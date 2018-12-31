@@ -13,7 +13,7 @@ LDFLAGS=\
   --script=linkfile
 
 CFLAGS=\
-  -std=c99 -O0 --save-temp
+  -std=c99 -O2 --save-temp
 
 SRCS:=$(sort $(wildcard *.c) $(wildcard *.asm))
 
@@ -24,7 +24,8 @@ all: $(FNAME)_8.bin
 
 $(FNAME)_8.bin: $(FNAME).elf
 	$(OBJCOPY) -O binary -j .text -j .ctors -j .data $^ header.bin
-	@dd if=/dev/null of=header.bin bs=512 seek=1
+	ls -l header.bin
+	@dd if=/dev/null of=header.bin bs=256 seek=1
 	$(OBJCOPY) -O binary -j .bank0 $^ bank0_tmp.bin
 	$(OBJCOPY) -O binary -j .bank1 $^ bank1_tmp.bin
 	cat header.bin bank0_tmp.bin >bank0.bin

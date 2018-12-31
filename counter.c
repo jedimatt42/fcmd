@@ -1,8 +1,6 @@
 #include "counter.h"
 
-int countup() {
-  static int counter = 0xCAFE;
-  counter++;
-  return counter;
+int countup(int x, int y, int z) {
+  return x + y * z;
 }
 

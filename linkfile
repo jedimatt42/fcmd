@@ -1,7 +1,7 @@
 MEMORY
 {
-  cart_rom   (rx) : ORIGIN = 0x6000, LENGTH = 0x0200 /* 512 bytes up front of common code */
-  bank_rom   (rx) : ORIGIN = 0x6200, LENGTH = 0x1E00 /* 8k cartridge ROM */
+  cart_rom   (rx) : ORIGIN = 0x6000, LENGTH = 0x0100 /* 256 bytes up front of common code */
+  bank_rom   (rx) : ORIGIN = 0x6100, LENGTH = 0x1F00 /* 8k-header of bankable cartridge ROM */
   lower_exp  (wx) : ORIGIN = 0x2000, LENGTH = 0x2000 /* 8k        */
   upper_exp  (wx) : ORIGIN = 0xA000, LENGTH = 0x6000 /* 24k upper ram */
   scratchpad (wx) : ORIGIN = 0x8320, LENGTH = 0x00e0 /* 32b is for workspace */
