@@ -25,7 +25,8 @@ void _start(void)
   /* Create the stack before declaring any variables */
   __asm__("\tli sp, >4000"); // TOP OF LOW MEM
 
-  /* Fill .data section with initial values */
+  /*
+  // Fill .data section with initial values
   {
     extern int __VAL_START;
     extern int __DATA_START;
@@ -37,33 +38,7 @@ void _start(void)
       *dst++ = *src++;
     }
   } 
-
-  /* Erase .bss section */
-  {
-    extern int __BSS_START;
-    extern int __BSS_END;
-    char *dst = (char*)&__BSS_START;
-    while(dst < (char*)&__BSS_END)
-    {
-      *dst++ = 0;
-    }
-  }
-
-#ifdef __cplusplus
-  /* Call all initial constructors.
-  * The .ctors section is filled with function pointers to constructors. 
-  * Iterate through them and call each function. */
-  {
-    extern int __CTOR_START;
-    extern int __CTOR_END;
-    typedef void(*funcptr)(void);
-    funcptr *ctor = (funcptr*)&__CTOR_START;
-    while(ctor < (funcptr*)&__CTOR_END)
-    {
-      (*(ctor++))();
-    }
-  }
-#endif
+  */
 
   /* Start running C code */
   main();

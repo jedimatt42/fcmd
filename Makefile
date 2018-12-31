@@ -20,9 +20,9 @@ SRCS:=$(sort $(wildcard *.c) $(wildcard *.asm))
 OBJECT_LIST:=$(SRCS:.c=.o)
 OBJECT_LIST:=$(OBJECT_LIST:.asm=.o)
 
-all: $(FNAME)_C.bin
+all: $(FNAME)_8.bin
 
-$(FNAME)_C.bin: $(FNAME).elf
+$(FNAME)_8.bin: $(FNAME).elf
 	$(OBJCOPY) -O binary -j .text -j .ctors -j .data $^ header.bin
 	@dd if=/dev/null of=header.bin bs=512 seek=1
 	$(OBJCOPY) -O binary -j .bank0 $^ bank0_tmp.bin

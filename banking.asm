@@ -1,21 +1,10 @@
 ; Implementation of cartridge bankswitching trampoline.
 ; paired with FAR_CALL macro in banking.h
 
-	DEF dest_bank
-	DEF dest_func_addr
-	DEF caller_bank
-	DEF caller_return_addr
 	DEF tramp_func
 
-dest_bank:
-	BSS 2
-dest_func_addr:
-	BSS 2
-caller_bank:
-	BSS 2
-caller_return_addr:
-	BSS 2
-
+; allows casting to target function signature more easily.
+;  although I know it wastes a word.
 tramp_func:
 	DATA trampoline
 
