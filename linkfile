@@ -1,0 +1,30 @@
+MEMORY
+{
+  cart_rom   (rx) : ORIGIN = 0x6000, LENGTH = 0x0200 /* 512 bytes up front */
+  bank_rom  (rx) : ORIGIN = 0x6200, LENGTH = 0x1E00 /* 8k cartridge ROM */
+  lower_exp  (wx) : ORIGIN = 0x2000, LENGTH = 0x2000 /* 8k        */
+  upper_exp  (wx) : ORIGIN = 0xA000, LENGTH = 0x6000 /* 24k upper ram */
+  scratchpad (wx) : ORIGIN = 0x8320, LENGTH = 0x00e0 /* 32b is for workspace */
+}
+
+
+SECTIONS
+{
+  /* overlays */
+  OVERLAY : 
+  {
+    .bank0 { main.o(.text .data) }
+    .bank1 { counter.o(.text .data) }
+  } >bank_rom
+
+  /* common */
+  .text : {
+    __header.o(.text)
+    _crt0.o(.text)
+  } >cart_rom
+
+  __VAL_START = .;
+  .data : AT(__VAL_START) { __DATA_START = .; *(.data); __DATA_END = .;} >lower_exp
+
+  .bss  ALIGN(2) : { __BSS_START = .; *(.bss); __BSS_END = .;}
+}  
