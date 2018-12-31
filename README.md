@@ -8,7 +8,12 @@ You then pass your arguments by calling that cast function pointer returned by t
 
 The trampoline stores the return address. It then switches banks, and BL to the original target function. That returns to the trampoline, which subsequently restores the bank, restores the original return address, and returns.
 
+See: banking.h for calling macro.
+     main.c for example usage.
+
 ## TODO: 
 
+* Return value gets messed up if -O0 is used... works fine with -O2 ?? Otherwise, parameters and return values work.
 * Implement a stack - in this example, you cannot nest calls.
-* test with parameters - it should work... gcc doesn't know that the trampoline is any different from the intended function if you get the signature parameter correct. The trampoline only messes with R11. 
+* Figure out how to link in library modules.
+

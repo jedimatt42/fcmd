@@ -23,7 +23,12 @@ extern void* caller_return_addr;
 // untyped function pointer to the trampoline
 extern void* tramp_func;
 
-// f=function address, db=function bank address, t=signature of function, a=argument list 
+// f=function address, db=function bank address, t=signature of function
+//
+// examples of t - the signature:
+//  void foo(); t = void (*)(void)
+//  int  bar(int x); t = int (*)(int)
+// 
 #define BANK_CALL(f,db,t) \
   __extension__ \
   ((t) ({ dest_func_addr=f; dest_bank=(int*)db; caller_bank=(int*)MYBANK; tramp_func;}))
