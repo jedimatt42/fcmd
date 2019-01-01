@@ -22,10 +22,14 @@ OBJECT_LIST:=$(OBJECT_LIST:.asm=.o)
 
 all: $(FNAME)_8.bin
 
+# The size of the car_rom segment in decimal
+# must agree with linkfile
+COMMON_SIZE = 96
+
 header.bin: $(FNAME).elf
 	$(OBJCOPY) -O binary -j .text $^ header.bin
 	ls -l header.bin
-	@dd if=/dev/null of=header.bin bs=256 seek=1
+	@dd if=/dev/null of=header.bin bs=$(COMMON_SIZE) seek=1
 
 bank0.bin: $(FNAME).elf header.bin
 	$(OBJCOPY) -O binary -j .bank0 $< bank0_tmp.bin
