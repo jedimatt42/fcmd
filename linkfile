@@ -10,24 +10,32 @@ MEMORY
 
 SECTIONS
 {
-  /* overlays */
-  OVERLAY : 
-  {
-    .bank0 { main.o(.text) }
-    .bank1 { counter.o(.text) }
-  } >bank_rom
-
   /* common */
   .text : {
     __header.o(.text)
-    _crt0.o(.text)
     banking.o(.text)
     bankdata.o(.text)
-    initdata.o(.text)
   } >cart_rom
 
-  __VAL_START = .;
-  .data : AT(__VAL_START) { __DATA_START = .; *(.data); __DATA_END = .;} >lower_exp
+  /* overlays */
+  OVERLAY : 
+  {
+    .bank0 { 
+      _crt0.o(.text)
+      main.o(.text) 
+      __LOAD_DATA = .;
+    }
+    .bank1 { 
+      counter.o(.text) 
+    }
+  } >bank_rom
 
-  .bss  ALIGN(2) : { __BSS_START = .; *(.bss); __BSS_END = .;}
+  . = 0x2000;
+  .data : {
+    __DATA_START = .;
+    * (.data); 
+    __DATA_END = .;
+  } >lower_exp
+
+  .bss  ALIGN(2) : { __BSS_START = .; *(.bss); __BSS_END = .;} >lower_exp
 }  

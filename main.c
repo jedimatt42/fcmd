@@ -15,3 +15,5 @@ void main() {
   *PORT = d;
 }
 
+int second_data = 0xA55A;
+
