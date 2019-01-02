@@ -10,6 +10,7 @@
 DECLARE_BANKED(setupScreen, BANK_1, void far_setupScreen())
 DECLARE_BANKED(countup, BANK_1, int far_countup(int a, int b, int c))
 DECLARE_BANKED(cputs, BANK_1, void far_cputs(const char* s))
+DECLARE_BANKED(checkresult, BANK_1, void far_checkresult(int s))
 
 const char message[] = "more";
 
@@ -25,8 +26,8 @@ void main() {
   int b = 2;
   int c = 4;
   int d = far_countup(a, b, c);
+  far_checkresult(d); // check that d is 9, print something about it.
 
-  gotoxy(0,23);
   // DEMONSTRATES GOTCHA:  message is in bank0, so code in bank1
   // cannot access it. will print garbage. whatever is at that address
   // in bank1. 

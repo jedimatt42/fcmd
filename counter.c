@@ -10,10 +10,18 @@ void setupScreen() {
   clrscr();
   gotoxy(0,0);
   cputs("Hello World!");
-  gotoxy(1,0);
 }
 
 int countup(int x, int y, int z) {
   return x + y * z;
+}
+
+void checkresult(int s) {
+  gotoxy(0,1);
+  if (s == 9) {
+    cputs("countup - good");
+  } else {
+    cputs("countup - error");
+  }
 }
 
