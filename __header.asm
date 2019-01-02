@@ -12,7 +12,7 @@
 	DATA	>0000		; unused - interrupt list
 	DATA	>0000		; unused - ???
 
-; ForceBASIC program entry
+; program entry
 menua:
 	DATA	>0000		; next list entry
 	DATA	_cart		; asm entry
@@ -20,9 +20,12 @@ menua:
 	TEXT	"BANK TEST"	; menu text
 	EVEN
 
+; start here instead of C typical entry of _start, so we can
+; force over to bank0, as most cartridges don't guarantee
+; power-on bank selection.
 _cart:
-	CLR	@>6000
-	B	@_start
+	CLR	@>6000		; move to bank0
+	B	@_start		; now branch into C.
 
 	
 
