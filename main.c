@@ -7,10 +7,10 @@
 #include <system.h>
 #include <conio.h>
 
-DECLARE_BANKED(setupScreen, BANK_1, void far_setupScreen())
-DECLARE_BANKED(countup, BANK_1, int far_countup(int a, int b, int c))
-DECLARE_BANKED(cputs, BANK_1, void far_cputs(const char* s))
-DECLARE_BANKED(checkresult, BANK_1, void far_checkresult(int s))
+DECLARE_BANKED(setupScreen, BANK_1, void far_setupScreen(), trampoline())
+DECLARE_BANKED(countup, BANK_1, int far_countup(int a, int b, int c), return trampoline(a, b, c))
+DECLARE_BANKED(cputs, BANK_1, void far_cputs(const char* s), trampoline(s))
+DECLARE_BANKED(checkresult, BANK_1, void far_checkresult(int s), trampoline(s))
 
 const char message[] = "more";
 

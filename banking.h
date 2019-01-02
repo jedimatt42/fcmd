@@ -29,7 +29,7 @@ extern void* trampoline();
  *
  * Assumes MYBANK is defined as the callers bank switch address
  */
-#define DECLARE_BANKED(realname, bank, fn_prototype) \
+#define DECLARE_BANKED(realname, bank, fn_prototype, trampcall) \
 static inline fn_prototype { \
  __asm__ volatile( \
    "li r0,%0  \n\t" \
@@ -40,11 +40,12 @@ static inline fn_prototype { \
    "mov r0,@tramp_stash \n\t" \
    "mov @bank_return,r0 \n\t" \
    "mov @tramp_stash,*r0 \n\t" \
-   "bl @trampoline \n\t" \
    : \
    : "i"(realname),"i"(bank),"i"(MYBANK) \
    : "r0" \
  ); \
+ \
+ trampcall; \
 }
 
 #endif
