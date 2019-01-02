@@ -1,6 +1,7 @@
-#include "counter.h"
 #include <vdp.h>
 #include <conio.h>
+
+#include "counter.h"
 
 void setupScreen() {
   set_text();
