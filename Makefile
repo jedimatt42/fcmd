@@ -10,10 +10,10 @@ FNAME=banktest
 UCFNAME=$(shell echo -n $(FNAME) | tr 'a-z' 'A-Z')
 
 LDFLAGS=\
-  --script=linkfile
+  --script=linkfile -L$(LIBTI99) -lti99
 
 CFLAGS=\
-  -std=c99 -O2 --save-temp
+  -std=c99 -O2 --save-temp -I$(LIBTI99)
 
 SRCS:=$(sort $(wildcard *.c) $(wildcard *.asm))
 
@@ -60,5 +60,5 @@ $(FNAME).elf: $(OBJECT_LIST)
 	$(GAS) $< -o $@
 
 %.o: %.c
-	$(CC) -c $< $(CFLAGS) -I$(LIBTI99) -I/home/matthew/dev/gcc-9900/lib/gcc/tms9900/4.4.0/include -o $@
+	$(CC) -c $< $(CFLAGS) -I/home/matthew/dev/gcc-9900/lib/gcc/tms9900/4.4.0/include -o $@
 

@@ -23,10 +23,14 @@ SECTIONS
     .bank0 { 
       _crt0.o(.text)
       main.o(.text) 
+      sys_*.o(.text)
       __LOAD_DATA = .;
     }
     .bank1 { 
       counter.o(.text) 
+      vdp_*.o(.text)
+      conio_*.o(.text)
+      str_*.o(.text)
     }
   } >bank_rom
 
