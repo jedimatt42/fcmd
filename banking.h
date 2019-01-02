@@ -19,8 +19,7 @@ extern volatile int* dest_bank;
 extern void* dest_func_addr;
 extern unsigned int* bank_return;
 
-// untyped function pointer to the trampoline
-extern void* tramp_func;
+extern void* trampoline();
 
 // f=function address, db=function bank address, t=signature of function
 //
@@ -30,7 +29,7 @@ extern void* tramp_func;
 // 
 #define BANK_CALL(f,db,t) \
   __extension__ \
-  ((t) ({ dest_func_addr=f; dest_bank=(int*)db; *bank_return=(unsigned int)MYBANK; tramp_func;}))
+  ((t) ({ dest_func_addr=f; dest_bank=(int*)db; *bank_return=(unsigned int)MYBANK; trampoline;}))
 
 /*
  * suggested alternative by PeteE

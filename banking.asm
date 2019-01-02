@@ -1,13 +1,7 @@
 ; Implementation of cartridge bankswitching trampoline.
-; paired with FAR_CALL macro in banking.h
+; paired with BANK_CALL macro in banking.h
 
-	DEF tramp_func
 	DEF trampoline
-
-; allows casting to target function signature more easily.
-;  although I know it wastes a word.
-tramp_func:
-	DATA trampoline
 
 RTADDR	EQU	>8300+(11*2)		; c register r11
 
