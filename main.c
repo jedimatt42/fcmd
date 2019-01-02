@@ -36,5 +36,3 @@ void main() {
   // to memcpy if creating a string on the stack, so that is a good candidate.
 }
 
-int second_data = 0xA55A;
-

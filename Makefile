@@ -13,7 +13,7 @@ LDFLAGS=\
   --script=linkfile -L$(LIBTI99) -lti99
 
 CFLAGS=\
-  -std=c99 -O2 --save-temp -I$(LIBTI99)
+  -std=c99 -O2 --save-temp -I$(LIBTI99) -DBANK_STACK_SIZE=5
 
 SRCS:=$(sort $(wildcard *.c) $(wildcard *.asm))
 
@@ -22,9 +22,9 @@ OBJECT_LIST:=$(OBJECT_LIST:.asm=.o)
 
 all: $(FNAME)_8.bin
 
-# The size of the car_rom segment in decimal
+# The size of the cart_rom segment in decimal
 # must agree with linkfile
-COMMON_SIZE = 96
+COMMON_SIZE = 256
 
 header.bin: $(FNAME).elf
 	$(OBJCOPY) -O binary -j .text $^ header.bin

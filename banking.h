@@ -17,8 +17,7 @@ Use BANK_CALL macro to:
 
 extern volatile int* dest_bank;
 extern void* dest_func_addr;
-extern volatile int* caller_bank;
-extern void* caller_return_addr;
+extern unsigned int* bank_return;
 
 // untyped function pointer to the trampoline
 extern void* tramp_func;
@@ -31,7 +30,29 @@ extern void* tramp_func;
 // 
 #define BANK_CALL(f,db,t) \
   __extension__ \
-  ((t) ({ dest_func_addr=f; dest_bank=(int*)db; caller_bank=(int*)MYBANK; tramp_func;}))
+  ((t) ({ dest_func_addr=f; dest_bank=(int*)db; *bank_return=(unsigned int)MYBANK; tramp_func;}))
+
+/*
+ * suggested alternative by PeteE
+ *
+
+#define DECLARE_BANKED(realname, bank, fn_prototype) \
+static inline fn_prototype { \
+ asm volatile( \
+   "li r0,%0  \n\t" \
+   "mov r0,@dest_func_addr \n\t" \
+   "li r0,%1  \n\t" \
+   "mov r0,@dest_bank \n\t" \
+   "li r0,%2  \n\t" \
+   "mov r0,@caller_bank \n\t" \
+   "bl @trampoline \n\t" \
+   : \
+   : "i"(realname),"i"(bank),"i"(MYBANK) \
+   : "r0" \
+ ); \
+}
+
+*/
 
 #endif
 
