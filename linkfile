@@ -11,8 +11,8 @@ MEMORY
 SECTIONS
 {
   /* common */
-  .text : {
-    __header.o(.text)
+  .text : {              /* all modules listed here will end up at front of each ROM bank */
+    __header.o(.text)      
     trampoline.o(.text)
     bankdata.o(.text)
   } >cart_rom
@@ -20,26 +20,30 @@ SECTIONS
   /* overlays */
   OVERLAY : 
   {
-    .bank0 { 
+    .bank0 {             /* list the set of modules in bank 0 */
       _crt0.o(.text)
       main.o(.text) 
-      sys_*.o(.text)
-      __LOAD_DATA = .;
+      sys_*.o(.text)     /* system modules from libti99 */
+      __LOAD_DATA = .;   /* .data segment is copied here so initial values can be loaded in RAM */
     }
     .bank1 { 
       counter.o(.text) 
-      vdp_*.o(.text)
-      conio_*.o(.text)
-      str_*.o(.text)
-    }
+      vdp_*.o(.text)     /* vdp routines from libti99 */
+      conio_*.o(.text)   /* conio routine from libti99 */
+      str_*.o(.text)     /*   libti99 doesn't know about banking, so dependencies from previous */
+    }                    /*   modules should be linked into the same bank */
   } >bank_rom
 
-  . = 0x2000;
+  . = 0x2000;            /* remaining references will start from this address. */
   .data : {
-    __DATA_START = .;
+    __DATA_START = .;    /* define RAM location symbol so __LOAD_DATA can be copied from ROM */
     * (.data); 
-    __DATA_END = .;
+    __DATA_END = .;      /* identifies end of data for initialization routine. */
   } >lower_exp
 
-  .bss  ALIGN(2) : { __BSS_START = .; *(.bss); __BSS_END = .;} >lower_exp
+  .bss  ALIGN(2) : { 
+    __BSS_START = .;     /* _crt0 will initialize RAM from here to __BSS_END to 0x00 values */
+    *(.bss); 
+    __BSS_END = .;
+  } >lower_exp
 }  
