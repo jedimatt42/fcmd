@@ -15,6 +15,7 @@ DECLARE_BANKED(checkresult, BANK_1, void far_checkresult(int s), trampoline(s))
 const char message[] = "more";
 
 void main() {
+
   // setupScreen is in bank1, and depends on a bunch of libti99 stuff.
   // so things like vdp_*.o are linked into bank1 to reside next to the
   // primary calling code.

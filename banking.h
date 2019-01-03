@@ -3,10 +3,7 @@
 
 #include "banks.h"
 
-extern volatile int* dest_bank;
-extern void* dest_func_addr;
-extern unsigned int* bank_return;
-extern unsigned int tramp_stash;
+extern int* tramp_data;
 
 extern void* trampoline();
 
@@ -31,21 +28,9 @@ extern void* trampoline();
  */
 #define DECLARE_BANKED(realname, bank, fn_prototype, trampcall) \
 static inline fn_prototype { \
- __asm__ volatile( \
-   "li r0,%0  \n\t" \
-   "mov r0,@dest_func_addr \n\t" \
-   "li r0,%1  \n\t" \
-   "mov r0,@dest_bank \n\t" \
-   "li r0,%2  \n\t" \
-   "mov r0,@tramp_stash \n\t" \
-   "mov @bank_return,r0 \n\t" \
-   "mov @tramp_stash,*r0 \n\t" \
-   : \
-   : "i"(realname),"i"(bank),"i"(MYBANK) \
-   : "r0" \
- ); \
- \
- trampcall; \
+  static const int foo[]={MYBANK, (int)realname, bank}; \
+  tramp_data = foo; \
+  trampcall; \
 }
 
 #endif

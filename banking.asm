@@ -5,42 +5,57 @@
 
 RTADDR	EQU	>8300+(11*2)		; c register r11
 
-; dest_bank, dest_func_addr, bank_return will have been set already.
-;   bank_return will be the bank value in the stack. 
-;   we still need to capture and set the return address and save
-;   it to the stack.
+; code to handle bouncing between banks.
+; 
+;   r11 - return address into caller function 
+; tramp_data will point to a block of 3 words (in ROM):
+;   [0] - return bank address
+;   [1] - address of function to call
+;   [2] - bank address for function to call
+;
+; current r11/return address and return bank need to be
+; saved to the bank_stack. 
 trampoline:
-	; advance bank_return stack pointer
-	INCT @bank_return
+	; store return address onto bank_stack
+	mov r11,@tramp_stash			; stash caller return address
+	mov @bank_return,r11			; get pointer to bank_stack
+	mov @tramp_stash,*r11			; push caller return to bank_stack
+	inct @bank_return			; move to next slot in bank_stack
 
-	; need to capture return addr
-	MOV @RTADDR,@tramp_stash	; stash the return addr so I can use r11
-	MOV @bank_return,r11
-	MOV @tramp_stash,*r11
-	; move pointer forward ready for nested BANK_CALL from C.
-	INCT @bank_return
+	; store the return bank onto stack
+	mov @tramp_data,r11			; get pointer to return bank
+	mov *r11,@tramp_stash			; stash return bank
+	mov @bank_return,r11			; get pointer free slot in bank_stack
+	mov @tramp_stash,*r11			; push caller bank to bank_stack
+	inct @bank_return			; move to next slot in bank_stack
+	
+	; stash the target address
+	inct @tramp_data			; advance to target function
+	mov @tramp_data,r11			; get pointer to target function address
+	mov *r11,@tramp_stash			; stash target function address
 
-	; switch bank
-	MOV @dest_bank,r11
-	CLR *r11
+	; set destination bank
+	inct @tramp_data			; advance to target bank
+	mov @tramp_data,r11			; get pointer to target bank
+	mov *r11,r11				; load bank address so we can write to it
+	clr *r11				; to switch banks
 
-	; call the intended function
-	; all the arguments should be in their places on the stack
-	; still or in registers as per calling convention.
-	MOV @dest_func_addr,r11
-	BL *r11
+	; call target address
+	mov @tramp_stash,r11			; copy the function address so we can call it
+	bl *r11					; call the target function
 
 	; restore bank
-	DECT @bank_return		; rewind to the return address
-	MOV @bank_return,r11		; 
-	MOV *r11,@tramp_stash		; stash the original return address
-	DECT @bank_return		; rewind to the originating bank
-	MOV @bank_return,r11		; 
-	MOV *r11,r11			; 
-	CLR *r11			; switch to the return bank
+	dect @bank_return			; move bank_stack back to caller bank
+	mov @bank_return,r11			; get pointer to caller bank address
+	mov *r11,r11				; load bank address so we can write to it
+	clr *r11				; switch back to caller bank
 
-	; restore caller return addr
-	MOV @tramp_stash,r11		; grab the return address
-	RT				; return to caller B *r11
+	; restore return address
+	dect @bank_return			; move bank_stack back to return address
+	mov @bank_return,r11			; get pointer to return address
+	mov *r11,r11				; load return address so we can go there
+
+	; return to caller B *r11
+	RT
 	
 
