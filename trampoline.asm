@@ -3,8 +3,6 @@
 
 	DEF trampoline
 
-RTADDR	EQU	>8300+(11*2)		; c register r11
-
 ; code to handle bouncing between banks.
 ; 
 ;   r11 - return address into caller function 

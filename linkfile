@@ -13,7 +13,7 @@ SECTIONS
   /* common */
   .text : {
     __header.o(.text)
-    banking.o(.text)
+    trampoline.o(.text)
     bankdata.o(.text)
   } >cart_rom
 
