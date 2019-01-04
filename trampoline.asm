@@ -15,43 +15,41 @@
 ; saved to the bank_stack. 
 trampoline:
 	; store return address onto bank_stack
-	mov r11,@tramp_stash			; stash caller return address
-	mov @bank_return,r11			; get pointer to bank_stack
-	mov @tramp_stash,*r11			; push caller return to bank_stack
-	inct @bank_return			; move to next slot in bank_stack
+	mov @bank_return,r12		; get pointer to bank_stack
+	mov R11,*r12+			; store return address onto bank_stack
+					;   and move bank_stack pointer forward
 
 	; store the return bank onto stack
-	mov @tramp_data,r11			; get pointer to return bank
-	mov *r11,@tramp_stash			; stash return bank
-	mov @bank_return,r11			; get pointer free slot in bank_stack
-	mov @tramp_stash,*r11			; push caller bank to bank_stack
-	inct @bank_return			; move to next slot in bank_stack
+	mov @tramp_data,r0		; get pointer to trampoline data for call
+	mov *r0+,*r12+			; store return bank onto bank_stack
+					;   and move both pointers forward
+
+	; set bank_return pointer to next slot in bank_stack
+	mov r12,@bank_return		; r12 currently points at next free slot
 	
 	; stash the target address
-	inct @tramp_data			; advance to target function
-	mov @tramp_data,r11			; get pointer to target function address
-	mov *r11,@tramp_stash			; stash target function address
+	mov *r0+,r11			; get address of function, and move pointer
+					;   forward to target bank
 
 	; set destination bank
-	inct @tramp_data			; advance to target bank
-	mov @tramp_data,r11			; get pointer to target bank
-	mov *r11,r11				; load bank address so we can write to it
-	clr *r11				; to switch banks
+	mov *r0,r12			; load target bank address
+	clr *r12			; switch to target bank
 
 	; call target address
-	mov @tramp_stash,r11			; copy the function address so we can call it
-	bl *r11					; call the target function
+	bl *r11				; run the target function
 
 	; restore bank
-	dect @bank_return			; move bank_stack back to caller bank
-	mov @bank_return,r11			; get pointer to caller bank address
-	mov *r11,r11				; load bank address so we can write to it
-	clr *r11				; switch back to caller bank
+	mov @bank_return,r0		; get bank_stack pointer
+	dect r0				; rewind to calling bank
+	mov *r0,r11			; load return bank address
+	clr *r11			; switch to calling bank
 
 	; restore return address
-	dect @bank_return			; move bank_stack back to return address
-	mov @bank_return,r11			; get pointer to return address
-	mov *r11,r11				; load return address so we can go there
+	dect r0				; rewind to caller return address
+	mov *r0,r11			; restore our return address
+
+	; make sure bank_return is adjusted back
+	mov r0,@bank_return		; free up this slot in bank_stack
 
 	; return to caller B *r11
 	RT
