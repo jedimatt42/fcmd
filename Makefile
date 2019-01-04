@@ -24,7 +24,7 @@ all: $(FNAME)_8.bin
 
 # The size of the cart_rom segment in decimal
 # must agree with linkfile
-COMMON_SIZE = 256
+COMMON_SIZE = 96
 
 header.bin: $(FNAME).elf
 	$(OBJCOPY) -O binary -j .text $^ header.bin
