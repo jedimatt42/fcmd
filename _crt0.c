@@ -10,6 +10,7 @@ extern "C"
 #endif
 void _start(void)
 {
+
   /* Disable interrupts
   *
   * This will disable console reset via keyboard, music playback,
@@ -23,7 +24,10 @@ void _start(void)
   __asm__("\tlwpi >8300");
 
   /* Create the stack before declaring any variables */
-  __asm__("\tli sp, >4000"); // TOP OF LOW MEM
+  {
+    extern int __STACK_TOP;
+    __asm__("\tli sp, %0" : : "i" (&__STACK_TOP) );
+  }
 
   // Fill .data section with initial values
   {

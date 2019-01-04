@@ -46,4 +46,6 @@ SECTIONS
     *(.bss); 
     __BSS_END = .;
   } >lower_exp
+
+  __STACK_TOP = 0x4000;
 }  
