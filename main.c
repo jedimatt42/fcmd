@@ -1,58 +1,30 @@
 #include "banking.h"
-#include "counter.h"
-
-#include <system.h>
 #include <conio.h>
+#include <system.h>
 
 // declare our current bank
 #define MYBANK BANK_0
 
-DECLARE_BANKED(setupScreen, BANK_1, void far_setupScreen(), trampoline())
-DECLARE_BANKED(countup, BANK_1, int far_countup(int a, int b, int c), return (int) trampoline(a, b, c))
-DECLARE_BANKED(cputs, BANK_1, void far_cputs(const char* s), trampoline(s))
-DECLARE_BANKED(cputc, BANK_1, void far_cputc(int ch), trampoline(ch))
-DECLARE_BANKED(checkresult, BANK_1, void far_checkresult(int s, int ex), trampoline(s, ex))
+#include "second.h"
 
-DECLARE_BANKED(test1, BANK_1, void far_test1(), trampoline())
-
-const char message[] = "more";
+DECLARE_BANKED(set_text, BANK_1, void bk_set_text(), trampoline())
+DECLARE_BANKED(charsetlc, BANK_1, void bk_charsetlc(), trampoline())
+// this one passes arguments
+DECLARE_BANKED(cputs, BANK_1, void bk_cputs(const char* s), trampoline(s))
+DECLARE_BANKED(halt, BANK_1, void bk_halt(), trampoline())
+DECLARE_BANKED(second, BANK_1, void bk_second(), trampoline())
 
 void main() {
+  bk_set_text();
+  bk_charsetlc();
 
-  // setupScreen is in bank1, and depends on a bunch of libti99 stuff.
-  // so things like vdp_*.o are linked into bank1 to reside next to the
-  // primary calling code.
-  far_setupScreen();
+  // even though constant, copy it into stack space for cross bank visibility
+  const char msg[] = "Hello from >6000!";
+  gotoxy(0,0);
+  bk_cputs(msg);
 
-  // none-pointer values pass well. 
-  // make a call to 'countup' in BANK_1 from BANK_0. with given signature.
-  int a = 1;
-  int b = 2;
-  int c = 4;
-  int d = far_countup(a, b, c);
-  d += far_countup(a, b, d);
-  far_checkresult(d, 17); // check that d is some expected number, print something about it.
+  bk_second();
 
-
-  // bank chaining : will go from bank 0, to bank 1, to bank 0, and then rewind
-  far_cputc('a');    
-  far_test1();
-  far_cputc('A');
-
-  // I linked this one into bank0, sys_*.o, so I can call it directly.
-  halt();
-
-  // if a function needs to be visible to both banks, like the trampoline, then
-  // it should end up in the common cart_rom .text section... gcc will make calls
-  // to memcpy if creating a string on the stack, so that is a good candidate.
-
-  // DEMONSTRATES GOTCHA:  message is in bank0, so code in bank1
-  // cannot access it. will print garbage. whatever is at that address
-  // in bank1. 
-  far_cputs(message);
-}
-
-void test2() {
-  far_cputc('a');
+  bk_halt();
 }
 
