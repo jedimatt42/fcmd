@@ -28,4 +28,15 @@ You may have a routine you need to be commonly available in all banks. This shou
 and you'll have to shrink the overlay segment, and increase the common segment. The common segment size is defined in the
 makefile, and in the linkfile.
 
+## Files:
+
+* banks.h - defines constants for the write addresses that trigger cartridge bank switching
+* banking.h - defines the DECLARED_BANK macro and related trampoline symbols
+* bankdata.c - module defining storage for the bank_stack, and trampoline parameter location
+* trampoline.asm - module defining trampoline function
+* Makefile - defines stack size, extracts binary chunks and composes cartrige bin
+* linkfile - defines which modules end up at what address spaces.
+* crt0.c - defines startup routine for C, and memory initialization, calls main.
+* header.asm - defines cartridge header for TI-99/4A, sets bank_0, and calls c startup
+
 

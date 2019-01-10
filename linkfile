@@ -12,7 +12,7 @@ SECTIONS
 {
   /* common */
   .text : {              /* all modules listed here will end up at front of each ROM bank */
-    __header.o(.text)      
+    header.o(.text)      
     trampoline.o(.text)
     bankdata.o(.text)
   } >cart_rom
@@ -21,7 +21,7 @@ SECTIONS
   OVERLAY : 
   {
     .bank0 {             /* list the set of modules in bank 0 */
-      _crt0.o(.text)
+      crt0.o(.text)
       main.o(.text) 
       sys_*.o(.text)     /* system modules from libti99 */
       __LOAD_DATA = .;   /* .data segment is copied here so initial values can be loaded in RAM */
