@@ -5,7 +5,7 @@ LIBTI99?=/home/matthew/dev/github/jedimatt42/libti99
 OBJCOPY=tms9900-objcopy
 OBJDUMP=tms9900-objdump
 
-FNAME=tipish
+FNAME=tipicmd
 UCFNAME=$(shell echo -n $(FNAME) | tr 'a-z' 'A-Z')
 
 LDFLAGS=\
@@ -61,6 +61,7 @@ $(FNAME).elf: $(OBJECT_LIST)
 	rm -f *.o
 	rm -f *.elf
 	rm -f *.bin
+	rm -f *.bin_tmp
 	rm -f *.i
 	rm -f *.s
 	rm -f mapfile
