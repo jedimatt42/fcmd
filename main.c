@@ -1,11 +1,11 @@
 #include "banking.h"
 #include "counter.h"
 
-// declare our current bank
-#include "bank0.h"
-
 #include <system.h>
 #include <conio.h>
+
+// declare our current bank
+#define MYBANK BANK_0
 
 DECLARE_BANKED(setupScreen, BANK_1, void far_setupScreen(), trampoline())
 DECLARE_BANKED(countup, BANK_1, int far_countup(int a, int b, int c), return (int) trampoline(a, b, c))
