@@ -3,7 +3,8 @@
 
 void setupScreen();
 int countup(int x, int y, int z);
-void checkresult(int s);
+void checkresult(int s, int ex);
+void test1();
 
 #endif
 

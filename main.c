@@ -10,7 +10,10 @@
 DECLARE_BANKED(setupScreen, BANK_1, void far_setupScreen(), trampoline())
 DECLARE_BANKED(countup, BANK_1, int far_countup(int a, int b, int c), return (int) trampoline(a, b, c))
 DECLARE_BANKED(cputs, BANK_1, void far_cputs(const char* s), trampoline(s))
-DECLARE_BANKED(checkresult, BANK_1, void far_checkresult(int s), trampoline(s))
+DECLARE_BANKED(cputc, BANK_1, void far_cputc(int ch), trampoline(ch))
+DECLARE_BANKED(checkresult, BANK_1, void far_checkresult(int s, int ex), trampoline(s, ex))
+
+DECLARE_BANKED(test1, BANK_1, void far_test1(), trampoline())
 
 const char message[] = "more";
 
@@ -27,12 +30,14 @@ void main() {
   int b = 2;
   int c = 4;
   int d = far_countup(a, b, c);
-  far_checkresult(d); // check that d is 9, print something about it.
+  d += far_countup(a, b, d);
+  far_checkresult(d, 17); // check that d is some expected number, print something about it.
 
-  // DEMONSTRATES GOTCHA:  message is in bank0, so code in bank1
-  // cannot access it. will print garbage. whatever is at that address
-  // in bank1. 
-  far_cputs(message);
+
+  // bank chaining : will go from bank 0, to bank 1, to bank 0, and then rewind
+  far_cputc('a');    
+  far_test1();
+  far_cputc('A');
 
   // I linked this one into bank0, sys_*.o, so I can call it directly.
   halt();
@@ -40,5 +45,14 @@ void main() {
   // if a function needs to be visible to both banks, like the trampoline, then
   // it should end up in the common cart_rom .text section... gcc will make calls
   // to memcpy if creating a string on the stack, so that is a good candidate.
+
+  // DEMONSTRATES GOTCHA:  message is in bank0, so code in bank1
+  // cannot access it. will print garbage. whatever is at that address
+  // in bank1. 
+  far_cputs(message);
+}
+
+void test2() {
+  far_cputc('a');
 }
 
