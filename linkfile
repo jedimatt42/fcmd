@@ -28,13 +28,10 @@ SECTIONS
     }
     .bank1 { 
       libti99.a(.text)     /* vdp routines from libti99 */
-      second.o(.text)
     }                    /*   modules should be linked into the same bank */
     .bank2 { 
-      third.o(.text)
     }                    /*   modules should be linked into the same bank */
     .bank3 { 
-      fourth.o(.text)
     }                    /*   modules should be linked into the same bank */
   } >bank_rom
 
