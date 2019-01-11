@@ -22,30 +22,18 @@ SECTIONS
   OVERLAY : 
   {
     .bank0 {             /* list the set of modules in bank 0 */
-      crt0.o(.text)
-      main.o(.text) 
-      globals.o(.text)
-      parsing.o(.text)
-      getstr.o(.text)
-      strutil.o(.text)
+      b0_*.o(.text)
       __LOAD_DATA = .;   /* .data segment is copied here so initial values can be loaded in RAM */
     }
     .bank1 { 
       libti99.a(.text)     /* vdp routines from libti99 */
-      dsrutil.o(.text)
-      lvl2.o(.text)
-      tifloat.o(.text)
-      mds_dsrlnk.o(.text)
-      mds_dsrlnkraw.o(.text)
+      b1_*.o(.text)
     }                    /*   modules should be linked into the same bank */
     .bank2 { 
-      commands.o(.text)
+      b2_*.o(.text)
     }                    /*   modules should be linked into the same bank */
     .bank3 { 
-      help.o(.text)
-      oem.o(.text)
-      oem_high_chars.o(.text)
-      oem_low_chars.o(.text)
+      b3_*.o(.text)
     }                    /*   modules should be linked into the same bank */
   } >bank_rom
 
