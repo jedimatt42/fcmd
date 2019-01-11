@@ -1,42 +1,155 @@
-# gcc pattern for bank switched cartridge ROM
+# TIPICMD usage
 
-## Theory:
+## cd
 
-Allow creating static inline bank switching calls that delegate through a trampoline and maintain a stack of bank switch
-calls.
+Change directory
 
-See: banking.h for calling macro.
-     main.c for example usage.
+syntax: 'cd' (path)
 
-## TODO: 
+Example: Change to TIPI.GAMES.EA5 folder
 
-* Return value gets messed up if -O0 is used... works fine with -O2 ?? Otherwise, parameters and return values work.
+```
+[1000.TIPI.]
+$ cd TIPI.GAMES.EA5
 
-## Stack depth
+[1000.TIPI.GAMES.EA5.]
+$
+```
 
-A limit is defined in the Makefile. BANK_STACK_SIZE
+Example: Change to floppy controller disk 2
 
-## Libraries:
+```
+[1000.TIPI.]
+$ cd 1100.DSK2.
 
-complicated:
+[1100.DSK2.]
+$
+```
 
-Library linking works... by default they will get pulled into the common .text segment... they won't all fit.
-You will need to select which bank the library routines belong in, and select them in with the linkfile.
-See this project's linkfile for examples using libti99.
+Example: Change to parent folder
 
-You may have a routine you need to be commonly available in all banks. This should then go in the common .text segment,
-and you'll have to shrink the overlay segment, and increase the common segment. The common segment size is defined in the
-makefile, and in the linkfile.
+```
+[1000.TIPI.GAMES.]
+$ cd ..
 
-## Files:
+[1000.TIPI.]
+$
+```
 
-* banks.h - defines constants for the write addresses that trigger cartridge bank switching
-* banking.h - defines the DECLARED_BANK macro and related trampoline symbols
-* bankdata.c - module defining storage for the bank_stack, and trampoline parameter location
-* trampoline.asm - module defining trampoline function
-* Makefile - defines stack size, extracts binary chunks and composes cartrige bin
-* linkfile - defines which modules end up at what address spaces.
-* crt0.c - defines startup routine for C, and memory initialization, calls main.
-* header.asm - defines cartridge header for TI-99/4A, sets bank_0, and calls c startup
+Example: Change into folder under current folder
 
+```
+[1000.TIPI.]
+$ cd GAMES
+
+[1000.TIPI.GAMES.]
+$
+```
+
+## dir
+
+List files in current directory or given directory
+
+syntax: 'dir' [path]
+
+Example: List files in current folder
+
+```
+[1000.TIPI.]
+$ dir
+
+Vol: TIPI
+TIPICFG    PRG
+TIPICFH    PRG
+TIPICFI    PRG
+```
+
+Example: List files in root folder of TIPI. device
+
+```
+[1100.DSK1.]
+$ dir TIPI.
+
+Vol: TIPI
+TIPICFG    PRG
+TIPICFH    PRG
+TIPICFI    PRG
+```
+
+Example: List files in floppy drive DSK1 (if both TIPI and Floppy Controller are present)
+
+```
+[1000.TIPI.]
+$ dir 1100.DSK1.
+
+Vol: INFOCOM
+LOAD       PRG
+DEADLINE   PRG
+DEAD       D/F 128
+```
+
+## drives 
+
+List drives along with disambiguation
+
+syntax: 'drives' 
+
+Example:
+
+```
+$ drives
+
+1000 - TIPI DSK0 DSK1 DSK2 DSK3
+1100 - DSK1 DSK2 DSK3 DSK4
+```
+
+## quit
+
+Exit the program
+
+syntax: 'quit'
+
+Example:
+
+```
+[1000.TIPI.]
+$ quit
+```
+
+## ver
+
+Print information about TIPIFM
+
+syntax: 'ver'
+
+Example:
+
+```
+[1000.TIPI.]
+$ ver
+
+TIPICMD v1
+Command Shell for TIPI
+www.jedimatt42.com
+```
+
+## width
+
+Change display width. TIPICMD auto-detects F18A and starts in best mode.
+
+syntax: 'width' (40|80)
+
+Example: Set 80 column mode
+
+```
+[1000.TIPI.]
+$ width 80
+```
+
+Example: Set 40 column mode
+
+```
+[1000.TIPI.]
+$ width 40
+```
 
