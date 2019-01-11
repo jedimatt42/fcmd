@@ -1,0 +1,7 @@
+*.bin
+*.bin_tmp
+*.o
+*.i
+*.s
+*.elf
+mapfile
