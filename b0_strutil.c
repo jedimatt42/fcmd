@@ -1,4 +1,4 @@
-#include "strutil.h"
+#include "b0_strutil.h"
 
 #include <conio.h>
 #include <string.h>

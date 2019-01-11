@@ -1,10 +1,10 @@
 // DSR interface code for the TI-99/4A by Tursi
 // You can copy this file and use it at will ;)
 
-#include "files.h"
-#include "vdp.h"
-#include "string.h"
-#include "mds_dsrlnk.h"
+#include <files.h>
+#include <vdp.h>
+#include <string.h>
+#include "b1_mds_dsrlnk.h"
 
 #define GPLWSR12	*((volatile unsigned int*)0x83F8)
 

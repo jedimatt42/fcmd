@@ -1,7 +1,6 @@
-#include "main.h"
-
-#include "conio.h"
-#include "strutil.h"
+#include "b0_main.h"
+#include "b0_strutil.h"
+#include <conio.h>
 
 const char* HELP_COMMANDS =
 "Show help\n"

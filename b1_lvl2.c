@@ -1,12 +1,11 @@
-#include "lvl2.h"
+#include "b1_lvl2.h"
+#include "b1_dsrutil.h"
+#include "b1_mds_dsrlnk.h"
+#include "b0_strutil.h"
 
+#include <string.h>
 #include <vdp.h>
 #include <conio.h>
-
-#include "dsrutil.h"
-#include "mds_dsrlnk.h"
-#include "string.h"
-#include "strutil.h"
 
 #define LVL2_STATUS *((volatile unsigned char*)0x8350)
 #define LVL2_UNIT *((volatile unsigned char*)0x834C)

@@ -1,9 +1,9 @@
-#include "commands.h"
-#include "globals.h"
-#include "main.h"
-#include "parsing.h"
-#include "strutil.h"
-#include "lvl2.h"
+#include "b2_commands.h"
+#include "b0_globals.h"
+#include "b0_main.h"
+#include "b0_parsing.h"
+#include "b0_strutil.h"
+#include "b1_lvl2.h"
 
 #include <system.h>
 #include <conio.h>
