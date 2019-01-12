@@ -79,7 +79,7 @@ void __attribute__((noinline)) mds_dsrlnkraw(int crubase, unsigned int vdp, int 
 	"	ai   r2,0x4000		; add in dsr base address - now we point at dsr list or subroutine list\n"
 	"       jmp  a2340		; always jump into the loop from here\n"
 	"a233a  mov  @0x83d2,r2         ; next sub\n"
-	"       sbo  0                  ; card on (already is, isn't it??)\n"
+	"       sbo  0                  ; card on - already is, isn't it?\n"
 	"a2340  mov  *r2,r2             ; grab link pointer to next\n"
 	"       jeq  a2310              ; if no pointer, link back to get next card\n"
 	"       mov  r2,@0x83d2         ; save link address in >83d2\n"
