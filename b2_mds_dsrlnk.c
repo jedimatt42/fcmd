@@ -4,7 +4,7 @@
 #include <files.h>
 #include <vdp.h>
 #include <string.h>
-#include "b1_mds_dsrlnk.h"
+#include "b2_mds_dsrlnk.h"
 
 #define GPLWSR12	*((volatile unsigned int*)0x83F8)
 

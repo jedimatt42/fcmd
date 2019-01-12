@@ -4,7 +4,7 @@
 #include <files.h>
 #include <vdp.h>
 #include <conio.h>
-#include "b1_mds_dsrlnk.h"
+#include "b2_mds_dsrlnk.h"
 
 // uses: scratchpad >8340-8348, >8354, >8355, >8356, >83d0, >83d2, GPLWS
 

@@ -1,7 +1,7 @@
 #ifndef _LVL2_H
 #define _LVL2_H 1
 
-#include "b1_dsrutil.h"
+#include "b2_dsrutil.h"
 
 #define LVL2_OP_PROTECT 0x12
 #define LVL2_OP_RENAME 0x13

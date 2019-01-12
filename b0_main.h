@@ -1,7 +1,7 @@
 #ifndef _MAIN_H
 #define _MAIN_H 1
 
-#include "b1_dsrutil.h"
+#include "b2_dsrutil.h"
 
 void initGlobals();
 void main();

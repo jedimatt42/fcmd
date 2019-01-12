@@ -1,7 +1,7 @@
 #ifndef _GLOBALS_H
 #define _GLOBALS_H 1
 
-#include "b1_dsrutil.h"
+#include "b2_dsrutil.h"
 
 extern struct DeviceServiceRoutine* currentDsr;
 extern char currentPath[256];
