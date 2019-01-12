@@ -19,6 +19,8 @@ SRCS:=$(sort $(wildcard *.c) $(wildcard *.asm))
 OBJECT_LIST:=$(SRCS:.c=.o)
 OBJECT_LIST:=$(OBJECT_LIST:.asm=.o)
 
+LINK_OBJECTS:=$(addprefix objects/,$(OBJECT_LIST))
+
 all: $(FNAME)_8.bin
 
 # The size of the cart_rom segment in decimal
@@ -27,7 +29,6 @@ COMMON_SIZE = 112
 
 header.bin: $(FNAME).elf
 	$(OBJCOPY) -O binary -j .text $< header.bin
-	ls -l header.bin
 	@dd if=/dev/null of=header.bin bs=$(COMMON_SIZE) seek=1
 
 bank0.bin: $(FNAME).elf header.bin
@@ -55,20 +56,20 @@ $(FNAME)_8.bin: bank0.bin bank1.bin bank2.bin bank3.bin
 	cat $^ >$@
 
 $(FNAME).elf: $(OBJECT_LIST)
-	$(LD) $(OBJECT_LIST) $(LDFLAGS) -o $(FNAME).elf -Map=mapfile
+	$(LD) $(LINK_OBJECTS) $(LDFLAGS) -o $(FNAME).elf -Map=mapfile
 
 .phony clean:
-	rm -f *.o
+	rm -fr objects
 	rm -f *.elf
 	rm -f *.bin
 	rm -f *.bin_tmp
-	rm -f *.i
-	rm -f *.s
 	rm -f mapfile
 
 %.o: %.asm
-	$(GAS) $< -o $@
+	mkdir -p objects
+	cd objects; $(GAS) ../$< -o $@
 
 %.o: %.c
-	$(CC) -c $< $(CFLAGS) -I/home/matthew/dev/gcc-9900/lib/gcc/tms9900/4.4.0/include -o $@
+	mkdir -p objects
+	cd objects; $(CC) -c ../$< $(CFLAGS) -I/home/matthew/dev/gcc-9900/lib/gcc/tms9900/4.4.0/include -o $@
 
