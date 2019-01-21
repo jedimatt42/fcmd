@@ -21,7 +21,6 @@ void sleep(int jiffies) {
 }
 
 int isF18A() {
-  /*
   bk_unlock_f18a();
   unsigned char testcode[6] = { 0x04, 0xE0, 0x3F, 0x00, 0x03, 0x40 };
   bk_vdpmemcpy(0x3F00, testcode, 6);
@@ -29,15 +28,10 @@ int isF18A() {
     VDP_SET_REGISTER(0x36, 0x3F);
     VDP_SET_REGISTER(0x37, 0x00);
   }
-  unsigned char gpumod = bk_vdpreadchar(0x3F00);
-  if (gpumod == 0) {
-    return 1;
-  } else {
-  */
-    return 0;
-  /*
-  }
-  */
+  VDP_SET_ADDRESS(0x3F00);
+  __asm__("NOP");
+  int res = VDPRD;
+  return !res;
 }
 
 void resetF18A() {
