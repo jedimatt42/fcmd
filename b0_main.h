@@ -8,4 +8,8 @@ void setupScreen(int width);
 void sleep(int jiffies);
 void titleScreen();
 
+#include "banking.h"
+
+DECLARE_BANKED_VOID(resetF18A, BANK_0, bk_resetF18A, (), ())
+
 #endif

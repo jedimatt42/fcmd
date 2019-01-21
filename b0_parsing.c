@@ -3,11 +3,10 @@
 
 #include "b0_parsing.h"
 #include "b0_strutil.h"
-#include "b0_globals.h"
+// #include "b0_globals.h"
 #include "b2_commands.h"
-#include "b2_dsrutil.h"
-#include <conio.h>
-#include <string.h>
+// #include "b2_dsrutil.h"
+#include "b1_libti99.h"
 
 #define MATCH(x,y) (!(strcmpi(x,y)))
 
@@ -15,25 +14,27 @@
 
 void handleCommand(char *buffer) {
   char* tok = strtok(buffer, " ");
-  COMMAND("cd", handleCd)
-  else COMMAND("checksum", handleChecksum)
-  else COMMAND("copy", handleCopy)
-  else COMMAND("delete", handleDelete)
-  else COMMAND("dir", handleDir)
-  else COMMAND("drives", handleDrives)
-  else COMMAND("exit", handleExit)
-  else COMMAND("help", handleHelp)
-  else COMMAND("lvl2", handleLvl2)
-  else COMMAND("mkdir", handleMkdir)
-  else COMMAND("protect", handleProtect)
-  else COMMAND("rename", handleRename)
-  else COMMAND("rmdir", handleRmdir)
-  else COMMAND("unprotect", handleUnprotect)
-  else COMMAND("ver", handleVer)
-  else COMMAND("width", handleWidth)
-  else cprintf("unknown command: %s\n", tok);
+  COMMAND("cls", bk_handleCls)
+  // COMMAND("cd", handleCd)
+  // else COMMAND("checksum", handleChecksum)
+  // else COMMAND("copy", handleCopy)
+  // else COMMAND("delete", handleDelete)
+  // else COMMAND("dir", handleDir)
+  // else COMMAND("drives", handleDrives)
+  else COMMAND("exit", bk_handleExit)
+  // else COMMAND("help", handleHelp)
+  // else COMMAND("lvl2", handleLvl2)
+  // else COMMAND("mkdir", handleMkdir)
+  // else COMMAND("protect", handleProtect)
+  // else COMMAND("rename", handleRename)
+  // else COMMAND("rmdir", handleRmdir)
+  // else COMMAND("unprotect", handleUnprotect)
+  // else COMMAND("ver", handleVer)
+  // else COMMAND("width", handleWidth)
+  // else cprintf("unknown command: %s\n", tok);
 }
 
+/*
 int parsePath(char* path, char* devicename) {
   char workbuf[14];
   int crubase = 0;
@@ -48,7 +49,9 @@ int parsePath(char* path, char* devicename) {
   }
   return crubase;
 }
+*/
 
+/*
 void parsePathParam(struct DeviceServiceRoutine** dsr, char* buffer, int requirements) {
   buffer[0] = 0; // null terminate so later we can tell if it is prepared or not.
   char* path = strtok(0, " ");
@@ -96,3 +99,4 @@ void parsePathParam(struct DeviceServiceRoutine** dsr, char* buffer, int require
     strcpy(buffer, path);
   }
 }
+*/

@@ -2,16 +2,19 @@
 #define MYBANK BANK_2
 
 #include "b2_commands.h"
-#include "b0_globals.h"
-#include "b0_main.h"
-#include "b0_parsing.h"
-#include "b0_strutil.h"
-#include "b2_lvl2.h"
 
-#include <system.h>
-#include <conio.h>
-#include <string.h>
 
+// #include "b0_globals.h"
+// #include "b0_main.h"
+// #include "b0_parsing.h"
+// #include "b0_strutil.h"
+// #include "b2_lvl2.h"
+
+// #include <system.h>
+// #include <conio.h>
+// #include <string.h>
+
+/*
 void handleCd() {
   struct DeviceServiceRoutine* dsr = 0;
   char path[256];
@@ -32,7 +35,9 @@ void handleCd() {
   currentDsr = dsr;
   strcpy(currentPath, path);
 }
+*/
 
+/*
 void handleChecksum() {
   char* filename = strtok(0, " ");
   if (filename == 0) {
@@ -104,7 +109,9 @@ void handleChecksum() {
   result += sum1;
   cprintf("checksum: %x\n", result);
 }
+*/
 
+/*
 void handleCopy() {
   char* filename = strtok(0, " ");
   if (filename == 0) {
@@ -193,11 +200,15 @@ void handleCopy() {
   }
   cprintf("\n"); // end status line.
 }
+*/
 
+/*
 void handleVer() {
   titleScreen();
 }
+*/
 
+/*
 void handleDrives() {
   int i = 0;
   int cb = 0;
@@ -212,7 +223,9 @@ void handleDrives() {
     cprintf("\n");
   }
 }
+*/
 
+/*
 void handleLvl2() {
   char* tok = strtok(0, " ");
   int crubase = htoi(tok);
@@ -236,7 +249,9 @@ void handleLvl2() {
 
   disableROM(crubase);
 }
+*/
 
+/*
 void handleDir() {
   struct DeviceServiceRoutine* dsr = 0;
   char path[256];
@@ -257,7 +272,9 @@ void handleDir() {
   loadDir(dsr, path, onVolInfo, onDirEntry);
   cprintf("\n");
 }
+*/
 
+/*
 void handleMkdir() {
   char* dirname = strtok(0, " ");
   if (dirname == 0) {
@@ -274,7 +291,9 @@ void handleMkdir() {
     cprintf("cannot create directory %s%s\n", currentPath, dirname);
   }
 }
+*/
 
+/*
 void handleProtect() {
   char* filename = strtok(0, " ");
   if (filename == 0) {
@@ -291,7 +310,9 @@ void handleProtect() {
     cprintf("cannot protect file %s%s\n", currentPath, filename);
   }
 }
+*/
 
+/*
 void handleUnprotect() {
   char* filename = strtok(0, " ");
   if (filename == 0) {
@@ -308,7 +329,9 @@ void handleUnprotect() {
     cprintf("cannot unprotect file %s%s\n", currentPath, filename);
   }
 }
+*/
 
+/*
 void handleDelete() {
   char* filename = strtok(0, " ");
   if (filename == 0) {
@@ -334,7 +357,9 @@ void handleDelete() {
     cprintf("cannot delete file %s%s\n", currentPath, filename);
   }
 }
+*/
 
+/*
 void handleRename() {
   char* filename = strtok(0, " ");
   if (filename == 0) {
@@ -368,7 +393,9 @@ void handleRename() {
     cprintf("cannot rename file %s%s\n", currentPath, filename);
   }
 }
+*/
 
+/*
 void handleRmdir() {
   char* dirname = strtok(0, " ");
   if (dirname == 0) {
@@ -385,7 +412,9 @@ void handleRmdir() {
     cprintf("cannot remove directory %s%s\n", currentPath, dirname);
   }
 }
+*/
 
+/*
 void handleWidth() {
   char* tok = strtok(0, " ");
   int width = atoi(tok);
@@ -396,8 +425,4 @@ void handleWidth() {
     cprintf("no width specified\n");
   }
 }
-
-void handleExit() {
-  resetF18A();
-  exit();
-}
+*/

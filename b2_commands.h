@@ -1,13 +1,16 @@
 #ifndef _COMMANDS_H
 #define _COMMANDS_H 1
 
+void handleCls();
+void handleExit();
+
+/*
 void handleCd();
 void handleChecksum();
 void handleCopy();
 void handleDelete();
 void handleDir();
 void handleDrives();
-void handleExit();
 void handleHelp();
 void handleLvl2();
 void handleMkdir();
@@ -17,5 +20,11 @@ void handleRmdir();
 void handleUnprotect();
 void handleVer();
 void handleWidth();
+*/
+
+#include "banking.h"
+
+DECLARE_BANKED_VOID(handleCls, BANK_2, bk_handleCls, (), ())
+DECLARE_BANKED_VOID(handleExit, BANK_2, bk_handleExit, (), ())
 
 #endif

@@ -7,6 +7,7 @@
 #include "b1_libti99.h"
 #include "b1_getstr.h"
 #include "b3_oem.h"
+#include "b0_parsing.h"
 
 #define APP_VER "1.0"
 
@@ -74,13 +75,13 @@ void main()
   titleScreen();
 
   char buffer[256];
-  buffer[0] = 0;
 
   while(1) {
     VDP_INT_POLL;
     strset(buffer, 0, 255);
     CCPUTS("\n$ ");
-    bk_getstr(2, 23, buffer, displayWidth - 3, backspace);
+    bk_getstr(2, conio_y, buffer, displayWidth - 3, backspace);
     CCPUTS("\n");
+    handleCommand(buffer);
   }
 }
