@@ -1,3 +1,6 @@
+#include "banks.h"
+#define MYBANK BANK_0
+
 #include "b0_parsing.h"
 #include "b0_strutil.h"
 #include "b0_globals.h"

@@ -1,3 +1,6 @@
+#include "banks.h"
+#define MYBANK BANK_1
+
 #include "b1_tifloat.h"
  
 int ti_floatToInt(unsigned char* bytes) {

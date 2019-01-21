@@ -46,6 +46,12 @@ $ cd GAMES
 $
 ```
 
+## checksum
+
+## copy
+
+## delete
+
 ## dir
 
 List files in current directory or given directory
@@ -103,18 +109,30 @@ $ drives
 1100 - DSK1 DSK2 DSK3 DSK4
 ```
 
-## quit
+## exit
 
 Exit the program
 
-syntax: 'quit'
+syntax: 'exit'
 
 Example:
 
 ```
 [1000.TIPI.]
-$ quit
+$ exit
 ```
+
+## lvl2
+
+## mkdir
+
+## protect
+
+## rename
+
+## rmdir
+
+## unprotect
 
 ## ver
 

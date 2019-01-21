@@ -1,3 +1,6 @@
+#include "banks.h"
+#define MYBANK BANK_2
+
 #include "b2_dsrutil.h"
 #include "b2_mds_dsrlnk.h"
 #include "b0_strutil.h"

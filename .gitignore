@@ -6,3 +6,4 @@ objects
 *.s
 *.elf
 mapfile
+.vscode

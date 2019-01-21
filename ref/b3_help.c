@@ -1,3 +1,6 @@
+#include "banks.h"
+#define MYBANK BANK_3
+
 #include "b0_main.h"
 #include "b0_strutil.h"
 #include <conio.h>

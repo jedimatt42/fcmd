@@ -1,38 +1,18 @@
-#include "b2_dsrutil.h"
-#include "b2_lvl2.h"
-#include "b0_strutil.h"
-#include "b3_oem.h"
-#include "b1_tifloat.h"
+#include "banks.h"
+#define MYBANK BANK_0
+
 #include "b0_main.h"
-#include "b2_commands.h"
-#include "b0_globals.h"
-#include "b0_parsing.h"
-#include "b0_getstr.h"
 
-#include <string.h>
-#include <conio.h>
-#include <kscan.h>
-#include <vdp.h>
+#include "b0_strutil.h"
+#include "b1_libti99.h"
+#include "b1_getstr.h"
+#include "b3_oem.h"
 
-#define TIPIMAN_VER "1.3"
+#define APP_VER "1.0"
 
-const char* const ftypes[] = {
-  "D/F",
-  "D/V",
-  "I/F",
-  "I/V",
-  "PRG",
-  "DIR"
-};
-
-int displayWidth;
-int column;
-
-void initObject() {
-  displayWidth = 40;
-  column = 0;
-  backspace = 0;
-}
+unsigned int displayWidth = 40;
+unsigned int column = 0;
+unsigned int backspace = 0;
 
 void sleep(int jiffies) {
   for(int i=0; i<jiffies;i++) {
@@ -41,82 +21,72 @@ void sleep(int jiffies) {
 }
 
 int isF18A() {
-  unlock_f18a();
+  /*
+  bk_unlock_f18a();
   unsigned char testcode[6] = { 0x04, 0xE0, 0x3F, 0x00, 0x03, 0x40 };
-  vdpmemcpy(0x3F00, testcode, 6);
-  VDP_SET_REGISTER(0x36, 0x3F);
-  VDP_SET_REGISTER(0x37, 0x00);
-  return !vdpreadchar(0x3F00);
+  bk_vdpmemcpy(0x3F00, testcode, 6);
+  {
+    VDP_SET_REGISTER(0x36, 0x3F);
+    VDP_SET_REGISTER(0x37, 0x00);
+  }
+  unsigned char gpumod = bk_vdpreadchar(0x3F00);
+  if (gpumod == 0) {
+    return 1;
+  } else {
+  */
+    return 0;
+  /*
+  }
+  */
 }
 
 void resetF18A() {
-  lock_f18a();
-  set_graphics(0); // just to reset EVERYTHING
+  bk_lock_f18a();
+  bk_set_graphics(0); // just to reset EVERYTHING
 }
 
 void setupScreen(int width) {
   resetF18A();
-  bgcolor(COLOR_CYAN);
-  textcolor(COLOR_BLACK);
+  bk_bgcolor(COLOR_CYAN);
+  bk_textcolor(COLOR_BLACK);
   if (width == 80) {
     displayWidth = 80;
-    set_text80_color();
+    bk_set_text80_color();
   } else if(width == 40) {
     displayWidth = 40;
-    set_text();
+    bk_set_text();
   }
 
-  clrscr();
+  bk_clrscr();
   gotoxy(0,23);
-  defineChars();
+  bk_defineChars();
+}
+
+#define CCPUTS(x) { \
+  const char msg[] = x; \
+  bk_cputs(msg); \
 }
 
 void titleScreen() {
-  cprintf("TIPIFM v%s\n", TIPIMAN_VER);
-  cprintf("www.jedimatt42.com\n");
+  CCPUTS("TIPICMD v");
+  CCPUTS(APP_VER);
+  CCPUTS("\nwww.jedimatt42.com\n");
 }
 
 void main()
 {
-  initObject();
   setupScreen(isF18A() ? 80 : 40);
+  bk_defineChars();
   titleScreen();
-  loadDriveDSRs();
-  currentDsr = dsrList;
-  strcpy(currentPath, currentDsr->name);
-  strcat(currentPath, ".");
+
   char buffer[256];
   buffer[0] = 0;
-  defineChars();
 
   while(1) {
     VDP_INT_POLL;
     strset(buffer, 0, 255);
-    cprintf("\n[%x.%s]\n$ ", currentDsr->crubase, currentPath);
-    getstr(2, 23, buffer, displayWidth - 3, backspace);
-    cprintf("\n");
-    if (buffer[0] != 0) {
-      handleCommand(buffer);
-    }
-  }
-}
-
-void onVolInfo(struct VolInfo* volInfo) {
-  cprintf("Vol: %s\n", volInfo->volname);
-  column = 0;
-}
-
-void onDirEntry(struct DirEntry* dirEntry) {
-  gotoxy(column,23);
-  cprintf("%s", dirEntry->name);
-  gotoxy(column + 11,23);
-  cprintf(ftypes[dirEntry->type - 1]);
-  if (dirEntry->reclen != 0) {
-    cprintf(" %d", dirEntry->reclen);
-  }
-  column += 20;
-  if (column == displayWidth) {
-    cprintf("\n");
-    column = 0;
+    CCPUTS("\n$ ");
+    bk_getstr(2, 23, buffer, displayWidth - 3, backspace);
+    CCPUTS("\n");
   }
 }

@@ -16,4 +16,8 @@ char* strncpy(char* dest, char* src, int limit);
 void strpad(char* dest, int limit, char pad);
 int htoi(char* s);
 
+#include "banking.h"
+
+DECLARE_BANKED_VOID(strset, BANK_0, bk_strset, (char* buffer, char value, int limit), (buffer, value, limit))
+
 #endif
