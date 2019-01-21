@@ -51,4 +51,10 @@ SECTIONS
   } >lower_exp
 
   __STACK_TOP = 0x4000;
+
+  __STATS_HEAD = SIZEOF(.text);
+  __STATS_BANK_0 = SIZEOF(.bank0);
+  __STATS_BANK_1 = SIZEOF(.bank1);
+  __STATS_BANK_2 = SIZEOF(.bank2);
+  __STATS_BANK_3 = SIZEOF(.bank3);
 }  
