@@ -45,4 +45,10 @@ DECLARE_BANKED_VOID(lock_f18a, BANK_1, bk_lock_f18a, (), ())
 DECLARE_BANKED_VOID(set_graphics, BANK_1, bk_set_graphics, (int sprite_mode), (sprite_mode))
 DECLARE_BANKED_VOID(charsetlc, BANK_1, bk_charsetlc, (), ())
 
+// helper macro the copy constant strings onto stack before passing to cputs.
+#define CCPUTS(x) { \
+  const char msg[] = x; \
+  bk_cputs(msg); \
+}
+
 #endif

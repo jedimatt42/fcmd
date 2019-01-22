@@ -31,7 +31,11 @@ void handleCommand(char *buffer) {
   // else COMMAND("unprotect", handleUnprotect)
   // else COMMAND("ver", handleVer)
   // else COMMAND("width", handleWidth)
-  // else cprintf("unknown command: %s\n", tok);
+  else {
+    CCPUTS("unknown command: ");
+    bk_cputs(tok);
+    bk_cputc('\n');
+  }
 }
 
 /*

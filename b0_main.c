@@ -57,11 +57,6 @@ void setupScreen(int width) {
   bk_defineChars();
 }
 
-#define CCPUTS(x) { \
-  const char msg[] = x; \
-  bk_cputs(msg); \
-}
-
 void titleScreen() {
   CCPUTS("TIPICMD v");
   CCPUTS(APP_VER);
