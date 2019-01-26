@@ -1,3 +1,4 @@
+	DEF	_cart
 	AORG 	>6000
 
 ; Cartridge ROM header

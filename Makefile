@@ -21,7 +21,7 @@ OBJECT_LIST:=$(OBJECT_LIST:.asm=.o)
 
 LINK_OBJECTS:=$(addprefix objects/,$(OBJECT_LIST))
 
-all: $(FNAME)_8.bin
+all: $(FNAME)_8.bin gpl-boot_G.bin
 
 # The size of the cart_rom segment in decimal
 # must agree with linkfile
@@ -56,6 +56,9 @@ bank3.bin: $(FNAME).elf $(HEADBIN)
 
 $(FNAME)_8.bin: bank0.bin bank1.bin bank2.bin bank3.bin
 	cat $^ >$@
+
+gpl-boot_G.bin: gpl-boot.g99
+	xga99.py -o $@ $<
 
 $(FNAME).elf: $(OBJECT_LIST)
 	$(LD) $(LINK_OBJECTS) $(LDFLAGS) -o $(FNAME).elf -Map=mapfile

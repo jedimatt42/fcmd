@@ -1,0 +1,37 @@
+; minimal auto booting GPL code that starts program in ROM
+;   aimed at working with the FinalGROM99
+;   still expects ROM to worry about banking
+
+	grom >6000
+	aorg >0000
+
+; Cartridge Header
+	data >AA01	; flag + version
+	data >0000	; reserved
+	data bootvec	; powerup list
+	data menua	; program menu list
+	data >0000	; other lists we don't use
+	data >0000
+	data >0000
+	data >0000	; end of header 16 bytes
+
+menua:
+	data >0000
+	data start
+	byte >07
+	text 'AUTOCMD'
+
+bootvec:
+	data >0000
+	data boot
+
+start:
+	exit
+
+; boot code will just branch over to machine code in 
+; cartridge rom.
+
+boot:
+	dst >601C,@>8300
+	xml >F0
+
