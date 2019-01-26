@@ -27,29 +27,31 @@ all: $(FNAME)_8.bin
 # must agree with linkfile
 COMMON_SIZE = 112
 
-header.bin: $(FNAME).elf
-	$(OBJCOPY) -O binary -j .text $< header.bin
-	@dd if=/dev/null of=header.bin bs=$(COMMON_SIZE) seek=1
+HEADBIN:=objects/header.bin
 
-bank0.bin: $(FNAME).elf header.bin
-	$(OBJCOPY) -O binary -j .data $< data_tmp.bin
-	$(OBJCOPY) -O binary -j .bank0 $< $@_tmp
-	cat header.bin $@_tmp data_tmp.bin >$@
+$(HEADBIN): $(FNAME).elf
+	$(OBJCOPY) -O binary -j .text $< $(HEADBIN)
+	@dd if=/dev/null of=$(HEADBIN) bs=$(COMMON_SIZE) seek=1
+
+bank0.bin: $(FNAME).elf $(HEADBIN)
+	$(OBJCOPY) -O binary -j .data $< objects/data.bin_tmp
+	$(OBJCOPY) -O binary -j .bank0 $< objects/$@_tmp
+	cat $(HEADBIN) objects/$@_tmp objects/data.bin_tmp >$@
 	@dd if=/dev/null of=$@ bs=8192 seek=1
 
-bank1.bin: $(FNAME).elf header.bin
-	$(OBJCOPY) -O binary -j .bank1 $< $@_tmp
-	cat header.bin $@_tmp >$@
+bank1.bin: $(FNAME).elf $(HEADBIN)
+	$(OBJCOPY) -O binary -j .bank1 $< objects/$@_tmp
+	cat $(HEADBIN) objects/$@_tmp >$@
 	@dd if=/dev/null of=$@ bs=8192 seek=1
 
-bank2.bin: $(FNAME).elf header.bin
-	$(OBJCOPY) -O binary -j .bank2 $< $@_tmp
-	cat header.bin $@_tmp >$@
+bank2.bin: $(FNAME).elf $(HEADBIN)
+	$(OBJCOPY) -O binary -j .bank2 $< objects/$@_tmp
+	cat $(HEADBIN) objects/$@_tmp >$@
 	@dd if=/dev/null of=$@ bs=8192 seek=1
 
-bank3.bin: $(FNAME).elf header.bin
-	$(OBJCOPY) -O binary -j .bank3 $< $@_tmp
-	cat header.bin $@_tmp >$@
+bank3.bin: $(FNAME).elf $(HEADBIN)
+	$(OBJCOPY) -O binary -j .bank3 $< objects/$@_tmp
+	cat $(HEADBIN) objects/$@_tmp >$@
 	@dd if=/dev/null of=$@ bs=8192 seek=1
 
 $(FNAME)_8.bin: bank0.bin bank1.bin bank2.bin bank3.bin
@@ -62,7 +64,6 @@ $(FNAME).elf: $(OBJECT_LIST)
 	rm -fr objects
 	rm -f *.elf
 	rm -f *.bin
-	rm -f *.bin_tmp
 	rm -f mapfile
 
 %.o: %.asm
