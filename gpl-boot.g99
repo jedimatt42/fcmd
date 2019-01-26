@@ -32,6 +32,6 @@ start:
 ; cartridge rom.
 
 boot:
-	dst >601C,@>8300
+	dst CART,@>8300	; source value is symbol _cart in rom
 	xml >F0
 

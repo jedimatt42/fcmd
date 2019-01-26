@@ -58,7 +58,7 @@ $(FNAME)_8.bin: bank0.bin bank1.bin bank2.bin bank3.bin
 	cat $^ >$@
 
 gpl-boot_G.bin: gpl-boot.g99
-	xga99.py -o $@ $<
+	xga99.py -D "CART=$(shell echo -n '>' ; grep _cart mapfile | cut -f2 -d'x' | cut -c13-16)" -o $@ $<
 
 $(FNAME).elf: $(OBJECT_LIST)
 	$(LD) $(LINK_OBJECTS) $(LDFLAGS) -o $(FNAME).elf -Map=mapfile
