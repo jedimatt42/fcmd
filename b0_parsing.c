@@ -31,7 +31,7 @@ void handleCommand(char *buffer) {
   // else COMMAND("rmdir", handleRmdir)
   // else COMMAND("unprotect", handleUnprotect)
   else COMMAND("ver", titleScreen)
-  // else COMMAND("width", handleWidth)
+  else COMMAND("width", handleWidth)
   else {
     CCPUTS("unknown command: ");
     bk_cputs(tok);

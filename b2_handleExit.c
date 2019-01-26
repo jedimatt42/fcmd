@@ -6,7 +6,6 @@
 #include "b1_libti99.h"
 #include "b0_main.h"
 
-__attribute__ ((noreturn)) 
 void handleExit() {
   bk_resetF18A();
   __asm__("li r0,0\n\t"

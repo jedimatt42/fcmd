@@ -3,6 +3,7 @@
 
 void handleCls();
 void handleExit();
+void handleWidth();
 
 /*
 void handleCd();
@@ -18,8 +19,6 @@ void handleProtect();
 void handleRename();
 void handleRmdir();
 void handleUnprotect();
-void handleVer();
-void handleWidth();
 */
 
 #include "banking.h"

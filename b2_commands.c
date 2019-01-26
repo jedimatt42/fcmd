@@ -408,15 +408,3 @@ void handleRmdir() {
 }
 */
 
-/*
-void handleWidth() {
-  char* tok = strtok(0, " ");
-  int width = atoi(tok);
-
-  if (width == 40 || width == 80) {
-    setupScreen(width);
-  } else {
-    cprintf("no width specified\n");
-  }
-}
-*/
