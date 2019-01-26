@@ -2,6 +2,7 @@
 #define MYBANK BANK_0
 
 #include "b0_parsing.h"
+#include "b0_main.h"
 #include "b0_strutil.h"
 // #include "b0_globals.h"
 #include "b2_commands.h"
@@ -29,7 +30,7 @@ void handleCommand(char *buffer) {
   // else COMMAND("rename", handleRename)
   // else COMMAND("rmdir", handleRmdir)
   // else COMMAND("unprotect", handleUnprotect)
-  // else COMMAND("ver", handleVer)
+  else COMMAND("ver", titleScreen)
   // else COMMAND("width", handleWidth)
   else {
     CCPUTS("unknown command: ");

@@ -203,12 +203,6 @@ void handleCopy() {
 */
 
 /*
-void handleVer() {
-  titleScreen();
-}
-*/
-
-/*
 void handleDrives() {
   int i = 0;
   int cb = 0;
