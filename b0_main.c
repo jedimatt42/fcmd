@@ -8,6 +8,7 @@
 #include "b1_getstr.h"
 #include "b3_oem.h"
 #include "b0_parsing.h"
+#include "sound.h"
 
 #define APP_VER "1.0"
 
@@ -15,10 +16,31 @@ unsigned int displayWidth = 40;
 unsigned int column = 0;
 unsigned int backspace = 0;
 
-void sleep(int jiffies) {
-  for(int i=0; i<jiffies;i++) {
-    VDP_WAIT_VBLANK_CRU;
+const char tipibeeps[] = {
+  0x04, 0x9f, 0xbf, 0xdf, 0xff, 0x02,
+  0x03, 0x80, 0x05, 0x94, 0x07,
+  0x03, 0x8B, 0x06, 0x94, 0x07,
+  0x03, 0x80, 0x05, 0x90, 0x0e,
+  0x01, 0x9f, 0x00
+};
+
+void playtipi() {
+  char* pSrc = (char*) tipibeeps;
+  unsigned int cnt = sizeof(tipibeeps);
+  VDP_SET_ADDRESS_WRITE(0x3E00);
+  while (cnt--) {
+    VDPWD=*(pSrc++);
   }
+  SET_SOUND_PTR(0x3E00);
+  SET_SOUND_VDP();
+  START_SOUND();
+  cnt = 9000;
+  while(cnt != 0) {
+    cnt--;
+    VDP_INT_POLL;
+  }
+  MUTE_SOUND();
+  VDP_INT_POLL;
 }
 
 int isF18A() {
@@ -68,6 +90,7 @@ void main()
   setupScreen(isF18A() ? 80 : 40);
   bk_defineChars();
   titleScreen();
+  playtipi();
 
   char buffer[256];
 

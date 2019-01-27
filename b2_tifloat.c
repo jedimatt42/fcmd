@@ -1,7 +1,7 @@
 #include "banks.h"
-#define MYBANK BANK_1
+#define MYBANK BANK_2
 
-#include "b1_tifloat.h"
+#include "b2_tifloat.h"
  
 int ti_floatToInt(unsigned char* bytes) {
   if (bytes[0] == 8) {

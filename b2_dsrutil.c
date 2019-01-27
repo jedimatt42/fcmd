@@ -3,10 +3,9 @@
 
 #include "b2_dsrutil.h"
 #include "b2_mds_dsrlnk.h"
+#include "b2_tifloat.h"
+#include "b1_libti99.h"
 #include "b0_strutil.h"
-#include "b1_tifloat.h"
-#include <conio.h>
-#include <string.h>
 
 struct DeviceServiceRoutine dsrList[40];
 

@@ -7,6 +7,7 @@ void resetF18A();
 void setupScreen(int width);
 void sleep(int jiffies);
 void titleScreen();
+void playtipi();
 
 #include "banking.h"
 

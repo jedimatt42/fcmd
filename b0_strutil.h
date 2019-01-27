@@ -19,5 +19,7 @@ int htoi(char* s);
 #include "banking.h"
 
 DECLARE_BANKED_VOID(strset, BANK_0, bk_strset, (char* buffer, char value, int limit), (buffer, value, limit))
+DECLARE_BANKED(strtok, BANK_0, char*, bk_strtok, (char* str, char* delim), (str, delim))
+DECLARE_BANKED(htoi, BANK_0, int, bk_htoi, (char* s), (s))
 
 #endif
