@@ -23,7 +23,7 @@ void handleCommand(char *buffer) {
   // else COMMAND("dir", handleDir)
   // else COMMAND("drives", handleDrives)
   else COMMAND("exit", bk_handleExit)
-  // else COMMAND("help", handleHelp)
+  else COMMAND("help", bk_handleHelp)
   // else COMMAND("load", handleLoad)
   else COMMAND("lvl2", bk_handleLvl2)
   // else COMMAND("mkdir", handleMkdir)
