@@ -34,9 +34,7 @@ void playtipi() {
   SET_SOUND_PTR(0x3E00);
   SET_SOUND_VDP();
   START_SOUND();
-  cnt = 9000;
-  while(cnt != 0) {
-    cnt--;
+  while(SOUND_CNT != 0) {
     VDP_INT_POLL;
   }
   MUTE_SOUND();

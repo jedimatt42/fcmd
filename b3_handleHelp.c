@@ -5,7 +5,7 @@
 #include "b0_strutil.h"
 #include "b1_libti99.h"
 
-#define HELP_COMMANDS "help tipibeeps"
+#define HELP_COMMANDS "cls exit help lvl2 tipibeeps ver width"
 
 int matchcmd(char* input, char* exp) {
   char stackstr[80];
@@ -25,11 +25,21 @@ void handleHelp() {
     return;
   }
 
-  if (matchcmd(tok, "help")) {
+  if (matchcmd(tok, "cls")) {
+    CCPUTS("cls - clear the screen and relocate cursor to upper left\n");
+  } else if (matchcmd(tok, "exit")) {
+    CCPUTS("exit - quit TIPICMD\n");
+  } else if (matchcmd(tok, "help")) {
     CCPUTS("help - list available commands\n");
     CCPUTS("help <command> - show help for individual command\n");
+  } else if (matchcmd(tok,"lvl2")) {
+    CCPUTS("lvl2 <crubase> - list level 2 io subprograms in DSR ROM at the specified CRU base address\n");
   } else if (matchcmd(tok,"tipibeeps")) {
     CCPUTS("tipibeeps - play tipi styled sound list\n");
+  } else if (matchcmd(tok,"ver")) {
+    CCPUTS("ver - display TIPICMD version information\n");
+  } else if (matchcmd(tok,"width")) {
+    CCPUTS("width <40|80> - change display to 40 or 80 column mode\n");
   } else {
     CCPUTS("no help for command: ");
     bk_cputs(tok);
