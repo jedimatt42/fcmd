@@ -80,4 +80,9 @@ struct DeviceServiceRoutine* findDsr(char* devicename, int crubase);
 
 void initPab(struct PAB* pab);
 
+#include "banking.h"
+
+DECLARE_BANKED_VOID(loadDriveDSRs, BANK_2, bk_loadDriveDSRs, (), ())
+
+
 #endif

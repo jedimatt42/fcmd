@@ -5,7 +5,7 @@
 #include "b0_strutil.h"
 #include "b1_libti99.h"
 
-#define HELP_COMMANDS "cls exit help lvl2 tipibeeps ver width"
+#define HELP_COMMANDS "cls drives exit help lvl2 tipibeeps ver width"
 
 int matchcmd(char* input, char* exp) {
   char stackstr[80];
@@ -27,6 +27,8 @@ void handleHelp() {
 
   if (matchcmd(tok, "cls")) {
     CCPUTS("cls - clear the screen and relocate cursor to upper left\n");
+  } else if (matchcmd(tok, "drives")) {
+    CCPUTS("drives - list device names grouped by CRU base address\n");
   } else if (matchcmd(tok, "exit")) {
     CCPUTS("exit - quit TIPICMD\n");
   } else if (matchcmd(tok, "help")) {

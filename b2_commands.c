@@ -202,23 +202,6 @@ void handleCopy() {
 }
 */
 
-/*
-void handleDrives() {
-  int i = 0;
-  int cb = 0;
-  
-  while(dsrList[i].name[0] != 0) {
-    cb = dsrList[i].crubase;
-    cprintf("%x -", cb);
-    while (cb == dsrList[i].crubase) {
-      cprintf(" %s", dsrList[i].name);
-      i++;
-    }
-    cprintf("\n");
-  }
-}
-*/
-
 
 /*
 void handleDir() {

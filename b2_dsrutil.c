@@ -155,7 +155,7 @@ void loadDriveDSRs() {
       while(dsrlinks != 0) {
         
         if (isDrive(dsrlinks->name)) {
-          basicToCstr(dsrlinks->name, listHead->name);
+          bk_basicToCstr(dsrlinks->name, listHead->name);
           listHead->crubase = cruscan;
           listHead->addr = dsrlinks->routine;
           listHead += 1;
@@ -172,7 +172,8 @@ void loadDriveDSRs() {
 
 int isDrive(char* basicstr) {
   if (basicstr[0] == 4) {
-    if (0 == basic_strcmp(basicstr, "TIPI")) {
+    char tipi[] = "TIPI";
+    if (0 == bk_basic_strcmp(basicstr, tipi)) {
       return 1;
     } else if (basicstr[1] >= 'A' && basicstr[1] <= 'Z' && basicstr[4] >= '0' && basicstr[4] <= '9') {
       return 1;

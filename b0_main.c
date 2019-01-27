@@ -8,6 +8,7 @@
 #include "b1_getstr.h"
 #include "b3_oem.h"
 #include "b0_parsing.h"
+#include "b2_dsrutil.h"
 #include "sound.h"
 
 #define APP_VER "1.0"
@@ -89,6 +90,8 @@ void main()
   bk_defineChars();
   titleScreen();
   playtipi();
+
+  bk_loadDriveDSRs();
 
   char buffer[256];
 
