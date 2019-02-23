@@ -33,15 +33,18 @@ $(HEADBIN): $(FNAME).elf
 	$(OBJCOPY) -O binary -j .text $< $(HEADBIN)
 	@dd if=/dev/null of=$(HEADBIN) bs=$(COMMON_SIZE) seek=1
 
+objects/libti99_tmp: $(FNAME).elf
+	$(OBJCOPY) -O binary -j .libti99 $< $@
+
 bank0.bin: $(FNAME).elf $(HEADBIN)
 	$(OBJCOPY) -O binary -j .data $< objects/data.bin_tmp
 	$(OBJCOPY) -O binary -j .bank0 $< objects/$@_tmp
 	cat $(HEADBIN) objects/$@_tmp objects/data.bin_tmp >$@
 	@dd if=/dev/null of=$@ bs=8192 seek=1
 
-bank1.bin: $(FNAME).elf $(HEADBIN)
+bank1.bin: $(FNAME).elf $(HEADBIN) objects/libti99_tmp
 	$(OBJCOPY) -O binary -j .bank1 $< objects/$@_tmp
-	cat $(HEADBIN) objects/$@_tmp >$@
+	cat $(HEADBIN) objects/$@_tmp objects/libti99_tmp >$@
 	@dd if=/dev/null of=$@ bs=8192 seek=1
 
 bank2.bin: $(FNAME).elf $(HEADBIN)

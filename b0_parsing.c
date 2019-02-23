@@ -3,11 +3,12 @@
 
 #include "b0_parsing.h"
 #include "b0_main.h"
-#include "b0_strutil.h"
-// #include "b0_globals.h"
+#include "b0_globals.h"
 #include "b2_commands.h"
-// #include "b2_dsrutil.h"
-#include "b1_libti99.h"
+#include "b2_dsrutil.h"
+#include "b1cp_strutil.h"
+#include <string.h>
+#include <conio.h>
 
 #define MATCH(x,y) (!(strcmpi(x,y)))
 
@@ -16,7 +17,7 @@
 void handleCommand(char *buffer) {
   char* tok = strtok(buffer, " ");
   COMMAND("cls", bk_handleCls)
-  // COMMAND("cd", handleCd)
+  COMMAND("cd", bk_handleCd)
   // else COMMAND("checksum", handleChecksum)
   // else COMMAND("copy", handleCopy)
   // else COMMAND("delete", handleDelete)
@@ -35,13 +36,12 @@ void handleCommand(char *buffer) {
   else COMMAND("ver", titleScreen)
   else COMMAND("width", handleWidth)
   else {
-    CCPUTS("unknown command: ");
-    bk_cputs(tok);
-    bk_cputc('\n');
+    cputs("unknown command: ");
+    cputs(tok);
+    cputc('\n');
   }
 }
 
-/*
 int parsePath(char* path, char* devicename) {
   char workbuf[14];
   int crubase = 0;
@@ -56,9 +56,7 @@ int parsePath(char* path, char* devicename) {
   }
   return crubase;
 }
-*/
 
-/*
 void parsePathParam(struct DeviceServiceRoutine** dsr, char* buffer, int requirements) {
   buffer[0] = 0; // null terminate so later we can tell if it is prepared or not.
   char* path = strtok(0, " ");
@@ -75,7 +73,7 @@ void parsePathParam(struct DeviceServiceRoutine** dsr, char* buffer, int require
       int ldot = lindexof(currentPath, '.', strlen(currentPath) - 2);
       if (ldot == -1) {
         *dsr = 0;
-        cprintf("No parent folder\n");
+        cputs("No parent folder\n");
         return;
       }
       strncpy(buffer, currentPath, ldot + 1);
@@ -91,7 +89,7 @@ void parsePathParam(struct DeviceServiceRoutine** dsr, char* buffer, int require
         *dsr = findDsr(devicename, crubase);
         // if still not found, then give up.
         if (*dsr == 0) {  
-          cprintf("device not found.\n");
+          cputs("device not found.\n");
           return;
         }
       }
@@ -106,4 +104,3 @@ void parsePathParam(struct DeviceServiceRoutine** dsr, char* buffer, int require
     strcpy(buffer, path);
   }
 }
-*/

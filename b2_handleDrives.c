@@ -2,7 +2,8 @@
 #define MYBANK BANK_2
 
 #include "b2_dsrutil.h"
-#include "b1_libti99.h"
+#include <conio.h>
+#include <string.h>
 
 void handleDrives() {
   int i = 0;
@@ -10,14 +11,14 @@ void handleDrives() {
   
   while(dsrList[i].name[0] != 0) {
     cb = dsrList[i].crubase;
-    bk_cputs(bk_uint2hex(cb));
-    CCPUTS(" -");
+    cputs(uint2hex(cb));
+    cputs(" -");
     while (cb == dsrList[i].crubase) {
-      bk_cputc(' ');
-      bk_cputs(dsrList[i].name);
+      cputc(' ');
+      cputs(dsrList[i].name);
       i++;
     }
-    bk_cputc('\n');
+    cputc('\n');
   }
 }
 

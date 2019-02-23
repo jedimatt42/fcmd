@@ -1,7 +1,4 @@
-#include "banks.h"
-#define MYBANK BANK_0
-
-#include "b0_strutil.h"
+#include "b1cp_strutil.h"
 
 #include <conio.h>
 #include <string.h>

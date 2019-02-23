@@ -3,19 +3,21 @@
 
 #include "b0_main.h"
 
-#include "b0_strutil.h"
-#include "b1_libti99.h"
-#include "b1_getstr.h"
-#include "b3_oem.h"
+#include "b0_getstr.h"
 #include "b0_parsing.h"
+#include "b0_globals.h"
+#include "b1_libtoram.h"
+#include "b1cp_strutil.h"
 #include "b2_dsrutil.h"
-#include "sound.h"
+#include "b3_oem.h"
+#include <sound.h>
+#include <vdp.h>
+#include <conio.h>
 
 #define APP_VER "1.0"
 
 unsigned int displayWidth = 40;
 unsigned int column = 0;
-unsigned int backspace = 0;
 
 const char tipibeeps[] = {
   0x04, 0x9f, 0xbf, 0xdf, 0xff, 0x02,
@@ -43,9 +45,9 @@ void playtipi() {
 }
 
 int isF18A() {
-  bk_unlock_f18a();
+  unlock_f18a();
   unsigned char testcode[6] = { 0x04, 0xE0, 0x3F, 0x00, 0x03, 0x40 };
-  bk_vdpmemcpy(0x3F00, testcode, 6);
+  vdpmemcpy(0x3F00, testcode, 6);
   {
     VDP_SET_REGISTER(0x36, 0x3F);
     VDP_SET_REGISTER(0x37, 0x00);
@@ -57,35 +59,36 @@ int isF18A() {
 }
 
 void resetF18A() {
-  bk_lock_f18a();
-  bk_set_graphics(0); // just to reset EVERYTHING
+  lock_f18a();
+  set_graphics(0); // just to reset EVERYTHING
 }
 
 void setupScreen(int width) {
   resetF18A();
-  bk_bgcolor(COLOR_CYAN);
-  bk_textcolor(COLOR_BLACK);
+  bgcolor(COLOR_CYAN);
+  textcolor(COLOR_BLACK);
   if (width == 80) {
     displayWidth = 80;
-    bk_set_text80_color();
+    set_text80_color();
   } else if(width == 40) {
     displayWidth = 40;
-    bk_set_text();
+    set_text();
   }
 
-  bk_clrscr();
+  clrscr();
   gotoxy(0,23);
-  bk_defineChars();
+  defineChars();
 }
 
 void titleScreen() {
-  CCPUTS("TIPICMD v");
-  CCPUTS(APP_VER);
-  CCPUTS("\nwww.jedimatt42.com\n");
+  cputs("TIPICMD v");
+  cputs(APP_VER);
+  cputs("\nwww.jedimatt42.com\n");
 }
 
 void main()
 {
+  bk_libtoram();
   setupScreen(isF18A() ? 80 : 40);
   bk_defineChars();
   titleScreen();
@@ -98,9 +101,9 @@ void main()
   while(1) {
     VDP_INT_POLL;
     strset(buffer, 0, 255);
-    CCPUTS("\n$ ");
-    bk_getstr(2, conio_y, buffer, displayWidth - 3, backspace);
-    CCPUTS("\n");
+    cputs("\n$ ");
+    getstr(2, conio_y, buffer, displayWidth - 3, backspace);
+    cputs("\n");
     handleCommand(buffer);
   }
 }

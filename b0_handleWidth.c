@@ -4,17 +4,18 @@
 #include "b2_commands.h"
 
 #include "b0_main.h"
-#include "b1_libti99.h"
-#include "b0_strutil.h"
+#include "b1cp_strutil.h"
+#include <conio.h>
+#include <string.h>
 
 void handleWidth() {
   char* tok = strtok(0, " ");
-  int width = bk_atoi(tok);
+  int width = atoi(tok);
 
   if (width == 40 || width == 80) {
     setupScreen(width);
   } else {
-    CCPUTS("no width specified\n");
+    cputs("no width specified\n");
   }
 }
 

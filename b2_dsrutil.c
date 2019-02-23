@@ -4,8 +4,8 @@
 #include "b2_dsrutil.h"
 #include "b2_mds_dsrlnk.h"
 #include "b2_tifloat.h"
-#include "b1_libti99.h"
-#include "b0_strutil.h"
+#include "b1cp_strutil.h"
+#include <conio.h>
 
 struct DeviceServiceRoutine dsrList[40];
 
@@ -155,7 +155,7 @@ void loadDriveDSRs() {
       while(dsrlinks != 0) {
         
         if (isDrive(dsrlinks->name)) {
-          bk_basicToCstr(dsrlinks->name, listHead->name);
+          basicToCstr(dsrlinks->name, listHead->name);
           listHead->crubase = cruscan;
           listHead->addr = dsrlinks->routine;
           listHead += 1;
@@ -173,7 +173,7 @@ void loadDriveDSRs() {
 int isDrive(char* basicstr) {
   if (basicstr[0] == 4) {
     char tipi[] = "TIPI";
-    if (0 == bk_basic_strcmp(basicstr, tipi)) {
+    if (0 == basic_strcmp(basicstr, tipi)) {
       return 1;
     } else if (basicstr[1] >= 'A' && basicstr[1] <= 'Z' && basicstr[4] >= '0' && basicstr[4] <= '9') {
       return 1;

@@ -15,29 +15,6 @@
 // #include <string.h>
 
 /*
-void handleCd() {
-  struct DeviceServiceRoutine* dsr = 0;
-  char path[256];
-  parsePathParam(&dsr, path, PR_REQUIRED);
-  if (dsr == 0) {
-    cprintf("no path: drive or folder specified\n");
-    return;
-  }
-  if (path[strlen(path)-1] != '.') {
-    strcat(path, ".");
-  }
-  unsigned char stat = existsDir(dsr, path);
-  if (stat != 0) {
-    cprintf("error, device/folder not found: %s\n", path);
-    return;
-  }
-  
-  currentDsr = dsr;
-  strcpy(currentPath, path);
-}
-*/
-
-/*
 void handleChecksum() {
   char* filename = strtok(0, " ");
   if (filename == 0) {

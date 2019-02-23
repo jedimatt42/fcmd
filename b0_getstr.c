@@ -1,11 +1,11 @@
 #include "banks.h"
 #define MYBANK BANK_1
 
-#include "b1_getstr.h"
+#include "b0_getstr.h"
 #include <conio.h>
 #include <string.h>
 #include <kscan.h>
-#include "b0_strutil.h"
+#include "b1cp_strutil.h"
 
 static unsigned char mycgetc();
 #define CUR_OVERWRITE 219
@@ -53,7 +53,7 @@ void getstr(int x, int y, char* var, int limit, int backspace) {
         break;
       case 7: // F3 - erase line
         idx = strlen(var);
-        bk_strset(var, 0, limit);
+        strset(var, 0, limit);
         cclearxy(x, y, idx);
         gotoxy(x,y);
         idx = 0;

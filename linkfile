@@ -3,7 +3,8 @@ MEMORY
   cart_rom   (rx) : ORIGIN = 0x6000, LENGTH = 0x0070 /* 96 bytes up front of common code */
   bank_rom   (rx) : ORIGIN = 0x6070, LENGTH = 0x1F90 /* 8k-header of bankable cartridge ROM */
   lower_exp  (wx) : ORIGIN = 0x2000, LENGTH = 0x2000 /* 8k        */
-  upper_exp  (wx) : ORIGIN = 0xA000, LENGTH = 0x6000 /* 24k upper ram */
+  upper_exp  (wx) : ORIGIN = 0xA000, LENGTH = 0x4000 /* 16k upper ram */
+  libti99_rom  (rx) : ORIGIN = 0xC000, LENGTH = 0x2000 /* 8k top of upper ram */
   scratchpad (wx) : ORIGIN = 0x8320, LENGTH = 0x00e0 /* 32b is for workspace */
 }
 
@@ -26,8 +27,8 @@ SECTIONS
       __LOAD_DATA = .;   /* .data segment is copied here so initial values can be loaded in RAM */
     }
     .bank1 { 
-      libti99.a(.text)     /* vdp routines from libti99 */
       objects/b1_*.o(.text)
+      __LIB_COPY = .;
     }                    /*   modules should be linked into the same bank */
     .bank2 { 
       objects/b2_*.o(.text)
@@ -36,6 +37,12 @@ SECTIONS
       objects/b3_*.o(.text)
     }                    /*   modules should be linked into the same bank */
   } >bank_rom
+
+  .libti99 : {
+    __LIB_START = .;     /* note the address so we can copy starting from here in ROM */
+    libti99.a(.text)     /* vdp routines from libti99 */
+    objects/b1cp_*.o(.text) 
+  } >libti99_rom
 
   . = 0xA000;            /* remaining references will start from this address. */
   .data : {
@@ -55,6 +62,7 @@ SECTIONS
   __STATS_HEAD = SIZEOF(.text);
   __STATS_BANK_0 = SIZEOF(.bank0);
   __STATS_BANK_1 = SIZEOF(.bank1);
+  __STATS_LIBTI99 = SIZEOF(.libti99);
   __STATS_BANK_2 = SIZEOF(.bank2);
   __STATS_BANK_3 = SIZEOF(.bank3);
 }  

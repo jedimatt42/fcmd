@@ -16,14 +16,4 @@ char* strncpy(char* dest, char* src, int limit);
 void strpad(char* dest, int limit, char pad);
 int htoi(char* s);
 
-#include "banking.h"
-
-DECLARE_BANKED_VOID(strset, BANK_0, bk_strset, (char* buffer, char value, int limit), (buffer, value, limit))
-
-DECLARE_BANKED(strtok, BANK_0, char*, bk_strtok, (char* str, char* delim), (str, delim))
-DECLARE_BANKED(htoi, BANK_0, int, bk_htoi, (char* s), (s))
-DECLARE_BANKED(strcmpi, BANK_0, int, bk_strcmpi, (const char* a, const char* b), (a, b))
-DECLARE_BANKED(basicToCstr, BANK_0, int, bk_basicToCstr, (const char* str, char* buf), (str, buf))
-DECLARE_BANKED(basic_strcmp, BANK_0, int, bk_basic_strcmp, (const char* basstr, const char* cstr), (basstr, cstr))
-
 #endif
