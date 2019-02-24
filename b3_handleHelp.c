@@ -28,7 +28,8 @@ void handleHelp() {
   if (matchcmd(tok, "cls")) {
     cputs("cls - clear the screen and relocate cursor to upper left\n");
   } else if (matchcmd(tok, "cd")) {
-    cputs("cd <path>|.. - switch to a different drive or directory\n");
+    cputs("cd [/w] <path>|.. - switch to a different drive or directory\n");
+    cputs("  /w : optional, output a simplified listing in multiple columns\n");
   } else if (matchcmd(tok, "drives")) {
     cputs("drives - list device names grouped by CRU base address\n");
   } else if (matchcmd(tok, "exit")) {

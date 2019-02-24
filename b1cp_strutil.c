@@ -95,6 +95,24 @@ char* strtok(char* str, char* delim) {
   return str;
 }
 
+char peekbuf[40];
+
+char* strtokpeek(char* str, char* delim) {
+  int ch;
+
+  if (str == 0)
+	  str = lasts;
+  do {
+	  if ((ch = *str++) == '\0')
+	    return 0;
+  } while (strchr(delim, ch));
+  --str;
+  char* plasts = str + strcspn(str, delim);
+
+  strncpy(peekbuf, str, plasts + 1 - str);
+  return peekbuf;
+}
+
 char* strchr(char* str, int delim) 
 {
   int x;
@@ -194,4 +212,17 @@ void strpad(char* dest, int limit, char pad) {
     }
   }
   dest[limit] = 0;
+}
+
+void cputpad(int padding, char* str) {
+  int c = 0;
+  volatile char zero = 0;
+  for(int i=0; i < padding; i++) {
+    if (c == zero && str[i] == zero) {
+      c = 1;
+    }
+    if (c == 1) {
+      cputc(' ');
+    }
+  }
 }

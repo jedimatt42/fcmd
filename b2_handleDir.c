@@ -12,11 +12,23 @@
 #include <conio.h>
 #include <string.h>
 
-static void onLongVolInfo(struct VolInfo* volInfo);
-static void onLongDirEntry(struct DirEntry* dirEntry);
+void onLongVolInfo(struct VolInfo* volInfo);
+void onLongDirEntry(struct DirEntry* dirEntry);
+
+void onWideVolInfo(struct VolInfo* volInfo);
+void onWideDirEntry(struct DirEntry* dirEntry);
+
+static int col = 0;
 
 void handleDir() {
   struct DeviceServiceRoutine* dsr = 0;
+
+  char* peek = strtokpeek(0, " ");
+  int wideFormat = 0 == strcmpi("/W", peek);
+  if (wideFormat) {
+    strtok(0, " "); // consume the option token.
+  }
+
   char path[256];
   bk_parsePathParam(&dsr, path, PR_OPTIONAL);
   if (dsr == 0) {
@@ -34,11 +46,16 @@ void handleDir() {
     return;
   }
 
-  loadDir(dsr, path, onLongVolInfo, onLongDirEntry);
+  if (wideFormat) {
+    col = 0;
+    loadDir(dsr, path, onWideVolInfo, onWideDirEntry);
+  } else {
+    loadDir(dsr, path, onLongVolInfo, onLongDirEntry);
+  }
   cputc('\n');
 }
 
-static void onLongVolInfo(struct VolInfo* volInfo) {
+void onLongVolInfo(struct VolInfo* volInfo) {
   cputs("Diskname: ");
   cputs(volInfo->volname);
   if (displayWidth == 40) {
@@ -51,41 +68,53 @@ static void onLongVolInfo(struct VolInfo* volInfo) {
   cputs(" Used: ");
   cputs(uint2str(volInfo->total - volInfo->available));
   cputs("\n\n");
-  cputs("Name       Size Type\n");
-  cputs("--------------------\n");
+  cputs("Name       Type    Reclen Sectors\n");
+  cputs("---------------------------------\n");
 }
 
 const char* file_types[] = {
-  "D/F",
-  "D/V",
-  "I/F",
-  "I/V",
-  "PRG",
+  "DIS/FIX",
+  "DIS/VAR",
+  "INT/FIX",
+  "INT/VAR",
+  "PROGRAM",
   "DIR"
 };
 
-static void onLongDirEntry(struct DirEntry* dirEntry) {
+void onLongDirEntry(struct DirEntry* dirEntry) {
   cputs(dirEntry->name);
-  for(int i=strlen(dirEntry->name); i<11; i++) {
-    cputc(' ');
+  cputpad(11, dirEntry->name);
+
+  char* ftype = (char*) file_types[(dirEntry->type)-1];
+  
+  cputs(ftype);
+  cputpad(8, ftype);
+
+  if (dirEntry->type < 5) {
+    char* sizestr = uint2str(dirEntry->reclen);
+    cputs(sizestr);
+    cputpad(7, sizestr);
+  } else {
+    cputpad(7, "");
   }
 
-  char* sizestr = 0;
-  if (dirEntry->type < 5) {
-    sizestr = uint2str(dirEntry->reclen);
-  } else if (dirEntry->type == 5) {
-    sizestr = uint2str(dirEntry->sectors);
-  }
-  if (sizestr != 0) {
-    for(int i=strlen(sizestr); i<4; i++) {
-      cputc(' ');
-    }
-    cputs(sizestr);
-  } else {
-    cputs("    ");
-  }
-  cputc(' ');
-  cputs(file_types[(dirEntry->type)-1]);
+  cputs(uint2str(dirEntry->sectors));
+
   cputc('\n');
 }
 
+void onWideVolInfo(struct VolInfo* volInfo) {
+  // do nothing, we don't want volume info in wide listing
+}
+
+void onWideDirEntry(struct DirEntry* dirEntry) {
+  int collimit = displayWidth / 11;
+  cputs(dirEntry->name);
+  col++;
+  if (col < collimit) {
+    cputpad(11, dirEntry->name);
+  } else {
+    col = 0;
+    cputc('\n');
+  }
+}
