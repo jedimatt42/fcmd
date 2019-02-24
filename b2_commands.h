@@ -6,6 +6,7 @@ void handleWidth();
 
 // in bank 2
 void handleCd();
+void handleChecksum();
 void handleCls();
 void handleExit();
 void handleLvl2();
@@ -16,7 +17,6 @@ void handleDir();
 void handleHelp();
 
 /*
-void handleChecksum();
 void handleCopy();
 void handleDelete();
 void handleMkdir();
@@ -29,6 +29,7 @@ void handleUnprotect();
 #include "banking.h"
 
 DECLARE_BANKED_VOID(handleCd, BANK_2, bk_handleCd, (), ())
+DECLARE_BANKED_VOID(handleChecksum, BANK_2, bk_handleChecksum, (), ())
 DECLARE_BANKED_VOID(handleCls, BANK_2, bk_handleCls, (), ())
 DECLARE_BANKED_VOID(handleDir, BANK_2, bk_handleDir, (), ())
 DECLARE_BANKED_VOID(handleDrives, BANK_2, bk_handleDrives, (), ())

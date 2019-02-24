@@ -5,7 +5,7 @@
 #include "b1cp_strutil.h"
 #include <conio.h>
 
-#define HELP_COMMANDS "cd cls drives exit help lvl2 tipibeeps ver width"
+#define HELP_COMMANDS "cd checksum cls drives exit help lvl2 tipibeeps ver width"
 
 int matchcmd(char* input, char* exp) {
   char stackstr[80];
@@ -27,6 +27,8 @@ void handleHelp() {
 
   if (matchcmd(tok, "cls")) {
     cputs("cls - clear the screen and relocate cursor to upper left\n");
+  } else if (matchcmd(tok, "checksum")) {
+    cputs("checksum <file> - 16 bit checksum of a file in the current directory\n");
   } else if (matchcmd(tok, "cd")) {
     cputs("cd [/w] <path>|.. - switch to a different drive or directory\n");
     cputs("  /w : optional, output a simplified listing in multiple columns\n");

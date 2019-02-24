@@ -15,80 +15,6 @@
 // #include <string.h>
 
 /*
-void handleChecksum() {
-  char* filename = strtok(0, " ");
-  if (filename == 0) {
-    cprintf("error, must specify a file name\n");
-    return;
-  }
-  char path[256];
-  // check that file exists
-  strcpy(path, currentPath);
-  strcat(path, filename);
-  if (0 != existsFile(currentDsr, path)) {
-    cprintf("error, file not found: %s%s\n", currentPath, filename);
-    return;
-  }
-
-  struct AddInfo* addInfoPtr = (struct AddInfo*) 0x8320;
-  addInfoPtr->first_sector = 0;
-  addInfoPtr->eof_offset = 0;
-  addInfoPtr->flags = 0;
-  addInfoPtr->rec_length = 0;
-  addInfoPtr->records = 0;
-  addInfoPtr->recs_per_sec = 0;
-  
-  unsigned int source_crubase = currentDsr->crubase;
-  unsigned char source_unit = path2unitmask(currentPath);
-
-  lvl2_setdir(source_crubase, source_unit, currentPath);
-  unsigned char err = lvl2_input(source_crubase, source_unit, filename, 0, addInfoPtr);
-  if (err) {
-    cprintf("error reading file: %x\n", err);
-    return;
-  }
-
-  unsigned char eof_offset = addInfoPtr->eof_offset;
-
-  int sum1 = 0;
-  int sum2 = 0;
-
-  int totalBlocks = addInfoPtr->first_sector;
-  if (totalBlocks == 0) {
-    cprintf("error, source file is empty.\n");
-    return;
-  }
-  int blockId = 0;
-  while(blockId < totalBlocks) {
-    addInfoPtr->first_sector = blockId;
-    lvl2_setdir(source_crubase, source_unit, currentPath);
-    err = lvl2_input(source_crubase, source_unit, filename, 1, addInfoPtr);
-    if (err) {
-      cprintf("error reading file: %x\n", err);
-      return;
-    }
-
-    unsigned char maxByte = 255;
-    if (blockId+1 == totalBlocks) {
-      maxByte = eof_offset == 0 ? 255 : eof_offset;
-    }
-
-    for(int i=0; i<= maxByte; i++) {
-      sum1 = (sum1 + vdpreadchar(addInfoPtr->buffer + i)) & 0xFF;
-      sum2 = (sum2 + sum1) & 0xFF;
-    }
-
-    blockId++;
-  }
-
-  int result = sum2;
-  result <<= 8;
-  result += sum1;
-  cprintf("checksum: %x\n", result);
-}
-*/
-
-/*
 void handleCopy() {
   char* filename = strtok(0, " ");
   if (filename == 0) {
@@ -176,30 +102,6 @@ void handleCopy() {
     cprintf("\rcopied block %d of %d", blockId, totalBlocks);
   }
   cprintf("\n"); // end status line.
-}
-*/
-
-
-/*
-void handleDir() {
-  struct DeviceServiceRoutine* dsr = 0;
-  char path[256];
-  parsePathParam(&dsr, path, PR_OPTIONAL);
-  if (dsr == 0) {
-    return;
-  }
-  if (path[strlen(path)-1] != '.') {
-    strcat(path, ".");
-  }
-
-  unsigned char stat = existsDir(dsr, path);
-  if (stat != 0) {
-    cprintf("error, device/folder not found: %s\n", path);
-    return;
-  }
-
-  loadDir(dsr, path, onVolInfo, onDirEntry);
-  cprintf("\n");
 }
 */
 

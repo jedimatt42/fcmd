@@ -178,6 +178,7 @@ void loadDriveDSRs() {
 
   currentDsr = dsrList;
   strcpy(currentPath, currentDsr->name);
+  strcat(currentPath, ".");
 }
 
 int isDrive(char* basicstr) {

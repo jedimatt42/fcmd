@@ -4,7 +4,7 @@
 #include "b2_lvl2.h"
 #include "b2_dsrutil.h"
 #include "b2_mds_dsrlnk.h"
-#include "b0_strutil.h"
+#include "b1cp_strutil.h"
 
 #include <string.h>
 #include <vdp.h>
@@ -36,7 +36,7 @@ unsigned char path2unitmask(char* currentPath) {
   }
   l = strlen(drive);
   unsigned char unit = drive[l-1] - '0' & 0x0F;
-  cprintf("unit: %x\n", unit);
+
   drive[l] = 0;
   if (0 == strcmp(drive, "WDS")) {
     operationSet = 0x20;
@@ -47,7 +47,7 @@ unsigned char path2unitmask(char* currentPath) {
   } else if (0 == strcmp(drive, "HDX")) {
     operationSet = 0x90;
   }
-  cprintf("operationSet: %x\n", operationSet);
+
   return operationSet | unit;
 }
 

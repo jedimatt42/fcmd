@@ -49,6 +49,7 @@ void handleDir() {
   if (wideFormat) {
     col = 0;
     loadDir(dsr, path, onWideVolInfo, onWideDirEntry);
+    cputc('\n');
   } else {
     loadDir(dsr, path, onLongVolInfo, onLongDirEntry);
   }
