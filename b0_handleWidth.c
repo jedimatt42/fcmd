@@ -12,10 +12,16 @@ void handleWidth() {
   char* tok = strtok(0, " ");
   int width = atoi(tok);
 
-  if (width == 40 || width == 80) {
-    setupScreen(width);
-  } else {
-    cputs("no width specified\n");
+  if (width == 80 && isF18A()) {
+    setupScreen(80);
+    return;
   }
+
+  if (width == 40) {
+    setupScreen(40);
+    return;
+  }
+  
+  cputs("no supported width specified\n");
 }
 

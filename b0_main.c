@@ -60,7 +60,6 @@ int isF18A() {
 
 void resetF18A() {
   lock_f18a();
-  set_graphics(0); // just to reset EVERYTHING
 }
 
 void setupScreen(int width) {
@@ -70,14 +69,14 @@ void setupScreen(int width) {
   if (width == 80) {
     displayWidth = 80;
     set_text80_color();
-  } else if(width == 40) {
+  } else { // 40 is the only other allowed value.
     displayWidth = 40;
     set_text();
   }
 
   clrscr();
   gotoxy(0,23);
-  defineChars();
+  bk_defineChars();
 }
 
 void titleScreen() {

@@ -13,7 +13,7 @@ void handleCd() {
   char path[256];
   bk_parsePathParam(&dsr, path, PR_REQUIRED);
   if (dsr == 0) {
-    cprintf("no path: drive or folder specified\n");
+    cputs("no path: drive or folder specified\n");
     return;
   }
   if (path[strlen(path)-1] != '.') {
@@ -21,7 +21,9 @@ void handleCd() {
   }
   unsigned char stat = existsDir(dsr, path);
   if (stat != 0) {
-    cprintf("error, device/folder not found: %s\n", path);
+    cputs("error, device/folder not found: ");
+    cputs(path);
+    cputc('\n');
     return;
   }
   

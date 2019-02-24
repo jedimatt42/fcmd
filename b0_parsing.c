@@ -17,7 +17,7 @@
 void handleCommand(char *buffer) {
   char* tok = strtok(buffer, " ");
   COMMAND("cls", bk_handleCls)
-  COMMAND("cd", bk_handleCd)
+  else COMMAND("cd", bk_handleCd)
   // else COMMAND("checksum", handleChecksum)
   // else COMMAND("copy", handleCopy)
   // else COMMAND("delete", handleDelete)

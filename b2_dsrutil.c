@@ -48,7 +48,7 @@ unsigned char loadDir(struct DeviceServiceRoutine* dsr, const char* pathname, vo
       // process Record
       if (recNo == 0) {
         if (cbuf[0] == 0) {
-          cprintf("no device\n");
+          cputs("no device\n");
           return 0;
         }
         basicToCstr(cbuf, volInfo.volname);

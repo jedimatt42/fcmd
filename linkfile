@@ -4,7 +4,7 @@ MEMORY
   bank_rom   (rx) : ORIGIN = 0x6070, LENGTH = 0x1F90 /* 8k-header of bankable cartridge ROM */
   lower_exp  (wx) : ORIGIN = 0x2000, LENGTH = 0x2000 /* 8k        */
   upper_exp  (wx) : ORIGIN = 0xA000, LENGTH = 0x4000 /* 16k upper ram */
-  libti99_rom  (rx) : ORIGIN = 0xC000, LENGTH = 0x2000 /* 8k top of upper ram */
+  libti99_rom  (rx) : ORIGIN = 0xE000, LENGTH = 0x2000 /* 8k top of upper ram */
   scratchpad (wx) : ORIGIN = 0x8320, LENGTH = 0x00e0 /* 32b is for workspace */
 }
 
