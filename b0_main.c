@@ -17,8 +17,6 @@
 
 #define APP_VER "1.0"
 
-unsigned int displayWidth = 40;
-unsigned int column = 0;
 
 const char tipibeeps[] = {
   0x04, 0x9f, 0xbf, 0xdf, 0xff, 0x02,

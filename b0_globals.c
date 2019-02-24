@@ -6,3 +6,5 @@
 struct DeviceServiceRoutine* currentDsr;
 char currentPath[256];
 int backspace;
+unsigned int displayWidth = 40;
+

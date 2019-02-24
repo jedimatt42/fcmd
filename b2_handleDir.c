@@ -41,7 +41,12 @@ void handleDir() {
 static void onLongVolInfo(struct VolInfo* volInfo) {
   cputs("Diskname: ");
   cputs(volInfo->volname);
-  cputs(" Available: ");
+  if (displayWidth == 40) {
+    cputc('\n');
+  } else {
+    cputc(' ');
+  }
+  cputs("Available: ");
   cputs(uint2str(volInfo->available));
   cputs(" Used: ");
   cputs(uint2str(volInfo->total - volInfo->available));
