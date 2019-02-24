@@ -21,7 +21,7 @@ void handleCommand(char *buffer) {
   // else COMMAND("checksum", handleChecksum)
   // else COMMAND("copy", handleCopy)
   // else COMMAND("delete", handleDelete)
-  // else COMMAND("dir", handleDir)
+  else COMMAND("dir", bk_handleDir)
   else COMMAND("drives", bk_handleDrives)
   else COMMAND("exit", bk_handleExit)
   else COMMAND("help", bk_handleHelp)

@@ -53,6 +53,8 @@ struct __attribute__((__packed__)) DirEntry {
 
 struct __attribute__((__packed__)) VolInfo {
   char volname[11];
+  int available;
+  int total;
   struct DeviceServiceRoutine* dsr;
 };
 
