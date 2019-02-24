@@ -11,6 +11,7 @@
 #include "b2_dsrutil.h"
 #include "b3_oem.h"
 #include <sound.h>
+#include <string.h>
 #include <vdp.h>
 #include <conio.h>
 
@@ -100,7 +101,11 @@ void main()
   while(1) {
     VDP_INT_POLL;
     strset(buffer, 0, 255);
-    cputs("\n$ ");
+    cputc('[');
+    cputs(uint2hex(currentDsr->crubase));
+    cputc('.');
+    cputs(currentPath);
+    cputs("]\n$ ");
     getstr(2, conio_y, buffer, displayWidth - 3, backspace);
     cputs("\n");
     handleCommand(buffer);

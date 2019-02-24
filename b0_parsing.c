@@ -80,13 +80,13 @@ void parsePathParam(struct DeviceServiceRoutine** dsr, char* buffer, int require
       return;
     } else {
       int crubase = parsePath(path, devicename);
-      *dsr = findDsr(devicename, crubase);
+      *dsr = bk_findDsr(devicename, crubase);
       if (*dsr == 0) {
         // not a base device, so try subdir
         strcpy(buffer, currentPath);
         strcat(buffer, path);
         crubase = parsePath(buffer, devicename);
-        *dsr = findDsr(devicename, crubase);
+        *dsr = bk_findDsr(devicename, crubase);
         // if still not found, then give up.
         if (*dsr == 0) {  
           cputs("device not found.\n");

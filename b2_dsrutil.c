@@ -1,11 +1,13 @@
 #include "banks.h"
 #define MYBANK BANK_2
 
+#include "b0_globals.h"
 #include "b2_dsrutil.h"
 #include "b2_mds_dsrlnk.h"
 #include "b2_tifloat.h"
 #include "b1cp_strutil.h"
 #include <conio.h>
+#include <string.h>
 
 struct DeviceServiceRoutine dsrList[40];
 
@@ -168,6 +170,9 @@ void loadDriveDSRs() {
     disableROM(cruscan);
     cruscan += 0x0100;
   }
+
+  currentDsr = dsrList;
+  strcpy(currentPath, currentDsr->name);
 }
 
 int isDrive(char* basicstr) {
