@@ -7,8 +7,9 @@
 
 void handleExit() {
   resetF18A();
+
   __asm__("li r0,0\n\t"
           "blwp *r0\n\t"
-          : : : "r0" );
+         );
 }
 

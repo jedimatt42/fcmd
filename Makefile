@@ -21,7 +21,7 @@ OBJECT_LIST:=$(OBJECT_LIST:.asm=.o)
 
 LINK_OBJECTS:=$(addprefix objects/,$(OBJECT_LIST))
 
-all: $(FNAME)8.bin $(FNAME)G.bin
+all: $(FNAME)C.bin $(FNAME)G.bin
 
 # The size of the cart_rom segment in decimal
 # must agree with linkfile
@@ -57,7 +57,7 @@ bank3.bin: $(FNAME).elf $(HEADBIN)
 	cat $(HEADBIN) objects/$@_tmp >$@
 	@dd if=/dev/null of=$@ bs=8192 seek=1
 
-$(FNAME)8.bin: bank0.bin bank1.bin bank2.bin bank3.bin
+$(FNAME)C.bin: bank0.bin bank1.bin bank2.bin bank3.bin
 	cat $^ >$@
 
 $(FNAME)G.bin: gpl-boot.g99

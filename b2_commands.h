@@ -2,23 +2,24 @@
 #define _COMMANDS_H 1
 
 // in bank 0
+void handleCls();
+void handleExit();
+void handleFg99();
 void handleWidth();
 
 // in bank 2
 void handleCd();
 void handleChecksum();
-void handleCls();
 void handleCopy();
-void handleExit();
-void handleLvl2();
-void handleDrives();
+void handleDelete();
 void handleDir();
+void handleDrives();
+void handleLvl2();
 
 // in bank 3
 void handleHelp();
 
 /*
-void handleDelete();
 void handleMkdir();
 void handleProtect();
 void handleRename();
@@ -31,6 +32,7 @@ void handleUnprotect();
 DECLARE_BANKED_VOID(handleCd, BANK_2, bk_handleCd, (), ())
 DECLARE_BANKED_VOID(handleChecksum, BANK_2, bk_handleChecksum, (), ())
 DECLARE_BANKED_VOID(handleCopy, BANK_2, bk_handleCopy, (), ())
+DECLARE_BANKED_VOID(handleDelete, BANK_2, bk_handleDelete, (), ())
 DECLARE_BANKED_VOID(handleDir, BANK_2, bk_handleDir, (), ())
 DECLARE_BANKED_VOID(handleDrives, BANK_2, bk_handleDrives, (), ())
 DECLARE_BANKED_VOID(handleLvl2, BANK_2, bk_handleLvl2, (), ())
