@@ -15,7 +15,7 @@
 #include <vdp.h>
 #include <conio.h>
 
-#define APP_VER "1.0"
+#define APP_VER "0.1"
 
 
 const char tipibeeps[] = {

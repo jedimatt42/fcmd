@@ -20,8 +20,12 @@ void handleFg99() {
     return;
   }
 
-  strncpy( &fg99_msg, cart, 8);
-  strpad( &fg99_msg, 8, ' ');
+  if (strlen(cart) > 8) {
+    cputs("error, name too long\n");
+    return;
+  }
+
+  strcpy( &fg99_msg, cart);
 
   resetF18A();
   fg99();

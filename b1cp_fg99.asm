@@ -39,7 +39,6 @@ fgmenu_seq:
        text 'OKFG99'
        byte >99
 fg99_msg:
-       text 'TIXB_G'
-       byte >00, >00          ; file to load (8 chars, pad with \00)
-       data >0000             ; >0000 for GROM/mixed, >FFFF for ROM
+       data >0000, >0000, >0000, >0000    ; file to load (8 chars, pad with \00)
+       data >0000                         ; >0000 for GROM/mixed, >FFFF for ROM
        data >0000
