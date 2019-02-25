@@ -10,8 +10,4 @@ void sleep(int jiffies);
 void titleScreen();
 void playtipi();
 
-#include "banking.h"
-
-DECLARE_BANKED_VOID(resetF18A, BANK_0, bk_resetF18A, (), ())
-
 #endif

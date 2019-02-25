@@ -5,7 +5,7 @@
 #include "b1cp_strutil.h"
 #include <conio.h>
 
-#define HELP_COMMANDS "cd checksum cls copy drives exit help lvl2 tipibeeps ver width"
+#define HELP_COMMANDS "cd checksum cls copy drives exit help lvl2 tipibeeps ver width\n\n"
 
 int matchcmd(char* input, char* exp) {
   char stackstr[80];
