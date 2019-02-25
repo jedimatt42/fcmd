@@ -49,7 +49,7 @@ void handleHelp() {
   } else if (matchcmd(tok,"mkdir")) {
     cputs("mkdir <dirname> - create new directory in current path\n");
   } else if (matchcmd(tok,"protect")) {
-    cputs("protect <filename> - protect a file in current path\n");
+    cputs("protect <filename> - protect a fileh in current path\n");
   } else if (matchcmd(tok,"tipibeeps")) {
     cputs("tipibeeps - play tipi styled sound list\n");
   } else if (matchcmd(tok,"ver")) {
