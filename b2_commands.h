@@ -8,6 +8,7 @@ void handleWidth();
 void handleCd();
 void handleChecksum();
 void handleCls();
+void handleCopy();
 void handleExit();
 void handleLvl2();
 void handleDrives();
@@ -17,7 +18,6 @@ void handleDir();
 void handleHelp();
 
 /*
-void handleCopy();
 void handleDelete();
 void handleMkdir();
 void handleProtect();
@@ -31,6 +31,7 @@ void handleUnprotect();
 DECLARE_BANKED_VOID(handleCd, BANK_2, bk_handleCd, (), ())
 DECLARE_BANKED_VOID(handleChecksum, BANK_2, bk_handleChecksum, (), ())
 DECLARE_BANKED_VOID(handleCls, BANK_2, bk_handleCls, (), ())
+DECLARE_BANKED_VOID(handleCopy, BANK_2, bk_handleCopy, (), ())
 DECLARE_BANKED_VOID(handleDir, BANK_2, bk_handleDir, (), ())
 DECLARE_BANKED_VOID(handleDrives, BANK_2, bk_handleDrives, (), ())
 DECLARE_BANKED_VOID(handleExit, BANK_2, bk_handleExit, (), ())
