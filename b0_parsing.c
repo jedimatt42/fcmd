@@ -28,7 +28,7 @@ void handleCommand(char *buffer) {
   else COMMAND("help", bk_handleHelp)
   // else COMMAND("load", handleLoad)
   else COMMAND("lvl2", bk_handleLvl2)
-  // else COMMAND("mkdir", handleMkdir)
+  else COMMAND("mkdir", bk_handleMkdir)
   // else COMMAND("protect", handleProtect)
   // else COMMAND("rename", handleRename)
   // else COMMAND("rmdir", handleRmdir)

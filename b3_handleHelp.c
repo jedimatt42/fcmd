@@ -5,7 +5,7 @@
 #include "b1cp_strutil.h"
 #include <conio.h>
 
-#define HELP_COMMANDS "cd checksum cls copy drives exit fg99 help lvl2 tipibeeps ver width\n\n"
+#define HELP_COMMANDS "cd checksum cls copy drives exit fg99 help lvl2 mkdir tipibeeps ver width\n\n"
 
 int matchcmd(char* input, char* exp) {
   char stackstr[80];
@@ -46,6 +46,8 @@ void handleHelp() {
     cputs("help <command> - show help for individual command\n");
   } else if (matchcmd(tok,"lvl2")) {
     cputs("lvl2 <crubase> - list level 2 io subprograms in DSR ROM at the specified CRU base address\n");
+  } else if (matchcmd(tok,"mkdir")) {
+    cputs("mkdir <dirname> - create new directory in current path\n");
   } else if (matchcmd(tok,"tipibeeps")) {
     cputs("tipibeeps - play tipi styled sound list\n");
   } else if (matchcmd(tok,"ver")) {
