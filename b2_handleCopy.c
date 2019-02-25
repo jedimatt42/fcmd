@@ -33,7 +33,7 @@ void handleCopy() {
   struct DeviceServiceRoutine* dsr = 0;
   bk_parsePathParam(&dsr, path, PR_REQUIRED);
   if (dsr == 0) {
-    cprintf("no path: drive or folder specified\n");
+    cputs("no path: drive or folder specified\n");
     return;
   }
   if (path[strlen(path)-1] != '.') {
