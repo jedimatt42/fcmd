@@ -16,14 +16,14 @@
 
 void handleCommand(char *buffer) {
   char* tok = strtok(buffer, " ");
-  COMMAND("cls", bk_handleCls)
+  COMMAND("cls", handleCls)
   else COMMAND("cd", bk_handleCd)
   else COMMAND("checksum", bk_handleChecksum)
   else COMMAND("copy", bk_handleCopy)
-  // else COMMAND("delete", handleDelete)
+  // else COMMAND("delete", bk_handleDelete)
   else COMMAND("dir", bk_handleDir)
   else COMMAND("drives", bk_handleDrives)
-  else COMMAND("exit", bk_handleExit)
+  else COMMAND("exit", handleExit)
   else COMMAND("help", bk_handleHelp)
   // else COMMAND("load", handleLoad)
   else COMMAND("lvl2", bk_handleLvl2)
