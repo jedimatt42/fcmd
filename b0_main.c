@@ -15,7 +15,7 @@
 #include <vdp.h>
 #include <conio.h>
 
-#define APP_VER "0.1"
+#define APP_VER "0.2"
 
 
 const char tipibeeps[] = {
@@ -81,6 +81,8 @@ void setupScreen(int width) {
 void titleScreen() {
   cputs("TIPICMD v");
   cputs(APP_VER);
+  cputc(' ');
+  cputs(__DATE__);
   cputs("\nwww.jedimatt42.com\n");
 }
 
