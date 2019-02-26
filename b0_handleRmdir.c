@@ -1,5 +1,5 @@
 #include "banks.h"
-#define MYBANK BANK_2
+#define MYBANK BANK_0
 
 #include "commands.h"
 #include "b0_globals.h"
@@ -15,11 +15,11 @@ void handleRmdir() {
     return;
   }
 
-  unsigned char unit = path2unitmask(currentPath);
+  unsigned char unit = bk_path2unitmask(currentPath);
 
-  lvl2_setdir(currentDsr->crubase, unit, currentPath);
+  bk_lvl2_setdir(currentDsr->crubase, unit, currentPath);
 
-  unsigned int err = lvl2_rmdir(currentDsr->crubase, unit, dirname);
+  unsigned int err = bk_lvl2_rmdir(currentDsr->crubase, unit, dirname);
   if (err) {
     cputs("cannot remove directory ");
     cputs(currentPath);

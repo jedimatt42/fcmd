@@ -44,5 +44,8 @@ DECLARE_BANKED_CHAR(path2unitmask, BANK_2, unsigned char, bk_path2unitmask, (cha
 
 DECLARE_BANKED(lvl2_setdir, BANK_2, unsigned int, bk_lvl2_setdir, (int crubase, char unit, char* path), (crubase, unit, path))
 DECLARE_BANKED(lvl2_protect, BANK_2, unsigned int, bk_lvl2_protect, (int crubase, char unit, char* filename, char protect), (crubase, unit, filename, protect))
+DECLARE_BANKED(lvl2_rename, BANK_2, unsigned int, bk_lvl2_rename, (int crubase, char unit, char* oldname, char* newname), (crubase, unit, oldname, newname))
+DECLARE_BANKED(lvl2_rendir, BANK_2, unsigned int, bk_lvl2_rendir, (int crubase, char unit, char* oldname, char* newname), (crubase, unit, oldname, newname))
+DECLARE_BANKED(lvl2_rmdir, BANK_2, unsigned int, bk_lvl2_rmdir, (int crubase, char unit, char* dirname), (crubase, unit, dirname))
 
 #endif

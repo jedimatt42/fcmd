@@ -83,7 +83,7 @@ void titleScreen() {
   cputs(APP_VER);
   cputc(' ');
   cputs(__DATE__);
-  cputs("\nwww.jedimatt42.com\n");
+  cputs("\nwww.jedimatt42.com\n\n");
 }
 
 void main()

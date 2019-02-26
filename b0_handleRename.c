@@ -21,21 +21,21 @@ void handleRename() {
     return;
   }
 
-  unsigned char unit = path2unitmask(currentPath);
+  unsigned char unit = bk_path2unitmask(currentPath);
 
   char path[256];
   strcpy(path, currentPath);
   strcat(path, ".");
   strcat(path, filename);
 
-  unsigned char stat = existsDir(currentDsr, path);
+  unsigned int stat = bk_existsDir(currentDsr, path);
 
-  lvl2_setdir(currentDsr->crubase, unit, currentPath);
+  bk_lvl2_setdir(currentDsr->crubase, unit, currentPath);
   unsigned int err = 0x00ff;
   if (stat == 0) {
-    err = lvl2_rendir(currentDsr->crubase, unit, filename, newname);
+    err = bk_lvl2_rendir(currentDsr->crubase, unit, filename, newname);
   } else {
-    err = lvl2_rename(currentDsr->crubase, unit, filename, newname);
+    err = bk_lvl2_rename(currentDsr->crubase, unit, filename, newname);
   }
 
   if (err) {

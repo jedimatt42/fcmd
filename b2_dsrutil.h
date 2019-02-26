@@ -69,7 +69,7 @@ typedef void (*vol_entry_cb)(struct VolInfo*);
 typedef void (*dir_entry_cb)(struct DirEntry*);
 
 unsigned char loadDir(struct DeviceServiceRoutine* dsr, const char* pathname, vol_entry_cb vol_cb, dir_entry_cb dir_cb);
-unsigned char existsDir(struct DeviceServiceRoutine* dsr, const char* pathname);
+unsigned int existsDir(struct DeviceServiceRoutine* dsr, const char* pathname);
 unsigned char existsFile(struct DeviceServiceRoutine* dsr, const char* pathname);
 
 void loadDriveDSRs();
@@ -86,6 +86,6 @@ void initPab(struct PAB* pab);
 
 DECLARE_BANKED_VOID(loadDriveDSRs, BANK_2, bk_loadDriveDSRs, (), ())
 DECLARE_BANKED(findDsr, BANK_2, struct DeviceServiceRoutine*, bk_findDsr, (char* devicename, int crubase), (devicename, crubase))
-
+DECLARE_BANKED(existsDir, BANK_2, unsigned int, bk_existsDir, (struct DeviceServiceRoutine* dsr, const char* pathname), (dsr, pathname))
 
 #endif

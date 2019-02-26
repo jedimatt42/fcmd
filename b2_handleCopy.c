@@ -37,7 +37,7 @@ void handleCopy() {
   if (path[strlen(path)-1] != '.') {
     strcat(path, ".");
   }
-  unsigned char stat = existsDir(dsr, path);
+  unsigned int stat = existsDir(dsr, path);
   if (stat != 0) {
     cputs("error, device/folder not found: ");
     cputs(path);

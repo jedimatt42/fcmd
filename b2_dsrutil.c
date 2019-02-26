@@ -11,7 +11,7 @@
 
 struct DeviceServiceRoutine dsrList[40];
 
-unsigned char existsDir(struct DeviceServiceRoutine* dsr, const char* pathname) {
+unsigned int existsDir(struct DeviceServiceRoutine* dsr, const char* pathname) {
   struct PAB pab;
   initPab(&pab);
   unsigned char open_err = dsr_open(dsr, &pab, pathname, DSR_TYPE_INPUT | DSR_TYPE_INTERNAL | DSR_TYPE_SEQUENTIAL, 38);
