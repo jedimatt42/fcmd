@@ -6,6 +6,8 @@ void handleCls();
 void handleExit();
 void handleFg99();
 void handleWidth();
+void handleRename();
+void handleUnprotect();
 
 // in bank 2
 void handleCd();
@@ -17,13 +19,11 @@ void handleDrives();
 void handleLvl2();
 void handleMkdir();
 void handleProtect();
-void handleUnprotect();
 
 // in bank 3
 void handleHelp();
 
 /*
-void handleRename();
 void handleRmdir();
 */
 
