@@ -20,7 +20,7 @@ void handleMkdir() {
 
   lvl2_setdir(currentDsr->crubase, unit, currentPath);
 
-  unsigned char err = lvl2_mkdir(currentDsr->crubase, unit, dirname);
+  unsigned int err = lvl2_mkdir(currentDsr->crubase, unit, dirname);
   if (err) {
     cputs("cannot create directory ");
     cputs(currentPath);

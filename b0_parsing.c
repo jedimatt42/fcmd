@@ -14,6 +14,8 @@
 
 #define COMMAND(x, y) if (MATCH(tok, x)) y();
 
+// NOTE command handle functions in bank 0 do not need bk_ banking stub
+
 void handleCommand(char *buffer) {
   char* tok = strtok(buffer, " ");
   COMMAND("cls", handleCls)
@@ -33,7 +35,7 @@ void handleCommand(char *buffer) {
   // else COMMAND("rename", handleRename)
   // else COMMAND("rmdir", handleRmdir)
   else COMMAND("tipibeeps", playtipi)
-  // else COMMAND("unprotect", handleUnprotect)
+  else COMMAND("unprotect", handleUnprotect)
   else COMMAND("ver", titleScreen)
   else COMMAND("width", handleWidth)
   else {

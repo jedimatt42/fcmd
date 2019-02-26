@@ -5,7 +5,7 @@
 #include "b1cp_strutil.h"
 #include <conio.h>
 
-#define HELP_COMMANDS "cd checksum cls copy drives exit fg99 help lvl2 mkdir protect tipibeeps ver width\n\n"
+#define HELP_COMMANDS "cd checksum cls copy drives exit fg99 help lvl2 mkdir protect tipibeeps unprotect ver width\n\n"
 
 int matchcmd(char* input, char* exp) {
   char stackstr[80];
@@ -49,9 +49,11 @@ void handleHelp() {
   } else if (matchcmd(tok,"mkdir")) {
     cputs("mkdir <dirname> - create new directory in current path\n");
   } else if (matchcmd(tok,"protect")) {
-    cputs("protect <filename> - protect a fileh in current path\n");
+    cputs("protect <filename> - protect a file in current path\n");
   } else if (matchcmd(tok,"tipibeeps")) {
     cputs("tipibeeps - play tipi styled sound list\n");
+  } else if (matchcmd(tok,"unprotect")) {
+    cputs("unprotect <filename> - unprotect a file in current path\n");
   } else if (matchcmd(tok,"ver")) {
     cputs("ver - display TIPICMD version information\n");
   } else if (matchcmd(tok,"width")) {

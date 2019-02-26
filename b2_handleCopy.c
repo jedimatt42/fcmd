@@ -61,7 +61,7 @@ void handleCopy() {
   unsigned char dest_unit = path2unitmask(path);
 
   lvl2_setdir(source_crubase, source_unit, currentPath);
-  unsigned char err = lvl2_input(source_crubase, source_unit, filename, 0, addInfoPtr);
+  unsigned int err = lvl2_input(source_crubase, source_unit, filename, 0, addInfoPtr);
   if (err) {
     cputs("error reading file: ");
     cputs(uint2hex(err));

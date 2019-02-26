@@ -24,18 +24,25 @@ struct __attribute__((__packed__)) AddInfo {
 
 unsigned char path2unitmask(char* currentPath);
 
-unsigned char lvl2_mkdir(int crubase, char unit, char* dirname);
-unsigned char lvl2_protect(int crubase, char unit, char* filename, char protect);
-unsigned char lvl2_rename(int crubase, char unit, char* oldname, char* newname);
-unsigned char lvl2_rendir(int crubase, char unit, char* oldname, char* newname);
-unsigned char lvl2_rmdir(int crubase, char unit, char* dirname);
-unsigned char lvl2_setdir(int crubase, char unit, char* path);
-unsigned char lvl2_input(int crubase, char unit, char* filename, unsigned char blockcount, struct AddInfo* addInfoPtr);
-unsigned char lvl2_output(int crubase, char unit, char* filename, unsigned char blockcount, struct AddInfo* addInfoPtr);
+unsigned int lvl2_mkdir(int crubase, char unit, char* dirname);
+unsigned int lvl2_protect(int crubase, char unit, char* filename, char protect);
+unsigned int lvl2_rename(int crubase, char unit, char* oldname, char* newname);
+unsigned int lvl2_rendir(int crubase, char unit, char* oldname, char* newname);
+unsigned int lvl2_rmdir(int crubase, char unit, char* dirname);
+unsigned int lvl2_setdir(int crubase, char unit, char* path);
+unsigned int lvl2_input(int crubase, char unit, char* filename, unsigned char blockcount, struct AddInfo* addInfoPtr);
+unsigned int lvl2_output(int crubase, char unit, char* filename, unsigned char blockcount, struct AddInfo* addInfoPtr);
 
 unsigned char __attribute__((noinline)) base_lvl2(int crubase, char unit, char operation, char* name1, char* name2, char param0);
 unsigned char __attribute__((noinline)) direct_io(int crubase, char unit, char operation, char* filename, unsigned char blockcount, struct AddInfo* addInfoPtr);
 unsigned int __attribute__((noinline)) subroutine(int crubase, unsigned char operation);
 void __attribute__((noinline)) call_lvl2(int crubase, unsigned char operation);
+
+#include "banking.h"
+
+DECLARE_BANKED_CHAR(path2unitmask, BANK_2, unsigned char, bk_path2unitmask, (char* currentPath), (currentPath))
+
+DECLARE_BANKED(lvl2_setdir, BANK_2, unsigned int, bk_lvl2_setdir, (int crubase, char unit, char* path), (crubase, unit, path))
+DECLARE_BANKED(lvl2_protect, BANK_2, unsigned int, bk_lvl2_protect, (int crubase, char unit, char* filename, char protect), (crubase, unit, filename, protect))
 
 #endif

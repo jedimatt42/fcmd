@@ -17,6 +17,7 @@ void handleDrives();
 void handleLvl2();
 void handleMkdir();
 void handleProtect();
+void handleUnprotect();
 
 // in bank 3
 void handleHelp();
@@ -24,11 +25,9 @@ void handleHelp();
 /*
 void handleRename();
 void handleRmdir();
-void handleUnprotect();
 */
 
 #include "banking.h"
-
 DECLARE_BANKED_VOID(handleCd, BANK_2, bk_handleCd, (), ())
 DECLARE_BANKED_VOID(handleChecksum, BANK_2, bk_handleChecksum, (), ())
 DECLARE_BANKED_VOID(handleCopy, BANK_2, bk_handleCopy, (), ())
