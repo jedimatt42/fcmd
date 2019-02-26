@@ -1,11 +1,12 @@
 #include "banks.h"
 #define MYBANK BANK_3
 
+#include "commands.h"
 #include "b0_main.h"
 #include "b1cp_strutil.h"
 #include <conio.h>
 
-#define HELP_COMMANDS "cd checksum cls copy drives exit fg99 help lvl2 mkdir protect rename tipibeeps unprotect ver width\n\n"
+#define HELP_COMMANDS "cd checksum cls copy drives exit fg99 help lvl2 mkdir protect rename rmdir tipibeeps unprotect ver width\n\n"
 
 int matchcmd(char* input, char* exp) {
   char stackstr[80];
@@ -52,6 +53,8 @@ void handleHelp() {
     cputs("protect <filename> - protect a file in current path\n");
   } else if (matchcmd(tok,"rename")) {
     cputs("rename <old-name> <new-name> - rename a file or directory in the current path\n");
+  } else if (matchcmd(tok,"rmdir")) {
+    cputs("rmdir <dirname> - remove a child directory from the current directory\n");
   } else if (matchcmd(tok,"tipibeeps")) {
     cputs("tipibeeps - play tipi styled sound list\n");
   } else if (matchcmd(tok,"unprotect")) {

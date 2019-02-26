@@ -4,7 +4,7 @@
 #include "b0_parsing.h"
 #include "b0_main.h"
 #include "b0_globals.h"
-#include "b2_commands.h"
+#include "commands.h"
 #include "b2_dsrutil.h"
 #include "b1cp_strutil.h"
 #include <string.h>
@@ -33,7 +33,7 @@ void handleCommand(char *buffer) {
   else COMMAND("mkdir", bk_handleMkdir)
   else COMMAND("protect", bk_handleProtect)
   else COMMAND("rename", handleRename)
-  // else COMMAND("rmdir", handleRmdir)
+  else COMMAND("rmdir", handleRmdir)
   else COMMAND("tipibeeps", playtipi)
   else COMMAND("unprotect", handleUnprotect)
   else COMMAND("ver", titleScreen)

@@ -6,11 +6,12 @@
 #include "b1cp_strutil.h"
 #include "b2_lvl2.h"
 #include <conio.h>
+#include <string.h>
 
-void handleProtect() {
-  char* filename = strtok(0, " ");
-  if (filename == 0) {
-    cputs("error, must specify a file name\n");
+void handleRmdir() {
+  char* dirname = strtok(0, " ");
+  if (dirname == 0) {
+    cputs("error, must specify a directory name\n");
     return;
   }
 
@@ -18,11 +19,11 @@ void handleProtect() {
 
   lvl2_setdir(currentDsr->crubase, unit, currentPath);
 
-  unsigned int err = lvl2_protect(currentDsr->crubase, unit, filename, 1);
+  unsigned int err = lvl2_rmdir(currentDsr->crubase, unit, dirname);
   if (err) {
-    cputs("cannot protect file ");
+    cputs("cannot remove directory ");
     cputs(currentPath);
-    cputs(filename);
+    cputs(dirname);
     cputc('\n');
   }
 }

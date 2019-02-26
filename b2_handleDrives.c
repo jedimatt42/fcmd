@@ -1,6 +1,7 @@
 #include "banks.h"
 #define MYBANK BANK_2
 
+#include "commands.h"
 #include "b2_dsrutil.h"
 #include <conio.h>
 #include <string.h>

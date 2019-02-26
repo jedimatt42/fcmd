@@ -1,7 +1,7 @@
 #include "banks.h"
 #define MYBANK BANK_2
 
-#include "b2_commands.h"
+#include "commands.h"
 #include <conio.h>
 #include <string.h>
 #include "b1cp_strutil.h"

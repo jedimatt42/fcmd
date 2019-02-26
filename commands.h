@@ -8,6 +8,7 @@ void handleFg99();
 void handleWidth();
 void handleRename();
 void handleUnprotect();
+void handleRmdir();
 
 // in bank 2
 void handleCd();
@@ -23,9 +24,6 @@ void handleProtect();
 // in bank 3
 void handleHelp();
 
-/*
-void handleRmdir();
-*/
 
 #include "banking.h"
 DECLARE_BANKED_VOID(handleCd, BANK_2, bk_handleCd, (), ())

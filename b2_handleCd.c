@@ -4,7 +4,7 @@
 #include "b1cp_strutil.h"
 #include "b0_parsing.h"
 #include "b0_globals.h"
-#include "b2_commands.h"
+#include "commands.h"
 #include <conio.h>
 #include <string.h>
 
