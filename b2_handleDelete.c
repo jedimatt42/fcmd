@@ -18,21 +18,21 @@ void handleDelete() {
 
   char buffer[256];
   strcpy(buffer, currentPath);
-  strcat(buffer, ".");
   strcat(buffer, filename);
+  
+  unsigned int exists = existsFile(currentDsr, buffer);
+  if (!exists) {
+    cputs("file not found ");
+    cputs(buffer);
+    cputc('\n');
+    return;
+  }
+
   struct PAB pab;
   initPab(&pab);
   pab.pName = buffer;
-  
-  unsigned char err = dsr_status(currentDsr, &pab);
-  if (err) {
-    cputs("file not found ");
-    cputs(currentPath);
-    cputs(filename);
-    cputc('\n');
-  }
 
-  err = dsr_delete(currentDsr, &pab);
+  unsigned char err = dsr_delete(currentDsr, &pab);
   if (err) {
     cputs("cannot delete file ");
     cputs(currentPath);

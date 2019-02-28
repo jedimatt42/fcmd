@@ -21,11 +21,11 @@ unsigned int existsDir(struct DeviceServiceRoutine* dsr, const char* pathname) {
   return open_err;
 }
 
-unsigned char existsFile(struct DeviceServiceRoutine* dsr, const char* pathname) {
+unsigned int existsFile(struct DeviceServiceRoutine* dsr, const char* pathname) {
   struct PAB pab;
   initPab(&pab);
   pab.pName = (char*) pathname;
-  return dsr_status(dsr, &pab);
+  return dsr_status(dsr, &pab) != 0x0080;
 }
 
 unsigned char loadDir(struct DeviceServiceRoutine* dsr, const char* pathname, vol_entry_cb vol_cb, dir_entry_cb dir_cb) {
@@ -134,11 +134,15 @@ unsigned char dsr_read(struct DeviceServiceRoutine* dsr, struct PAB* pab, int re
   return result;
 }
 
-unsigned char dsr_status(struct DeviceServiceRoutine* dsr, struct PAB* pab) {
+unsigned int dsr_status(struct DeviceServiceRoutine* dsr, struct PAB* pab) {
   pab->OpCode = DSR_STATUS;
 
-  unsigned char result = mds_dsrlnk(dsr->crubase, pab, VPAB, DSR_MODE_LVL3);
-  return result;
+  unsigned int result = (int) mds_dsrlnk(dsr->crubase, pab, VPAB, DSR_MODE_LVL3);
+  if (result) {
+    return result << 8;
+  } else {
+    return vdpreadchar(VPAB+8);
+  }
 }
 
 unsigned char dsr_delete(struct DeviceServiceRoutine* dsr, struct PAB* pab) {
@@ -146,6 +150,13 @@ unsigned char dsr_delete(struct DeviceServiceRoutine* dsr, struct PAB* pab) {
 
   unsigned char result = mds_dsrlnk(dsr->crubase, pab, VPAB, DSR_MODE_LVL3);
   return result;
+}
+
+unsigned int dsr_load(struct DeviceServiceRoutine* dsr, struct PAB* pab, const char* fname) {
+  initPab(pab);
+  pab->OpCode = DSR_LOAD;
+  pab->pName = (char*)fname;
+  return mds_dsrlnk(dsr->crubase, pab, VPAB, DSR_MODE_LVL3);
 }
 
 void loadDriveDSRs() {

@@ -5,6 +5,7 @@
 void handleCls();
 void handleExit();
 void handleFg99();
+void handleLoad();
 void handleWidth();
 void handleRename();
 void handleUnprotect();
