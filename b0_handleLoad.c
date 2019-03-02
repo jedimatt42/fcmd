@@ -3,6 +3,7 @@
 #define MYBANK BANK_0
 
 #include "commands.h"
+#include "b0_main.h"
 #include "b0_globals.h"
 #include "b0_parsing.h"
 #include "b1cp_strutil.h"
@@ -27,7 +28,19 @@ void handleLoad() {
     return;
   }
 
+  // TODO - test that it is ea5-ish
+
+  resetF18A();
+  set_graphics(0);
+  clrscr();
+
+  // TODO set VDP registers
+  // TODO set rest of VDP RAM
+  // TODO load ea-utils into >2000
+
   cputs("loading ");
   cputs(path);
   cputs("...\n");
+
+  bk_dsr_ea5load(dsr, path);
 } 

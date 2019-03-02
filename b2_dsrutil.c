@@ -2,6 +2,7 @@
 #define MYBANK BANK_2
 
 #include "b0_globals.h"
+#include "b0_main.h"
 #include "b2_dsrutil.h"
 #include "b2_mds_dsrlnk.h"
 #include "b2_tifloat.h"
@@ -145,18 +146,39 @@ unsigned int dsr_status(struct DeviceServiceRoutine* dsr, struct PAB* pab) {
   }
 }
 
-unsigned char dsr_delete(struct DeviceServiceRoutine* dsr, struct PAB* pab) {
+unsigned int dsr_delete(struct DeviceServiceRoutine* dsr, struct PAB* pab) {
   pab->OpCode = DSR_DELETE;
 
   unsigned char result = mds_dsrlnk(dsr->crubase, pab, VPAB, DSR_MODE_LVL3);
   return result;
 }
 
-unsigned int dsr_load(struct DeviceServiceRoutine* dsr, struct PAB* pab, const char* fname) {
+unsigned int dsr_ea5load(struct DeviceServiceRoutine* dsr, const char* fname) {
+  struct PAB* pab = (struct PAB*) 0x8320;
   initPab(pab);
   pab->OpCode = DSR_LOAD;
   pab->pName = (char*)fname;
-  return mds_dsrlnk(dsr->crubase, pab, VPAB, DSR_MODE_LVL3);
+  pab->VDPBuffer = 0x1380;
+  pab->RecordNumber = 0x2800;
+  int VDPPAB = pab->VDPBuffer - 740;
+  unsigned char err = mds_dsrlnk(dsr->crubase, pab, VDPPAB, DSR_MODE_LVL3);
+  if (err) {
+    reboot();
+  }
+  int flag = 0;
+  vdpmemread(0x1380, (char*) &flag, 2);
+  int size = 0;
+  vdpmemread(0x1382, (char*) &size, 2);
+  int addr = 0;
+  vdpmemread(0x1384, (char*) &addr, 2);
+
+  vdpmemread(0x1386, (char*) addr, size);
+  if (flag == 0) {
+    __asm__(
+      "bl *%0"
+      : : "r" (addr)
+    );
+  }
 }
 
 void loadDriveDSRs() {

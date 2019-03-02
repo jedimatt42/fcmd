@@ -63,8 +63,8 @@ unsigned char dsr_close(struct DeviceServiceRoutine* dsr, struct PAB* pab);
 unsigned char dsr_read(struct DeviceServiceRoutine* dsr, struct PAB* pab, int recordNumber);
 unsigned char dsr_write(struct DeviceServiceRoutine* dsr, struct PAB* pab, unsigned char* record);
 unsigned int dsr_status(struct DeviceServiceRoutine* dsr, struct PAB* pab);
-unsigned char dsr_delete(struct DeviceServiceRoutine* dsr, struct PAB* pab);
-unsigned int dsr_load(struct DeviceServiceRoutine* dsr, struct PAB* pab, const char* fname);
+unsigned int dsr_delete(struct DeviceServiceRoutine* dsr, struct PAB* pab);
+unsigned int dsr_ea5load(struct DeviceServiceRoutine* dsr, const char* fname);
 
 typedef void (*vol_entry_cb)(struct VolInfo*);
 typedef void (*dir_entry_cb)(struct DirEntry*);
@@ -86,8 +86,12 @@ void initPab(struct PAB* pab);
 #include "banking.h"
 
 DECLARE_BANKED_VOID(loadDriveDSRs, BANK_2, bk_loadDriveDSRs, (), ())
+DECLARE_BANKED_VOID(initPab, BANK_2, bk_initPab, (struct PAB* pab), (pab))
+
 DECLARE_BANKED(findDsr, BANK_2, struct DeviceServiceRoutine*, bk_findDsr, (char* devicename, int crubase), (devicename, crubase))
 DECLARE_BANKED(existsDir, BANK_2, unsigned int, bk_existsDir, (struct DeviceServiceRoutine* dsr, const char* pathname), (dsr, pathname))
 DECLARE_BANKED(existsFile, BANK_2, unsigned int, bk_existsFile, (struct DeviceServiceRoutine* dsr, const char* pathname), (dsr, pathname))
+DECLARE_BANKED(dsr_ea5load, BANK_2, unsigned int, bk_dsr_ea5load, (struct DeviceServiceRoutine* dsr, const char* fname), (dsr, fname))
+DECLARE_BANKED(dsr_delete, BANK_2, unsigned int, bk_dsr_delete, (struct DeviceServiceRoutine* dsr, struct PAB* pab), (dsr, pab))
 
 #endif

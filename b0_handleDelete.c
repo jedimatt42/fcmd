@@ -1,5 +1,5 @@
 #include "banks.h"
-#define MYBANK BANK_2
+#define MYBANK BANK_0
 
 #include "b0_globals.h"
 #include "commands.h"
@@ -20,7 +20,7 @@ void handleDelete() {
   strcpy(buffer, currentPath);
   strcat(buffer, filename);
   
-  unsigned int exists = existsFile(currentDsr, buffer);
+  unsigned int exists = bk_existsFile(currentDsr, buffer);
   if (!exists) {
     cputs("file not found ");
     cputs(buffer);
@@ -29,10 +29,10 @@ void handleDelete() {
   }
 
   struct PAB pab;
-  initPab(&pab);
+  bk_initPab(&pab);
   pab.pName = buffer;
 
-  unsigned char err = dsr_delete(currentDsr, &pab);
+  unsigned int err = bk_dsr_delete(currentDsr, &pab);
   if (err) {
     cputs("cannot delete file ");
     cputs(currentPath);

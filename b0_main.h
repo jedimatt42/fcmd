@@ -10,4 +10,10 @@ void sleep(int jiffies);
 void titleScreen();
 void playtipi();
 
+inline void reboot() {
+  __asm__("li r0,0\n\t"
+  "blwp *r0\n\t"
+  );
+}
+
 #endif
