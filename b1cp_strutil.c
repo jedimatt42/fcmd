@@ -216,9 +216,8 @@ void strpad(char* dest, int limit, char pad) {
 
 void cputpad(int padding, char* str) {
   int c = 0;
-  volatile char zero = 0;
   for(int i=0; i < padding; i++) {
-    if (c == zero && str[i] == zero) {
+    if (c == 0 && str[i] == 0) {
       c = 1;
     }
     if (c == 1) {

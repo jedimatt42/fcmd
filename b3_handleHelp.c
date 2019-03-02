@@ -3,10 +3,12 @@
 
 #include "commands.h"
 #include "b0_main.h"
+#include "b0_globals.h"
 #include "b1cp_strutil.h"
+#include <string.h>
 #include <conio.h>
 
-#define HELP_COMMANDS "cd checksum cls copy drives exit fg99 help load lvl2 mkdir protect rename rmdir tipibeeps unprotect ver width\n\n"
+#define HELP_COMMANDS "cd checksum cls copy drives exit fg99 help load lvl2 mkdir protect rename rmdir tipibeeps unprotect ver width"
 
 int matchcmd(char* input, char* exp) {
   char stackstr[80];
@@ -19,10 +21,35 @@ int matchcmd(char* input, char* exp) {
   return 0 == strcmpi(input, stackstr);
 }
 
+int wordlen(char* str) {
+  int r=0;
+  while(!(str[r] == 0 || str[r] == ' ')) {
+    r++;
+  }
+  return r;
+}
+
+void wraptext(char* str) {
+  int i=0;
+  while(str[i] != 0) {
+    if (str[i] == ' ') {
+      if (displayWidth-1 < wherex() + wordlen(str+i+1)) {
+        cputc('\n');
+      } else {
+        cputc(str[i]);
+      }
+    } else {
+      cputc(str[i]);
+    }
+    i++;
+  }
+}
+
 void handleHelp() {
   char* tok = strtok(0, " ");
   if (tok == 0) {
-    cputs(HELP_COMMANDS);
+    wraptext(HELP_COMMANDS);
+    cputs("\n\n");
     return;
   }
 

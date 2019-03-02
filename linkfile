@@ -20,7 +20,7 @@ SECTIONS
   } >cart_rom
 
   /* overlays */
-  OVERLAY : 
+  OVERLAY : AT (0x10000)
   {
     .bank0 {             /* list the set of modules in bank 0 */
       objects/b0_*.o(.text)
