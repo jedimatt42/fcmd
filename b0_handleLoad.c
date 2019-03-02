@@ -21,6 +21,8 @@ void handleLoad() {
     return;
   }
 
+  // TODO, don't require exists if a PI.HTTP URL... 
+
   if (!bk_existsFile(dsr, path)) {
     cputs("error, file not found: ");
     cputs(path);

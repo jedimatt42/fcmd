@@ -153,31 +153,78 @@ unsigned int dsr_delete(struct DeviceServiceRoutine* dsr, struct PAB* pab) {
   return result;
 }
 
+#define GPLWSR12	*((volatile unsigned int*)0x83F8)
+
+// Handle full of libti99 functions need to be replicated in ROM here
+static void ea5_vdpmemread(int pAddr, unsigned char *pDest, int cnt) {
+	VDP_SET_ADDRESS(pAddr);
+	while (cnt--) {
+		*(pDest++)=VDPRD;
+	}
+}
+
+static unsigned char ea5_vdpreadchar(int pAddr) {
+	VDP_SET_ADDRESS(pAddr);
+	__asm("NOP");
+	return VDPRD;
+}
+
+static void ea5_vdpchar(int pAddr, int ch) {
+	VDP_SET_ADDRESS_WRITE(pAddr);
+	VDPWD=ch;
+}
+
 unsigned int dsr_ea5load(struct DeviceServiceRoutine* dsr, const char* fname) {
+  // We are never returning from this function..
+  // move stack to scratchpad so we can do a little function calling
+  __asm__("\tli sp, 0x83C0");
+
   struct PAB* pab = (struct PAB*) 0x8320;
   initPab(pab);
   pab->OpCode = DSR_LOAD;
   pab->pName = (char*)fname;
+  pab->NameLength = strlen(fname);
   pab->VDPBuffer = 0x1380;
   pab->RecordNumber = 0x2800;
   int VDPPAB = pab->VDPBuffer - 740;
-  unsigned char err = mds_dsrlnk(dsr->crubase, pab, VDPPAB, DSR_MODE_LVL3);
+  int flag = 0xFFFF;
+  int crubase = dsr->crubase;
+  unsigned char err = mds_dsrlnk(crubase, pab, VDPPAB, DSR_MODE_LVL3);
   if (err) {
     reboot();
   }
-  int flag = 0;
-  vdpmemread(0x1380, (char*) &flag, 2);
-  int size = 0;
-  vdpmemread(0x1382, (char*) &size, 2);
-  int addr = 0;
-  vdpmemread(0x1384, (char*) &addr, 2);
+  int faddr = 0;
+  int lastcharaddr = VDPPAB + pab->NameLength + 9;
 
-  vdpmemread(0x1386, (char*) addr, size);
-  if (flag == 0) {
-    __asm__(
-      "bl *%0"
-      : : "r" (addr)
-    );
+  while(flag) {
+    ea5_vdpmemread(0x1380, (char*) &flag, 2);
+    int size = 0;
+    ea5_vdpmemread(0x1382, (char*) &size, 2);
+    int addr = 0;
+    ea5_vdpmemread(0x1384, (char*) &addr, 2);
+    if (faddr == 0) {
+      faddr = addr;
+    }
+    // after this point, expansion ram belongs to the target program
+    ea5_vdpmemread(0x1386, (char*) addr, size);
+    if (flag == 0) {
+      __asm__(
+        "bl *%0"
+        : : "r" (faddr)
+      );
+    } else {
+      // increment name in vdp pab... 
+      ea5_vdpchar(lastcharaddr, ea5_vdpreadchar(lastcharaddr) + 1);
+
+      // now we can call it
+      mds_dsrlnkraw(crubase, VDPPAB, DSR_MODE_LVL3);
+
+      // if GPLWS(R12) is not crubase, then the dsr skipped the request
+      if (!(GPLWSR12 == crubase && 0==GET_ERROR(ea5_vdpreadchar(VDPPAB+1)))) {
+        reboot();
+      }
+
+    }
   }
 }
 
