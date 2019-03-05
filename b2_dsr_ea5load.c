@@ -13,6 +13,8 @@
 
 #define GPLWSR12	*((volatile unsigned int*)0x83F8)
 
+void finish_load(int crubase, int VDPPAB, int lastcharaddr);
+
 // Handle full of libti99 functions need to be replicated in ROM here
 static void ea5_vdpmemread(int pAddr, unsigned char *pDest, int cnt) {
   VDP_SET_ADDRESS(pAddr);
@@ -32,7 +34,26 @@ static void ea5_vdpchar(int pAddr, int ch) {
   VDPWD=ch;
 }
 
-static void finish_load(int crubase, int VDPPAB, int lastcharaddr) {
+unsigned int dsr_ea5load(struct DeviceServiceRoutine* dsr, const char* fname) {
+  struct PAB* pab = (struct PAB*) 0x8320;
+  initPab(pab);
+  pab->OpCode = DSR_LOAD;
+  pab->pName = (char*)fname;
+  pab->NameLength = strlen(fname);
+  pab->VDPBuffer = 0x1380;
+  pab->RecordNumber = 0x2800;
+  int VDPPAB = pab->VDPBuffer - 740;
+  int crubase = dsr->crubase;
+  unsigned char err = mds_dsrlnk(crubase, pab, VDPPAB, DSR_MODE_LVL3);
+  if (err) {
+    reboot();
+  }
+  int lastcharaddr = VDPPAB + pab->NameLength + 9;
+
+  finish_load(crubase, VDPPAB, lastcharaddr);
+}
+
+void finish_load(int crubase, int VDPPAB, int lastcharaddr) {
   int faddr = 0;
   int flag = 0xFFFF;
   while(flag) {
@@ -65,23 +86,4 @@ static void finish_load(int crubase, int VDPPAB, int lastcharaddr) {
 
     }
   }
-}
-
-unsigned int dsr_ea5load(struct DeviceServiceRoutine* dsr, const char* fname) {
-  struct PAB* pab = (struct PAB*) 0x8320;
-  initPab(pab);
-  pab->OpCode = DSR_LOAD;
-  pab->pName = (char*)fname;
-  pab->NameLength = strlen(fname);
-  pab->VDPBuffer = 0x1380;
-  pab->RecordNumber = 0x2800;
-  int VDPPAB = pab->VDPBuffer - 740;
-  int crubase = dsr->crubase;
-  unsigned char err = mds_dsrlnk(crubase, pab, VDPPAB, DSR_MODE_LVL3);
-  if (err) {
-    reboot();
-  }
-  int lastcharaddr = VDPPAB + pab->NameLength + 9;
-
-  finish_load(crubase, VDPPAB, lastcharaddr);
 }
