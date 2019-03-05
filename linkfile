@@ -60,9 +60,9 @@ SECTIONS
   __STACK_TOP = 0x4000;
 
   __STATS_HEAD = SIZEOF(.text);
-  __STATS_BANK_0 = SIZEOF(.bank0);
-  __STATS_BANK_1 = SIZEOF(.bank1);
+  __STATS_BANK_0 = 0x1F90 - SIZEOF(.bank0);
+  __STATS_BANK_1 = 0x1F90 - SIZEOF(.bank1) - SIZEOF(.libti99);
   __STATS_LIBTI99 = SIZEOF(.libti99);
-  __STATS_BANK_2 = SIZEOF(.bank2);
-  __STATS_BANK_3 = SIZEOF(.bank3);
+  __STATS_BANK_2 = 0x1F90 - SIZEOF(.bank2);
+  __STATS_BANK_3 = 0x1F90 - SIZEOF(.bank3);
 }  

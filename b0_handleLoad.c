@@ -34,15 +34,17 @@ void handleLoad() {
 
   resetF18A();
   set_graphics(0);
+  // ea clears screen with 0x20 (space characters)
   clrscr();
+  // load character set
+  charset();
+  // TODO load ea copyright and cursor
 
-  // TODO set VDP registers
+  // set colors
+
+
   // TODO set rest of VDP RAM
   // TODO load ea-utils into >2000
-
-  cputs("loading ");
-  cputs(path);
-  cputs("...\n");
 
   bk_dsr_ea5load(dsr, path);
 } 
