@@ -53,24 +53,27 @@ unsigned int dsr_ea5load(struct DeviceServiceRoutine* dsr, const char* fname) {
   finish_load(crubase, VDPPAB, lastcharaddr);
 }
 
+#define FADDR (*(volatile int*)0x8320)
+#define FLAG (*(volatile int*)0x8322)
+#define BSIZE (*(volatile int*)0x8324)
+#define ADDR (*(volatile int*)0x8326)
+
 void finish_load(int crubase, int VDPPAB, int lastcharaddr) {
-  int faddr = 0;
-  int flag = 0xFFFF;
-  while(flag) {
-    ea5_vdpmemread(0x1380, (char*) &flag, 2);
-    int size = 0;
-    ea5_vdpmemread(0x1382, (char*) &size, 2);
-    int addr = 0;
-    ea5_vdpmemread(0x1384, (char*) &addr, 2);
-    if (faddr == 0) {
-      faddr = addr;
+  FADDR = 0;
+  FLAG = 0xFFFF;
+  while(FLAG) {
+    ea5_vdpmemread(0x1380, (char*)0x8322, 2);
+    ea5_vdpmemread(0x1382, (char*)0x8324, 2);
+    ea5_vdpmemread(0x1384, (char*)0x8326, 2);
+    if (FADDR == 0) {
+      FADDR = ADDR;
     }
     // after this point, expansion ram belongs to the target program
-    ea5_vdpmemread(0x1386, (char*) addr, size);
-    if (flag == 0) {
+    ea5_vdpmemread(0x1386, (char*) ADDR, BSIZE);
+    if (FLAG == 0) {
       __asm__(
         "bl *%0"
-        : : "r" (faddr)
+        : : "r" (FADDR)
       );
     } else {
       // increment name in vdp pab... 
