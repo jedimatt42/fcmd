@@ -54,17 +54,17 @@ unsigned int dsr_ea5load(struct DeviceServiceRoutine* dsr, const char* fname) {
 }
 
 #define FADDR (*(volatile int*)0x8320)
-#define FLAG (*(volatile int*)0x8322)
-#define BSIZE (*(volatile int*)0x8324)
-#define ADDR (*(volatile int*)0x8326)
+#define FLAG (*(volatile int*)0x8324)
+#define BSIZE (*(volatile int*)0x8326)
+#define ADDR (*(volatile int*)0x8328)
 
 void finish_load(int crubase, int VDPPAB, int lastcharaddr) {
   FADDR = 0;
   FLAG = 0xFFFF;
   while(FLAG) {
-    ea5_vdpmemread(0x1380, (char*)0x8322, 2);
-    ea5_vdpmemread(0x1382, (char*)0x8324, 2);
-    ea5_vdpmemread(0x1384, (char*)0x8326, 2);
+    ea5_vdpmemread(0x1380, (char*)0x8324, 2);
+    ea5_vdpmemread(0x1382, (char*)0x8326, 2);
+    ea5_vdpmemread(0x1384, (char*)0x8328, 2);
     if (FADDR == 0) {
       FADDR = ADDR;
     }

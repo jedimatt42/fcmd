@@ -9,12 +9,13 @@
 #include <conio.h>
 #include "b2_mds_dsrlnk.h"
 
-// uses: scratchpad >8340-8348, >8354, >8355, >8356, >83d0, >83d2, GPLWS
+// uses: scratchpad >8322 >8340-8348, >8354, >8355, >8356, >83d0, >83d2, GPLWS
 
 #define DSR_NAME_LEN	*((volatile unsigned int*)0x8354)
 
-void __attribute__((noinline)) mds_dsrlnkraw(int crubase, unsigned int vdp, int mode) {
+void mds_dsrlnkraw(int crubase, unsigned int vdp, int mode) {
 	// modified version of the e/a DSRLNK, for data >8 (DSR) only (MDS: adding >A lvl2/subroutine list support)
+	
 	// this one does not modify data in low memory expansion so "boot tracking" there may not work.
 	unsigned char *buf = (unsigned char*)0x8380;	// 8 bytes of memory for a name buffer
 	unsigned int status = vdp + 1;
@@ -22,7 +23,10 @@ void __attribute__((noinline)) mds_dsrlnkraw(int crubase, unsigned int vdp, int 
 	vdp+=9;
 	DSR_PAB_POINTER = vdp;
 
-	unsigned char size = vdpreadchar(vdp);
+	VDP_SET_ADDRESS(vdp);
+	__asm("NOP");
+	unsigned char size = VDPRD;
+
 	unsigned char cnt=0;
 	if (mode == DSR_MODE_LVL3) {
 		while (cnt < 8) {
@@ -34,7 +38,8 @@ void __attribute__((noinline)) mds_dsrlnkraw(int crubase, unsigned int vdp, int 
 		}
 		if ((cnt == 0) || (cnt > 7)) {
 			// illegal device name length
-			vdpchar(status, DSR_ERR_FILEERROR);
+			VDP_SET_ADDRESS_WRITE(status);
+			VDPWD=DSR_ERR_FILEERROR;
 			return;
 		}
 	} else {
