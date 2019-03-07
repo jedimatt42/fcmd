@@ -194,6 +194,11 @@ int isDrive(char* basicstr) {
     } else if (basicstr[1] >= 'A' && basicstr[1] <= 'Z' && basicstr[4] >= '0' && basicstr[4] <= '9') {
       return 1;
     }
+  } else if (basicstr[0] == 2) {
+    char pi[] = "PI";
+    if (0 == basic_strcmp(basicstr, pi)) {
+      return 1;
+    }
   }
   return 0;
 }

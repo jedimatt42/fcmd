@@ -22,28 +22,32 @@ void handleLoad() {
   }
 
   // TODO, don't require exists if a PI.HTTP URL... 
-
-  if (!bk_existsFile(dsr, path)) {
-    cputs("error, file not found: ");
-    cputs(path);
-    cputc('\n');
-    return;
+  if (path[0] != 'P' || path[1] != 'I') {
+    if (!bk_existsFile(dsr, path)) {
+      cputs("error, file not found: ");
+      cputs(path);
+      cputc('\n');
+      return;
+    }
   }
 
   // TODO - test that it is ea5-ish
 
   resetF18A();
   set_graphics(0);
-  // ea clears screen with 0x20 (space characters)
+
+  // erase first 4k of vdp
+  vdpmemset(0,0,4192);
+
+  // ea clears screen with 0x20 (space characters)  
   clrscr();
   // load character set
   charset();
   // TODO load ea copyright and cursor
 
   // set colors
+  vdpmemset(0x0380, 0x13, 32);
 
-
-  // TODO set rest of VDP RAM
   // TODO load ea-utils into >2000
 
   bk_dsr_ea5load(dsr, path);
