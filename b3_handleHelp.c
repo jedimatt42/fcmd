@@ -8,7 +8,7 @@
 #include <string.h>
 #include <conio.h>
 
-#define HELP_COMMANDS "cd checksum cls copy drives exit fg99 help load lvl2 mkdir protect rename rmdir tipibeeps unprotect ver width"
+#define HELP_COMMANDS "cd checksum cls copy delete drives exit fg99 help load lvl2 mkdir protect rename rmdir tipibeeps unprotect ver width"
 
 int matchcmd(char* input, char* exp) {
   char stackstr[80];
@@ -62,12 +62,14 @@ void handleHelp() {
     cputs("cls - clear the screen and relocate cursor to upper left\n");
   } else if (matchcmd(tok, "copy")) {
     cputs("copy <filename> <path> - copy a file to a different directory or device\n");
+  } else if (matchcmd(tok, "delete")) {
+    cputs("delete <filename> - delete file in current directory\n");
   } else if (matchcmd(tok, "drives")) {
     cputs("drives - list device names grouped by CRU base address\n");
   } else if (matchcmd(tok, "exit")) {
     cputs("exit - quit TIPICMD\n");
   } else if (matchcmd(tok, "fg99")) {
-    cputs("fg99 <cart> - load cartridge on FinalGROM99\n");
+    cputs("fg99 <cart> - load cartridge from FinalGROM99 sd card\n");
     cputs("  cart - maximum 8 character name without the '.bin'\n");
   } else if (matchcmd(tok, "help")) {
     cputs("help - list available commands\n");
