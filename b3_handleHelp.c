@@ -8,7 +8,7 @@
 #include <string.h>
 #include <conio.h>
 
-#define HELP_COMMANDS "cd checksum cls copy delete drives exit fg99 help load lvl2 mkdir protect rename rmdir tipibeeps unprotect ver width"
+#define HELP_COMMANDS "cd checksum cls copy delete drives echo exit fg99 help load lvl2 mkdir protect rename rmdir tipibeeps unprotect ver width"
 
 int matchcmd(char* input, char* exp) {
   char stackstr[80];
@@ -66,6 +66,9 @@ void handleHelp() {
     cputs("delete <filename> - delete file in current directory\n");
   } else if (matchcmd(tok, "drives")) {
     cputs("drives - list device names grouped by CRU base address\n");
+  } else if (matchcmd(tok, "echo")) {
+    cputs("echo [/n] [text] - print text to screen\n");
+    cputs("  /n : optional, do not print newline after text\n");
   } else if (matchcmd(tok, "exit")) {
     cputs("exit - quit TIPICMD\n");
   } else if (matchcmd(tok, "fg99")) {

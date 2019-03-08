@@ -4,6 +4,7 @@
 // in bank 0
 void handleCls();
 void handleDelete();
+void handleEcho();
 void handleExit();
 void handleFg99();
 void handleLoad();
