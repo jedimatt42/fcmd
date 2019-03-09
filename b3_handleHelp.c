@@ -92,11 +92,12 @@ void handleHelp() {
   } else if (matchcmd(tok,"tipibeeps")) {
     cputs("tipibeeps - play tipi styled sound list\n");
   } else if (matchcmd(tok,"tipimap")) {
-    cputs("tipimap [/c] [ <drive> [path] ] - set or get a tipi drive mapping\n");
+    cputs("tipimap [/c] [ auto on|off ] [ <drive> [path] ] - set or get a tipi drive mapping\n");
     cputs("    If no drive is specified, all configuration items are listed\n");
     cputs("  /c - optional, if specified erases the specified drive mapping\n");
     cputs("  drive - the name of the drive\n");
     cputs("  path - the directory to set\n");
+    cputs("  auto - set to on or off to map DSK1 when PROGRAM image is loaded\n");
   } else if (matchcmd(tok,"unprotect")) {
     cputs("unprotect <filename> - unprotect a file in current path\n");
   } else if (matchcmd(tok,"ver")) {

@@ -7,7 +7,17 @@
 #include <conio.h>
 #include <string.h>
 
-static void listDrives() {
+typedef void (*line_cb)(char*, char*);
+
+void handleTipimap();
+static void listDrives();
+static void visitLines(line_cb onLine, char* filterArg1);
+static void showDriveMapping(const char* drive);
+static void clearDriveMapping(const char* drive);
+static void setAutoMap();
+static void setDriveMapping(const char* drive, const char* path);
+
+static void visitLines(line_cb onLine, char* filterArg1) {
   char namebuf[14];
   strcpy(namebuf, "DSK1");
 
@@ -32,20 +42,60 @@ static void listDrives() {
       vdpmemread(pab.VDPBuffer, linebuf, pab.CharCount);
       linebuf[pab.CharCount] = 0;
 
-      char* key = strtok(linebuf, "=");
-      if (strlen(key) > 3 && str_startswith(key, "DSK")) {
-        char* path = strtok(0, " ");
-        if (path) {
-          char* drive = strtok(key, "_");
-          cputs(drive);
-          cputs(". => TIPI.");
-          cputs(path);
-        }
-        cputc('\n');
-      }
+      onLine(linebuf, filterArg1);
     }
   }
   bk_dsr_close(dsr, &pab);
+}
+
+void onLineShowMapping(char* linebuf, char* extra) {
+  char* key = strtok(linebuf, "=");
+  if (strlen(key) > 3 && str_startswith(key, "DSK")) {
+    char* path = strtok(0, " ");
+    if (path) {
+      char* drive = strtok(key, "_");
+      cputs(drive);
+      cputs(". => TIPI.");
+      cputs(path);
+    }
+    cputc('\n');
+  }
+}
+
+static void listDrives() {
+  visitLines(onLineShowMapping, 0);
+}
+
+void onLineIfDriveShowMapping(char* linebuf, char* drivePrefix) {
+  char* key = strtok(linebuf, "=");
+  if (strlen(key) > 4 && str_startswith(key, drivePrefix)) {
+    char* path = strtok(0, " ");
+    if (path) {
+      cputs("TIPI.");
+      cputs(path);
+    } else {
+      cputs("not mapped\n");
+    }
+    cputc('\n');
+  }
+}
+
+static void showDriveMapping(const char* drive) {
+  char* drivePrefix = strtok((char*) drive, ".");
+
+  visitLines(onLineIfDriveShowMapping, drivePrefix);
+}
+
+static void clearDriveMapping(const char* drive) {
+
+}
+
+static void setAutoMap() {
+
+}
+
+static void setDriveMapping(const char* drive, const char* path) {
+
 }
 
 void handleTipimap() {
@@ -58,11 +108,26 @@ void handleTipimap() {
   }
 
   char* drive = strtok(0, " ");
-  if (drive == 0) {
+  if (!drive) {
     if (clear) {
       cputs("error, must specify drive to with /c\n");
     } else {
       listDrives();
+    }
+  } else {
+    if (clear) {
+      clearDriveMapping(drive);
+    } else {
+      if (!strcmpi(drive, "AUTO")) {
+        setAutoMap();
+      } else {
+        char* path = strtok(0, " ");
+        if (path) {
+          setDriveMapping(drive, path);
+        } else {
+          showDriveMapping(drive);
+        }
+      }
     }
   }
   cputc('\n');
