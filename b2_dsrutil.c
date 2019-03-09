@@ -15,7 +15,7 @@ struct DeviceServiceRoutine dsrList[40];
 unsigned int existsDir(struct DeviceServiceRoutine* dsr, const char* pathname) {
   struct PAB pab;
   initPab(&pab);
-  unsigned char open_err = dsr_open(dsr, &pab, pathname, DSR_TYPE_INPUT | DSR_TYPE_INTERNAL | DSR_TYPE_SEQUENTIAL, 38);
+  unsigned int open_err = dsr_open(dsr, &pab, pathname, DSR_TYPE_INPUT | DSR_TYPE_INTERNAL | DSR_TYPE_SEQUENTIAL, 38);
   if (open_err == 0) {
     dsr_close(dsr, &pab);
   }
@@ -35,7 +35,7 @@ unsigned char loadDir(struct DeviceServiceRoutine* dsr, const char* pathname, vo
   struct VolInfo volInfo;
   struct DirEntry dirEntry;
 
-  unsigned char ferr = dsr_open(dsr, &pab, pathname, DSR_TYPE_INPUT | DSR_TYPE_INTERNAL | DSR_TYPE_SEQUENTIAL, 38);
+  unsigned int ferr = dsr_open(dsr, &pab, pathname, DSR_TYPE_INPUT | DSR_TYPE_INTERNAL | DSR_TYPE_SEQUENTIAL, 38);
   if (ferr) {
     return ferr;
   }
@@ -102,7 +102,7 @@ void initPab(struct PAB* pab) {
   pab->VDPBuffer = FBUF;
 }
 
-unsigned char dsr_open(struct DeviceServiceRoutine* dsr, struct PAB* pab, const char* fname, unsigned char flags, int reclen) {
+unsigned int dsr_open(struct DeviceServiceRoutine* dsr, struct PAB* pab, const char* fname, unsigned char flags, int reclen) {
   initPab(pab);
   pab->OpCode = DSR_OPEN;
   if (flags != 0) {
@@ -116,7 +116,7 @@ unsigned char dsr_open(struct DeviceServiceRoutine* dsr, struct PAB* pab, const 
   return mds_dsrlnk(dsr->crubase, pab, VPAB, DSR_MODE_LVL3);
 }
 
-unsigned char dsr_close(struct DeviceServiceRoutine* dsr, struct PAB* pab) {
+unsigned int dsr_close(struct DeviceServiceRoutine* dsr, struct PAB* pab) {
   pab->OpCode = DSR_CLOSE;
 
   return mds_dsrlnk(dsr->crubase, pab, VPAB, DSR_MODE_LVL3);
@@ -125,7 +125,7 @@ unsigned char dsr_close(struct DeviceServiceRoutine* dsr, struct PAB* pab) {
 // the data read is in FBUF, the length read in pab->CharCount
 // typically passing 0 in for record number will let the controller
 // auto-increment it. 
-unsigned char dsr_read(struct DeviceServiceRoutine* dsr, struct PAB* pab, int recordNumber) {
+unsigned int dsr_read(struct DeviceServiceRoutine* dsr, struct PAB* pab, int recordNumber) {
   pab->OpCode = DSR_READ;
   pab->RecordNumber = recordNumber;
   pab->CharCount = 0;

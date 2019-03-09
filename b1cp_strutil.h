@@ -5,6 +5,7 @@ int strcmp(const char* a, const char* b);
 int strcmpi(const char* a, const char* b);
 int indexof(const char* str, char c);
 int lindexof(const char* str, char c, int start);
+int str_startswith(const char* str, const char* prefix);
 int basicToCstr(const char* str, char* buf);
 int basic_strcmp(const char* basstr, const char* cstr);
 char* strtok(char* str, char* delim);

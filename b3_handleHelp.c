@@ -8,7 +8,7 @@
 #include <string.h>
 #include <conio.h>
 
-#define HELP_COMMANDS "cd checksum cls copy delete drives echo exit fg99 help load lvl2 mkdir protect rename rmdir tipibeeps unprotect ver width"
+#define HELP_COMMANDS "cd checksum cls copy delete drives echo exit fg99 help load lvl2 mkdir protect rename rmdir tipibeeps tipimap unprotect ver width"
 
 int matchcmd(char* input, char* exp) {
   char stackstr[80];
@@ -91,6 +91,12 @@ void handleHelp() {
     cputs("rmdir <dirname> - remove a child directory from the current directory\n");
   } else if (matchcmd(tok,"tipibeeps")) {
     cputs("tipibeeps - play tipi styled sound list\n");
+  } else if (matchcmd(tok,"tipimap")) {
+    cputs("tipimap [/c] [ <drive> [path] ] - set or get a tipi drive mapping\n");
+    cputs("    If no drive is specified, all configuration items are listed\n");
+    cputs("  /c - optional, if specified erases the specified drive mapping\n");
+    cputs("  drive - the name of the drive\n");
+    cputs("  path - the directory to set\n");
   } else if (matchcmd(tok,"unprotect")) {
     cputs("unprotect <filename> - unprotect a file in current path\n");
   } else if (matchcmd(tok,"ver")) {

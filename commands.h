@@ -10,6 +10,7 @@ void handleFg99();
 void handleLoad();
 void handleWidth();
 void handleRename();
+void handleTipimap();
 void handleUnprotect();
 void handleRmdir();
 

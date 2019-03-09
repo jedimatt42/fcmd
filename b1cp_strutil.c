@@ -22,6 +22,20 @@ char lowerchar(char c) {
   return c;
 }
 
+int str_startswith(const char* str, const char* prefix) {
+  if (str == 0 || strlen(str) < strlen(prefix)) {
+    return 0;
+  }
+  while(*prefix != 0) {
+    if (*prefix != *str) {
+      return 0;
+    }
+    str++;
+    prefix++;
+  }
+  return 1;
+}
+
 int strcmpi(const char* a, const char* b) {
   int i=0;
   char ch = lowerchar(a[i]);
