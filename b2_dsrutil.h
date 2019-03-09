@@ -58,7 +58,7 @@ struct __attribute__((__packed__)) VolInfo {
   struct DeviceServiceRoutine* dsr;
 };
 
-unsigned int dsr_open(struct DeviceServiceRoutine* dsr, struct PAB* pab, const char* fname, unsigned char flags, int reclen);
+unsigned int dsr_open(struct DeviceServiceRoutine* dsr, struct PAB* pab, const char* fname, int flags, int reclen);
 unsigned int dsr_close(struct DeviceServiceRoutine* dsr, struct PAB* pab);
 unsigned int dsr_read(struct DeviceServiceRoutine* dsr, struct PAB* pab, int recordNumber);
 unsigned int dsr_write(struct DeviceServiceRoutine* dsr, struct PAB* pab, unsigned char* record, int reclen);
@@ -93,8 +93,10 @@ DECLARE_BANKED(existsDir, BANK_2, unsigned int, bk_existsDir, (struct DeviceServ
 DECLARE_BANKED(existsFile, BANK_2, unsigned int, bk_existsFile, (struct DeviceServiceRoutine* dsr, const char* pathname), (dsr, pathname))
 DECLARE_BANKED(dsr_ea5load, BANK_2, unsigned int, bk_dsr_ea5load, (struct DeviceServiceRoutine* dsr, const char* fname), (dsr, fname))
 DECLARE_BANKED(dsr_delete, BANK_2, unsigned int, bk_dsr_delete, (struct DeviceServiceRoutine* dsr, struct PAB* pab), (dsr, pab))
-DECLARE_BANKED(dsr_open, BANK_2, unsigned int, bk_dsr_open, (struct DeviceServiceRoutine* dsr, struct PAB* pab, const char* fname, unsigned char flags, int reclen),(dsr, pab, fname, flags, reclen))
+DECLARE_BANKED(dsr_open, BANK_2, unsigned int, bk_dsr_open, (struct DeviceServiceRoutine* dsr, struct PAB* pab, const char* fname, int flags, int reclen),(dsr, pab, fname, flags, reclen))
 DECLARE_BANKED(dsr_close, BANK_2, unsigned int, bk_dsr_close, (struct DeviceServiceRoutine* dsr, struct PAB* pab), (dsr, pab))
 DECLARE_BANKED(dsr_read, BANK_2, unsigned int, bk_dsr_read, (struct DeviceServiceRoutine* dsr, struct PAB* pab, int recordNumber), (dsr, pab, recordNumber))
+DECLARE_BANKED(dsr_write, BANK_2, unsigned int, bk_dsr_write, (struct DeviceServiceRoutine* dsr, struct PAB* pab, unsigned char* record, int reclen), (dsr, pab, record, reclen))
+
 
 #endif

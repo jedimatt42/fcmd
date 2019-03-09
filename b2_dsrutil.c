@@ -102,11 +102,11 @@ void initPab(struct PAB* pab) {
   pab->VDPBuffer = FBUF;
 }
 
-unsigned int dsr_open(struct DeviceServiceRoutine* dsr, struct PAB* pab, const char* fname, unsigned char flags, int reclen) {
+unsigned int dsr_open(struct DeviceServiceRoutine* dsr, struct PAB* pab, const char* fname, int flags, int reclen) {
   initPab(pab);
   pab->OpCode = DSR_OPEN;
-  if (flags != 0) {
-    pab->Status = flags;
+  if (flags) {
+    pab->Status = (unsigned char) flags;
   }
   if (reclen != 0) {
     pab->RecordLength = reclen;
@@ -132,6 +132,15 @@ unsigned int dsr_read(struct DeviceServiceRoutine* dsr, struct PAB* pab, int rec
 
   unsigned char result = mds_dsrlnk(dsr->crubase, pab, VPAB, DSR_MODE_LVL3);
   vdpmemread(VPAB + 5, (&pab->CharCount), 1);
+  return result;
+}
+
+unsigned int dsr_write(struct DeviceServiceRoutine* dsr, struct PAB* pab, unsigned char* record, int reclen) {
+  pab->OpCode = DSR_WRITE;
+  pab->CharCount = reclen;
+  vdpmemcpy(pab->VDPBuffer, record, reclen);
+  
+  unsigned char result = mds_dsrlnk(dsr->crubase, pab, VPAB, DSR_MODE_LVL3);
   return result;
 }
 
