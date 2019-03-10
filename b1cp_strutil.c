@@ -161,7 +161,7 @@ void strset(char* buffer, char value, int limit) {
   }
 }
 
-char* strcat(char* dest, char* add) {
+char* strcat(char* dest, const char* add) {
   int x = strlen(dest);
   char* s = dest + x;
   while(*add != 0) {

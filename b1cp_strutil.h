@@ -13,7 +13,7 @@ char* strtokpeek(char* str, char* delim);
 char* strchr(char* str, int delim);
 int strcspn(char* string, char* chars);
 void strset(char* buffer, char value, int limit);
-char* strcat(char* dst, char* add);
+char* strcat(char* dst, const char* add);
 char* strncpy(char* dest, char* src, int limit);
 void strpad(char* dest, int limit, char pad);
 void cputpad(int padding, char* str); // print spaces for padding - strlen(str)
