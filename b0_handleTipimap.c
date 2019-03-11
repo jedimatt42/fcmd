@@ -71,7 +71,6 @@ static void writeConfigItem(const char* key, const char* value) {
   strcat(linebuf, "=");
   strcat(linebuf, (char*) value);
   err = bk_dsr_write(dsr, &pab, linebuf, strlen(linebuf));
-  cputs(uint2hex(err)); cputs("\n");
 
   bk_dsr_close(dsr, &pab);
 }
@@ -135,8 +134,29 @@ static void clearDriveMapping(const char* drive) {
   writeConfigItem(keybuf, empty);
 }
 
-static void setAutoMap() {
+void onLineAuto(char* linebuf, char* extra) {
+  if (str_startswith(linebuf, "AUTO=")) {
+    char* val = strtok(linebuf, "=");
+    val = strtok(0, " ");
+    cputs("AUTO ");
+    cputs(val);
+    cputc('\n');
+  }
+}
 
+static void setAutoMap() {
+  char* onoff = strtok(0, " ");
+  if (onoff) {
+    if (!strcmpi(onoff, "ON")) {
+      writeConfigItem("AUTO", "on");
+    } else if (!strcmpi(onoff, "OFF")) {
+      writeConfigItem("AUTO", "off");
+    } else {
+      cputs("error, value must be one of: on, off\n");
+    }
+  } else {
+    visitLines(onLineAuto, 0);
+  }
 }
 
 static void setDriveMapping(const char* drive, const char* path) {
@@ -203,7 +223,7 @@ void handleTipimap() {
   char* drive = strtok(0, " ");
   if (!drive) {
     if (clear) {
-      cputs("error, must specify drive to with /c\n");
+      cputs("error, /c requies drive to clear\n");
     } else {
       listDrives();
     }
