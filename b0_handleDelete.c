@@ -4,15 +4,14 @@
 #include "b0_globals.h"
 #include "commands.h"
 #include "b1cp_strutil.h"
+#include "b1cp_terminal.h"
 #include "b2_dsrutil.h"
 #include <string.h>
-#include <conio.h>
-
 
 void handleDelete() {
   char* filename = strtok(0, " ");
   if (filename == 0) {
-    cputs("error, must specify a file name\n");
+    tputs("error, must specify a file name\n");
     return;
   }
 
@@ -22,9 +21,9 @@ void handleDelete() {
   
   unsigned int exists = bk_existsFile(currentDsr, buffer);
   if (!exists) {
-    cputs("file not found ");
-    cputs(buffer);
-    cputc('\n');
+    tputs("file not found ");
+    tputs(buffer);
+    tputc('\n');
     return;
   }
 
@@ -34,9 +33,9 @@ void handleDelete() {
 
   unsigned int err = bk_dsr_delete(currentDsr, &pab);
   if (err) {
-    cputs("cannot delete file ");
-    cputs(currentPath);
-    cputs(filename);
-    cputc('\n');
+    tputs("cannot delete file ");
+    tputs(currentPath);
+    tputs(filename);
+    tputc('\n');
   }
 }

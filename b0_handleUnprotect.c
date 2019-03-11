@@ -4,13 +4,13 @@
 #include "commands.h"
 #include "b0_globals.h"
 #include "b1cp_strutil.h"
+#include "b1cp_terminal.h"
 #include "b2_lvl2.h"
-#include <conio.h>
 
 void handleUnprotect() {
   char* filename = strtok(0, " ");
   if (filename == 0) {
-    cputs("error, must specify a file name\n");
+    tputs("error, must specify a file name\n");
     return;
   }
 
@@ -20,10 +20,10 @@ void handleUnprotect() {
 
   unsigned int err = bk_lvl2_protect(currentDsr->crubase, unit, filename, 0);
   if (err) {
-    cputs("cannot unprotect file ");
-    cputs(currentPath);
-    cputs(filename);
-    cputc('\n');
+    tputs("cannot unprotect file ");
+    tputs(currentPath);
+    tputs(filename);
+    tputc('\n');
   }
 }
 

@@ -7,7 +7,8 @@
 #include "b2_mds_dsrlnk.h"
 #include "b2_tifloat.h"
 #include "b1cp_strutil.h"
-#include <conio.h>
+#include "b1cp_terminal.h"
+#include <vdp.h>
 #include <string.h>
 
 struct DeviceServiceRoutine dsrList[40];
@@ -51,7 +52,7 @@ unsigned char loadDir(struct DeviceServiceRoutine* dsr, const char* pathname, vo
       // process Record
       if (recNo == 0) {
         if (cbuf[0] == 0) {
-          cputs("no device\n");
+          tputs("no device\n");
           return 0;
         }
         int namlen = basicToCstr(cbuf, volInfo.volname);

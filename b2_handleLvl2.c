@@ -5,14 +5,14 @@
 #include "b2_dsrutil.h"
 #include "b1cp_strutil.h"
 #include <string.h>
-#include <conio.h>
+#include "b1cp_terminal.h"
 
 void handleLvl2() {
   char* tok = strtok(0, " ");
   int crubase = htoi(tok);
 
   if (crubase == 0) {
-    cputs("no crubase specified\n");
+    tputs("no crubase specified\n");
     return;
   }
 
@@ -22,12 +22,12 @@ void handleLvl2() {
   struct NameLink* link = rom->basiclnk;
   while(link != 0) {
     if (link->name[0] == 1) {
-      cputs(" >");
-      cputs(uint2hex(link->name[1]));
+      tputs(" >");
+      tputs(uint2hex(link->name[1]));
     }
     link = link->next;
   }
-  cputc('\n');
+  tputc('\n');
 
   disableROM(crubase);
 }

@@ -5,7 +5,7 @@
 #include "b0_parsing.h"
 #include "b0_globals.h"
 #include "commands.h"
-#include <conio.h>
+#include "b1cp_terminal.h"
 #include <string.h>
 
 void handleCd() {
@@ -13,7 +13,7 @@ void handleCd() {
   char path[256];
   bk_parsePathParam(&dsr, path, PR_REQUIRED);
   if (dsr == 0) {
-    cputs("no path: drive or folder specified\n");
+    tputs("no path: drive or folder specified\n");
     return;
   }
   if (path[strlen(path)-1] != '.') {
@@ -21,9 +21,9 @@ void handleCd() {
   }
   unsigned int stat = existsDir(dsr, path);
   if (stat != 0) {
-    cputs("error, device/folder not found: ");
-    cputs(path);
-    cputc('\n');
+    tputs("error, device/folder not found: ");
+    tputs(path);
+    tputc('\n');
     return;
   }
   

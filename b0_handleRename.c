@@ -4,20 +4,20 @@
 #include "commands.h"
 #include "b0_globals.h"
 #include "b1cp_strutil.h"
+#include "b1cp_terminal.h"
 #include "b2_lvl2.h"
 #include <string.h>
-#include <conio.h>
 
 
 void handleRename() {
   char* filename = strtok(0, " ");
   if (filename == 0) {
-    cputs("error, must specify source file name\n");
+    tputs("error, must specify source file name\n");
     return;
   }
   char* newname = strtok(0, " ");
   if (newname == 0) {
-    cputs("error, must specify new file name\n");
+    tputs("error, must specify new file name\n");
     return;
   }
 
@@ -39,9 +39,9 @@ void handleRename() {
   }
 
   if (err) {
-    cputs("cannot rename file ");
-    cputs(currentPath);
-    cputs(filename);
-    cputc('\n');
+    tputs("cannot rename file ");
+    tputs(currentPath);
+    tputs(filename);
+    tputc('\n');
   }
 }

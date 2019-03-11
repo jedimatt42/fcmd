@@ -7,9 +7,11 @@
 #include "b0_globals.h"
 #include "b0_parsing.h"
 #include "b1cp_strutil.h"
+#include "b1cp_terminal.h"
 #include "b2_dsrutil.h"
 #include "b2_lvl2.h"
 #include <string.h>
+#include <vdp.h>
 #include <conio.h>
 
 void handleLoad() {
@@ -24,9 +26,9 @@ void handleLoad() {
   // TODO, don't require exists if a PI.HTTP URL... 
   if (path[0] != 'P' || path[1] != 'I') {
     if (!bk_existsFile(dsr, path)) {
-      cputs("error, file not found: ");
-      cputs(path);
-      cputc('\n');
+      tputs("error, file not found: ");
+      tputs(path);
+      tputc('\n');
       return;
     }
   }

@@ -5,7 +5,7 @@
 
 #include "b0_main.h"
 #include "b1cp_strutil.h"
-#include <conio.h>
+#include "b1cp_terminal.h"
 #include <string.h>
 
 void handleWidth() {
@@ -22,6 +22,6 @@ void handleWidth() {
     return;
   }
   
-  cputs("no supported width specified\n");
+  tputs("no supported width specified\n");
 }
 

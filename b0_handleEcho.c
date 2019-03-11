@@ -4,7 +4,7 @@
 
 #include "commands.h"
 #include "b1cp_strutil.h"
-#include <conio.h>
+#include "b1cp_terminal.h"
 
 void handleEcho() {
   char* peek = strtokpeek(0, " ");
@@ -15,9 +15,9 @@ void handleEcho() {
   }
 
   char* tok = strtok(0, 0);
-  cputs(tok);
+  tputs(tok);
 
   if (newline) {
-    cputc('\n');
+    tputc('\n');
   }
 }

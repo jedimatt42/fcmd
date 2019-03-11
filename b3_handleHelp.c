@@ -5,6 +5,7 @@
 #include "b0_main.h"
 #include "b0_globals.h"
 #include "b1cp_strutil.h"
+#include "b1cp_terminal.h"
 #include <string.h>
 #include <conio.h>
 
@@ -34,12 +35,12 @@ void wraptext(char* str) {
   while(str[i] != 0) {
     if (str[i] == ' ') {
       if (displayWidth-1 < wherex() + wordlen(str+i+1)) {
-        cputc('\n');
+        tputc('\n');
       } else {
-        cputc(str[i]);
+        tputc(str[i]);
       }
     } else {
-      cputc(str[i]);
+      tputc(str[i]);
     }
     i++;
   }
@@ -49,7 +50,7 @@ void handleHelp() {
   char* tok = strtok(0, " ");
   if (tok == 0) {
     wraptext(HELP_COMMANDS);
-    cputs("\n\n");
+    tputs("\n\n");
     return;
   }
 
@@ -105,9 +106,9 @@ void handleHelp() {
   } else if (matchcmd(tok,"width")) {
     wraptext("width <40|80> - change display to 40 or 80 column mode\n");
   } else {
-    cputs("no help for command: ");
-    cputs(tok);
-    cputc('\n');
+    tputs("no help for command: ");
+    tputs(tok);
+    tputc('\n');
   }
-  cputc('\n');
+  tputc('\n');
 }

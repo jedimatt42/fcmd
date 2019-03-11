@@ -3,10 +3,10 @@
 #define MYBANK BANK_0
 
 #include "commands.h"
-#include <conio.h>
+#include "b1cp_terminal.h"
 
 void handleCls() {
-  clrscr();
-  gotoxy(0,0);
+  char cls[] = { 27, '[', '2', 'J', 0 };
+  tputs(cls);
 }
 

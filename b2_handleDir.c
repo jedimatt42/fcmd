@@ -8,8 +8,7 @@
 #include "b0_parsing.h"
 #include "b1cp_strutil.h"
 #include "b2_dsrutil.h"
-
-#include <conio.h>
+#include "b1cp_terminal.h"
 #include <string.h>
 
 void onLongVolInfo(struct VolInfo* volInfo);
@@ -40,37 +39,37 @@ void handleDir() {
 
   unsigned int stat = existsDir(dsr, path);
   if (stat != 0) {
-    cputs("error, device/folder not found: ");
-    cputs(path);
-    cputc('\n');
+    tputs("error, device/folder not found: ");
+    tputs(path);
+    tputc('\n');
     return;
   }
 
   if (wideFormat) {
     col = 0;
     loadDir(dsr, path, onWideVolInfo, onWideDirEntry);
-    cputc('\n');
+    tputc('\n');
   } else {
     loadDir(dsr, path, onLongVolInfo, onLongDirEntry);
   }
-  cputc('\n');
+  tputc('\n');
 }
 
 void onLongVolInfo(struct VolInfo* volInfo) {
-  cputs("Diskname: ");
-  cputs(volInfo->volname);
+  tputs("Diskname: ");
+  tputs(volInfo->volname);
   if (displayWidth == 40) {
-    cputc('\n');
+    tputc('\n');
   } else {
-    cputc(' ');
+    tputc(' ');
   }
-  cputs("Available: ");
-  cputs(uint2str(volInfo->available));
-  cputs(" Used: ");
-  cputs(uint2str(volInfo->total - volInfo->available));
-  cputs("\n\n");
-  cputs("Name       Type    Reclen Sectors\n");
-  cputs("---------------------------------\n");
+  tputs("Available: ");
+  tputs(uint2str(volInfo->available));
+  tputs(" Used: ");
+  tputs(uint2str(volInfo->total - volInfo->available));
+  tputs("\n\n");
+  tputs("Name       Type    Reclen Sectors\n");
+  tputs("---------------------------------\n");
 }
 
 const char* file_types[] = {
@@ -83,25 +82,25 @@ const char* file_types[] = {
 };
 
 void onLongDirEntry(struct DirEntry* dirEntry) {
-  cputs(dirEntry->name);
+  tputs(dirEntry->name);
   cputpad(11, dirEntry->name);
 
   char* ftype = (char*) file_types[(dirEntry->type)-1];
   
-  cputs(ftype);
+  tputs(ftype);
   cputpad(8, ftype);
 
   if (dirEntry->type < 5) {
     char* sizestr = uint2str(dirEntry->reclen);
-    cputs(sizestr);
+    tputs(sizestr);
     cputpad(7, sizestr);
   } else {
     cputpad(7, "");
   }
 
-  cputs(uint2str(dirEntry->sectors));
+  tputs(uint2str(dirEntry->sectors));
 
-  cputc('\n');
+  tputc('\n');
 }
 
 void onWideVolInfo(struct VolInfo* volInfo) {
@@ -110,12 +109,12 @@ void onWideVolInfo(struct VolInfo* volInfo) {
 
 void onWideDirEntry(struct DirEntry* dirEntry) {
   int collimit = displayWidth / 11;
-  cputs(dirEntry->name);
+  tputs(dirEntry->name);
   col++;
   if (col < collimit) {
     cputpad(11, dirEntry->name);
   } else {
     col = 0;
-    cputc('\n');
+    tputc('\n');
   }
 }

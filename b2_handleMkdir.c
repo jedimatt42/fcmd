@@ -2,7 +2,7 @@
 #define MYBANK BANK_2
 
 #include "commands.h"
-#include <conio.h>
+#include "b1cp_terminal.h"
 #include <string.h>
 #include "b1cp_strutil.h"
 #include "b0_globals.h"
@@ -12,7 +12,7 @@
 void handleMkdir() {
   char* dirname = strtok(0, " ");
   if (dirname == 0) {
-    cputs("error, must specify a directory name\n");
+    tputs("error, must specify a directory name\n");
     return;
   }
 
@@ -22,9 +22,9 @@ void handleMkdir() {
 
   unsigned int err = lvl2_mkdir(currentDsr->crubase, unit, dirname);
   if (err) {
-    cputs("cannot create directory ");
-    cputs(currentPath);
-    cputs(dirname);
-    cputc('\n');
+    tputs("cannot create directory ");
+    tputs(currentPath);
+    tputs(dirname);
+    tputc('\n');
   }
 }

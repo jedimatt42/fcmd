@@ -14,6 +14,7 @@
 #include <string.h>
 #include <vdp.h>
 #include <conio.h>
+#include "b1cp_terminal.h"
 
 #define APP_VER "0.2"
 
@@ -72,6 +73,8 @@ void setupScreen(int width) {
     displayWidth = 40;
     set_text();
   }
+  initTerminal();
+  termWidth = displayWidth;
 
   clrscr();
   gotoxy(0,23);
@@ -79,11 +82,11 @@ void setupScreen(int width) {
 }
 
 void titleScreen() {
-  cputs("TIPICMD v");
-  cputs(APP_VER);
-  cputc(' ');
-  cputs(__DATE__);
-  cputs("\nwww.jedimatt42.com\n\n");
+  tputs("TIPICMD v");
+  tputs(APP_VER);
+  tputc(' ');
+  tputs(__DATE__);
+  tputs("\nwww.jedimatt42.com\n\n");
 }
 
 void main()
@@ -101,13 +104,13 @@ void main()
   while(1) {
     VDP_INT_POLL;
     strset(buffer, 0, 255);
-    cputc('[');
-    cputs(uint2hex(currentDsr->crubase));
-    cputc('.');
-    cputs(currentPath);
-    cputs("]\n$ ");
+    tputc('[');
+    tputs(uint2hex(currentDsr->crubase));
+    tputc('.');
+    tputs(currentPath);
+    tputs("]\n$ ");
     getstr(2, conio_y, buffer, displayWidth - 3, backspace);
-    cputs("\n");
+    tputs("\n");
     handleCommand(buffer);
   }
 }

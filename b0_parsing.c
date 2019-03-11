@@ -7,8 +7,8 @@
 #include "commands.h"
 #include "b2_dsrutil.h"
 #include "b1cp_strutil.h"
+#include "b1cp_terminal.h"
 #include <string.h>
-#include <conio.h>
 
 #define MATCH(x,y) (!(strcmpi(x,y)))
 
@@ -41,9 +41,9 @@ void handleCommand(char *buffer) {
   else COMMAND("ver", titleScreen)
   else COMMAND("width", handleWidth)
   else {
-    cputs("unknown command: ");
-    cputs(tok);
-    cputc('\n');
+    tputs("unknown command: ");
+    tputs(tok);
+    tputc('\n');
   }
 }
 
@@ -78,7 +78,7 @@ void parsePathParam(struct DeviceServiceRoutine** dsr, char* buffer, int require
       int ldot = lindexof(currentPath, '.', strlen(currentPath) - 2);
       if (ldot == -1) {
         *dsr = 0;
-        cputs("No parent folder\n");
+        tputs("No parent folder\n");
         return;
       }
       strncpy(buffer, currentPath, ldot + 1);
@@ -94,7 +94,7 @@ void parsePathParam(struct DeviceServiceRoutine** dsr, char* buffer, int require
         *dsr = bk_findDsr(devicename, crubase);
         // if still not found, then give up.
         if (*dsr == 0) {  
-          cputs("device not found.\n");
+          tputs("device not found.\n");
           return;
         }
       }

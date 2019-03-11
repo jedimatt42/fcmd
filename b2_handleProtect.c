@@ -5,12 +5,12 @@
 #include "b0_globals.h"
 #include "b1cp_strutil.h"
 #include "b2_lvl2.h"
-#include <conio.h>
+#include "b1cp_terminal.h"
 
 void handleProtect() {
   char* filename = strtok(0, " ");
   if (filename == 0) {
-    cputs("error, must specify a file name\n");
+    tputs("error, must specify a file name\n");
     return;
   }
 
@@ -20,9 +20,9 @@ void handleProtect() {
 
   unsigned int err = lvl2_protect(currentDsr->crubase, unit, filename, 1);
   if (err) {
-    cputs("cannot protect file ");
-    cputs(currentPath);
-    cputs(filename);
-    cputc('\n');
+    tputs("cannot protect file ");
+    tputs(currentPath);
+    tputs(filename);
+    tputc('\n');
   }
 }

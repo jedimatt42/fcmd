@@ -3,7 +3,7 @@
 
 #include "commands.h"
 #include "b2_dsrutil.h"
-#include <conio.h>
+#include "b1cp_terminal.h"
 #include <string.h>
 
 void handleDrives() {
@@ -12,14 +12,14 @@ void handleDrives() {
   
   while(dsrList[i].name[0] != 0) {
     cb = dsrList[i].crubase;
-    cputs(uint2hex(cb));
-    cputs(" -");
+    tputs(uint2hex(cb));
+    tputs(" -");
     while (cb == dsrList[i].crubase) {
-      cputc(' ');
-      cputs(dsrList[i].name);
+      tputc(' ');
+      tputs(dsrList[i].name);
       i++;
     }
-    cputc('\n');
+    tputc('\n');
   }
 }
 

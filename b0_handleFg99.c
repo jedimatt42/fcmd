@@ -5,7 +5,7 @@
 #include "b0_main.h"
 #include "b1cp_strutil.h"
 #include <string.h>
-#include <conio.h>
+#include "b1cp_terminal.h"
 #include <system.h>
 
 extern void fg99();
@@ -16,12 +16,12 @@ void handleFg99() {
   char* cart = strtok(0, " ");
 
   if (cart == 0) {
-    cputs("error, no cartridge image name specified\n");
+    tputs("error, no cartridge image name specified\n");
     return;
   }
 
   if (strlen(cart) > 8) {
-    cputs("error, name too long\n");
+    tputs("error, name too long\n");
     return;
   }
 
