@@ -37,6 +37,7 @@ void handleCommand(char *buffer) {
   else COMMAND("rmdir", handleRmdir)
   else COMMAND("tipibeeps", playtipi)
   else COMMAND("tipimap", handleTipimap)
+  else COMMAND("type", handleType)
   else COMMAND("unprotect", handleUnprotect)
   else COMMAND("ver", titleScreen)
   else COMMAND("width", handleWidth)

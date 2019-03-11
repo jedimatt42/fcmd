@@ -12,6 +12,7 @@ void handleLoad();
 void handleWidth();
 void handleRename();
 void handleTipimap();
+void handleType();
 void handleUnprotect();
 void handleRmdir();
 

@@ -9,7 +9,7 @@
 #include <string.h>
 #include <conio.h>
 
-#define HELP_COMMANDS "cd checksum cls copy delete drives echo exit fg99 help load lvl2 mkdir protect rename rmdir tipibeeps tipimap unprotect ver width"
+#define HELP_COMMANDS "cd checksum cls copy delete drives echo exit fg99 help load lvl2 mkdir protect rename rmdir tipibeeps tipimap type unprotect ver width"
 
 int matchcmd(char* input, char* exp) {
   char stackstr[80];
@@ -99,6 +99,8 @@ void handleHelp() {
     wraptext("  drive - the name of the drive\n");
     wraptext("  path - the directory to set\n");
     wraptext("  auto - set to on or off to map DSK1 when PROGRAM image is loaded\n");
+  } else if (matchcmd(tok,"type")) {
+    wraptext("type <filepath> - copy the contents of the file to the screen\n");
   } else if (matchcmd(tok,"unprotect")) {
     wraptext("unprotect <filename> - unprotect a file in current path\n");
   } else if (matchcmd(tok,"ver")) {
