@@ -10,6 +10,7 @@
 #include "b1cp_strutil.h"
 #include "b2_dsrutil.h"
 #include "b3_oem.h"
+#include "b3_banner.h"
 #include <sound.h>
 #include <string.h>
 #include <vdp.h>
@@ -94,6 +95,9 @@ void main()
   bk_libtoram();
   setupScreen(isF18A() ? 80 : 40);
   bk_defineChars();
+  if (displayWidth == 80) {
+    bk_banner();
+  }
   titleScreen();
   playtipi();
 
