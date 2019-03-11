@@ -17,8 +17,8 @@
 menua:
 	DATA	>0000		; next list entry
 	DATA	_cart		; asm entry
-	BYTE	7		; length of menu string
-	TEXT	"TIPICMD"	; menu text
+	BYTE	9		; length of menu string
+	TEXT	"FORCE CMD"	; menu text
 	EVEN
 
 ; start here instead of C typical entry of _start, so we can

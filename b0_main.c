@@ -82,7 +82,7 @@ void setupScreen(int width) {
 }
 
 void titleScreen() {
-  tputs("TIPICMD v");
+  tputs("Force Command v");
   tputs(APP_VER);
   tputc(' ');
   tputs(__DATE__);

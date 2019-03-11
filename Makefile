@@ -5,7 +5,7 @@ LIBTI99?=/home/matthew/dev/github/jedimatt42/libti99
 OBJCOPY=tms9900-objcopy
 OBJDUMP=tms9900-objdump
 
-FNAME=tipicmd
+FNAME=FCMD
 UCFNAME=$(shell echo -n $(FNAME) | tr 'a-z' 'A-Z')
 
 LDFLAGS=\

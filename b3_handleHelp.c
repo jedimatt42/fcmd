@@ -71,7 +71,7 @@ void handleHelp() {
     wraptext("echo [/n] [text] - print text to screen\n");
     wraptext("  /n : optional, do not print newline after text\n");
   } else if (matchcmd(tok, "exit")) {
-    wraptext("exit - quit TIPICMD\n");
+    wraptext("exit - quit Force Command\n");
   } else if (matchcmd(tok, "fg99")) {
     wraptext("fg99 <cart> - load cartridge from FinalGROM99 sd card\n");
     wraptext("  cart - maximum 8 character name without the '.bin'\n");
@@ -102,7 +102,7 @@ void handleHelp() {
   } else if (matchcmd(tok,"unprotect")) {
     wraptext("unprotect <filename> - unprotect a file in current path\n");
   } else if (matchcmd(tok,"ver")) {
-    wraptext("ver - display TIPICMD version information\n");
+    wraptext("ver - display Force Command version information\n");
   } else if (matchcmd(tok,"width")) {
     wraptext("width <40|80> - change display to 40 or 80 column mode\n");
   } else {
