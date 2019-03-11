@@ -54,56 +54,56 @@ void handleHelp() {
   }
 
   if (matchcmd(tok, "cd")) {
-    cputs("cd [/w] <path>|.. - switch to a different drive or directory\n");
-    cputs("  /w : optional, output a simplified listing in multiple columns\n");
+    wraptext("cd [/w] <path>|.. - switch to a different drive or directory\n");
+    wraptext("  /w : optional, output a simplified listing in multiple columns\n");
   } else if (matchcmd(tok, "checksum")) {
-    cputs("checksum <file> - 16 bit checksum of a file in the current directory\n");
+    wraptext("checksum <file> - 16 bit checksum of a file in the current directory\n");
   } else if (matchcmd(tok, "cls")) {
-    cputs("cls - clear the screen and relocate cursor to upper left\n");
+    wraptext("cls - clear the screen and relocate cursor to upper left\n");
   } else if (matchcmd(tok, "copy")) {
-    cputs("copy <filename> <path> - copy a file to a different directory or device\n");
+    wraptext("copy <filename> <path> - copy a file to a different directory or device\n");
   } else if (matchcmd(tok, "delete")) {
-    cputs("delete <filename> - delete file in current directory\n");
+    wraptext("delete <filename> - delete file in current directory\n");
   } else if (matchcmd(tok, "drives")) {
-    cputs("drives - list device names grouped by CRU base address\n");
+    wraptext("drives - list device names grouped by CRU base address\n");
   } else if (matchcmd(tok, "echo")) {
-    cputs("echo [/n] [text] - print text to screen\n");
-    cputs("  /n : optional, do not print newline after text\n");
+    wraptext("echo [/n] [text] - print text to screen\n");
+    wraptext("  /n : optional, do not print newline after text\n");
   } else if (matchcmd(tok, "exit")) {
-    cputs("exit - quit TIPICMD\n");
+    wraptext("exit - quit TIPICMD\n");
   } else if (matchcmd(tok, "fg99")) {
-    cputs("fg99 <cart> - load cartridge from FinalGROM99 sd card\n");
-    cputs("  cart - maximum 8 character name without the '.bin'\n");
+    wraptext("fg99 <cart> - load cartridge from FinalGROM99 sd card\n");
+    wraptext("  cart - maximum 8 character name without the '.bin'\n");
   } else if (matchcmd(tok, "help")) {
-    cputs("help - list available commands\n");
-    cputs("help <command> - show help for individual command\n");
+    wraptext("help - list available commands\n");
+    wraptext("help <command> - show help for individual command\n");
   } else if (matchcmd(tok,"load")) {
-    cputs("load <file> - load an EA5 program image file or files\n");
+    wraptext("load <file> - load an EA5 program image file or files\n");
   } else if (matchcmd(tok,"lvl2")) {
-    cputs("lvl2 <crubase> - list level 2 io subprograms in DSR ROM at the specified CRU base address\n");
+    wraptext("lvl2 <crubase> - list level 2 io subprograms in DSR ROM at the specified CRU base address\n");
   } else if (matchcmd(tok,"mkdir")) {
-    cputs("mkdir <dirname> - create new directory in current path\n");
+    wraptext("mkdir <dirname> - create new directory in current path\n");
   } else if (matchcmd(tok,"protect")) {
-    cputs("protect <filename> - protect a file in current path\n");
+    wraptext("protect <filename> - protect a file in current path\n");
   } else if (matchcmd(tok,"rename")) {
-    cputs("rename <old-name> <new-name> - rename a file or directory in the current path\n");
+    wraptext("rename <old-name> <new-name> - rename a file or directory in the current path\n");
   } else if (matchcmd(tok,"rmdir")) {
-    cputs("rmdir <dirname> - remove a child directory from the current directory\n");
+    wraptext("rmdir <dirname> - remove a child directory from the current directory\n");
   } else if (matchcmd(tok,"tipibeeps")) {
-    cputs("tipibeeps - play tipi styled sound list\n");
+    wraptext("tipibeeps - play tipi styled sound list\n");
   } else if (matchcmd(tok,"tipimap")) {
-    cputs("tipimap [/c] [ auto on|off ] [ <drive> [path] ] - set or get a tipi drive mapping\n");
-    cputs("    If no drive is specified, all configuration items are listed\n");
-    cputs("  /c - optional, if specified erases the specified drive mapping\n");
-    cputs("  drive - the name of the drive\n");
-    cputs("  path - the directory to set\n");
-    cputs("  auto - set to on or off to map DSK1 when PROGRAM image is loaded\n");
+    wraptext("tipimap [/c] [ auto on|off ] [ <drive> [path] ] - set or get a tipi drive mapping\n");
+    wraptext("    If no drive is specified, all configuration items are listed\n");
+    wraptext("  /c - optional, if specified erases the specified drive mapping\n");
+    wraptext("  drive - the name of the drive\n");
+    wraptext("  path - the directory to set\n");
+    wraptext("  auto - set to on or off to map DSK1 when PROGRAM image is loaded\n");
   } else if (matchcmd(tok,"unprotect")) {
-    cputs("unprotect <filename> - unprotect a file in current path\n");
+    wraptext("unprotect <filename> - unprotect a file in current path\n");
   } else if (matchcmd(tok,"ver")) {
-    cputs("ver - display TIPICMD version information\n");
+    wraptext("ver - display TIPICMD version information\n");
   } else if (matchcmd(tok,"width")) {
-    cputs("width <40|80> - change display to 40 or 80 column mode\n");
+    wraptext("width <40|80> - change display to 40 or 80 column mode\n");
   } else {
     cputs("no help for command: ");
     cputs(tok);
