@@ -55,6 +55,10 @@ int isF18A() {
   }
   VDP_SET_ADDRESS(0x3F00);
   __asm__("NOP");
+  VDP_WAIT_VBLANK_CRU;
+  __asm__("NOP");
+  VDP_WAIT_VBLANK_CRU;
+  
   int res = VDPRD;
   return !res;
 }
@@ -78,7 +82,7 @@ void setupScreen(int width) {
   termWidth = displayWidth;
 
   clrscr();
-  gotoxy(0,23);
+  gotoxy(0,0);
   bk_defineChars();
 }
 
@@ -95,6 +99,7 @@ void main()
   bk_libtoram();
   setupScreen(isF18A() ? 80 : 40);
   bk_defineChars();
+
   if (displayWidth == 80) {
     bk_banner();
   }

@@ -8,6 +8,10 @@ void terminalDisplay(unsigned char c);
 void tputs(const char* str);
 
 extern int termWidth;
+extern unsigned char foreground;
+extern unsigned char background;
+extern unsigned char colors[];
+extern unsigned char isBold;
 
 void resetState();
 int getParamA(int def);

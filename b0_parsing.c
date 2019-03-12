@@ -35,6 +35,7 @@ void handleCommand(char *buffer) {
   else COMMAND("protect", bk_handleProtect)
   else COMMAND("rename", handleRename)
   else COMMAND("rmdir", handleRmdir)
+  else COMMAND("set", bk_handleSet)
   else COMMAND("tipibeeps", playtipi)
   else COMMAND("tipimap", handleTipimap)
   else COMMAND("type", handleType)

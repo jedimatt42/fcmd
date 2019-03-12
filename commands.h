@@ -27,6 +27,7 @@ void handleProtect();
 
 // in bank 3
 void handleHelp();
+void handleSet();
 
 
 #include "banking.h"
@@ -39,5 +40,6 @@ DECLARE_BANKED_VOID(handleMkdir, BANK_2, bk_handleMkdir, (), ())
 DECLARE_BANKED_VOID(handleProtect, BANK_2, bk_handleProtect, (), ())
 
 DECLARE_BANKED_VOID(handleHelp, BANK_3, bk_handleHelp, (), ())
+DECLARE_BANKED_VOID(handleSet, BANK_3, bk_handleSet, (), ())
 
 #endif

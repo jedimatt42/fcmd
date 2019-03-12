@@ -9,7 +9,7 @@
 #include <string.h>
 #include <conio.h>
 
-#define HELP_COMMANDS "cd checksum cls copy delete drives echo exit fg99 help load lvl2 mkdir protect rename rmdir tipibeeps tipimap type unprotect ver width"
+#define HELP_COMMANDS "cd checksum cls copy delete drives echo exit fg99 help load lvl2 mkdir protect rename rmdir set tipibeeps tipimap type unprotect ver width"
 
 int matchcmd(char* input, char* exp) {
   char stackstr[80];
@@ -90,6 +90,10 @@ void handleHelp() {
     wraptext("rename <old-name> <new-name> - rename a file or directory in the current path\n");
   } else if (matchcmd(tok,"rmdir")) {
     wraptext("rmdir <dirname> - remove a child directory from the current directory\n");
+  } else if (matchcmd(tok,"set")) {
+    wraptext("set color <F> [B] - set text and background color (0-15)\n");
+    wraptext("  F - foreground text color\n");
+    wraptext("  B - optional, background color\n");
   } else if (matchcmd(tok,"tipibeeps")) {
     wraptext("tipibeeps - play tipi styled sound list\n");
   } else if (matchcmd(tok,"tipimap")) {
