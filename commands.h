@@ -10,7 +10,6 @@ void handleExit();
 void handleFg99();
 void handleLoad();
 void handleWidth();
-void handleRename();
 void handleTipimap();
 void handleType();
 void handleUnprotect();
@@ -28,6 +27,7 @@ void handleProtect();
 // in bank 3
 void handleHelp();
 void handleSet();
+void handleRename();
 
 
 #include "banking.h"
@@ -41,5 +41,6 @@ DECLARE_BANKED_VOID(handleProtect, BANK_2, bk_handleProtect, (), ())
 
 DECLARE_BANKED_VOID(handleHelp, BANK_3, bk_handleHelp, (), ())
 DECLARE_BANKED_VOID(handleSet, BANK_3, bk_handleSet, (), ())
+DECLARE_BANKED_VOID(handleRename, BANK_3, bk_handleRename, (), ())
 
 #endif

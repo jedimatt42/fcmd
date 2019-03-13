@@ -56,7 +56,7 @@ int isF18A() {
 
   int frames = 3;
   while(frames--) {
-    vdpwaitvint();
+    //vdpwaitvint();
     VDP_SET_ADDRESS(0x3F00);
     int res = VDPRD;
     if (!res) {
@@ -106,11 +106,36 @@ void main()
 
   bk_loadDriveDSRs();
 
-  if (displayWidth == 80) {
-    bk_banner();
+  char autocmd[13];
+  strcpy(autocmd, currentPath);
+  strcat(autocmd, "AUTOCMD");
+  struct DeviceServiceRoutine* autodsr = currentDsr;
+  struct PAB pab;
+  int ranauto = 0;
+  int ferr = bk_dsr_open(autodsr, &pab, autocmd, DSR_TYPE_INPUT | DSR_TYPE_DISPLAY | DSR_TYPE_VARIABLE | DSR_TYPE_SEQUENTIAL, 0);
+  if (!ferr) {
+    ranauto = 1;
+    char buffer[256];
+    while(!ferr) {
+      VDP_INT_POLL;
+      strset(buffer, 0, 255);
+      ferr = bk_dsr_read(autodsr, &pab, 0);
+      if (!ferr) {
+        vdpmemread(pab.VDPBuffer, buffer, pab.CharCount);
+        buffer[pab.CharCount] = 0;
+        handleCommand(buffer);
+      }
+    }
+    bk_dsr_close(autodsr, &pab);
   }
-  titleScreen();
-  playtipi();
+
+  if (!ranauto) {
+    if (displayWidth == 80) {
+      bk_banner();
+    }
+    titleScreen();
+    playtipi();
+  }
 
   char buffer[256];
 

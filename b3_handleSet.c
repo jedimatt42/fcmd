@@ -2,6 +2,7 @@
 #define MYBANK BANK_3
 
 #include "commands.h"
+#include "b0_globals.h"
 #include "b1cp_strutil.h"
 #include "b1cp_terminal.h"
 #include <conio.h>
@@ -22,7 +23,9 @@ void handleSet() {
     int bg = atoi(back);
     if (bg) {
       bgcolor(bg);
-      VDP_SET_REGISTER(VDP_REG_COL, bg & 0x0f);
+      if (displayWidth == 80) {
+        VDP_SET_REGISTER(VDP_REG_COL, bg & 0x0f);
+      }
     }
   }
 }

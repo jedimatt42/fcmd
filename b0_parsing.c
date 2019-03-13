@@ -17,6 +17,9 @@
 // NOTE command handle functions in bank 0 do not need bk_ banking stub
 
 void handleCommand(char *buffer) {
+  if (buffer[0] == 0) {
+    return;
+  }
   char* tok = strtok(buffer, " ");
   COMMAND("cls", handleCls)
   else COMMAND("cd", bk_handleCd)
@@ -33,7 +36,7 @@ void handleCommand(char *buffer) {
   else COMMAND("lvl2", bk_handleLvl2)
   else COMMAND("mkdir", bk_handleMkdir)
   else COMMAND("protect", bk_handleProtect)
-  else COMMAND("rename", handleRename)
+  else COMMAND("rename", bk_handleRename)
   else COMMAND("rmdir", handleRmdir)
   else COMMAND("set", bk_handleSet)
   else COMMAND("tipibeeps", playtipi)
