@@ -53,14 +53,18 @@ int isF18A() {
     VDP_SET_REGISTER(0x36, 0x3F);
     VDP_SET_REGISTER(0x37, 0x00);
   }
-  VDP_SET_ADDRESS(0x3F00);
-  __asm__("NOP");
-  VDP_WAIT_VBLANK_CRU;
-  __asm__("NOP");
-  VDP_WAIT_VBLANK_CRU;
+
+  int frames = 3;
+  while(frames--) {
+    vdpwaitvint();
+    VDP_SET_ADDRESS(0x3F00);
+    int res = VDPRD;
+    if (!res) {
+      return 1;
+    }
+  }
   
-  int res = VDPRD;
-  return !res;
+  return 0;
 }
 
 void resetF18A() {
@@ -100,13 +104,13 @@ void main()
   setupScreen(isF18A() ? 80 : 40);
   bk_defineChars();
 
+  bk_loadDriveDSRs();
+
   if (displayWidth == 80) {
     bk_banner();
   }
   titleScreen();
   playtipi();
-
-  bk_loadDriveDSRs();
 
   char buffer[256];
 
