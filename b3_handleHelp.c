@@ -9,7 +9,7 @@
 #include <string.h>
 #include <conio.h>
 
-#define HELP_COMMANDS "cd checksum cls copy delete drives echo exit fg99 help load lvl2 mkdir protect rename rmdir set tipibeeps tipimap type unprotect ver width"
+#define HELP_COMMANDS "autocmd call cd checksum cls copy delete drives echo exit fg99 help load lvl2 mkdir protect rename rmdir set tipibeeps tipimap type unprotect ver width"
 
 int matchcmd(char* input, char* exp) {
   char stackstr[80];
@@ -54,7 +54,11 @@ void handleHelp() {
     return;
   }
 
-  if (matchcmd(tok, "cd")) {
+  if (matchcmd(tok,"autocmd")) {
+    wraptext("DISPLAY VARIABLE format will run AUTOCMD file as script if found at startup on first drive in system.\n");
+  } else if (matchcmd(tok,"call")) {
+    wraptext("call <filepath> - run a script. Must be DISPLAY VARIABLE file.\n");
+  } else if (matchcmd(tok, "cd")) {
     wraptext("cd [/w] <path>|.. - switch to a different drive or directory\n");
     wraptext("  /w : optional, output a simplified listing in multiple columns\n");
   } else if (matchcmd(tok, "checksum")) {

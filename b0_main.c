@@ -19,6 +19,7 @@
 
 #define APP_VER "0.3"
 
+char commandbuf[256];
 
 const char tipibeeps[] = {
   0x04, 0x9f, 0xbf, 0xdf, 0xff, 0x02,
@@ -110,24 +111,7 @@ void main()
   strcpy(autocmd, currentPath);
   strcat(autocmd, "AUTOCMD");
   struct DeviceServiceRoutine* autodsr = currentDsr;
-  struct PAB pab;
-  int ranauto = 0;
-  int ferr = bk_dsr_open(autodsr, &pab, autocmd, DSR_TYPE_INPUT | DSR_TYPE_DISPLAY | DSR_TYPE_VARIABLE | DSR_TYPE_SEQUENTIAL, 0);
-  if (!ferr) {
-    ranauto = 1;
-    char buffer[256];
-    while(!ferr) {
-      VDP_INT_POLL;
-      strset(buffer, 0, 255);
-      ferr = bk_dsr_read(autodsr, &pab, 0);
-      if (!ferr) {
-        vdpmemread(pab.VDPBuffer, buffer, pab.CharCount);
-        buffer[pab.CharCount] = 0;
-        handleCommand(buffer);
-      }
-    }
-    bk_dsr_close(autodsr, &pab);
-  }
+  int ranauto = runScript(autodsr, autocmd);
 
   if (!ranauto) {
     if (displayWidth == 80) {
@@ -137,18 +121,38 @@ void main()
     playtipi();
   }
 
-  char buffer[256];
-
   while(1) {
     VDP_INT_POLL;
-    strset(buffer, 0, 255);
+    strset(commandbuf, 0, 255);
     tputc('[');
     tputs(uint2hex(currentDsr->crubase));
     tputc('.');
     tputs(currentPath);
     tputs("]\n$ ");
-    getstr(2, conio_y, buffer, displayWidth - 3, backspace);
+    getstr(2, conio_y, commandbuf, displayWidth - 3, backspace);
     tputs("\n");
-    handleCommand(buffer);
+    handleCommand(commandbuf);
   }
+}
+
+int runScript(struct DeviceServiceRoutine* dsr, char* scriptName) {
+  int ran = 0;
+  struct PAB pab;
+
+  int ferr = bk_dsr_open(dsr, &pab, scriptName, DSR_TYPE_INPUT | DSR_TYPE_DISPLAY | DSR_TYPE_VARIABLE | DSR_TYPE_SEQUENTIAL, 0);
+  if (!ferr) {
+    ran = 1;
+    while(!ferr) {
+      VDP_INT_POLL;
+      strset(commandbuf, 0, 255);
+      ferr = bk_dsr_read(dsr, &pab, 0);
+      if (!ferr) {
+        vdpmemread(pab.VDPBuffer, commandbuf, pab.CharCount);
+        commandbuf[pab.CharCount] = 0;
+        handleCommand(commandbuf);
+      }
+    }
+    bk_dsr_close(dsr, &pab);
+  }
+  return ran;
 }

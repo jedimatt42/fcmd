@@ -2,6 +2,7 @@
 #define _COMMANDS_H 1
 
 // in bank 0
+void handleCall();
 void handleCls();
 void handleDelete();
 void handleDrives();
