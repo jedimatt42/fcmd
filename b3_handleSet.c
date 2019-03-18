@@ -14,18 +14,26 @@ void handleSet() {
     char* fore = strtok(0, " ");
     char* back = strtok(0, " ");
     int fc = atoi(fore);
-    if (fc) {
-      textcolor(fc);
+    int oldfc = foreground;
+    if (fore && fc >= 0 && fc <= 15) {
+      foreground = fc;
     } else {
-      tputs("must specify a foreground color 1-15\n");
+      tputs("must specify a foreground color 0-15\n");
       return;
     }
-    int bg = atoi(back);
-    if (bg) {
-      bgcolor(bg);
-      if (displayWidth == 80) {
-        VDP_SET_REGISTER(VDP_REG_COL, bg & 0x0f);
+    if (back) {
+      int bg = atoi(back);
+      if (back && bg >= 0 && bg <= 15) {
+        background = bg;
+      } else {
+        tputs("background must be between 0-15 if specified\n");
+        foreground = oldfc;
+        return;
       }
+    }
+    setColors();
+    if (termWidth == 80) {
+      VDP_SET_REGISTER(VDP_REG_COL, colors[background] & 0x0f);
     }
   }
 }

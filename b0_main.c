@@ -74,8 +74,6 @@ void resetF18A() {
 
 void setupScreen(int width) {
   resetF18A();
-  bgcolor(COLOR_CYAN);
-  textcolor(COLOR_BLACK);
   if (width == 80) {
     displayWidth = 80;
     set_text80_color();
@@ -85,6 +83,11 @@ void setupScreen(int width) {
   }
   initTerminal();
   termWidth = displayWidth;
+
+  setColors();
+  if (termWidth == 80) {
+    VDP_SET_REGISTER(VDP_REG_COL, colors[background] & 0x0f);
+  }
 
   clrscr();
   gotoxy(0,0);
@@ -102,8 +105,9 @@ void titleScreen() {
 void main()
 {
   bk_libtoram();
+  foreground = 0; // set to index in ansi colors
+  background = 6;
   setupScreen(isF18A() ? 80 : 40);
-  bk_defineChars();
 
   bk_loadDriveDSRs();
 
