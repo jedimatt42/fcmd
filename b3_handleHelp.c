@@ -98,6 +98,10 @@ void handleHelp() {
     wraptext("set color <F> [B] - set text and background color (0-15)\n");
     wraptext("  F - foreground text color\n");
     wraptext("  B - optional, background color\n");
+    wraptext("In 80 column mode, this sets colors for subsequent text, and current border.\n");
+    wraptext("In 40 column mode, it sets the full screen colors.\n");
+    wraptext("colors are near ANSI style:\n");
+    wraptext("0=BLACK, 1=MEDIUM RED, 2=MEDIUM GREEN, 3=DARK YELLOW, 4=DARK BLUE, 5=MAGENTA, 6=CYAN, 7=GRAY, 8=GRAY, 9=LIGHT RED, 10=LIGHT GREEN, 11=LIGHT YELLOW, 12=LIGHT BLUE, 13=DARK RED, 14=CYAN, 15=WHITE\n");
   } else if (matchcmd(tok,"tipibeeps")) {
     wraptext("tipibeeps - play tipi styled sound list\n");
   } else if (matchcmd(tok,"tipimap")) {
