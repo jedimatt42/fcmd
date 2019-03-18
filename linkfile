@@ -36,6 +36,18 @@ SECTIONS
     .bank3 { 
       objects/b3_*.o(.text)
     }                    /*   modules should be linked into the same bank */
+    .bank4 { 
+      objects/b4_*.o(.text)
+    }                    /*   modules should be linked into the same bank */
+    .bank5 { 
+      objects/b5_*.o(.text)
+    }                    /*   modules should be linked into the same bank */
+    .bank6 { 
+      objects/b6_*.o(.text)
+    }                    /*   modules should be linked into the same bank */
+    .bank7 { 
+      objects/b7_*.o(.text)
+    }                    /*   modules should be linked into the same bank */
   } >bank_rom
 
   .libti99 : {
@@ -65,4 +77,8 @@ SECTIONS
   __STATS_LIBTI99 = SIZEOF(.libti99);
   __STATS_BANK_2 = 0x1F90 - SIZEOF(.bank2);
   __STATS_BANK_3 = 0x1F90 - SIZEOF(.bank3);
+  __STATS_BANK_4 = 0x1F90 - SIZEOF(.bank4);
+  __STATS_BANK_5 = 0x1F90 - SIZEOF(.bank5);
+  __STATS_BANK_6 = 0x1F90 - SIZEOF(.bank6);
+  __STATS_BANK_7 = 0x1F90 - SIZEOF(.bank7);
 }  

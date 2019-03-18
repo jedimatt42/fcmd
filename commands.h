@@ -6,14 +6,12 @@ void handleCall();
 void handleCls();
 void handleDelete();
 void handleDrives();
-void handleEcho();
 void handleExit();
 void handleFg99();
 void handleLoad();
 void handleWidth();
 void handleTipimap();
 void handleType();
-void handleUnprotect();
 void handleRmdir();
 
 // in bank 2
@@ -30,6 +28,10 @@ void handleHelp();
 void handleSet();
 void handleRename();
 
+// in bank 4
+void handleEcho();
+void handleUnprotect();
+
 
 #include "banking.h"
 DECLARE_BANKED_VOID(handleCd, BANK_2, bk_handleCd, (), ())
@@ -43,5 +45,8 @@ DECLARE_BANKED_VOID(handleProtect, BANK_2, bk_handleProtect, (), ())
 DECLARE_BANKED_VOID(handleHelp, BANK_3, bk_handleHelp, (), ())
 DECLARE_BANKED_VOID(handleSet, BANK_3, bk_handleSet, (), ())
 DECLARE_BANKED_VOID(handleRename, BANK_3, bk_handleRename, (), ())
+
+DECLARE_BANKED_VOID(handleEcho, BANK_4, bk_handleEcho, (), ())
+DECLARE_BANKED_VOID(handleUnprotect, BANK_4, bk_handleUnprotect, (), ())
 
 #endif

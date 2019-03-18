@@ -29,7 +29,7 @@ void handleCommand(char *buffer) {
   else COMMAND("delete", handleDelete)
   else COMMAND("dir", bk_handleDir)
   else COMMAND("drives", handleDrives)
-  else COMMAND("echo", handleEcho)
+  else COMMAND("echo", bk_handleEcho)
   else COMMAND("exit", handleExit)
   else COMMAND("fg99", handleFg99)
   else COMMAND("help", bk_handleHelp)
@@ -43,7 +43,7 @@ void handleCommand(char *buffer) {
   else COMMAND("tipibeeps", playtipi)
   else COMMAND("tipimap", handleTipimap)
   else COMMAND("type", handleType)
-  else COMMAND("unprotect", handleUnprotect)
+  else COMMAND("unprotect", bk_handleUnprotect)
   else COMMAND("ver", titleScreen)
   else COMMAND("width", handleWidth)
   else {

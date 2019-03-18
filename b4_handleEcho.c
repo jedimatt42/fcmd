@@ -1,6 +1,6 @@
 #include "banks.h"
 
-#define MYBANK BANK_0
+#define MYBANK BANK_4
 
 #include "commands.h"
 #include "b1cp_strutil.h"
