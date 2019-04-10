@@ -57,7 +57,6 @@ int isF18A() {
 
   int frames = 3;
   while(frames--) {
-    //vdpwaitvint();
     VDP_SET_ADDRESS(0x3F00);
     int res = VDPRD;
     if (!res) {
@@ -84,9 +83,12 @@ void setupScreen(int width) {
   initTerminal();
   termWidth = displayWidth;
 
-  setColors();
   if (termWidth == 80) {
-    VDP_SET_REGISTER(VDP_REG_COL, colors[background] & 0x0f);
+    bgcolor(background);
+    textcolor(foreground);
+    VDP_SET_REGISTER(VDP_REG_COL, background & 0x0f);
+  } else {
+    VDP_SET_REGISTER(VDP_REG_COL, foreground << 4 | background);
   }
 
   clrscr();
@@ -105,8 +107,8 @@ void titleScreen() {
 void main()
 {
   bk_libtoram();
-  foreground = 0; // set to index in ansi colors
-  background = 6;
+  foreground = 1;
+  background = 7;
   setupScreen(isF18A() ? 80 : 40);
 
   bk_loadDriveDSRs();

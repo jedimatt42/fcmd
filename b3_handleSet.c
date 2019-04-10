@@ -31,9 +31,13 @@ void handleSet() {
         return;
       }
     }
-    setColors();
+    
     if (termWidth == 80) {
-      VDP_SET_REGISTER(VDP_REG_COL, colors[background] & 0x0f);
+      bgcolor(background);
+      textcolor(foreground);
+      VDP_SET_REGISTER(VDP_REG_COL, background & 0x0f);
+    } else {
+      VDP_SET_REGISTER(VDP_REG_COL, foreground << 4 | background);
     }
   }
 }
