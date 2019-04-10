@@ -154,7 +154,11 @@ int runScript(struct DeviceServiceRoutine* dsr, char* scriptName) {
       ferr = bk_dsr_read(dsr, &pab, 0);
       if (!ferr) {
         vdpmemread(pab.VDPBuffer, commandbuf, pab.CharCount);
-        commandbuf[pab.CharCount] = 0;
+        int l = strlen(commandbuf);
+        // TI-Writer adds \r to lines, so erase those automatically if at end of line.
+        if (commandbuf[l-1] == 13) {
+          commandbuf[l-1] = 0;
+        }
         handleCommand(commandbuf);
       }
     }
