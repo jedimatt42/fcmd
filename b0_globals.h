@@ -7,5 +7,7 @@ extern struct DeviceServiceRoutine* currentDsr;
 extern char currentPath[256];
 extern int backspace;
 extern unsigned int displayWidth;
+extern int scripton;
+extern int lineno;
 
 #endif

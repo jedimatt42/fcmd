@@ -28,7 +28,7 @@ void handleCommand(char *buffer) {
   else COMMAND("copy", bk_handleCopy)
   else COMMAND("delete", handleDelete)
   else COMMAND("dir", bk_handleDir)
-  else COMMAND("drives", handleDrives)
+  else COMMAND("drives", bk_handleDrives)
   else COMMAND("echo", bk_handleEcho)
   else COMMAND("exit", handleExit)
   else COMMAND("fg99", handleFg99)
@@ -46,7 +46,16 @@ void handleCommand(char *buffer) {
   else COMMAND("unprotect", bk_handleUnprotect)
   else COMMAND("ver", titleScreen)
   else COMMAND("width", handleWidth)
-  else {
+  else if (tok[strlen(tok)-1] == ':') {
+    if (scripton) {
+      tputs(uint2str(lineno));
+      tputs(" : ");
+      tputs(tok);
+      tputs("\n");
+    } else {
+      tputs("error, label only supported in script\n");
+    }
+  } else {
     tputs("unknown command: ");
     tputs(tok);
     tputc('\n');

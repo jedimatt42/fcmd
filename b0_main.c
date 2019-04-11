@@ -143,6 +143,8 @@ void main()
 
 int runScript(struct DeviceServiceRoutine* dsr, char* scriptName) {
   int ran = 0;
+  scripton = 1;
+  lineno = 0;
   struct PAB pab;
 
   int ferr = bk_dsr_open(dsr, &pab, scriptName, DSR_TYPE_INPUT | DSR_TYPE_DISPLAY | DSR_TYPE_VARIABLE | DSR_TYPE_SEQUENTIAL, 0);
@@ -153,6 +155,7 @@ int runScript(struct DeviceServiceRoutine* dsr, char* scriptName) {
       strset(commandbuf, 0, 255);
       ferr = bk_dsr_read(dsr, &pab, 0);
       if (!ferr) {
+        lineno++;
         vdpmemread(pab.VDPBuffer, commandbuf, pab.CharCount);
         int l = strlen(commandbuf);
         // TI-Writer adds \r to lines, so erase those automatically if at end of line.
@@ -164,5 +167,6 @@ int runScript(struct DeviceServiceRoutine* dsr, char* scriptName) {
     }
     bk_dsr_close(dsr, &pab);
   }
+  scripton = 0;
   return ran;
 }

@@ -5,7 +5,6 @@
 void handleCall();
 void handleCls();
 void handleDelete();
-void handleDrives();
 void handleExit();
 void handleFg99();
 void handleLoad();
@@ -30,6 +29,7 @@ void handleRename();
 
 // in bank 4
 void handleEcho();
+void handleDrives();
 void handleUnprotect();
 
 
@@ -47,6 +47,7 @@ DECLARE_BANKED_VOID(handleSet, BANK_3, bk_handleSet, (), ())
 DECLARE_BANKED_VOID(handleRename, BANK_3, bk_handleRename, (), ())
 
 DECLARE_BANKED_VOID(handleEcho, BANK_4, bk_handleEcho, (), ())
+DECLARE_BANKED_VOID(handleDrives, BANK_4, bk_handleDrives, (), ())
 DECLARE_BANKED_VOID(handleUnprotect, BANK_4, bk_handleUnprotect, (), ())
 
 #endif
