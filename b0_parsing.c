@@ -42,7 +42,7 @@ void handleCommand(char *buffer) {
   else COMMAND("set", bk_handleSet)
   else COMMAND("tipibeeps", playtipi)
   else COMMAND("tipimap", handleTipimap)
-  else COMMAND("type", handleType)
+  else COMMAND("type", bk_handleType)
   else COMMAND("unprotect", bk_handleUnprotect)
   else COMMAND("ver", titleScreen)
   else COMMAND("width", handleWidth)

@@ -10,7 +10,6 @@ void handleFg99();
 void handleLoad();
 void handleWidth();
 void handleTipimap();
-void handleType();
 void handleRmdir();
 
 // in bank 2
@@ -30,6 +29,7 @@ void handleRename();
 // in bank 4
 void handleEcho();
 void handleDrives();
+void handleType();
 void handleUnprotect();
 
 
@@ -48,6 +48,7 @@ DECLARE_BANKED_VOID(handleRename, BANK_3, bk_handleRename, (), ())
 
 DECLARE_BANKED_VOID(handleEcho, BANK_4, bk_handleEcho, (), ())
 DECLARE_BANKED_VOID(handleDrives, BANK_4, bk_handleDrives, (), ())
+DECLARE_BANKED_VOID(handleType, BANK_4, bk_handleType, (), ())
 DECLARE_BANKED_VOID(handleUnprotect, BANK_4, bk_handleUnprotect, (), ())
 
 #endif
