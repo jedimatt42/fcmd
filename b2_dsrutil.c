@@ -119,7 +119,12 @@ unsigned int dsr_open(struct DeviceServiceRoutine* dsr, struct PAB* pab, const c
 
 unsigned int dsr_close(struct DeviceServiceRoutine* dsr, struct PAB* pab) {
   pab->OpCode = DSR_CLOSE;
+  return mds_dsrlnk(dsr->crubase, pab, VPAB, DSR_MODE_LVL3);
+}
 
+unsigned int dsr_reset(struct DeviceServiceRoutine* dsr, struct PAB* pab, int record) {
+  pab->OpCode = DSR_REWIND;
+  pab->RecordNumber = record;
   return mds_dsrlnk(dsr->crubase, pab, VPAB, DSR_MODE_LVL3);
 }
 

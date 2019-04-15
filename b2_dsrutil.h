@@ -65,6 +65,7 @@ unsigned int dsr_write(struct DeviceServiceRoutine* dsr, struct PAB* pab, unsign
 unsigned int dsr_status(struct DeviceServiceRoutine* dsr, struct PAB* pab);
 unsigned int dsr_delete(struct DeviceServiceRoutine* dsr, struct PAB* pab);
 unsigned int dsr_ea5load(struct DeviceServiceRoutine* dsr, const char* fname);
+unsigned int dsr_reset(struct DeviceServiceRoutine* dsr, struct PAB* pab, int record);
 
 typedef void (*vol_entry_cb)(struct VolInfo*);
 typedef void (*dir_entry_cb)(struct DirEntry*);
@@ -97,6 +98,7 @@ DECLARE_BANKED(dsr_open, BANK_2, unsigned int, bk_dsr_open, (struct DeviceServic
 DECLARE_BANKED(dsr_close, BANK_2, unsigned int, bk_dsr_close, (struct DeviceServiceRoutine* dsr, struct PAB* pab), (dsr, pab))
 DECLARE_BANKED(dsr_read, BANK_2, unsigned int, bk_dsr_read, (struct DeviceServiceRoutine* dsr, struct PAB* pab, int recordNumber), (dsr, pab, recordNumber))
 DECLARE_BANKED(dsr_write, BANK_2, unsigned int, bk_dsr_write, (struct DeviceServiceRoutine* dsr, struct PAB* pab, unsigned char* record, int reclen), (dsr, pab, record, reclen))
+DECLARE_BANKED(dsr_reset, BANK_2, unsigned int, bk_dsr_reset, (struct DeviceServiceRoutine* dsr, struct PAB* pab, int record), (dsr, pab, record))
 
 
 #endif

@@ -8,6 +8,7 @@
 #include "b2_dsrutil.h"
 #include "b1cp_strutil.h"
 #include "b1cp_terminal.h"
+#include "b4_labellist.h"
 #include <string.h>
 
 #define MATCH(x,y) (!(strcmpi(x,y)))
@@ -32,6 +33,7 @@ void handleCommand(char *buffer) {
   else COMMAND("echo", bk_handleEcho)
   else COMMAND("exit", handleExit)
   else COMMAND("fg99", handleFg99)
+  else COMMAND("goto", bk_handleGoto)
   else COMMAND("help", bk_handleHelp)
   else COMMAND("load", handleLoad)
   else COMMAND("lvl2", bk_handleLvl2)
@@ -48,10 +50,8 @@ void handleCommand(char *buffer) {
   else COMMAND("width", handleWidth)
   else if (tok[strlen(tok)-1] == ':') {
     if (scripton) {
-      tputs(uint2str(lineno));
-      tputs(" : ");
-      tputs(tok);
-      tputs("\n");
+      tok[strlen(tok)-1] = 0; // shorten to just the name
+      bk_labels_add(tok, lineno);
     } else {
       tputs("error, label only supported in script\n");
     }

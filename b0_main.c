@@ -16,6 +16,7 @@
 #include <vdp.h>
 #include <conio.h>
 #include "b1cp_terminal.h"
+#include "b4_labellist.h"
 
 #define APP_VER "0.3"
 
@@ -112,6 +113,7 @@ void main()
   setupScreen(isF18A() ? 80 : 40);
 
   bk_loadDriveDSRs();
+  scripton = 0;
 
   char autocmd[13];
   strcpy(autocmd, currentPath);
@@ -141,11 +143,17 @@ void main()
   }
 }
 
+
+
 int runScript(struct DeviceServiceRoutine* dsr, char* scriptName) {
   int ran = 0;
-  scripton = 1;
-  lineno = 0;
+  struct DeviceServiceRoutine* oldDsr = scriptDsr;
+  scriptDsr = dsr;
   struct PAB pab;
+  scriptPab = &pab;
+  bk_labels_clear();
+  scripton++;
+  lineno = 0;
 
   int ferr = bk_dsr_open(dsr, &pab, scriptName, DSR_TYPE_INPUT | DSR_TYPE_DISPLAY | DSR_TYPE_VARIABLE | DSR_TYPE_SEQUENTIAL, 0);
   if (!ferr) {
@@ -167,6 +175,6 @@ int runScript(struct DeviceServiceRoutine* dsr, char* scriptName) {
     }
     bk_dsr_close(dsr, &pab);
   }
-  scripton = 0;
+  scripton--;
   return ran;
 }

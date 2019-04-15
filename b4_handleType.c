@@ -2,6 +2,7 @@
 #define MYBANK BANK_4
 
 #include <string.h>
+#include "commands.h"
 #include "b1cp_strutil.h"
 #include "b1cp_terminal.h"
 #include "b2_dsrutil.h"
@@ -11,7 +12,7 @@
 void handleType() {
   char namebuf[256];
   struct DeviceServiceRoutine* dsr;
-  parsePathParam(&dsr, namebuf, PR_REQUIRED);
+  bk_parsePathParam(&dsr, namebuf, PR_REQUIRED);
   if (dsr == 0) {
     tputs("error, no file specified\n");
     return;
@@ -22,7 +23,7 @@ void handleType() {
   int err = bk_dsr_open(dsr, &pab, namebuf, DSR_TYPE_INPUT | DSR_TYPE_DISPLAY | DSR_TYPE_VARIABLE | DSR_TYPE_SEQUENTIAL, 0);
   
   if (err) {
-    tputs("could no open ");
+    tputs("could not open ");
     tputs(namebuf);
     tputc('\n');
     return;

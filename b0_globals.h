@@ -4,6 +4,8 @@
 #include "b2_dsrutil.h"
 
 extern struct DeviceServiceRoutine* currentDsr;
+extern struct DeviceServiceRoutine* scriptDsr;
+extern struct PAB* scriptPab;
 extern char currentPath[256];
 extern int backspace;
 extern unsigned int displayWidth;
