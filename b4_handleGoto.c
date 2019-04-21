@@ -9,6 +9,11 @@
 #include "b0_globals.h"
 
 void handleGoto() {
+  if (!scripton) {
+    tputs("Error, 'goto' only valid in a script\n");
+    return;
+  }
+
   char* label = strtok(0, " ");
  
   if (!label) {
