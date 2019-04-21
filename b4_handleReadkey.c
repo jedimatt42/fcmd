@@ -7,6 +7,7 @@
 #include "b1cp_strutil.h"
 #include "b1cp_terminal.h"
 #include "b4_variables.h"
+#include <string.h>
 
 void handleReadkey() {
   char* name = strtok(0, " ");

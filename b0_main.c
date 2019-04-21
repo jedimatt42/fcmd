@@ -15,6 +15,7 @@
 #include <string.h>
 #include <vdp.h>
 #include <conio.h>
+#include <kscan.h>
 #include "b1cp_terminal.h"
 #include "b4_labellist.h"
 
@@ -162,6 +163,10 @@ int runScript(struct DeviceServiceRoutine* dsr, char* scriptName) {
       VDP_INT_POLL;
       strset(commandbuf, 0, 255);
       ferr = bk_dsr_read(dsr, &pab, 0);
+      char k = kscan(5);
+      if (k == 131 || k == 2) { // control-c
+        ferr = 1; // so abort script
+      }
       if (!ferr) {
         lineno++;
         vdpmemread(pab.VDPBuffer, commandbuf, pab.CharCount);
