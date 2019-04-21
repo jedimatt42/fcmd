@@ -9,7 +9,7 @@
 #include <string.h>
 #include <conio.h>
 
-#define HELP_COMMANDS "autocmd call cd checksum cls copy delete drives echo exit fg99 help load lvl2 mkdir protect rename rmdir set tipibeeps tipimap type unprotect ver width"
+#define HELP_COMMANDS "autocmd call cd checksum cls copy delete drives echo exit fg99 goto help label load lvl2 mkdir protect rename rmdir set tipibeeps tipimap type unprotect ver width"
 
 int matchcmd(char* input, char* exp) {
   char stackstr[80];
@@ -79,9 +79,13 @@ void handleHelp() {
   } else if (matchcmd(tok, "fg99")) {
     wraptext("fg99 <cart> - load cartridge from FinalGROM99 sd card\n");
     wraptext("  cart - maximum 8 character name without the '.bin'\n");
+  } else if (matchcmd(tok, "goto")) {
+    wraptext("goto <label> - jump to the line following a label\n");
   } else if (matchcmd(tok, "help")) {
     wraptext("help - list available commands\n");
     wraptext("help <command> - show help for individual command\n");
+  } else if (matchcmd(tok,"label")) {
+    wraptext("<label-name>: - a custom identifier followed by a colon defines a label that may be branched to with 'goto'\n");
   } else if (matchcmd(tok,"load")) {
     wraptext("load <file> - load an EA5 program image file or files\n");
   } else if (matchcmd(tok,"lvl2")) {
