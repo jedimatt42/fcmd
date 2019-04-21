@@ -1,5 +1,5 @@
 #include "banks.h"
-#define MYBANK BANK_3
+#define MYBANK BANK_5
 
 #include "commands.h"
 #include "b0_main.h"
@@ -9,7 +9,7 @@
 #include <string.h>
 #include <conio.h>
 
-#define HELP_COMMANDS "call cd checksum cls color copy delete drives echo env exit fg99 goto help label load lvl2 mkdir protect rename rmdir tipibeeps tipimap type unprotect ver width"
+#define HELP_COMMANDS "call cd checksum cls color copy delete drives echo env exit fg99 goto help label load lvl2 mkdir protect readkey rename rmdir tipibeeps tipimap type unprotect ver width"
 
 int matchcmd(char* input, char* exp) {
   char stackstr[80];
@@ -88,6 +88,14 @@ void handleHelp() {
     wraptext(" * '\e' : will output an ESCAPE, ascii 27 character\n");
   } else if (matchcmd(tok, "env")) {
     wraptext("env - list all variables and their values\n");
+    wraptext("\nVariables are set by assigning a name of up to 10 characters a value, or by specific commands.\n");
+    wraptext("\nexample: NAME1=FLINSTONE\n");
+    wraptext("Variable names are case insensative.\n");
+    wraptext("Variables may be used in any command by the '$' + <name> format.\n");
+    wraptext("You may disambiguate with the '$' '(' <name ')' syntax.\n");
+    wraptext("\nexamples:\n");
+    wraptext("  echo $NAME1\n");
+    wraptext("  echo $(NAME1)A99\n");
   } else if (matchcmd(tok, "exit")) {
     wraptext("exit - quit Force Command\n");
   } else if (matchcmd(tok, "fg99")) {
@@ -108,6 +116,8 @@ void handleHelp() {
     wraptext("mkdir <dirname> - create new directory in current path\n");
   } else if (matchcmd(tok,"protect")) {
     wraptext("protect <filename> - protect a file in current path\n");
+  } else if (matchcmd(tok,"readkey")) {
+    wraptext("readkey <varname> - set varname to value of key currently pressed\n");
   } else if (matchcmd(tok,"rename")) {
     wraptext("rename <old-name> <new-name> - rename a file or directory in the current path\n");
   } else if (matchcmd(tok,"rmdir")) {

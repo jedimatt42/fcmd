@@ -58,6 +58,7 @@ void handleCommand(char *buffer) {
   else COMMAND("lvl2", bk_handleLvl2)
   else COMMAND("mkdir", bk_handleMkdir)
   else COMMAND("protect", bk_handleProtect)
+  else COMMAND("readkey", bk_handleReadkey)
   else COMMAND("rename", bk_handleRename)
   else COMMAND("rmdir", handleRmdir)
   else COMMAND("tipibeeps", playtipi)

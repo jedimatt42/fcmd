@@ -46,20 +46,39 @@ char* preprocess(char* buf) {
       int ve = i+1;
       char varname[MAX_VAR_NAME+1];
       strset(varname, 0, MAX_VAR_NAME+1);
-      int vn = 0;
-      while(charin(buf[ve], (char*) VARNAME_CLASS)) {
-        if (vn < MAX_VAR_NAME) {
-          varname[vn] = buf[ve];
+      if (buf[ve] == '(') {
+        ve++;
+        int vn = 0;
+        while(charin(buf[ve], (char*) VARNAME_CLASS)) {
+          if (vn < MAX_VAR_NAME) {
+            varname[vn] = buf[ve];
+          }
+          ve++;
+          vn++;
+        }
+        if (buf[ve] != ')') {
+          // short out the substitution...
+          varname[0] = 0;
         }
         ve++;
-        vn++;
+      } else {
+        int vn = 0;
+        while(charin(buf[ve], (char*) VARNAME_CLASS)) {
+          if (vn < MAX_VAR_NAME) {
+            varname[vn] = buf[ve];
+          }
+          ve++;
+          vn++;
+        }
       }
       char* val = vars_get(varname);
       if ((int) val != -1) {
         strcpy(&procbuf[pi], val);
+        i = ve;
+        pi += strlen(val);
+      } else {
+        procbuf[pi] = buf[i];
       }
-      pi += strlen(val);
-      i = ve;
     } else {
       procbuf[pi] = buf[i];
     }

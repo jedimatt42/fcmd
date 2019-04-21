@@ -23,7 +23,6 @@ void handleProtect();
 
 // in bank 3
 void handleColor();
-void handleHelp();
 void handleRename();
 
 // in bank 4
@@ -31,8 +30,12 @@ void handleEcho();
 void handleEnv();
 void handleDrives();
 void handleGoto();
+void handleReadkey();
 void handleType();
 void handleUnprotect();
+
+// in bank 5
+void handleHelp();
 
 
 #include "banking.h"
@@ -45,14 +48,16 @@ DECLARE_BANKED_VOID(handleMkdir, BANK_2, bk_handleMkdir, (), ())
 DECLARE_BANKED_VOID(handleProtect, BANK_2, bk_handleProtect, (), ())
 
 DECLARE_BANKED_VOID(handleColor, BANK_3, bk_handleColor, (), ())
-DECLARE_BANKED_VOID(handleHelp, BANK_3, bk_handleHelp, (), ())
 DECLARE_BANKED_VOID(handleRename, BANK_3, bk_handleRename, (), ())
 
 DECLARE_BANKED_VOID(handleEcho, BANK_4, bk_handleEcho, (), ())
 DECLARE_BANKED_VOID(handleEnv, BANK_4, bk_handleEnv, (), ())
 DECLARE_BANKED_VOID(handleDrives, BANK_4, bk_handleDrives, (), ())
 DECLARE_BANKED_VOID(handleGoto, BANK_4, bk_handleGoto, (), ())
+DECLARE_BANKED_VOID(handleReadkey, BANK_4, bk_handleReadkey, (), ())
 DECLARE_BANKED_VOID(handleType, BANK_4, bk_handleType, (), ())
 DECLARE_BANKED_VOID(handleUnprotect, BANK_4, bk_handleUnprotect, (), ())
+
+DECLARE_BANKED_VOID(handleHelp, BANK_5, bk_handleHelp, (), ())
 
 #endif
