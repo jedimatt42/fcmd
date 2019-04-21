@@ -108,8 +108,8 @@ void titleScreen() {
 void main()
 {
   bk_libtoram();
-  foreground = 1;
-  background = 7;
+  foreground = 15;
+  background = 4;
   setupScreen(isF18A() ? 80 : 40);
 
   bk_loadDriveDSRs();

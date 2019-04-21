@@ -9,11 +9,22 @@
 #include "b1cp_strutil.h"
 #include "b1cp_terminal.h"
 #include "b4_labellist.h"
+#include "b4_variables.h"
 #include <string.h>
 
 #define MATCH(x,y) (!(strcmpi(x,y)))
 
 #define COMMAND(x, y) if (MATCH(tok, x)) y();
+
+static int isAssignment(char* str) {
+  int i = 0;
+  while(str[i] != 0) {
+    if (str[i] = '=') {
+      return 1;
+    }
+  }
+  return 0;
+}
 
 // NOTE command handle functions in bank 0 do not need bk_ banking stub
 
@@ -55,6 +66,10 @@ void handleCommand(char *buffer) {
     } else {
       tputs("error, label only supported in script\n");
     }
+  } else if (isAssignment(tok)) {
+    char* key = strtok(buffer, "=");
+    char* value = strtokpeek(0, ""); // to end of line
+    bk_vars_set(key, value);
   } else {
     tputs("unknown command: ");
     tputs(tok);

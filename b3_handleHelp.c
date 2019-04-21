@@ -9,7 +9,7 @@
 #include <string.h>
 #include <conio.h>
 
-#define HELP_COMMANDS "autocmd call cd checksum cls color copy delete drives echo exit fg99 goto help label load lvl2 mkdir protect rename rmdir tipibeeps tipimap type unprotect ver width"
+#define HELP_COMMANDS "call cd checksum cls color copy delete drives echo exit fg99 goto help label load lvl2 mkdir protect rename rmdir tipibeeps tipimap type unprotect ver width"
 
 int matchcmd(char* input, char* exp) {
   char stackstr[80];
@@ -49,15 +49,18 @@ void wraptext(char* str) {
 void handleHelp() {
   char* tok = strtok(0, " ");
   if (tok == 0) {
+    tputs("help <command>\n");
+    tputs("\nAvailable commands:\n");
     wraptext(HELP_COMMANDS);
     tputs("\n\n");
     return;
   }
 
-  if (matchcmd(tok,"autocmd")) {
-    wraptext("DISPLAY VARIABLE format will run AUTOCMD file as script if found at startup on first drive in system.\n");
-  } else if (matchcmd(tok,"call")) {
+  if (matchcmd(tok,"call")) {
     wraptext("call <filepath> - run a script. Must be DISPLAY VARIABLE file.\n");
+    wraptext("\nSpecial file: AUTOCMD - on startup first drive will be checked for existing of AUTOCMD. If present it will run.\n");
+    wraptext("Some behavior changes in AUTOCMD:\n");
+    wraptext(" * startup banner is suppressed.\n");
   } else if (matchcmd(tok, "cd")) {
     wraptext("cd [/w] <path>|.. - switch to a different drive or directory\n");
     wraptext("  /w : optional, output a simplified listing in multiple columns\n");
@@ -79,8 +82,10 @@ void handleHelp() {
   } else if (matchcmd(tok, "drives")) {
     wraptext("drives - list device names grouped by CRU base address\n");
   } else if (matchcmd(tok, "echo")) {
-    wraptext("echo [/n] [text] - print text to screen\n");
+    wraptext("echo [/n] [text] - print text to ANSI terminal screen\n");
     wraptext("  /n : optional, do not print newline after text\n");
+    wraptext("substitutions:\n");
+    wraptext(" * '\e' : will output an ESCAPE, ascii 27 character\n");
   } else if (matchcmd(tok, "exit")) {
     wraptext("exit - quit Force Command\n");
   } else if (matchcmd(tok, "fg99")) {
