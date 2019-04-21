@@ -9,7 +9,7 @@
 #include <string.h>
 #include <conio.h>
 
-#define HELP_COMMANDS "autocmd call cd checksum cls copy delete drives echo exit fg99 goto help label load lvl2 mkdir protect rename rmdir set tipibeeps tipimap type unprotect ver width"
+#define HELP_COMMANDS "autocmd call cd checksum cls color copy delete drives echo exit fg99 goto help label load lvl2 mkdir protect rename rmdir tipibeeps tipimap type unprotect ver width"
 
 int matchcmd(char* input, char* exp) {
   char stackstr[80];
@@ -65,6 +65,13 @@ void handleHelp() {
     wraptext("checksum <file> - 16 bit checksum of a file in the current directory\n");
   } else if (matchcmd(tok, "cls")) {
     wraptext("cls - clear the screen and relocate cursor to upper left\n");
+  } else if (matchcmd(tok, "color")) {
+    wraptext("color <F> [B] - set text and background color (0-15)\n");
+    wraptext("  F - foreground text color\n");
+    wraptext("  B - optional, background color\n");
+    wraptext("In 80 column mode, this sets colors for subsequent text, and current border.\n");
+    wraptext("In 40 column mode, it sets the full screen colors.\n");
+    wraptext("colors are TI \n");
   } else if (matchcmd(tok, "copy")) {
     wraptext("copy <filename> <path> - copy a file to a different directory or device\n");
   } else if (matchcmd(tok, "delete")) {
@@ -98,13 +105,6 @@ void handleHelp() {
     wraptext("rename <old-name> <new-name> - rename a file or directory in the current path\n");
   } else if (matchcmd(tok,"rmdir")) {
     wraptext("rmdir <dirname> - remove a child directory from the current directory\n");
-  } else if (matchcmd(tok,"set")) {
-    wraptext("set color <F> [B] - set text and background color (0-15)\n");
-    wraptext("  F - foreground text color\n");
-    wraptext("  B - optional, background color\n");
-    wraptext("In 80 column mode, this sets colors for subsequent text, and current border.\n");
-    wraptext("In 40 column mode, it sets the full screen colors.\n");
-    wraptext("colors are TI \n");
   } else if (matchcmd(tok,"tipibeeps")) {
     wraptext("tipibeeps - play tipi styled sound list\n");
   } else if (matchcmd(tok,"tipimap")) {

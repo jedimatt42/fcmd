@@ -22,8 +22,8 @@ void handleMkdir();
 void handleProtect();
 
 // in bank 3
+void handleColor();
 void handleHelp();
-void handleSet();
 void handleRename();
 
 // in bank 4
@@ -43,8 +43,8 @@ DECLARE_BANKED_VOID(handleLvl2, BANK_2, bk_handleLvl2, (), ())
 DECLARE_BANKED_VOID(handleMkdir, BANK_2, bk_handleMkdir, (), ())
 DECLARE_BANKED_VOID(handleProtect, BANK_2, bk_handleProtect, (), ())
 
+DECLARE_BANKED_VOID(handleColor, BANK_3, bk_handleColor, (), ())
 DECLARE_BANKED_VOID(handleHelp, BANK_3, bk_handleHelp, (), ())
-DECLARE_BANKED_VOID(handleSet, BANK_3, bk_handleSet, (), ())
 DECLARE_BANKED_VOID(handleRename, BANK_3, bk_handleRename, (), ())
 
 DECLARE_BANKED_VOID(handleEcho, BANK_4, bk_handleEcho, (), ())
