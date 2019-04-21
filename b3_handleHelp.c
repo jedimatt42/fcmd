@@ -9,7 +9,7 @@
 #include <string.h>
 #include <conio.h>
 
-#define HELP_COMMANDS "call cd checksum cls color copy delete drives echo exit fg99 goto help label load lvl2 mkdir protect rename rmdir tipibeeps tipimap type unprotect ver width"
+#define HELP_COMMANDS "call cd checksum cls color copy delete drives echo env exit fg99 goto help label load lvl2 mkdir protect rename rmdir tipibeeps tipimap type unprotect ver width"
 
 int matchcmd(char* input, char* exp) {
   char stackstr[80];
@@ -86,6 +86,8 @@ void handleHelp() {
     wraptext("  /n : optional, do not print newline after text\n");
     wraptext("substitutions:\n");
     wraptext(" * '\e' : will output an ESCAPE, ascii 27 character\n");
+  } else if (matchcmd(tok, "env")) {
+    wraptext("env - list all variables and their values\n");
   } else if (matchcmd(tok, "exit")) {
     wraptext("exit - quit Force Command\n");
   } else if (matchcmd(tok, "fg99")) {

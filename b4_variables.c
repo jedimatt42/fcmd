@@ -7,8 +7,8 @@
 #include "string.h"
 
 struct __attribute__((__packed__)) VarEntry {
-  char name[12]; // room for 11 characters
-  char value[32]; // value
+  char name[MAX_VAR_NAME+1]; // 
+  char value[MAX_VAR_VAL+1]; // value
 };
 
 #define VAR_COUNT 20
@@ -44,11 +44,20 @@ void vars_set(char* name, char* value) {
   }
 }
 
-
 char* vars_get(char* name) {
   int i = vars_find(name);
   if (i != -1) {
     return var_map[i].value;
   }
   return (char*) -1;
+}
+
+void printVars() {
+  for(int i=0; i<vars_next; i++) {
+    tputs(var_map[i].name);
+    tputc('=');
+    tputs(var_map[i].value);
+    tputc('\n');
+  }
+  tputc('\n');
 }

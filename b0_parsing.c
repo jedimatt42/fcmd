@@ -10,6 +10,7 @@
 #include "b1cp_terminal.h"
 #include "b4_labellist.h"
 #include "b4_variables.h"
+#include "b4_preprocess.h"
 #include <string.h>
 
 #define MATCH(x,y) (!(strcmpi(x,y)))
@@ -19,9 +20,10 @@
 static int isAssignment(char* str) {
   int i = 0;
   while(str[i] != 0) {
-    if (str[i] = '=') {
+    if (str[i] == '=') {
       return 1;
     }
+    i++;
   }
   return 0;
 }
@@ -32,7 +34,11 @@ void handleCommand(char *buffer) {
   if (buffer[0] == 0) {
     return;
   }
-  char* tok = strtok(buffer, " ");
+
+  // perform any escaping, variable substitutions, etc...
+  char* procbuf = bk_preprocess(buffer);
+
+  char* tok = strtok(procbuf, " ");
   COMMAND("call", handleCall)
   else COMMAND("cls", handleCls)
   else COMMAND("cd", bk_handleCd)
@@ -43,6 +49,7 @@ void handleCommand(char *buffer) {
   else COMMAND("dir", bk_handleDir)
   else COMMAND("drives", bk_handleDrives)
   else COMMAND("echo", bk_handleEcho)
+  else COMMAND("env", bk_handleEnv)
   else COMMAND("exit", handleExit)
   else COMMAND("fg99", handleFg99)
   else COMMAND("goto", bk_handleGoto)
@@ -67,9 +74,9 @@ void handleCommand(char *buffer) {
       tputs("error, label only supported in script\n");
     }
   } else if (isAssignment(tok)) {
-    char* key = strtok(buffer, "=");
+    char* name = strtok(procbuf, "=");
     char* value = strtokpeek(0, ""); // to end of line
-    bk_vars_set(key, value);
+    bk_vars_set(name, value);
   } else {
     tputs("unknown command: ");
     tputs(tok);
