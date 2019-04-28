@@ -30,6 +30,7 @@ void handleEcho();
 void handleEnv();
 void handleDrives();
 void handleGoto();
+void handleIf();
 void handleReadkey();
 void handleType();
 void handleUnprotect();
@@ -54,6 +55,7 @@ DECLARE_BANKED_VOID(handleEcho, BANK_4, bk_handleEcho, (), ())
 DECLARE_BANKED_VOID(handleEnv, BANK_4, bk_handleEnv, (), ())
 DECLARE_BANKED_VOID(handleDrives, BANK_4, bk_handleDrives, (), ())
 DECLARE_BANKED_VOID(handleGoto, BANK_4, bk_handleGoto, (), ())
+DECLARE_BANKED_VOID(handleIf, BANK_4, bk_handleIf, (), ())
 DECLARE_BANKED_VOID(handleReadkey, BANK_4, bk_handleReadkey, (), ())
 DECLARE_BANKED_VOID(handleType, BANK_4, bk_handleType, (), ())
 DECLARE_BANKED_VOID(handleUnprotect, BANK_4, bk_handleUnprotect, (), ())

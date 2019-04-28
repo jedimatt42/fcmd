@@ -1,4 +1,5 @@
 #include "b1cp_strutil.h"
+#include "b1cp_terminal.h"
 
 #include <conio.h>
 #include <string.h>

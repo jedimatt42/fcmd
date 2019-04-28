@@ -53,6 +53,7 @@ void handleCommand(char *buffer) {
   else COMMAND("exit", handleExit)
   else COMMAND("fg99", handleFg99)
   else COMMAND("goto", bk_handleGoto)
+  else COMMAND("if", bk_handleIf)
   else COMMAND("help", bk_handleHelp)
   else COMMAND("load", handleLoad)
   else COMMAND("lvl2", bk_handleLvl2)

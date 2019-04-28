@@ -192,10 +192,6 @@ static void setDriveMapping(const char* drive, const char* path) {
       strcpy(namebuf, path);
     }
     
-    if(0!=bk_existsDir(dsr, namebuf)) {
-      tputs("error target invalid path\n");
-      // return;
-    }
     tputs(keybuf);
     tputs(" => TIPI.");
   } else {
@@ -224,7 +220,7 @@ void handleTipimap() {
   char* drive = strtok(0, " ");
   if (!drive) {
     if (clear) {
-      tputs("error, /c requies drive to clear\n");
+      tputs("error, no mapping drive specified\n");
     } else {
       listDrives();
     }

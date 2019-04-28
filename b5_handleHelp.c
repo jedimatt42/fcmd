@@ -9,7 +9,7 @@
 #include <string.h>
 #include <conio.h>
 
-#define HELP_COMMANDS "call cd checksum cls color copy delete drives echo env exit fg99 goto help label load lvl2 mkdir protect readkey rename rmdir tipibeeps tipimap type unprotect ver width"
+#define HELP_COMMANDS "call cd checksum cls color copy delete drives echo env exit fg99 goto help if label load lvl2 mkdir protect readkey rename rmdir tipibeeps tipimap type unprotect ver width"
 
 int matchcmd(char* input, char* exp) {
   char stackstr[80];
@@ -106,6 +106,15 @@ void handleHelp() {
   } else if (matchcmd(tok, "help")) {
     wraptext("help - list available commands\n");
     wraptext("help <command> - show help for individual command\n");
+  } else if (matchcmd(tok, "if")) {
+    wraptext("if <expr> <command> - conditional statement\n");
+    wraptext("expression following 'if' is evaluated. If the expression evaluates to true, the rest of the command is executed.\n");
+    wraptext("example:\n");
+    wraptext("  if \"A$\" == \"C\" goto lC\n");
+    wraptext("expressions syntax: <lvalue> ' ' <operator> ' ' <rvalue>\n");
+    wraptext(" <lvalue> - quoted string which may contain variable references\n");
+    wraptext(" <lvalue> - quoted string which may contain variable references\n");
+    wraptext(" <operator> - '=='\n");
   } else if (matchcmd(tok,"label")) {
     wraptext("<label-name>: - a custom identifier followed by a colon defines a label that may be branched to with 'goto'\n");
   } else if (matchcmd(tok,"load")) {

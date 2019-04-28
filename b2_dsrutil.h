@@ -99,6 +99,7 @@ DECLARE_BANKED(dsr_close, BANK_2, unsigned int, bk_dsr_close, (struct DeviceServ
 DECLARE_BANKED(dsr_read, BANK_2, unsigned int, bk_dsr_read, (struct DeviceServiceRoutine* dsr, struct PAB* pab, int recordNumber), (dsr, pab, recordNumber))
 DECLARE_BANKED(dsr_write, BANK_2, unsigned int, bk_dsr_write, (struct DeviceServiceRoutine* dsr, struct PAB* pab, unsigned char* record, int reclen), (dsr, pab, record, reclen))
 DECLARE_BANKED(dsr_reset, BANK_2, unsigned int, bk_dsr_reset, (struct DeviceServiceRoutine* dsr, struct PAB* pab, int record), (dsr, pab, record))
+DECLARE_BANKED(dsr_status, BANK_2, unsigned int, bk_dsr_status, (struct DeviceServiceRoutine* dsr, struct PAB* pab), (dsr, pab))
 
 
 #endif

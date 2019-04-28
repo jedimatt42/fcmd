@@ -12,7 +12,7 @@ LDFLAGS=\
   --script=linkfile -L$(LIBTI99) -lti99
 
 CFLAGS=\
-  -std=gnu99 -O2 -Werror --save-temp -I$(LIBTI99) -DBANK_STACK_SIZE=5
+  -std=gnu99 -O2 -Werror --save-temp -I$(LIBTI99) -DBANK_STACK_SIZE=10
 
 SRCS:=$(sort $(wildcard *.c) $(wildcard *.asm))
 

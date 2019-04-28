@@ -144,8 +144,6 @@ void main()
   }
 }
 
-
-
 int runScript(struct DeviceServiceRoutine* dsr, char* scriptName) {
   int ran = 0;
   struct DeviceServiceRoutine* oldDsr = scriptDsr;
