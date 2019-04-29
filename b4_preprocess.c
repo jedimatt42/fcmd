@@ -25,6 +25,7 @@ static char procbuf[256];
 
 // perform escaping and variable substitutions on command buffer
 char* preprocess(char* buf) {
+  strset(procbuf, 0, 256);
   int i = 0;
   int pi = 0;
   while(buf[i] != 0) {
@@ -58,9 +59,10 @@ char* preprocess(char* buf) {
         }
         if (buf[ve] != ')') {
           // short out the substitution...
-          varname[0] = 0;
+          varname[0] = 0; // should really just be an early error...
+        } else {
+          ve++;
         }
-        ve++;
       } else {
         int vn = 0;
         while(charin(buf[ve], (char*) VARNAME_CLASS)) {
@@ -74,9 +76,10 @@ char* preprocess(char* buf) {
       char* val = vars_get(varname);
       if ((int) val != -1) {
         strcpy(&procbuf[pi], val);
-        i = ve;
-        pi += strlen(val);
+        i = ve - 1;
+        pi += strlen(val) - 1;
       } else {
+        // if variable is not set, then leave it unsubstituted.
         procbuf[pi] = buf[i];
       }
     } else {
