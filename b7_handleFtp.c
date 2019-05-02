@@ -147,6 +147,12 @@ void ftpDir() {
       tcpbuf[datalen] = 0;
       tputs(tcpbuf);
     }
+    datalen = 1;
+    while(datalen) {
+      datalen = tcp_read_socket(0);
+      tcpbuf[datalen] = 0;
+      tputs(tcpbuf);
+    }
   }
 }
 
