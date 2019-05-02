@@ -52,6 +52,7 @@ void handleCommand(char *buffer) {
   else COMMAND("env", bk_handleEnv)
   else COMMAND("exit", handleExit)
   else COMMAND("fg99", handleFg99)
+  else COMMAND("ftp", bk_handleFtp)
   else COMMAND("goto", bk_handleGoto)
   else COMMAND("if", bk_handleIf)
   else COMMAND("help", bk_handleHelp)

@@ -38,6 +38,11 @@ void handleUnprotect();
 // in bank 5
 void handleHelp();
 
+// in bank 6
+
+// in bank 7
+void handleFtp();
+
 
 #include "banking.h"
 DECLARE_BANKED_VOID(handleCd, BANK_2, bk_handleCd, (), ())
@@ -61,5 +66,7 @@ DECLARE_BANKED_VOID(handleType, BANK_4, bk_handleType, (), ())
 DECLARE_BANKED_VOID(handleUnprotect, BANK_4, bk_handleUnprotect, (), ())
 
 DECLARE_BANKED_VOID(handleHelp, BANK_5, bk_handleHelp, (), ())
+
+DECLARE_BANKED_VOID(handleFtp, BANK_7, bk_handleFtp, (), ())
 
 #endif
