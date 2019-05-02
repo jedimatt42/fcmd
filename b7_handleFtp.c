@@ -14,13 +14,18 @@ int connected = 0;
 
 const char EOL[3] = {13, 10, 0};
 
+char hostname[30];
+
 void ftpOpen();
 void ftpQuit();
 void ftpPwd();
 void ftpCd();
+void ftpDir();
 
 int getFtpCode();
 int sendFtpCommand(char* command, char* argstring);
+unsigned int sendFtpPasv();
+
 
 void handleFtp() {
   char commandbuf[120];
@@ -40,6 +45,8 @@ void handleFtp() {
         ftpPwd();
       } else if (!strcmpi("cd", tok)) {
         ftpCd();
+      } else if (!strcmpi("dir", tok)) {
+        ftpDir();
       } else {
         tputs("Error, unknown command.\n");
       }
@@ -55,6 +62,7 @@ void ftpOpen() {
     tputs("Error, no host provided.\n");
     return;
   }
+  strcpy(hostname, host); // store for pasv connections later.
   char* port = strtok(0, " ");
   if (!port) {
     port = "21";
@@ -75,10 +83,7 @@ void ftpOpen() {
   connected = 1;
   tputs("connected\n");
 
-  int code = 0;
-  while(code != 220) {
-    code = getFtpCode();
-  }
+  int code = getFtpCode();
 
   while(code != 230) {
     while(code != 331) {
@@ -114,23 +119,34 @@ void ftpOpen() {
 
 void ftpQuit() {
   int code = 0;
-  while(code != 221) {
-    code = sendFtpCommand("QUIT", 0);
-  }
+  sendFtpCommand("QUIT", 0);
 }
 
 void ftpPwd() {
   int code = 0;
-  while(code == 0) {
-    code = sendFtpCommand("PWD", 0);
-  }
+  sendFtpCommand("PWD", 0);
 }
 
 void ftpCd() {
   char* tok = strtokpeek(0, "");
   int code = 0;
-  while(code == 0) {
-    code = sendFtpCommand("CWD", tok);
+  sendFtpCommand("CWD", tok);
+}
+
+void ftpDir() {
+  char* tok = strtokpeek(0, "");
+  unsigned int port = sendFtpPasv();
+  // connect second socket to provided port number.
+  for(volatile int delay=0; delay<7000; delay++) { /* do nothing */ }
+  int res = tcp_connect(1, hostname, uint2str(port));
+  if (res) {
+    int code = sendFtpCommand("LIST", tok);
+    int datalen = 1;
+    while(datalen) {
+      datalen = tcp_read_socket(1);
+      tcpbuf[datalen] = 0;
+      tputs(tcpbuf);
+    }
   }
 }
 
@@ -150,6 +166,42 @@ int sendFtpCommand(char* command, char* argstring) {
   }
 
   return getFtpCode();
+}
+
+unsigned int sendFtpPasv() {
+  /*
+  PASV
+  227 Entering Passive Mode (127,0,0,1,156,117).
+  */
+  int code = 0;
+  char ftpcmd[8];
+  strcpy(ftpcmd, "PASV");
+  strcat(ftpcmd, EOL);
+  int len = strlen(ftpcmd);
+  int res = tcp_send_chars(0, ftpcmd, len);
+  if (!res) {
+    tputs("Error, server disconnected\n");
+    return -1;
+  }
+
+  int bufsize = 0;
+  // read until we get some response.
+  while(bufsize == 0) {
+    bufsize = tcp_read_socket(0);
+  }
+  tcpbuf[bufsize] = 0;
+  tputs(tcpbuf);
+  tputs("\n");
+  char* tok = strtok(tcpbuf, "(");
+  for(int i=0; i<4; i++) {
+    tok = strtok(0, ",");
+  }
+  tok = strtok(0, ",");
+  unsigned int port = ((unsigned int)atoi(tok)) << 8;
+  tok = strtok(0, ")");
+  port += (unsigned int)atoi(tok);
+
+  return port;
 }
 
 int getFtpCode() {
