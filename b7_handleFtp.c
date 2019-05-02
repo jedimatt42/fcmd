@@ -16,6 +16,9 @@ const char EOL[3] = {13, 10, 0};
 
 void ftpOpen();
 void ftpQuit();
+void ftpPwd();
+void ftpCd();
+
 int getFtpCode();
 int sendFtpCommand(char* command, char* argstring);
 
@@ -33,6 +36,10 @@ void handleFtp() {
       if (!strcmpi("bye", tok)) {
         ftpQuit();
         return;
+      } else if (!strcmpi("pwd", tok)) {
+        ftpPwd();
+      } else if (!strcmpi("cd", tok)) {
+        ftpCd();
       } else {
         tputs("Error, unknown command.\n");
       }
@@ -109,6 +116,21 @@ void ftpQuit() {
   int code = 0;
   while(code != 221) {
     code = sendFtpCommand("QUIT", 0);
+  }
+}
+
+void ftpPwd() {
+  int code = 0;
+  while(code == 0) {
+    code = sendFtpCommand("PWD", 0);
+  }
+}
+
+void ftpCd() {
+  char* tok = strtokpeek(0, "");
+  int code = 0;
+  while(code == 0) {
+    code = sendFtpCommand("CWD", tok);
   }
 }
 
