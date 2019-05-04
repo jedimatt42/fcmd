@@ -103,14 +103,6 @@ void handleHelp() {
     wraptext("  cart - maximum 8 character name without the '.bin'\n");
   } else if (matchcmd(tok, "ftp")) {
     wraptext("ftp - open an ftp prompt. Data connection will be in passive mode only.\n");
-    wraptext("at the ftp prompt, the following commands are availabe:\n");
-    wraptext("  open <hostname> [port] - connect to an ftp server, defaults to port 21\n");
-    wraptext("  dir [pathname] - list directory\n");
-    wraptext("  pwd - show current server directory\n");
-    wraptext("  cd <pathname> - change server directory location\n");
-    wraptext("  get <filename> - retrieve a file\n");
-    wraptext("  put <filename> - send a file\n");
-    wraptext("  bye - hangup connection\n");
   } else if (matchcmd(tok, "goto")) {
     wraptext("goto <label> - jump to the line following a label\n");
   } else if (matchcmd(tok, "help")) {

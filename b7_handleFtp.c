@@ -28,9 +28,10 @@ int getFtpCode();
 int sendFtpCommand(char* command, char* argstring);
 unsigned int sendFtpPasv();
 void drainCommandChannel();
+void drainChannel(unsigned char socketId);
 void saveTiFile(struct AddInfo* addInfo, char* sector, int bufoffset);
 void saveForeignFile(char* sector, int bufoffset);
-
+char* readline(unsigned char socketId);
 
 struct __attribute__((__packed__)) TiFiles {
   unsigned char seven;
@@ -66,18 +67,27 @@ void handleFtp() {
     char* tok = strtok(commandbuf, " ");
     if (!strcmpi("open", tok)) {
       ftpOpen();
+    } else if (!strcmpi("bye", tok) || !strcmpi("quit", tok) || !strcmpi("exit", tok)) {
+      ftpQuit();
+      return;
     } else if (connected) {
-      if (!strcmpi("bye", tok)) {
-        ftpQuit();
-        return;
-      } else if (!strcmpi("pwd", tok)) {
+      if (!strcmpi("pwd", tok)) {
         ftpPwd();
       } else if (!strcmpi("cd", tok)) {
         ftpCd();
-      } else if (!strcmpi("dir", tok)) {
+      } else if (!strcmpi("dir", tok) || !strcmpi("ls", tok)) {
         ftpDir();
       } else if (!strcmpi("get", tok)) {
         ftpGet();
+      } else if (!strcmpi("help", tok)) {
+        tputs("open <hostname> [port] - connect to an ftp server, defaults to port 21\n");
+        tputs("dir [/w] [pathname] - list directory\n");
+        tputs("  alias: ls\n");
+        tputs("pwd - show current server directory\n");
+        tputs("cd <pathname> - change server directory location\n");
+        tputs("get <filename> - retrieve a file\n");
+        tputs("bye - close connection\n");
+        tputs("  aliases: exit, quit\n");
       } else {
         tputs("Error, unknown command.\n");
       }
@@ -115,6 +125,7 @@ void ftpOpen() {
   tputs("connected\n");
 
   int code = getFtpCode();
+  drainCommandChannel();
 
   while(code != 230) {
     while(code != 331) {
@@ -133,9 +144,7 @@ void ftpOpen() {
       int y = conio_y;
       bk_getstr(9, y, passwd, 20, backspace);
       int plen = strlen(passwd);
-      if (plen == 0) {
-        return;
-      }
+
       for(int i=0; i<plen; i++) {
         tputc(8);
       }
@@ -146,11 +155,15 @@ void ftpOpen() {
       code = sendFtpCommand("PASS", passwd);
     }
   }
+  drainCommandChannel();
 }
 
 void ftpQuit() {
   int code = 0;
   sendFtpCommand("QUIT", 0);
+  for(volatile int i = 0; i<7000; i++) { /* spin */ }
+  tcp_close(0);
+  tcp_close(1);
 }
 
 void ftpPwd() {
@@ -166,20 +179,25 @@ void ftpCd() {
 
 void ftpDir() {
   char* tok = strtokpeek(0, "");
+  int nlist = 0;
+  if (str_startswith("/w ", tok)) {
+    nlist = 1;
+    tok = strtok(0, " "); // consume the "/w"
+    tok = strtokpeek(0, "");
+  }
   unsigned int port = sendFtpPasv();
   // connect second socket to provided port number.
   for(volatile int delay=0; delay<7000; delay++) { /* a moment for server to listen */ }
   int res = tcp_connect(1, hostname, uint2str(port));
   if (res) {
-    int code = sendFtpCommand("LIST", tok);
-    int datalen = 1;
-    while(datalen) {
-      datalen = tcp_read_socket(1);
-      tcpbuf[datalen] = 0;
-      tputs(tcpbuf);
+    if (nlist) {
+      sendFtpCommand("NLST", tok);
+    } else {
+      sendFtpCommand("LIST", tok);
     }
-    drainCommandChannel();
+    drainChannel(1);
   }
+  drainCommandChannel();
 }
 
 #define macro_min(x,y) ((y>x)?x:y)
@@ -194,6 +212,7 @@ void ftpGet() {
   if (!tiname) {
     tiname = tok;
   }
+  sendFtpCommand("TYPE", "I");
   unsigned int port = sendFtpPasv();
   for(volatile int delay=0; delay<7000; delay++) { /* a moment for server to listen */ }
   int res = tcp_connect(1, hostname, uint2str(port));
@@ -242,8 +261,8 @@ void ftpGet() {
       saveForeignFile(sector, bufoffset);
     }
 
-    drainCommandChannel();
   }
+  drainCommandChannel();
 }
 
 int sendFtpCommand(char* command, char* argstring) {
@@ -265,11 +284,11 @@ int sendFtpCommand(char* command, char* argstring) {
 }
 
 unsigned int sendFtpPasv() {
-  /*
+  /*  int bufsize = 0;
+
   PASV
   227 Entering Passive Mode (127,0,0,1,156,117).
   */
-  int code = 0;
   char ftpcmd[8];
   strcpy(ftpcmd, "PASV");
   strcat(ftpcmd, EOL);
@@ -280,15 +299,12 @@ unsigned int sendFtpPasv() {
     return -1;
   }
 
-  int bufsize = 0;
-  // read until we get some response.
-  while(bufsize == 0) {
-    bufsize = tcp_read_socket(0);
+  char* line = readline(0);
+  tputs(line);
+  if (!str_startswith(line, "227")) {
+    return 0;
   }
-  tcpbuf[bufsize] = 0;
-  tputs(tcpbuf);
-  tputs("\n");
-  char* tok = strtok(tcpbuf, "(");
+  char* tok = strtok(line, "(");
   for(int i=0; i<4; i++) {
     tok = strtok(0, ",");
   }
@@ -300,38 +316,62 @@ unsigned int sendFtpPasv() {
   return port;
 }
 
+static char commandresponse[100];
+static int linebufload;
+static int tcpbufavail = 0;
+static int crlfstate;
+
+char* readline(unsigned char socketId) {
+  strset(commandresponse, 0, 100);
+  linebufload = 0;
+  crlfstate = 0;
+  while (tcpbufavail == 0) {
+    tcpbufavail = tcp_read_socket(socketId);
+    int i = 0;
+    while(tcpbufavail) {
+      if (crlfstate == 0 && tcpbuf[i] == 13) {
+        commandresponse[linebufload++] = tcpbuf[i++];
+        tcpbufavail--;
+        crlfstate = 1;
+      } else if (crlfstate == 1 && tcpbuf[i] == 10) {
+        commandresponse[linebufload++] = tcpbuf[i++];
+        tcpbufavail--;
+        crlfstate = 0;
+        return commandresponse;
+      } else {
+        commandresponse[linebufload++] = tcpbuf[i++];
+        tcpbufavail--;
+      }
+    }
+  }
+}
+
 int getFtpCode() {
-  int bufsize = 0;
+  tcpbufavail = 0;
   // read until we get some response.
-  while(1) {
-    bufsize = tcp_read_socket(0);
-    if (bufsize > 0) {
-      break;
-    }
-  }
-  tcpbuf[bufsize] = 0;
-  tputs(tcpbuf);
+  char* line = readline(0);
+  tputs(line);
   // get code from first response...
-  int code = atoi(tcpbuf);
-  // make sure we print any of the remaining response text.
-  while(1) {
-    bufsize = tcp_read_socket(0);
-    if (bufsize > 0) {
-      tcpbuf[bufsize] = 0;
-      tputs(tcpbuf);
-    } else {
-      break;
-    }
-  }
+  int code = atoi(line);
   return code;
 }
 
 void drainCommandChannel() {
-  int datalen = 1;
-  while(datalen) {
-    datalen = tcp_read_socket(0);
+  drainChannel(0);
+}
+
+void drainChannel(unsigned char socketId) {
+  int retries = 0;
+  while(retries < 10) {
+    int datalen = tcp_read_socket(socketId);
     tcpbuf[datalen] = 0;
     tputs(tcpbuf);
+    if (datalen) {
+      retries = 0;
+    } else {
+      for (volatile int i=0;i<3000;i++) {/*delay*/}
+      retries++;
+    }
   }
 }
 

@@ -70,3 +70,14 @@ int tcp_read_socket(unsigned char socketId) {
   return bufsize;
 }
 
+unsigned int tcp_close(unsigned char socketId) {
+  tcpbuf[0] = TI_SOCKET_REQUEST;
+  tcpbuf[1] = socketId;
+  tcpbuf[2] = TI_SOCKET_CLOSE;
+  tipi_on();
+  tipi_sendmsg(3, tcpbuf);
+  int bufsize = 0;
+  tipi_recvmsg(&bufsize, tcpbuf);
+  tipi_off();
+  return tcpbuf[0];
+}
