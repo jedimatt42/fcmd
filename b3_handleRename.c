@@ -21,24 +21,24 @@ void handleRename() {
     return;
   }
 
-  unsigned char unit = bk_path2unitmask(currentPath);
+  unsigned int unit = bk_path2unitmask(currentPath);
 
   char path[256];
   strcpy(path, currentPath);
-  strcat(path, ".");
   strcat(path, filename);
 
   unsigned int stat = bk_existsDir(currentDsr, path);
+  unsigned int ferr = 0x00FF;
 
   bk_lvl2_setdir(currentDsr->crubase, unit, currentPath);
-  unsigned int err = 0x00ff;
+
   if (stat == 0) {
-    err = bk_lvl2_rendir(currentDsr->crubase, unit, filename, newname);
+    ferr = bk_lvl2_rendir(currentDsr->crubase, unit, filename, newname);
   } else {
-    err = bk_lvl2_rename(currentDsr->crubase, unit, filename, newname);
+    ferr = bk_lvl2_rename(currentDsr->crubase, unit, filename, newname);
   }
 
-  if (err) {
+  if (ferr) {
     tputs("cannot rename file ");
     tputs(currentPath);
     tputs(filename);

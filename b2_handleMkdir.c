@@ -16,7 +16,7 @@ void handleMkdir() {
     return;
   }
 
-  unsigned char unit = path2unitmask(currentPath);
+  unsigned int unit = path2unitmask(currentPath);
 
   lvl2_setdir(currentDsr->crubase, unit, currentPath);
 

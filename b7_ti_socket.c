@@ -13,7 +13,7 @@
 
 unsigned char tcpbuf[256];
 
-unsigned int tcp_connect(unsigned char socketId, unsigned char* hostname, unsigned char* port) {
+unsigned int tcp_connect(unsigned int socketId, unsigned char* hostname, unsigned char* port) {
   tcpbuf[0] = TI_SOCKET_REQUEST;
   tcpbuf[1] = socketId;
   tcpbuf[2] = TI_SOCKET_OPEN;
@@ -36,7 +36,7 @@ unsigned int tcp_connect(unsigned char socketId, unsigned char* hostname, unsign
 }
 
 // will send at most 253 byte character sequences (cause size of tcp buffer)
-int tcp_send_chars(unsigned char socketId, unsigned char* buf, int size) {
+int tcp_send_chars(unsigned int socketId, unsigned char* buf, int size) {
   tcpbuf[0] = TI_SOCKET_REQUEST;
   tcpbuf[1] = socketId;
   tcpbuf[2] = TI_SOCKET_WRITE;
@@ -56,7 +56,7 @@ int tcp_send_chars(unsigned char socketId, unsigned char* buf, int size) {
   return tcpbuf[0];
 }
 
-int tcp_read_socket(unsigned char socketId) {
+int tcp_read_socket(unsigned int socketId) {
   tcpbuf[0] = TI_SOCKET_REQUEST;
   tcpbuf[1] = socketId;
   tcpbuf[2] = TI_SOCKET_READ;
@@ -70,7 +70,7 @@ int tcp_read_socket(unsigned char socketId) {
   return bufsize;
 }
 
-unsigned int tcp_close(unsigned char socketId) {
+unsigned int tcp_close(unsigned int socketId) {
   tcpbuf[0] = TI_SOCKET_REQUEST;
   tcpbuf[1] = socketId;
   tcpbuf[2] = TI_SOCKET_CLOSE;

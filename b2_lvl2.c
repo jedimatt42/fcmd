@@ -26,36 +26,36 @@
 //	IDE controller:			IDE	>8x
 //	Ti to PC serial connection:	HDX	>9x
 unsigned int path2unitmask(char* currentPath) {
-  unsigned char operationSet = 0x10;
+  unsigned int operationSet = 0x0010;
   char drive[9];
   strncpy(drive, currentPath, 9);
   int l = indexof(drive, '.');
   drive[l] = 0;
   if (0 == strcmp("TIPI", drive)) {
-    return 0x10;
+    return 0x0010;
   }
   l = strlen(drive);
   unsigned char unit = drive[l-1] - '0' & 0x0F;
 
   drive[l] = 0;
   if (0 == strcmp(drive, "WDS")) {
-    operationSet = 0x20;
+    operationSet = 0x0020;
   } else if (0 == strcmp(drive, "SCS")) {
-    operationSet = 0x20; // yep, same as Myarc
+    operationSet = 0x0020; // yep, same as Myarc
   } else if (0 == strcmp(drive, "IDE")) {
-    operationSet = 0x80;
+    operationSet = 0x0080;
   } else if (0 == strcmp(drive, "HDX")) {
-    operationSet = 0x90;
+    operationSet = 0x0090;
   }
 
   return operationSet | unit;
 }
 
-unsigned int lvl2_protect(int crubase, char unit, char* filename, char protect) {
+unsigned int lvl2_protect(int crubase, int unit, char* filename, int protect) {
   return base_lvl2(crubase, unit, LVL2_OP_PROTECT, filename, 0, protect ? 0xff : 0x00);
 }
 
-unsigned int lvl2_setdir(int crubase, char unit, char* path) {
+unsigned int lvl2_setdir(int crubase, int unit, char* path) {
   LVL2_PARAMADDR1 = FBUF;
   int len = strlen(path);
   if (len > 39) {
@@ -72,27 +72,27 @@ unsigned int lvl2_setdir(int crubase, char unit, char* path) {
   return LVL2_STATUS;
 }
 
-unsigned int lvl2_mkdir(int crubase, char unit, char* dirname) {
+unsigned int lvl2_mkdir(int crubase, int unit, char* dirname) {
   return base_lvl2(crubase, unit, LVL2_OP_MKDIR, dirname, 0, 0);
 }
 
-unsigned int lvl2_rmdir(int crubase, char unit, char* dirname) {
+unsigned int lvl2_rmdir(int crubase, int unit, char* dirname) {
   return base_lvl2(crubase, unit, LVL2_OP_DELDIR, dirname, 0, 0);
 }
 
-unsigned int lvl2_rename(int crubase, char unit, char* oldname, char* newname) {
+unsigned int lvl2_rename(int crubase, int unit, char* oldname, char* newname) {
   return base_lvl2(crubase, unit, LVL2_OP_RENAME, newname, oldname, 0);
 }
 
-unsigned int lvl2_rendir(int crubase, char unit, char* oldname, char* newname) {
+unsigned int lvl2_rendir(int crubase, int unit, char* oldname, char* newname) {
   return base_lvl2(crubase, unit, LVL2_OP_RENDIR, newname, oldname, 0);
 }
 
-unsigned int lvl2_input(int crubase, char unit, char* filename, unsigned char blockcount, struct AddInfo* addInfoPtr) {
+unsigned int lvl2_input(int crubase, int unit, char* filename, unsigned int blockcount, struct AddInfo* addInfoPtr) {
   return direct_io(crubase, unit, LVL2_OP_INPUT, filename, blockcount, addInfoPtr);
 }
 
-unsigned int lvl2_output(int crubase, char unit, char* filename, unsigned char blockcount, struct AddInfo* addInfoPtr) {
+unsigned int lvl2_output(int crubase, int unit, char* filename, unsigned int blockcount, struct AddInfo* addInfoPtr) {
   return direct_io(crubase, unit, LVL2_OP_OUTPUT, filename, blockcount, addInfoPtr);
 }
 
