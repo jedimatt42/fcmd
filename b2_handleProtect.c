@@ -7,7 +7,17 @@
 #include "b2_lvl2.h"
 #include "b1cp_terminal.h"
 
+static void doProtect(char mode);
+
 void handleProtect() {
+  doProtect(1);
+}
+
+void handleUnprotect() {
+  doProtect(0);
+}
+
+static void doProtect(char mode) {
   char* filename = strtok(0, " ");
   if (filename == 0) {
     tputs("error, must specify a file name\n");
@@ -18,7 +28,7 @@ void handleProtect() {
 
   lvl2_setdir(currentDsr->crubase, unit, currentPath);
 
-  unsigned int err = lvl2_protect(currentDsr->crubase, unit, filename, 1);
+  unsigned int err = lvl2_protect(currentDsr->crubase, unit, filename, mode);
   if (err) {
     tputs("cannot protect file ");
     tputs(currentPath);
