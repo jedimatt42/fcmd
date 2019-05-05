@@ -269,7 +269,7 @@ void ftpGet() {
           tputs("Error, could not output file\n");
         } else {
           int totalsectors = tifiles->sectors;
-          int secno = 1;
+          int secno = 0;
           while(secno <= totalsectors) {
             len = readstream(1, 256); // now work in single block chunks.
             // if (len != 256) {
