@@ -150,11 +150,11 @@ void ftpOpen() {
       strset(passwd, 0, 20);
       tputs("password: ");
       int y = conio_y;
-      bk_getstr(9, y, passwd, 20, backspace);
+      bk_getstr(10, y, passwd, 20, backspace);
       int plen = strlen(passwd);
 
       for(int i=0; i<plen; i++) {
-        tputc(8);
+        tputc(8); // backspace
       }
       for(int i=0; i<plen; i++) {
         tputc('*');
@@ -251,16 +251,42 @@ void ftpGet() {
     struct TiFiles* tifiles = (struct TiFiles*) block;
 
     if (len == 128 && isTiFiles(tifiles)) {
-      struct AddInfo addInfo;
+      struct AddInfo* addInfoPtr = (struct AddInfo*) 0x8320;
       tputs("found TIFILES header\n");
-      addInfo.first_sector = tifiles->sectors;
-      addInfo.flags = tifiles->filetype.flags;
-      addInfo.recs_per_sec = tifiles->recpersec;
-      addInfo.eof_offset = tifiles->lastseclen;
-      addInfo.rec_length = tifiles->reclen;
+      addInfoPtr->first_sector = tifiles->sectors;
+      addInfoPtr->flags = tifiles->filetype.flags;
+      addInfoPtr->recs_per_sec = tifiles->recpersec;
+      addInfoPtr->eof_offset = tifiles->lastseclen;
+      addInfoPtr->rec_length = tifiles->reclen;
 
-      bk_lvl2_output(currentDsr->crubase, unit, tiname, 0, &addInfo);
-
+      tputs("setdir: "); tputs(currentPath); tputs("\n");
+      int ferr = bk_lvl2_setdir(currentDsr->crubase, unit, currentPath);
+      if (ferr) {
+        tputs("Error, could not set directory\n");
+      } else {
+        ferr = bk_lvl2_output(currentDsr->crubase, unit, tiname, 0, addInfoPtr);
+        if (ferr) {
+          tputs("Error, could not output file\n");
+        } else {
+          int totalsectors = tifiles->sectors;
+          int secno = 1;
+          while(secno <= totalsectors) {
+            len = readstream(1, 256); // now work in single block chunks.
+            // if (len != 256) {
+            //   tputs("Error, receiving full block\n");
+            //   break;
+            // }
+            vdpmemcpy(VDPFBUF, block, 256);
+            addInfoPtr->first_sector = secno++;
+            ferr = bk_lvl2_output(currentDsr->crubase, unit, tiname, 1, addInfoPtr);
+            if (ferr) {
+              tputs("Error, failed to write block\n");
+            } else {
+              tputs("block"); tputs(uint2str(secno-1)); tputs(" of "); tputs(uint2str(totalsectors)); tputs("\n");
+            }
+          }
+        }
+      }
     } else {
       tputs("foreign file, will use D/F 128");
       if (len == 0) {
@@ -385,7 +411,7 @@ int readstream(unsigned char socketId, int limit) {
       if (tcpbufavail) {
         retries = 0;
       } else {
-        for(volatile int d=0; d<3000; d++) { /* delay */ }
+        for(volatile int d=0; d<7000; d++) { /* delay */ }
         retries++;
       }
     }

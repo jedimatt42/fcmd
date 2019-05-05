@@ -16,17 +16,6 @@ void handleChecksum() {
     tputs("error, must specify a file name\n");
     return;
   }
-  char path[256];
-  // check that file exists
-  strcpy(path, currentPath);
-  strcat(path, filename);
-  if (0 != existsFile(currentDsr, path)) {
-    tputs("error, file not found: ");
-    tputs(currentPath);
-    tputs(filename);
-    tputc('\n');
-    return;
-  }
 
   struct AddInfo* addInfoPtr = (struct AddInfo*) 0x8320;
   addInfoPtr->first_sector = 0;

@@ -12,6 +12,8 @@
 #define LVL2_OP_DELDIR 0x19
 #define LVL2_OP_RENDIR 0x1A
 
+#define VDPFBUF (FBUF + 0x100)
+
 struct __attribute__((__packed__)) AddInfo {
   unsigned int buffer;
   unsigned int first_sector;
@@ -22,7 +24,7 @@ struct __attribute__((__packed__)) AddInfo {
   unsigned int records;
 }; 
 
-unsigned char path2unitmask(char* currentPath);
+unsigned int path2unitmask(char* currentPath);
 
 unsigned int lvl2_mkdir(int crubase, char unit, char* dirname);
 unsigned int lvl2_protect(int crubase, char unit, char* filename, char protect);
@@ -40,7 +42,7 @@ void __attribute__((noinline)) call_lvl2(int crubase, unsigned char operation);
 
 #include "banking.h"
 
-DECLARE_BANKED_CHAR(path2unitmask, BANK_2, unsigned char, bk_path2unitmask, (char* currentPath), (currentPath))
+DECLARE_BANKED(path2unitmask, BANK_2, unsigned int, bk_path2unitmask, (char* currentPath), (currentPath))
 
 DECLARE_BANKED(lvl2_setdir, BANK_2, unsigned int, bk_lvl2_setdir, (int crubase, char unit, char* path), (crubase, unit, path))
 DECLARE_BANKED(lvl2_protect, BANK_2, unsigned int, bk_lvl2_protect, (int crubase, char unit, char* filename, char protect), (crubase, unit, filename, protect))

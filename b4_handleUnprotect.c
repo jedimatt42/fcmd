@@ -6,6 +6,7 @@
 #include "b1cp_strutil.h"
 #include "b1cp_terminal.h"
 #include "b2_lvl2.h"
+#include <string.h>
 
 void handleUnprotect() {
   char* filename = strtok(0, " ");

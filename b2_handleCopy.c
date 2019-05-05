@@ -20,13 +20,6 @@ void handleCopy() {
   // check that file exists
   strcpy(path, currentPath);
   strcat(path, filename);
-  if (0 != existsFile(currentDsr, path)) {
-    tputs("error, file not found: ");
-    tputs(currentPath);
-    tputs(filename);
-    tputc('\n');
-    return;
-  }
 
   struct DeviceServiceRoutine* dsr = 0;
   bk_parsePathParam(&dsr, path, PR_REQUIRED);

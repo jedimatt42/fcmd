@@ -5,10 +5,10 @@
 #include "b2_dsrutil.h"
 #include "b2_mds_dsrlnk.h"
 #include "b1cp_strutil.h"
+#include "b1cp_terminal.h"
 
 #include <string.h>
 #include <vdp.h>
-#include <conio.h>
 
 #define LVL2_STATUS *((volatile unsigned char*)0x8350)
 #define LVL2_UNIT *((volatile unsigned char*)0x834C)
@@ -25,7 +25,7 @@
 //	Scuzzy controller		SCS	>2x
 //	IDE controller:			IDE	>8x
 //	Ti to PC serial connection:	HDX	>9x
-unsigned char path2unitmask(char* currentPath) {
+unsigned int path2unitmask(char* currentPath) {
   unsigned char operationSet = 0x10;
   char drive[9];
   strncpy(drive, currentPath, 9);
@@ -41,7 +41,7 @@ unsigned char path2unitmask(char* currentPath) {
   if (0 == strcmp(drive, "WDS")) {
     operationSet = 0x20;
   } else if (0 == strcmp(drive, "SCS")) {
-    operationSet = 0x20;
+    operationSet = 0x20; // yep, same as Myarc
   } else if (0 == strcmp(drive, "IDE")) {
     operationSet = 0x80;
   } else if (0 == strcmp(drive, "HDX")) {
@@ -105,7 +105,7 @@ unsigned char direct_io(int crubase, char unit, char operation, char* filename, 
   LVL2_PROTECT = blockcount;
   LVL2_STATUS = ((unsigned int) addInfoPtr) - 0x8300;
 
-  addInfoPtr->buffer = FBUF + 0x100; // safe from file and path name overwrites.
+  addInfoPtr->buffer = VDPFBUF; // safe from file and path name overwrites.
 
   call_lvl2(crubase, OPNAME(unit, operation));
 
@@ -114,7 +114,7 @@ unsigned char direct_io(int crubase, char unit, char operation, char* filename, 
 
 // Setup parameters suitably for most lvl2 calls.
 unsigned char __attribute__((noinline)) base_lvl2(int crubase, char unit, char operation, char* name1, char* name2, char param0) {
-  LVL2_UNIT = unit;
+  LVL2_UNIT = UNITNO(unit);
   LVL2_PROTECT = param0;
   LVL2_PARAMADDR1 = FBUF;
 
@@ -129,7 +129,7 @@ unsigned char __attribute__((noinline)) base_lvl2(int crubase, char unit, char o
     vdpmemcpy(LVL2_PARAMADDR2, name2, 10);
   }
 
-  call_lvl2(crubase, operation);
+  call_lvl2(crubase, OPNAME(unit, operation));
 
   return LVL2_STATUS;
 }
