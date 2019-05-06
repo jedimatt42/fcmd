@@ -36,30 +36,20 @@ void ftpGet();
 int getFtpCode();
 int sendFtpCommand(char* command, char* argstring);
 unsigned int sendFtpPasv();
-void drainCommandChannel();
 void drainChannel(unsigned char socketId);
 char* readline(unsigned char socketId);
+void readline_paged(unsigned char socketId);
 int readstream(unsigned char socketId, int limit);
 
 struct __attribute__((__packed__)) TiFiles {
   unsigned char seven;
   unsigned char tifiles[7];
   unsigned int sectors;
-  union {
-    struct {
-      unsigned int variable : 1;
-      unsigned int unused : 3;
-      unsigned int protected : 1;
-      unsigned int unused2 : 1;
-      unsigned int internal : 1;
-      unsigned int program : 1;
-    } bits;
-    unsigned char flags;
-  } filetype;
-  unsigned char recpersec;
-  unsigned char lastseclen;
-  unsigned char reclen;
-  unsigned int sw_records;
+  unsigned char flags;
+  unsigned char recs_per_sec;
+  unsigned char eof_offset;
+  unsigned char rec_length;
+  unsigned int records; // swizzled
 }; 
 
 int isTiFiles(struct TiFiles* buffer);
@@ -133,7 +123,7 @@ void ftpOpen() {
   tputs("connected\n");
 
   int code = getFtpCode();
-  drainCommandChannel();
+  drainChannel(0);
 
   while(code != 230) {
     while(code != 331) {
@@ -163,7 +153,7 @@ void ftpOpen() {
       code = sendFtpCommand("PASS", passwd);
     }
   }
-  drainCommandChannel();
+  drainChannel(0);
 }
 
 void ftpQuit() {
@@ -205,7 +195,13 @@ void ftpDir() {
     }
     drainChannel(1);
   }
-  drainCommandChannel();
+  int code = 0;
+  char* line;
+  while(!code) {
+    line = readline(0);
+    code = atoi(line);
+  }
+  tputs(line);
 }
 
 void ftpGet() {
@@ -253,11 +249,7 @@ void ftpGet() {
     if (len == 128 && isTiFiles(tifiles)) {
       struct AddInfo* addInfoPtr = (struct AddInfo*) 0x8320;
       tputs("found TIFILES header\n");
-      addInfoPtr->first_sector = tifiles->sectors;
-      addInfoPtr->flags = tifiles->filetype.flags;
-      addInfoPtr->recs_per_sec = tifiles->recpersec;
-      addInfoPtr->eof_offset = tifiles->lastseclen;
-      addInfoPtr->rec_length = tifiles->reclen;
+      memcpy(&(addInfoPtr->first_sector), &(tifiles->sectors), 8);
 
       tputs("setdir: "); tputs(currentPath); tputs("\n");
       int ferr = bk_lvl2_setdir(currentDsr->crubase, unit, currentPath);
@@ -270,7 +262,7 @@ void ftpGet() {
         } else {
           int totalsectors = tifiles->sectors;
           int secno = 0;
-          while(secno <= totalsectors) {
+          while(secno < totalsectors) {
             len = readstream(1, 256); // now work in single block chunks.
             // if (len != 256) {
             //   tputs("Error, receiving full block\n");
@@ -282,10 +274,11 @@ void ftpGet() {
             if (ferr) {
               tputs("Error, failed to write block\n");
             } else {
-              tputs("block"); tputs(uint2str(secno-1)); tputs(" of "); tputs(uint2str(totalsectors)); tputs("\n");
+              tputs(".");
             }
           }
         }
+        tputs("\n");
       }
     } else {
       tputs("foreign file, will use D/F 128");
@@ -306,11 +299,11 @@ void ftpGet() {
           tputs("Error, writing file\n");
           // should probably send an abort command.
           drainChannel(1);
-          drainCommandChannel();
+          drainChannel(0);
           return;
         }
         len = readstream(1, 128);
-        tputs("read "); tputs(int2str(len)); tputs(" bytes of data\n");
+        tputs("\rread "); tputs(int2str(len)); tputs(" bytes of data\n");
       }
       if (bk_dsr_close(currentDsr, &pab)) {
         tputs("Error, closing file\n");
@@ -319,7 +312,7 @@ void ftpGet() {
     }
 
   }
-  drainCommandChannel();
+  drainChannel(0);
 }
 
 int sendFtpCommand(char* command, char* argstring) {
@@ -402,7 +395,6 @@ int readstream(unsigned char socketId, int limit) {
   strset(block, 0, 256);
   blockload = 0;
   int retries = 0;
-  tputs("--> readstream, avail: "); tputs(uint2str(tcpbufavail)); tputs("\n");
 
   while(retries < 10 && blockload < limit) {
     while(retries < 10 && !tcpbufavail) {
@@ -424,7 +416,6 @@ int readstream(unsigned char socketId, int limit) {
     }
   }
 
-  tputs("<-- blockload: "); tputs(uint2str(blockload)); tputs("\n");
   return blockload;
 }
 
@@ -436,10 +427,6 @@ int getFtpCode() {
   // get code from first response...
   int code = atoi(line);
   return code;
-}
-
-void drainCommandChannel() {
-  drainChannel(0);
 }
 
 void drainChannel(unsigned char socketId) {

@@ -21,7 +21,7 @@ struct __attribute__((__packed__)) AddInfo {
   unsigned char recs_per_sec;
   unsigned char eof_offset;
   unsigned char rec_length;
-  unsigned int records;
+  unsigned int records; // swizzled
 }; 
 
 unsigned int path2unitmask(char* currentPath);
