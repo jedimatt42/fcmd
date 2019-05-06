@@ -3,6 +3,7 @@
 
 int strcmp(const char* a, const char* b);
 int strcmpi(const char* a, const char* b);
+int str_equals(char* a, char* b);
 int indexof(const char* str, char c);
 int lindexof(const char* str, char c, int start);
 int str_startswith(const char* str, const char* prefix);

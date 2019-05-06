@@ -16,6 +16,19 @@ int strcmp(const char* a, const char* b) {
   return a[i] - b[i];
 }
 
+int str_equals(char* a, char* b) {
+  int l = strlen(a);
+  if (strlen(b) != l) {
+    return 0;
+  }
+  for(int i=0; i<l; i++) {
+    if (a[i] != b[i]) {
+      return 0;
+    }
+  }
+  return 1;
+}
+
 char lowerchar(char c) {
   if (c >= 'A' && c <= 'Z') {
     return c - 'A' + 'a';

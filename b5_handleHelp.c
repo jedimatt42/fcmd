@@ -109,18 +109,18 @@ void handleHelp() {
     wraptext("help - list available commands\n");
     wraptext("help <command> - show help for individual command\n");
   } else if (matchcmd(tok, "if")) {
-    wraptext("if <expr> <command> - conditional statement\n");
+    wraptext("if <expr> then <command> - conditional statement\n");
     wraptext("expression following 'if' is evaluated. If the expression evaluates to true, the rest of the command is executed.\n");
     wraptext("example:\n");
-    wraptext("  if \"A$\" == \"C\" goto lC\n");
-    wraptext("expressions syntax: <lvalue> ' ' <operator> ' ' <rvalue>\n");
+    wraptext("  if $A == C then goto LC\n");
+    wraptext("expressions syntax: [not] <lvalue> ' ' <operator> ' ' <rvalue>\n");
     wraptext(" <lvalue> - quoted string which may contain variable references\n");
     wraptext(" <lvalue> - quoted string which may contain variable references\n");
     wraptext(" <operator> - '=='\n");
   } else if (matchcmd(tok,"label")) {
     wraptext("<label-name>: - a custom identifier followed by a colon defines a label that may be branched to with 'goto'\n");
   } else if (matchcmd(tok,"load")) {
-    wraptext("load <file> - load an EA5 program image file or files\n");
+    wraptext("load <file> - load and run an EA5 program image file or files\n");
   } else if (matchcmd(tok,"lvl2")) {
     wraptext("lvl2 <crubase> - list level 2 io subprograms in DSR ROM at the specified CRU base address\n");
   } else if (matchcmd(tok,"mkdir")) {

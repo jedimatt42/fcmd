@@ -13,6 +13,7 @@ void parsePathParam(struct DeviceServiceRoutine** dsr, char* buffer, int require
 
 #include "banking.h"
 
+DECLARE_BANKED_VOID(handleCommand, BANK_0, bk_handleCommand, (char* buffer), (buffer))
 DECLARE_BANKED_VOID(parsePathParam, BANK_0, bk_parsePathParam, (struct DeviceServiceRoutine** dsr, char* buffer, int requirements), (dsr, buffer, requirements))
 
 #endif
