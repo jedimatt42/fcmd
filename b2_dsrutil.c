@@ -95,7 +95,7 @@ unsigned char loadDir(struct DeviceServiceRoutine* dsr, const char* pathname, vo
 void initPab(struct PAB* pab) {
   pab->OpCode = DSR_OPEN;
   pab->Status = DSR_TYPE_DISPLAY | DSR_TYPE_VARIABLE | DSR_TYPE_SEQUENTIAL | DSR_TYPE_INPUT;
-  pab->RecordLength = 80;
+  pab->RecordLength = 0;
   pab->RecordNumber = 0;
   pab->ScreenOffset = 0;
   pab->NameLength = 0;

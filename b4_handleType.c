@@ -9,7 +9,17 @@
 #include "b0_parsing.h"
 #include <vdp.h>
 
+int CTRLZ = 0x001A;
+
 void handleType() {
+  int ansi = 0;
+
+  char* tok = strtokpeek(0, " ");
+  if (!strcmpi("/ansi", tok)) {
+    ansi = 1;
+    strtok(0, " "); // consume optional token
+  }
+
   char namebuf[256];
   struct DeviceServiceRoutine* dsr;
   bk_parsePathParam(&dsr, namebuf, PR_REQUIRED);
@@ -20,7 +30,14 @@ void handleType() {
 
   struct PAB pab;
 
-  int err = bk_dsr_open(dsr, &pab, namebuf, DSR_TYPE_INPUT | DSR_TYPE_DISPLAY | DSR_TYPE_VARIABLE | DSR_TYPE_SEQUENTIAL, 0);
+  int flags = DSR_TYPE_INPUT | DSR_TYPE_DISPLAY | DSR_TYPE_SEQUENTIAL;
+  if (ansi) {
+    flags |= DSR_TYPE_FIXED;
+  } else {
+    flags |= DSR_TYPE_VARIABLE;
+  }
+
+  int err = bk_dsr_open(dsr, &pab, namebuf, flags, 0);
   
   if (err) {
     tputs("could not open ");
@@ -34,10 +51,23 @@ void handleType() {
       // print the line...
       char linebuf[256];
       vdpmemread(pab.VDPBuffer, linebuf, pab.CharCount);
-      linebuf[pab.CharCount] = 0;
 
-      tputs(linebuf);
-      tputc('\n');
+      int i = 0;
+      while(i<pab.CharCount) {
+        if (ansi) {
+          volatile int val = linebuf[i];
+          if (val == CTRLZ) {
+            err = 1;
+            break;
+          }
+        } 
+        tputc(linebuf[i]);
+        i++;
+      }
+
+      if (!ansi) {
+        tputc('\n');
+      }
     }
   }
   bk_dsr_close(dsr, &pab);

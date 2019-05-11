@@ -146,7 +146,9 @@ void handleHelp() {
     wraptext("  path - the directory to set\n");
     wraptext("  auto - set to on or off to map DSK1 when PROGRAM image is loaded\n");
   } else if (matchcmd(tok,"type")) {
-    wraptext("type <filepath> - copy the contents of the file to the screen\n");
+    wraptext("type [/ansi] <filepath> - copy the contents of the file to the screen\n");
+    wraptext("  /ansi - optional. Open in DISPLAY/FIXED mode instead of DISPLAY/VARIABLE\n");
+    wraptext("          and terminate output on CTRL-Z character (26)\n");
   } else if (matchcmd(tok,"unprotect")) {
     wraptext("unprotect <filename> - unprotect a file in current path\n");
   } else if (matchcmd(tok,"ver")) {
