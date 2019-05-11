@@ -191,20 +191,13 @@ static void setDriveMapping(const char* drive, const char* path) {
     } else {
       strcpy(namebuf, path);
     }
-    
-    tputs(keybuf);
-    tputs(" => TIPI.");
   } else {
     if (!str_startswith(path, "HTTP")) {
       tputs("error path must be a URL prefix\n");
       return;
     }
     strcpy(namebuf, path);
-    tputs(keybuf);
-    tputs(" => ");
   }
-  
-  tputs(namebuf); tputs("\n");
   writeConfigItem(keybuf, namebuf);
 }
 

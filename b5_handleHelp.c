@@ -58,12 +58,12 @@ void handleHelp() {
 
   if (matchcmd(tok,"call")) {
     wraptext("call <filepath> - run a script. Must be DISPLAY VARIABLE file.\n");
-    wraptext("\nSpecial file: AUTOCMD - on startup first drive will be checked for existing of AUTOCMD. If present it will run.\n");
-    wraptext("Some behavior changes in AUTOCMD:\n");
+    wraptext("\nSpecial file: AUTOCMD - First drive will be scanned for existance of AUTOCMD. If present it will run.\n");
+    wraptext("Some behavior changes when AUTOCMD is found:\n");
     wraptext(" * startup banner is suppressed.\n");
+    wraptext(" * initial tipibeeps sound is suppressed.\n");
   } else if (matchcmd(tok, "cd")) {
-    wraptext("cd [/w] <path>|.. - switch to a different drive or directory\n");
-    wraptext("  /w : optional, output a simplified listing in multiple columns\n");
+    wraptext("cd <path>|.. - switch to a different drive or directory\n");
   } else if (matchcmd(tok, "checksum")) {
     wraptext("checksum <file> - 16 bit checksum of a file in the current directory\n");
   } else if (matchcmd(tok, "cls")) {
@@ -79,6 +79,9 @@ void handleHelp() {
     wraptext("copy <filename> <path> - copy a file to a different directory or device\n");
   } else if (matchcmd(tok, "delete")) {
     wraptext("delete <filename> - delete file in current directory\n");
+  } else if (matchcmd(tok, "dir")) {
+    wraptext("dir [/w] [path] - list current directory or directory for given path\n");
+    wraptext("  /w : optional. Output a simplified listing in multiple columns\n");
   } else if (matchcmd(tok, "drives")) {
     wraptext("drives - list device names grouped by CRU base address\n");
   } else if (matchcmd(tok, "echo")) {
@@ -90,7 +93,7 @@ void handleHelp() {
     wraptext("env - list all variables and their values\n");
     wraptext("\nVariables are set by assigning a name of up to 10 characters a value, or by specific commands.\n");
     wraptext("\nexample: NAME1=FLINSTONE\n");
-    wraptext("Variable names are case insensative.\n");
+    wraptext("Variable names are case insensitive.\n");
     wraptext("Variables may be used in any command by the '$' + <name> format.\n");
     wraptext("You may disambiguate with the '$' '(' <name ')' syntax.\n");
     wraptext("\nexamples:\n");
@@ -115,14 +118,14 @@ void handleHelp() {
     wraptext("  if $A == C then goto LC\n");
     wraptext("expressions syntax: [not] <lvalue> ' ' <operator> ' ' <rvalue>\n");
     wraptext(" <lvalue> - quoted string which may contain variable references\n");
-    wraptext(" <lvalue> - quoted string which may contain variable references\n");
+    wraptext(" <rvalue> - quoted string which may contain variable references\n");
     wraptext(" <operator> - '=='\n");
   } else if (matchcmd(tok,"label")) {
     wraptext("<label-name>: - a custom identifier followed by a colon defines a label that may be branched to with 'goto'\n");
   } else if (matchcmd(tok,"load")) {
     wraptext("load <file> - load and run an EA5 program image file or files\n");
   } else if (matchcmd(tok,"lvl2")) {
-    wraptext("lvl2 <crubase> - list level 2 io subprograms in DSR ROM at the specified CRU base address\n");
+    wraptext("lvl2 <crubase> - list level 2 I/O subprograms in DSR ROM at the specified CRU base address\n");
   } else if (matchcmd(tok,"mkdir")) {
     wraptext("mkdir <dirname> - create new directory in current path\n");
   } else if (matchcmd(tok,"protect")) {
@@ -138,7 +141,7 @@ void handleHelp() {
   } else if (matchcmd(tok,"tipimap")) {
     wraptext("tipimap [/c] [ auto on|off ] [ <drive> [path] ] - set or get a tipi drive mapping\n");
     wraptext("    If no drive is specified, all configuration items are listed\n");
-    wraptext("  /c - optional, if specified erases the specified drive mapping\n");
+    wraptext("  /c - optional. If specified, erases the specified drive mapping\n");
     wraptext("  drive - the name of the drive\n");
     wraptext("  path - the directory to set\n");
     wraptext("  auto - set to on or off to map DSK1 when PROGRAM image is loaded\n");

@@ -19,7 +19,7 @@
 #include "b1cp_terminal.h"
 #include "b4_labellist.h"
 
-#define APP_VER "0.5"
+#define APP_VER "0.6"
 
 char commandbuf[256];
 
@@ -109,6 +109,8 @@ void titleScreen() {
 void main()
 {
   bk_libtoram();
+  MUTE_SOUND();
+
   foreground = 15;
   background = 4;
   setupScreen(isF18A() ? 80 : 40);

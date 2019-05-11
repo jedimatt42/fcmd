@@ -36,6 +36,18 @@ static void vars_add(char* name, char* value) {
 }
 
 void vars_set(char* name, char* value) {
+  if (strlen(name) > MAX_VAR_NAME) {
+    tputs("Error, variable name too long, limit is ");
+    tputs(uint2str(MAX_VAR_NAME));
+    tputs("\n");
+    return;
+  }
+  if (strlen(value) > MAX_VAR_VAL) {
+    tputs("Error, variable value too long, limit is ");
+    tputs(uint2str(MAX_VAR_VAL));
+    tputs("\n");
+    return;
+  }
   int i = vars_find(name);
   if (i == -1) {
     vars_add(name, value);

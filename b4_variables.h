@@ -5,7 +5,7 @@
 
 // Lets keep these odd numbers so null terminate makes even
 #define MAX_VAR_NAME 11
-#define MAX_VAR_VAL 31
+#define MAX_VAR_VAL 81
 
 char* vars_get(char* name);
 void vars_set(char* name, char* value);

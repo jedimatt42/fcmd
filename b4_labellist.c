@@ -20,8 +20,7 @@ void labels_clear() {
 
 int labels_get(char* name) {
   for(int i = 0; i < label_next; i++) {
-    if (str_startswith(name, labels[i].name) && 
-      (strlen(name) == strlen(labels[i].name))) {
+    if (str_equals(name, labels[i].name)) {
       return labels[i].lineno;
     }
   }
@@ -29,6 +28,10 @@ int labels_get(char* name) {
 }
 
 void labels_add(char* name, int gotoline) {
+  if (strlen(name) > 10) {
+    tputs("Error, label name too long, limit is 10\n");
+    return;
+  }
   int existing = labels_get(name);
   if (existing != -1) {
     tputs("Error, label already defined at line: ");
