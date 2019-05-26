@@ -68,6 +68,15 @@ void handleFtp() {
     } else if (!strcmpi("bye", tok) || !strcmpi("quit", tok) || !strcmpi("exit", tok)) {
       ftpQuit();
       return;
+    } else if (!strcmpi("help", tok)) {
+      tputs("open <hostname> [port] - connect to an ftp server, defaults to port 21\n");
+      tputs("dir [/w] [pathname] - list directory\n");
+      tputs("  alias: ls\n");
+      tputs("pwd - show current server directory\n");
+      tputs("cd <pathname> - change server directory location\n");
+      tputs("get <filename> [tiname] - retrieve a file\n");
+      tputs("bye - close connection\n");
+      tputs("  aliases: exit, quit\n");      
     } else if (connected) {
       if (!strcmpi("pwd", tok)) {
         ftpPwd();
@@ -77,15 +86,6 @@ void handleFtp() {
         ftpDir();
       } else if (!strcmpi("get", tok)) {
         ftpGet();
-      } else if (!strcmpi("help", tok)) {
-        tputs("open <hostname> [port] - connect to an ftp server, defaults to port 21\n");
-        tputs("dir [/w] [pathname] - list directory\n");
-        tputs("  alias: ls\n");
-        tputs("pwd - show current server directory\n");
-        tputs("cd <pathname> - change server directory location\n");
-        tputs("get <filename> [tiname] - retrieve a file\n");
-        tputs("bye - close connection\n");
-        tputs("  aliases: exit, quit\n");
       } else {
         tputs("Error, unknown command.\n");
       }
