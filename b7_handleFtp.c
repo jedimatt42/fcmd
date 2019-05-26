@@ -183,6 +183,7 @@ void ftpDir() {
     tok = strtok(0, " "); // consume the "/w"
     tok = strtokpeek(0, "");
   }
+  sendFtpCommand("TYPE", "A");
   unsigned int port = sendFtpPasv();
   // connect second socket to provided port number.
   for(volatile int delay=0; delay<7000; delay++) { /* a moment for server to listen */ }
@@ -312,7 +313,13 @@ void ftpGet() {
     }
 
   }
-  drainChannel(0);
+  int code = 0;
+  char* line;
+  while(code != 226) {
+    line = readline(0);
+    code = atoi(line);
+  }
+  tputs(line);
 }
 
 int sendFtpCommand(char* command, char* argstring) {
