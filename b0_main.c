@@ -19,7 +19,7 @@
 #include "b1cp_terminal.h"
 #include "b4_labellist.h"
 
-#define APP_VER "0.7"
+#define APP_VER "0.8"
 
 char commandbuf[256];
 
@@ -142,11 +142,13 @@ void main()
     tputs("]\n$ ");
     getstr(2, conio_y, commandbuf, displayWidth - 3, backspace);
     tputs("\n");
+    enable_more();
     handleCommand(commandbuf);
   }
 }
 
 int runScript(struct DeviceServiceRoutine* dsr, char* scriptName) {
+  disable_more();
   int ran = 0;
   struct DeviceServiceRoutine* oldDsr = scriptDsr;
   scriptDsr = dsr;

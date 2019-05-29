@@ -15,6 +15,8 @@ unsigned char bytestr[128];
 int bs_idx;
 
 int termWidth;
+int more_on;
+int more_count;
 
 unsigned char cursor_store_x;
 unsigned char cursor_store_y;
@@ -31,8 +33,35 @@ void resetState() {
 void initTerminal() {
   cursor_store_x = 0;
   cursor_store_y = 0;
+  more_on = 0;
+  more_count = 0;
 
   resetState();
+}
+
+void enable_more() {
+  more_on = 1;
+  more_count = 0;
+}
+
+void disable_more() {
+  more_on = 0;
+}
+
+static void optional_pause() {
+  // only called if more_on is true
+  // disable more_on to avoid infinate recursion
+  more_on = 0;
+  more_count++;
+  if (more_count >= 22) {
+    tputs("\n-- press any key for more --");
+    cgetc();
+    more_count = 0;
+    cclearxy(0,22,termWidth);
+    cclearxy(0,23,termWidth);
+    gotoxy(0,22);
+  }
+  more_on = 1;
 }
 
 int getParamA(int def) {
@@ -407,6 +436,9 @@ void charout(unsigned char ch) {
     case '\n': // line feed
       conio_x=0;
       inc_row();
+      if (more_on) {
+        optional_pause();
+      }
       break;
     case '\b': // backspace
       --conio_x;
@@ -420,6 +452,9 @@ void charout(unsigned char ch) {
         if (conio_x >= nTextEnd-nTextRow) {
           conio_x=0;
           inc_row();
+          if (more_on) {
+            optional_pause();
+          }
         }
         vdpchar(conio_getvram(), ch);
         ++conio_x;

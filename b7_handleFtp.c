@@ -62,6 +62,7 @@ void handleFtp() {
     strset(commandbuf, 0, 120);
     bk_getstr(5, conio_y, commandbuf, displayWidth - 3, backspace);
     tputc('\n');
+    enable_more();
     char* tok = strtok(commandbuf, " ");
     if (!strcmpi("open", tok)) {
       ftpOpen();
@@ -76,7 +77,7 @@ void handleFtp() {
       tputs("cd <pathname> - change server directory location\n");
       tputs("get <filename> [tiname] - retrieve a file\n");
       tputs("bye - close connection\n");
-      tputs("  aliases: exit, quit\n");      
+      tputs("  aliases: exit, quit\n");
     } else if (connected) {
       if (!strcmpi("pwd", tok)) {
         ftpPwd();

@@ -31,5 +31,7 @@ void doSGRCommand();
 void doCsiCommand(unsigned char c);
 int doEscCommand(unsigned char c);
 void charout(unsigned char ch);
+void enable_more();
+void disable_more();
 
 #endif

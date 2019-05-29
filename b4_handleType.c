@@ -33,6 +33,7 @@ void handleType() {
   int flags = DSR_TYPE_INPUT | DSR_TYPE_DISPLAY | DSR_TYPE_SEQUENTIAL;
   if (ansi) {
     flags |= DSR_TYPE_FIXED;
+    disable_more();
   } else {
     flags |= DSR_TYPE_VARIABLE;
   }
