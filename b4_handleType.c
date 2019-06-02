@@ -8,6 +8,7 @@
 #include "b2_dsrutil.h"
 #include "b0_parsing.h"
 #include <vdp.h>
+#include <kscan.h>
 
 int CTRLZ = 0x001A;
 
@@ -47,6 +48,11 @@ void handleType() {
     return;
   }
   while(!err) {
+    char k = kscan(5);
+    if (k == 131 || k == 2) { // control-c or alt-4
+      break;
+    }
+
     err = bk_dsr_read(dsr, &pab, 0);
     if (!err) {
       // print the line...

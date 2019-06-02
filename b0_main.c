@@ -166,7 +166,7 @@ int runScript(struct DeviceServiceRoutine* dsr, char* scriptName) {
       strset(commandbuf, 0, 255);
       ferr = bk_dsr_read(dsr, &pab, 0);
       char k = kscan(5);
-      if (k == 131 || k == 2) { // control-c
+      if (k == 131 || k == 2) { // control-c or alt-4
         ferr = 1; // so abort script
       }
       if (!ferr) {
