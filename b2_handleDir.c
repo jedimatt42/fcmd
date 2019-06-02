@@ -68,8 +68,8 @@ void onLongVolInfo(struct VolInfo* volInfo) {
   tputs(" Used: ");
   tputs(uint2str(volInfo->total - volInfo->available));
   tputs("\n\n");
-  tputs("Name       Type    Reclen Sectors\n");
-  tputs("---------------------------------\n");
+  tputs("Name       Type    P Reclen Sectors\n");
+  tputs("-----------------------------------\n");
 }
 
 const char* file_types[] = {
@@ -85,17 +85,25 @@ void onLongDirEntry(struct DirEntry* dirEntry) {
   tputs(dirEntry->name);
   cputpad(11, dirEntry->name);
 
-  char* ftype = (char*) file_types[(dirEntry->type)-1];
+  int de_type = (0x0007 & dirEntry->type) - 1;
+
+  char* ftype = (char*) file_types[de_type];
   
   tputs(ftype);
   cputpad(8, ftype);
 
-  if (dirEntry->type < 5) {
+  if (dirEntry->type < 0) {
+    tputs("P ");
+  } else {
+    tputs("  ");
+  }
+
+  if (de_type >= 5) { // is program or dir? skip record details.
+    cputpad(7, "");
+  } else {
     char* sizestr = uint2str(dirEntry->reclen);
     tputs(sizestr);
     cputpad(7, sizestr);
-  } else {
-    cputpad(7, "");
   }
 
   tputs(uint2str(dirEntry->sectors));
