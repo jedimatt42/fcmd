@@ -32,6 +32,7 @@ void ftpPwd();
 void ftpCd();
 void ftpDir();
 void ftpGet();
+void ftpLcd();
 
 int getFtpCode();
 int sendFtpCommand(char* command, char* argstring);
@@ -67,7 +68,9 @@ void handleFtp() {
     if (!strcmpi("open", tok)) {
       ftpOpen();
     } else if (!strcmpi("bye", tok) || !strcmpi("quit", tok) || !strcmpi("exit", tok)) {
-      ftpQuit();
+      if (connected) {
+        ftpQuit();
+      }
       return;
     } else if (!strcmpi("help", tok)) {
       tputs("open <hostname> [port] - connect to an ftp server, defaults to port 21\n");
@@ -76,6 +79,8 @@ void handleFtp() {
       tputs("pwd - show current server directory\n");
       tputs("cd <pathname> - change server directory location\n");
       tputs("get <filename> [tiname] - retrieve a file\n");
+      tputs("lcd <pathname> - change directory on local machine\n");
+      tputs("ldir [pathname] - list local machine directory\n");
       tputs("bye - close connection\n");
       tputs("  aliases: exit, quit\n");
     } else if (connected) {
@@ -87,6 +92,10 @@ void handleFtp() {
         ftpDir();
       } else if (!strcmpi("get", tok)) {
         ftpGet();
+      } else if (!strcmpi("lcd", tok)) {
+        ftpLcd();
+      } else if (!strcmpi("ldir", tok)) {
+        bk_handleDir();
       } else {
         tputs("Error, unknown command.\n");
       }
@@ -162,7 +171,6 @@ void ftpQuit() {
   sendFtpCommand("QUIT", 0);
   for(volatile int i = 0; i<7000; i++) { /* spin */ }
   tcp_close(0);
-  tcp_close(1);
 }
 
 void ftpPwd() {
@@ -454,4 +462,13 @@ void drainChannel(unsigned char socketId) {
 
 int isTiFiles(struct TiFiles* tifiles) {
   return !basic_strcmp((char*) tifiles, "TIFILES");
+}
+
+void ftpLcd() {
+  bk_handleCd();
+  tputs("local dir: ");
+  tputs(uint2hex(currentDsr->crubase));
+  tputc('.');
+  tputs(currentPath);
+  tputc('\n');
 }
