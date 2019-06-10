@@ -50,6 +50,22 @@ int str_startswith(const char* str, const char* prefix) {
   return 1;
 }
 
+int str_endswith(const char* str, const char* suffix) {
+  int istr = strlen(str);
+  int isuf = strlen(suffix);
+  if (str == 0 || istr < isuf) {
+    return 0;
+  }
+  while(isuf > 0) {
+    istr--;
+    isuf--;
+    if (str[istr] != suffix[isuf]) {
+      return 0;
+    }
+  }
+  return 1;
+}
+
 int strcmpi(const char* a, const char* b) {
   int i=0;
   char ch = lowerchar(a[i]);

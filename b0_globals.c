@@ -5,6 +5,7 @@
 
 struct DeviceServiceRoutine* currentDsr;
 char currentPath[256];
+char filterglob[12];
 int backspace;
 unsigned int displayWidth = 40;
 int scripton = 0;

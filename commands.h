@@ -4,7 +4,6 @@
 // in bank 0
 void handleCall();
 void handleCls();
-void handleDelete();
 void handleExit();
 void handleFg99();
 void handleLoad();
@@ -24,6 +23,7 @@ void handleUnprotect();
 
 // in bank 3
 void handleColor();
+void handleDelete();
 void handleRename();
 
 // in bank 4
@@ -55,6 +55,7 @@ DECLARE_BANKED_VOID(handleProtect, BANK_2, bk_handleProtect, (), ())
 DECLARE_BANKED_VOID(handleUnprotect, BANK_2, bk_handleUnprotect, (), ())
 
 DECLARE_BANKED_VOID(handleColor, BANK_3, bk_handleColor, (), ())
+DECLARE_BANKED_VOID(handleDelete, BANK_3, bk_handleDelete, (), ())
 DECLARE_BANKED_VOID(handleRename, BANK_3, bk_handleRename, (), ())
 
 DECLARE_BANKED_VOID(handleEcho, BANK_4, bk_handleEcho, (), ())

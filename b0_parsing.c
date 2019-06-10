@@ -45,7 +45,7 @@ void handleCommand(char *buffer) {
   else COMMAND("checksum", bk_handleChecksum)
   else COMMAND("color", bk_handleColor)
   else COMMAND("copy", bk_handleCopy)
-  else COMMAND("delete", handleDelete)
+  else COMMAND("delete", bk_handleDelete)
   else COMMAND("dir", bk_handleDir)
   else COMMAND("drives", bk_handleDrives)
   else COMMAND("echo", bk_handleEcho)
@@ -103,6 +103,7 @@ int parsePath(char* path, char* devicename) {
 }
 
 void parsePathParam(struct DeviceServiceRoutine** dsr, char* buffer, int requirements) {
+  filterglob[0] = 0;
   buffer[0] = 0; // null terminate so later we can tell if it is prepared or not.
   char* path = strtok(0, " ");
   *dsr = currentDsr;
@@ -111,7 +112,8 @@ void parsePathParam(struct DeviceServiceRoutine** dsr, char* buffer, int require
       *dsr = 0; // set dsr pointer to null to indicate missing required parameter.
       return;
     }
-    path = currentPath; // if not required, use current path
+    strcpy(buffer, currentPath); // if not required, use current path
+    return;
   } else {
     char devicename[8];
     if (0 == strcmp("..", path)) {
@@ -137,15 +139,44 @@ void parsePathParam(struct DeviceServiceRoutine** dsr, char* buffer, int require
           tputs("device not found.\n");
           return;
         }
+        // at this stage, buffer is set with result device name.
       }
       if (crubase != 0) {
         path = strtok(path, ".");
         path = strtok(0, " ");
+        strcpy(buffer, path);
+      } else {
+        if (buffer[0] == 0) {
+          strcpy(buffer, path);
+        }
       }
     }
   }
   // Todo: test for existance and matching requirements
-  if (buffer[0] == 0) {
-    strcpy(buffer, path);
+  
+  // separate path and filter if wildcards are supported.
+  if (requirements & PR_WILDCARD) {
+    int len = strlen(buffer);
+    int dotidx = lindexof(buffer, '.', len);
+    if (indexof(buffer + dotidx, '*') != -1) {
+      strcpy(filterglob, buffer+dotidx+1);
+      buffer[dotidx] = 0;
+    }
   }
+}
+
+// if filename matches current glob, or no glob is specified, return true.
+int globMatches(char* filename) {
+  if (filterglob[0] == 0) {
+    return 1;
+  }
+
+  int prelen = indexof(filterglob, '*') + 1;
+  char prefix[12];
+  strncpy(prefix, filterglob, prelen);
+
+  char suffix[12];
+  strcpy(suffix, filterglob+prelen);
+
+  return str_startswith(filename, prefix) && str_endswith(filename, suffix);
 }

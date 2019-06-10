@@ -19,6 +19,13 @@ void onWideDirEntry(struct DirEntry* dirEntry);
 
 static int col = 0;
 
+/*
+ want to be able to handle:
+   dir 1100.TIPI.GAMES
+   dir
+   dir F*
+   dir TIPI.GAMES.P*
+*/
 void handleDir() {
   struct DeviceServiceRoutine* dsr = 0;
 
@@ -29,7 +36,7 @@ void handleDir() {
   }
 
   char path[256];
-  bk_parsePathParam(&dsr, path, PR_OPTIONAL);
+  bk_parsePathParam(&dsr, path, PR_OPTIONAL | PR_WILDCARD);
   if (dsr == 0) {
     return;
   }
@@ -82,6 +89,9 @@ const char* file_types[] = {
 };
 
 void onLongDirEntry(struct DirEntry* dirEntry) {
+  if (!bk_globMatches(dirEntry->name)) {
+    return;
+  }
   tputs(dirEntry->name);
   cputpad(11, dirEntry->name);
 
@@ -116,6 +126,9 @@ void onWideVolInfo(struct VolInfo* volInfo) {
 }
 
 void onWideDirEntry(struct DirEntry* dirEntry) {
+  if (!bk_globMatches(dirEntry->name)) {
+    return;
+  }
   int collimit = displayWidth / 11;
   tputs(dirEntry->name);
   col++;

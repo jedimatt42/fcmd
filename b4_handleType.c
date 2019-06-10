@@ -47,13 +47,14 @@ void handleType() {
     tputc('\n');
     return;
   }
+  int rec = 0;
   while(!err) {
     char k = kscan(5);
     if (k == 131 || k == 2) { // control-c or alt-4
       break;
     }
 
-    err = bk_dsr_read(dsr, &pab, 0);
+    err = bk_dsr_read(dsr, &pab, rec++);
     if (!err) {
       // print the line...
       char linebuf[256];

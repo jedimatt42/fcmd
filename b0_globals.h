@@ -7,6 +7,7 @@ extern struct DeviceServiceRoutine* currentDsr;
 extern struct DeviceServiceRoutine* scriptDsr;
 extern struct PAB* scriptPab;
 extern char currentPath[256];
+extern char filterglob[12];
 extern int backspace;
 extern unsigned int displayWidth;
 extern int scripton;
