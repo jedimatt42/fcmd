@@ -1,9 +1,12 @@
-# TIPICMD usage
+# Force Command usage
 
-Produces a tipicmdG.bin and tipicmdC.bin to be loaded by FinalGROM99.
+Produces a FCMDG.bin and FCMDC.bin to be loaded by FinalGROM99.
 
 The menu entry for the GROM is 'AUTOCMD' - choose this to load the auto-running
 cartridge image, or select 'FORCE CMD' if you don't want the auto-running feature.
+
+The autorunning feature of 'AUTOCMD' skips the TI-99/4A title screen and begins
+Force Command immediately.
 
 The tool provides a command line style console interface to the TI-99/4A,
 borrowing concepts from MS-DOS 2.11/3.3 era... It will also be influenced by
@@ -16,7 +19,8 @@ Supports:
 * 40 column mode is used by default if F18A is not detected.
 * FinalGROM cartridge switching (limited)
 * EA5 load command
-* 'call' to run scripts. run AUTOCMD script on first drive on startup.
+* 'call' to run scripts. 
+* AUTOCMD script on first drive is run on startup.
 * ANSI display
 * TIPIMAP to control DSKx, URIx, and AUTO mapping
 
