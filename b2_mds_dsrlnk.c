@@ -15,6 +15,9 @@
 // NOTE: because this does not return the entire PAB back to you,
 // if you need data from the DSR other than the error byte
 // (ie: RECORD NUMBER), then you have to get it yourself!
+// ---------- Matthew Splett -----------------
+// This routine is modified handle error:0 as an error instead of
+// cascading on to other devices.
 unsigned char mds_dsrlnk(int crubase, struct PAB *pab, unsigned int vdp, int mode) {
 	unsigned char x;
 
