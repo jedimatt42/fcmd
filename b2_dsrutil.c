@@ -16,7 +16,7 @@ struct DeviceServiceRoutine dsrList[40];
 unsigned int existsDir(struct DeviceServiceRoutine* dsr, const char* pathname) {
   struct PAB pab;
   initPab(&pab);
-  unsigned int open_err = dsr_open(dsr, &pab, pathname, DSR_TYPE_INPUT | DSR_TYPE_INTERNAL | DSR_TYPE_SEQUENTIAL, 38);
+  unsigned int open_err = dsr_open(dsr, &pab, pathname, DSR_TYPE_INPUT | DSR_TYPE_INTERNAL | DSR_TYPE_RELATIVE, 0);
   if (open_err == 0) {
     dsr_close(dsr, &pab);
   }
@@ -36,7 +36,9 @@ unsigned char loadDir(struct DeviceServiceRoutine* dsr, const char* pathname, vo
   struct VolInfo volInfo;
   struct DirEntry dirEntry;
 
-  unsigned int ferr = dsr_open(dsr, &pab, pathname, DSR_TYPE_INPUT | DSR_TYPE_INTERNAL | DSR_TYPE_SEQUENTIAL, 38);
+  // specifying record length is not recommended (by TI)
+  // CATALOG file must be INPUT | INTERNAL | RELATIVE
+  unsigned int ferr = dsr_open(dsr, &pab, pathname, DSR_TYPE_INPUT | DSR_TYPE_INTERNAL | DSR_TYPE_RELATIVE, 0);
   if (ferr) {
     return ferr;
   }
@@ -44,7 +46,7 @@ unsigned char loadDir(struct DeviceServiceRoutine* dsr, const char* pathname, vo
   int recNo = 0;
   ferr = DSR_ERR_NONE;
   while(ferr == DSR_ERR_NONE) {
-    unsigned char cbuf[38];
+    unsigned char cbuf[100];
     ferr = dsr_read(dsr, &pab, recNo);
     if (ferr == DSR_ERR_NONE) {
       // Now FBUF has the data... 
