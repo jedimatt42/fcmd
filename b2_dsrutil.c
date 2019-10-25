@@ -16,7 +16,7 @@ struct DeviceServiceRoutine dsrList[40];
 unsigned int existsDir(struct DeviceServiceRoutine* dsr, const char* pathname) {
   struct PAB pab;
   initPab(&pab);
-  unsigned int open_err = dsr_open(dsr, &pab, pathname, DSR_TYPE_INPUT | DSR_TYPE_INTERNAL | DSR_TYPE_RELATIVE, 0);
+  unsigned int open_err = dsr_open(dsr, &pab, pathname, DSR_TYPE_INPUT | DSR_TYPE_DISPLAY | DSR_TYPE_FIXED | DSR_TYPE_INTERNAL | DSR_TYPE_RELATIVE, 0);
   if (open_err == 0) {
     dsr_close(dsr, &pab);
   }
@@ -38,7 +38,7 @@ unsigned char loadDir(struct DeviceServiceRoutine* dsr, const char* pathname, vo
 
   // specifying record length is not recommended (by TI)
   // CATALOG file must be INPUT | INTERNAL | RELATIVE
-  unsigned int ferr = dsr_open(dsr, &pab, pathname, DSR_TYPE_INPUT | DSR_TYPE_INTERNAL | DSR_TYPE_RELATIVE, 0);
+  unsigned int ferr = dsr_open(dsr, &pab, pathname, DSR_TYPE_INPUT | DSR_TYPE_DISPLAY | DSR_TYPE_FIXED | DSR_TYPE_INTERNAL | DSR_TYPE_RELATIVE, 0);
   if (ferr) {
     return ferr;
   }
@@ -46,18 +46,18 @@ unsigned char loadDir(struct DeviceServiceRoutine* dsr, const char* pathname, vo
   int recNo = 0;
   ferr = DSR_ERR_NONE;
   while(ferr == DSR_ERR_NONE) {
-    unsigned char cbuf[100];
+    unsigned char cbuf[150];
     ferr = dsr_read(dsr, &pab, recNo);
     if (ferr == DSR_ERR_NONE) {
       // Now FBUF has the data... 
       vdpmemread(FBUF, cbuf, pab.CharCount);
       // process Record
       if (recNo == 0) {
-        if (cbuf[0] == 0) {
-          tputs("no device\n");
-          return 0;
-        }
         int namlen = basicToCstr(cbuf, volInfo.volname);
+        if (namlen == 0) {
+          tputs("no device\n");
+          break;
+        }
         int a = ti_floatToInt(cbuf+1+namlen);
         int j = ti_floatToInt(cbuf+10+namlen);
         int k = ti_floatToInt(cbuf+19+namlen);
@@ -116,7 +116,9 @@ unsigned int dsr_open(struct DeviceServiceRoutine* dsr, struct PAB* pab, const c
   }
   pab->pName = (char*)fname;
 
-  return mds_dsrlnk(dsr->crubase, pab, VPAB, DSR_MODE_LVL3);
+  int res = mds_dsrlnk(dsr->crubase, pab, VPAB, DSR_MODE_LVL3);
+  vdpmemread(VPAB + 4, (&pab->RecordLength), 1);
+  return res;
 }
 
 unsigned int dsr_close(struct DeviceServiceRoutine* dsr, struct PAB* pab) {
@@ -140,6 +142,9 @@ unsigned int dsr_read(struct DeviceServiceRoutine* dsr, struct PAB* pab, int rec
 
   unsigned char result = mds_dsrlnk(dsr->crubase, pab, VPAB, DSR_MODE_LVL3);
   vdpmemread(VPAB + 5, (&pab->CharCount), 1);
+  if (! (pab->Status & DSR_TYPE_VARIABLE)) {
+    pab->CharCount = pab->RecordLength;
+  }
   return result;
 }
 

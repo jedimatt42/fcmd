@@ -1,5 +1,5 @@
 #include "banks.h"
-#define MYBANK BANK_2
+#define MYBANK BANK_0
 
 #include "commands.h"
 #include "b2_dsrutil.h"
@@ -16,7 +16,7 @@ void handleLvl2() {
     return;
   }
 
-  enableROM(crubase);
+  bk_enableROM(crubase);
   struct DeviceRomHeader* rom = (struct DeviceRomHeader*)0x4000;
 
   struct NameLink* link = rom->basiclnk;
@@ -29,6 +29,6 @@ void handleLvl2() {
   }
   tputc('\n');
 
-  disableROM(crubase);
+  bk_disableROM(crubase);
 }
 

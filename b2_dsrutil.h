@@ -88,6 +88,8 @@ void initPab(struct PAB* pab);
 
 DECLARE_BANKED_VOID(loadDriveDSRs, BANK_2, bk_loadDriveDSRs, (), ())
 DECLARE_BANKED_VOID(initPab, BANK_2, bk_initPab, (struct PAB* pab), (pab))
+DECLARE_BANKED_VOID(enableROM, BANK_2, bk_enableROM, (int crubase), (crubase))
+DECLARE_BANKED_VOID(disableROM, BANK_2, bk_disableROM, (int crubase), (crubase))
 
 DECLARE_BANKED(findDsr, BANK_2, struct DeviceServiceRoutine*, bk_findDsr, (char* devicename, int crubase), (devicename, crubase))
 DECLARE_BANKED(existsDir, BANK_2, unsigned int, bk_existsDir, (struct DeviceServiceRoutine* dsr, const char* pathname), (dsr, pathname))
