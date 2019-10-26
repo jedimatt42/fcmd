@@ -31,20 +31,21 @@ unsigned int path2unitmask(char* currentPath) {
   strncpy(drive, currentPath, 9);
   int l = indexof(drive, '.');
   drive[l] = 0;
-  if (0 == strcmp("TIPI", drive)) {
+  if (str_equals("TIPI", drive)) {
     return 0x0010;
   }
-  l = strlen(drive);
-  unsigned char unit = drive[l-1] - '0' & 0x0F;
+  l--;
+  unsigned char unit = drive[l] - '0' & 0x0F;
 
   drive[l] = 0;
-  if (0 == strcmp(drive, "WDS")) {
+
+  if (str_equals(drive, "WDS")) {
     operationSet = 0x0020;
-  } else if (0 == strcmp(drive, "SCS")) {
+  } else if (str_equals(drive, "SCS")) {
     operationSet = 0x0020; // yep, same as Myarc
-  } else if (0 == strcmp(drive, "IDE")) {
+  } else if (str_equals(drive, "IDE")) {
     operationSet = 0x0080;
-  } else if (0 == strcmp(drive, "HDX")) {
+  } else if (str_equals(drive, "HDX")) {
     operationSet = 0x0090;
   }
 
@@ -137,6 +138,7 @@ unsigned char __attribute__((noinline)) base_lvl2(int crubase, char unit, char o
 unsigned int __attribute__((noinline)) subroutine(int crubase, unsigned char operation) {
   enableROM(crubase);
   unsigned int addr = 0;
+
   struct DeviceRomHeader* dsrrom = (struct DeviceRomHeader*) 0x4000;
   struct NameLink* entry = (struct NameLink*) dsrrom->basiclnk;
   while(entry != 0) {
