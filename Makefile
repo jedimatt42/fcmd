@@ -4,6 +4,7 @@ CC=tms9900-gcc
 LIBTI99?=/home/matthew/dev/github/jedimatt42/libti99
 OBJCOPY=tms9900-objcopy
 OBJDUMP=tms9900-objdump
+XGA99?=$(shell which xga99.py)
 
 FNAME=FCMD
 UCFNAME=$(shell echo -n $(FNAME) | tr 'a-z' 'A-Z')
@@ -81,7 +82,7 @@ $(FNAME)C.bin: bank0.bin bank1.bin bank2.bin bank3.bin bank4.bin bank5.bin bank6
 	cat $^ >$@
 
 $(FNAME)G.bin: gpl-boot.g99
-	xga99.py -D "CART=$(shell echo -n '>' ; grep _cart mapfile | cut -f2 -d'x' | cut -c13-16)" -o $@ $<
+	python2 $(XGA99) -D "CART=$(shell echo -n '>' ; grep _cart mapfile | cut -f2 -d'x' | cut -c13-16)" -o $@ $<
 
 $(FNAME).elf: $(OBJECT_LIST)
 	$(LD) $(LINK_OBJECTS) $(LDFLAGS) -o $(FNAME).elf -Map=mapfile
