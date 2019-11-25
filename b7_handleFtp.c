@@ -262,30 +262,27 @@ void ftpGet() {
       memcpy(&(addInfoPtr->first_sector), &(tifiles->sectors), 8);
 
       tputs("setdir: "); tputs(currentPath); tputs("\n");
-      int ferr = bk_lvl2_setdir(currentDsr->crubase, unit, currentPath);
+      bk_lvl2_setdir(currentDsr->crubase, unit, currentPath);
+
+      int ferr = bk_lvl2_output(currentDsr->crubase, unit, tiname, 0, addInfoPtr);
       if (ferr) {
-        tputs("Error, could not set directory\n");
+        tputs("Error, could not output file\n");
       } else {
-        ferr = bk_lvl2_output(currentDsr->crubase, unit, tiname, 0, addInfoPtr);
-        if (ferr) {
-          tputs("Error, could not output file\n");
-        } else {
-          int totalsectors = tifiles->sectors;
-          int secno = 0;
-          while(secno < totalsectors) {
-            len = readstream(1, 256); // now work in single block chunks.
-            // if (len != 256) {
-            //   tputs("Error, receiving full block\n");
-            //   break;
-            // }
-            vdpmemcpy(VDPFBUF, block, 256);
-            addInfoPtr->first_sector = secno++;
-            ferr = bk_lvl2_output(currentDsr->crubase, unit, tiname, 1, addInfoPtr);
-            if (ferr) {
-              tputs("Error, failed to write block\n");
-            } else {
-              tputs(".");
-            }
+        int totalsectors = tifiles->sectors;
+        int secno = 0;
+        while(secno < totalsectors) {
+          len = readstream(1, 256); // now work in single block chunks.
+          // if (len != 256) {
+          //   tputs("Error, receiving full block\n");
+          //   break;
+          // }
+          vdpmemcpy(VDPFBUF, block, 256);
+          addInfoPtr->first_sector = secno++;
+          ferr = bk_lvl2_output(currentDsr->crubase, unit, tiname, 1, addInfoPtr);
+          if (ferr) {
+            tputs("Error, failed to write block\n");
+          } else {
+            tputs(".");
           }
         }
         tputs("\n");
