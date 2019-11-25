@@ -14,7 +14,8 @@ MSX dos, as I am a fan, and whatever seems easiest to implement...
 
 Supports:
 
-* Directories ( TIPI, other devices are un-tested )
+* Directories
+  * Tested against TIPI, SCSI 1.6, IDE (Fred Kaal DSR), Myarc HFDC
 * F18A 80 column with an ANSI font, and fast scrolling.
 * 40 column mode is used by default if F18A is not detected.
 * FinalGROM cartridge switching (limited)

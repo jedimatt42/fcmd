@@ -141,8 +141,10 @@ unsigned int __attribute__((noinline)) subroutine(int crubase, unsigned char ope
 
   struct DeviceRomHeader* dsrrom = (struct DeviceRomHeader*) 0x4000;
   struct NameLink* entry = (struct NameLink*) dsrrom->basiclnk;
+  unsigned int searchname = 0x0100 | operation;
   while(entry != 0) {
-    if (entry->name[0] == 1 && entry->name[1] == operation) {
+    unsigned int entryname = *((int*)entry->name);
+    if (entryname == searchname) {
       addr = entry->routine;
       break;
     }

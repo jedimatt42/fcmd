@@ -23,7 +23,9 @@ void handleLvl2() {
   while(link != 0) {
     if (link->name[0] == 1) {
       tputs(" >");
-      tputs(uint2hex(link->name[1]));
+      register unsigned int opname = 0;
+      opname = link->name[1];
+      tputs(uint2hex(opname)+2);
     }
     link = link->next;
   }
