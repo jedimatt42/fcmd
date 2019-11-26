@@ -81,7 +81,7 @@ bank7.bin: $(FNAME).elf $(HEADBIN)
 $(FNAME)C.bin: bank0.bin bank1.bin bank2.bin bank3.bin bank4.bin bank5.bin bank6.bin bank7.bin
 	cat $^ >$@
 
-$(FNAME)G.bin: gpl-boot.g99
+$(FNAME)G.bin: gpl-boot.g99 $(FNAME).elf
 	python2 $(XGA99) -D "CART=$(shell echo -n '>' ; grep _cart mapfile | cut -f2 -d'x' | cut -c13-16)" -o $@ $<
 
 $(FNAME).elf: $(OBJECT_LIST)
