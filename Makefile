@@ -92,6 +92,7 @@ $(FNAME).elf: $(OBJECT_LIST)
 	rm -f *.elf
 	rm -f *.bin
 	rm -f mapfile
+	rm -f *.RPK
 
 %.o: %.asm
 	mkdir -p objects
