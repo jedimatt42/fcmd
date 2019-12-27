@@ -22,6 +22,7 @@ SECTIONS
   OVERLAY : AT (0x10000)
   {
     .bank0 {             /* list the set of modules in bank 0 */
+      objects/api.o(.text)
       objects/b0_*.o(.text)
       __LOAD_DATA = .;   /* .data segment is copied here so initial values can be loaded in RAM */
     }

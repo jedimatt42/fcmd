@@ -62,7 +62,7 @@ void handleCommand(char *buffer) {
   else COMMAND("protect", bk_handleProtect)
   else COMMAND("readkey", bk_handleReadkey)
   else COMMAND("rename", bk_handleRename)
-  else COMMAND("rmdir", handleRmdir)
+  else COMMAND("rmdir", bk_handleRmdir)
   else COMMAND("tipibeeps", playtipi)
   else COMMAND("tipimap", handleTipimap)
   else COMMAND("type", bk_handleType)

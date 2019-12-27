@@ -7,3 +7,5 @@ objects
 *.elf
 mapfile
 .vscode
+api.asm
+api.h

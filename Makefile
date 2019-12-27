@@ -17,7 +17,7 @@ CFLAGS=\
 
 SRCS:=$(sort $(wildcard *.c) $(wildcard *.asm))
 
-OBJECT_LIST:=$(SRCS:.c=.o)
+OBJECT_LIST:=$(SRCS:.c=.o) api.o
 OBJECT_LIST:=$(OBJECT_LIST:.asm=.o)
 
 LINK_OBJECTS:=$(addprefix objects/,$(OBJECT_LIST))
@@ -93,6 +93,7 @@ $(FNAME).elf: $(OBJECT_LIST)
 	rm -f *.bin
 	rm -f mapfile
 	rm -f *.RPK
+	rm -f api.asm
 
 %.o: %.asm
 	mkdir -p objects
@@ -101,4 +102,10 @@ $(FNAME).elf: $(OBJECT_LIST)
 %.o: %.c
 	mkdir -p objects
 	cd objects; $(CC) -c ../$< $(CFLAGS) -I/home/matthew/dev/gcc-9900/lib/gcc/tms9900/4.4.0/include -o $@
+
+api.asm: api.lst
+	rm -f api.asm
+	for f in `cat api.lst`; do echo "\tref $$f" >> api.asm; done
+	for f in `cat api.lst`; do echo "\tdef api_$$f" >> api.asm; done
+	for f in `cat api.lst`; do echo "api_$$f\tdata $$f" >> api.asm; done
 

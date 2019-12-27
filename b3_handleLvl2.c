@@ -1,5 +1,5 @@
 #include "banks.h"
-#define MYBANK BANK_0
+#define MYBANK BANK_3
 
 #include "commands.h"
 #include "b2_dsrutil.h"
