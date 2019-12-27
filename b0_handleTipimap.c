@@ -160,6 +160,11 @@ static void setAutoMap() {
   }
 }
 
+static int validDrive(const char* keybuf, const char* prefix, char min, char max) {
+  return (0==str_startswith(keybuf, prefix) && 
+       keybuf[3] >= min && keybuf[3] <= max);
+}
+
 static void setDriveMapping(const char* drive, const char* path) {
   char keybuf[10];
   int dlen = strlen(drive);
@@ -167,8 +172,7 @@ static void setDriveMapping(const char* drive, const char* path) {
   keybuf[9] = 0;
   
   if (!((dlen == 4 || (dlen == 5 && keybuf[4] == '.')) && 
-       (0==str_startswith(keybuf, "DSK") || 0==str_startswith(keybuf, "URI")) && 
-       keybuf[3] >= '1' && keybuf[3] <= '3'))
+       (validDrive(keybuf, "DSK", '0', '4') || validDrive(keybuf, "URI", '1', '3'))))
   {
     tputs("error, bad drive specification\n");
     return;
@@ -186,7 +190,9 @@ static void setDriveMapping(const char* drive, const char* path) {
     strcpy(namebuf, "TIPI");
     struct DeviceServiceRoutine* dsr = bk_findDsr(namebuf, 0);
     strcat(namebuf, ".");
-    if (str_startswith(path, "TIPI.")) {
+    if (str_equals((char*) path, "TIPI.") || str_equals((char*) path, ".")) {
+      strcpy(namebuf, ".");
+    } else if (str_startswith(path, "TIPI.")) {
       strcpy(namebuf, path+5);
     } else {
       strcpy(namebuf, path);
