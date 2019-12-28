@@ -17,8 +17,8 @@ CFLAGS=\
 
 SRCS:=$(sort $(wildcard *.c) $(wildcard *.asm))
 
-OBJECT_LIST:=$(SRCS:.c=.o) api.o
-OBJECT_LIST:=$(OBJECT_LIST:.asm=.o)
+OBJECT_LIST:=$(SRCS:.c=.o)
+OBJECT_LIST:=$(filter-out api.o,$(OBJECT_LIST:.asm=.o)) api.o
 
 LINK_OBJECTS:=$(addprefix objects/,$(OBJECT_LIST))
 
@@ -84,7 +84,7 @@ $(FNAME)C.bin: bank0.bin bank1.bin bank2.bin bank3.bin bank4.bin bank5.bin bank6
 $(FNAME)G.bin: gpl-boot.g99 $(FNAME).elf
 	python2 $(XGA99) -D "CART=$(shell echo -n '>' ; grep _cart mapfile | sed 's/^\s*0x0*\([0-9a-f]*\) *_cart/\1/')" -o $@ $<
 
-$(FNAME).elf: $(OBJECT_LIST)
+$(FNAME).elf: $(LINK_OBJECTS)
 	$(LD) $(LINK_OBJECTS) $(LDFLAGS) -o $(FNAME).elf -Map=mapfile
 
 .phony clean:
@@ -94,18 +94,18 @@ $(FNAME).elf: $(OBJECT_LIST)
 	rm -f mapfile
 	rm -f *.RPK
 	rm -f api.asm
+	rm -f api.banks
 
-%.o: %.asm
+objects/%.o: %.asm
 	mkdir -p objects
-	cd objects; $(GAS) ../$< -o $@
+	cd objects; $(GAS) ../$< -o $(notdir $@)
 
-%.o: %.c
+objects/%.o: %.c
 	mkdir -p objects
-	cd objects; $(CC) -c ../$< $(CFLAGS) -I/home/matthew/dev/gcc-9900/lib/gcc/tms9900/4.4.0/include -o $@
+	cd objects; $(CC) -c ../$< $(CFLAGS) -I/home/matthew/dev/gcc-9900/lib/gcc/tms9900/4.4.0/include -o $(notdir $@)
 
-api.asm: api.lst
+api.asm: api.lst makeapi.py
 	rm -f api.asm
-	for f in `cat api.lst`; do echo "\tref $$f" >> api.asm; done
-	for f in `cat api.lst`; do echo "\tdef api_$$f" >> api.asm; done
-	for f in `cat api.lst`; do echo "api_$$f\tdata $$f" >> api.asm; done
+	for f in `cat api.lst`; do grep $$f b*.h; done | grep BANK_ | cut -d'(' -f2 | cut -d',' -f1-2 >api.banks
+	python2 makeapi.py api.lst api.banks api.asm
 
