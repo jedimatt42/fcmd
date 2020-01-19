@@ -50,13 +50,13 @@ SECTIONS
     }                    /*   modules should be linked into the same bank */
   } >bank_rom
 
-  . = 0xA000;            /* b1cp code (libti99 + term) and data + bss */
+  . = 0x2000;            /* b1cp code (libti99 + term) and data + bss */
 
   .libti99 : {
     __LIB_START = .;     /* note the address so we can copy starting from here in ROM */
     libti99.a(.text)     /* vdp routines from libti99 */
     objects/b1cp_*.o(.text) 
-  } >upper_exp
+  } >lower_exp
 
   .data : {
     __DATA_START = .;    /* define RAM location symbol so __LOAD_DATA can be copied from ROM */
@@ -70,7 +70,7 @@ SECTIONS
     __BSS_END = .;
   } >upper_exp
 
-  __STACK_TOP = 0xFF00;
+  __STACK_TOP = 0xC000;
 
   __STATS_HEAD = SIZEOF(.text);
   __STATS_LIBTI99 = SIZEOF(.libti99);
@@ -83,4 +83,5 @@ SECTIONS
   __STATS_BANK_6 = 0x1F90 - SIZEOF(.bank6);
   __STATS_BANK_7 = 0x1F90 - SIZEOF(.bank7);
   __STATS_RAM = SIZEOF(.bss) + SIZEOF(.data);
+  __STATS_STACK = __STACK_TOP - __BSS_END;
 }  
