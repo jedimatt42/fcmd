@@ -1,5 +1,5 @@
 #include "banks.h"
-#define MYBANK BANK_2
+#define MYBANK BANK_4
 
 #include "b1cp_strutil.h"
 #include "b0_parsing.h"
@@ -13,16 +13,16 @@ void handleCd() {
   char path[256];
   bk_parsePathParam(&dsr, path, PR_REQUIRED);
   if (dsr == 0) {
-    tputs("no path: drive or folder specified\n");
+    tputs_rom("no path: drive or folder specified\n");
     return;
   }
   if (path[strlen(path)-1] != '.') {
     strcat(path, ".");
   }
-  unsigned int stat = existsDir(dsr, path);
+  unsigned int stat = bk_existsDir(dsr, path);
   if (stat != 0) {
-    tputs("error, device/folder not found: ");
-    tputs(path);
+    tputs_rom("error, device/folder not found: ");
+    tputs_ram(path);
     tputc('\n');
     return;
   }

@@ -12,7 +12,7 @@
 void handleReadkey() {
   char* name = strtok(0, " ");
   if (!name) {
-    tputs("Error, variable name must be given\n");
+    tputs_rom("Error, variable name must be given\n");
     return;
   }
 

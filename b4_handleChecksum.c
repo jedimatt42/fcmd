@@ -1,5 +1,5 @@
 #include "banks.h"
-#define MYBANK BANK_2
+#define MYBANK BANK_4
 
 #include "commands.h"
 #include "b0_globals.h"
@@ -13,7 +13,7 @@
 void handleChecksum() {
   char* filename = strtok(0, " ");
   if (filename == 0) {
-    tputs("error, must specify a file name\n");
+    tputs_rom("error, must specify a file name\n");
     return;
   }
 
@@ -26,13 +26,13 @@ void handleChecksum() {
   addInfoPtr->recs_per_sec = 0;
   
   unsigned int source_crubase = currentDsr->crubase;
-  unsigned char source_unit = path2unitmask(currentPath);
+  unsigned char source_unit = bk_path2unitmask(currentPath);
 
-  lvl2_setdir(source_crubase, source_unit, currentPath);
-  unsigned int err = lvl2_input(source_crubase, source_unit, filename, 0, addInfoPtr);
+  bk_lvl2_setdir(source_crubase, source_unit, currentPath);
+  unsigned int err = bk_lvl2_input(source_crubase, source_unit, filename, 0, addInfoPtr);
   if (err) {
-    tputs("error reading file: ");
-    tputs(uint2hex(err));
+    tputs_rom("error reading file: ");
+    tputs_ram(uint2hex(err));
     tputc('\n');
     return;
   }
@@ -44,17 +44,17 @@ void handleChecksum() {
 
   int totalBlocks = addInfoPtr->first_sector;
   if (totalBlocks == 0) {
-    tputs("error, source file is empty.\n");
+    tputs_rom("error, source file is empty.\n");
     return;
   }
   int blockId = 0;
   while(blockId < totalBlocks) {
     addInfoPtr->first_sector = blockId;
-    lvl2_setdir(source_crubase, source_unit, currentPath);
-    err = lvl2_input(source_crubase, source_unit, filename, 1, addInfoPtr);
+    bk_lvl2_setdir(source_crubase, source_unit, currentPath);
+    err = bk_lvl2_input(source_crubase, source_unit, filename, 1, addInfoPtr);
     if (err) {
-      tputs("error reading file: ");
-      tputs(uint2hex(err));
+      tputs_rom("error reading file: ");
+      tputs_ram(uint2hex(err));
       tputc('\n');
       return;
     }
@@ -75,8 +75,8 @@ void handleChecksum() {
   int result = sum2;
   result <<= 8;
   result += sum1;
-  tputs("checksum: ");
-  tputs(uint2hex(result));
+  tputs_rom("checksum: ");
+  tputs_ram(uint2hex(result));
   tputc('\n');
 }
 

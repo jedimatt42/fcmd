@@ -11,7 +11,7 @@
 void handleRmdir() {
   char* dirname = strtok(0, " ");
   if (dirname == 0) {
-    tputs("error, must specify a directory name\n");
+    tputs_rom("error, must specify a directory name\n");
     return;
   }
 
@@ -21,9 +21,9 @@ void handleRmdir() {
 
   unsigned int err = bk_lvl2_rmdir(currentDsr->crubase, unit, dirname);
   if (err) {
-    tputs("cannot remove directory ");
-    tputs(currentPath);
-    tputs(dirname);
+    tputs_rom("cannot remove directory ");
+    tputs_ram(currentPath);
+    tputs_ram(dirname);
     tputc('\n');
   }
 }

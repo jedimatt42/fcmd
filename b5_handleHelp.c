@@ -49,10 +49,10 @@ void wraptext(char* str) {
 void handleHelp() {
   char* tok = strtok(0, " ");
   if (tok == 0) {
-    tputs("help <command>\n");
-    tputs("\nAvailable commands:\n");
+    wraptext("help <command>\n");
+    wraptext("\nAvailable commands:\n");
     wraptext(HELP_COMMANDS);
-    tputs("\n\n");
+    wraptext("\n\n");
     return;
   }
 
@@ -156,8 +156,8 @@ void handleHelp() {
   } else if (matchcmd(tok,"width")) {
     wraptext("width <40|80> - change display to 40 or 80 column mode\n");
   } else {
-    tputs("no help for command: ");
-    tputs(tok);
+    wraptext("no help for command: ");
+    tputs_ram(tok);
     tputc('\n');
   }
   tputc('\n');

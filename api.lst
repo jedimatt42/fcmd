@@ -1,5 +1,5 @@
 getstr
-tputs
+tputc
 
 dsr_ea5load
 dsr_open

@@ -29,19 +29,19 @@ int labels_get(char* name) {
 
 void labels_add(char* name, int gotoline) {
   if (strlen(name) > 10) {
-    tputs("Error, label name too long, limit is 10\n");
+    tputs_rom("Error, label name too long, limit is 10\n");
     return;
   }
   int existing = labels_get(name);
   if (existing != -1) {
-    tputs("Error, label already defined at line: ");
-    tputs(uint2str(existing));
-    tputs("\n");
+    tputs_rom("Error, label already defined at line: ");
+    tputs_ram(uint2str(existing));
+    tputc('\n');
     return;
   }
 
   if (label_next >= 50) {
-    tputs("Error, no more room in label dictionary\n");
+    tputs_rom("Error, no more room in label dictionary\n");
     return;
   }
   strcpy(labels[label_next].name, name);

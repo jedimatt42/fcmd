@@ -22,6 +22,6 @@ void handleWidth() {
     return;
   }
   
-  tputs("no supported width specified\n");
+  tputs_rom("no supported width specified\n");
 }
 

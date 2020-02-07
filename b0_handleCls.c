@@ -7,6 +7,6 @@
 
 void handleCls() {
   char cls[] = { 27, '[', '2', 'J', 0 };
-  tputs(cls);
+  tputs_rom(cls);
 }
 

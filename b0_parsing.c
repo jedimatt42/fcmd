@@ -74,15 +74,15 @@ void handleCommand(char *buffer) {
       tok[strlen(tok)-1] = 0; // shorten to just the name
       bk_labels_add(tok, lineno);
     } else {
-      tputs("error, label only supported in script\n");
+      tputs_rom("error, label only supported in script\n");
     }
   } else if (isAssignment(tok)) {
     char* name = strtok(procbuf, "=");
     char* value = strtokpeek(0, ""); // to end of line
     bk_vars_set(name, value);
   } else {
-    tputs("unknown command: ");
-    tputs(tok);
+    tputs_rom("unknown command: ");
+    tputs_ram(tok);
     tputc('\n');
   }
 }
@@ -120,7 +120,7 @@ void parsePathParam(struct DeviceServiceRoutine** dsr, char* buffer, int require
       int ldot = lindexof(currentPath, '.', strlen(currentPath) - 2);
       if (ldot == -1) {
         *dsr = 0;
-        tputs("No parent folder\n");
+        tputs_rom("No parent folder\n");
         return;
       }
       strncpy(buffer, currentPath, ldot + 1);
@@ -136,7 +136,7 @@ void parsePathParam(struct DeviceServiceRoutine** dsr, char* buffer, int require
         *dsr = bk_findDsr(devicename, crubase);
         // if still not found, then give up.
         if (*dsr == 0) {  
-          tputs("device not found.\n");
+          tputs_rom("device not found.\n");
           return;
         }
         // at this stage, buffer is set with result device name.

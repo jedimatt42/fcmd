@@ -32,7 +32,7 @@ static void visitLines(line_cb onLine, char* filterArg1) {
   int err = bk_dsr_open(dsr, &pab, namebuf, DSR_TYPE_INPUT | DSR_TYPE_DISPLAY | DSR_TYPE_VARIABLE | DSR_TYPE_SEQUENTIAL, 0);
   
   if (err) {
-    tputs("could no open PI.CONFIG\n");
+    tputs_rom("could no open PI.CONFIG\n");
     return;
   }
   while(!err) {
@@ -62,7 +62,7 @@ static void writeConfigItem(const char* key, const char* value) {
   int err = bk_dsr_open(dsr, &pab, namebuf, DSR_TYPE_APPEND | DSR_TYPE_VARIABLE, 0);
   
   if (err) {
-    tputs("could no open PI.CONFIG\n");
+    tputs_rom("could no open PI.CONFIG\n");
     return;
   }
   bk_initPab(&pab);
@@ -82,14 +82,14 @@ void onLineShowMapping(char* linebuf, char* extra) {
     char* path = strtok(0, " ");
     if (path) {
       if (str_startswith(key, "URI")) {
-        tputs(key);
-        tputs(". => ");
+        tputs_ram(key);
+        tputs_rom(". => ");
       } else {
         char* drive = strtok(key, "_");
-        tputs(drive);
-        tputs(". => TIPI.");
+        tputs_ram(drive);
+        tputs_rom(". => TIPI.");
       }
-      tputs(path);
+      tputs_ram(path);
       tputc('\n');
     }
   }
@@ -104,10 +104,10 @@ void onLineIfDriveShowMapping(char* linebuf, char* drivePrefix) {
   if (strlen(key) > 4 && str_startswith(key, drivePrefix)) {
     char* path = strtok(0, " ");
     if (path) {
-      tputs("TIPI.");
-      tputs(path);
+      tputs_rom("TIPI.");
+      tputs_ram(path);
     } else {
-      tputs("not mapped\n");
+      tputs_rom("not mapped\n");
     }
     tputc('\n');
   }
@@ -139,8 +139,8 @@ void onLineAuto(char* linebuf, char* extra) {
   if (str_startswith(linebuf, "AUTO=")) {
     char* val = strtok(linebuf, "=");
     val = strtok(0, " ");
-    tputs("AUTO ");
-    tputs(val);
+    tputs_rom("AUTO ");
+    tputs_ram(val);
     tputc('\n');
   }
 }
@@ -153,7 +153,7 @@ static void setAutoMap() {
     } else if (!strcmpi(onoff, "OFF")) {
       writeConfigItem("AUTO", "off");
     } else {
-      tputs("error, value must be one of: on, off\n");
+      tputs_rom("error, value must be one of: on, off\n");
     }
   } else {
     visitLines(onLineAuto, 0);
@@ -174,7 +174,7 @@ static void setDriveMapping(const char* drive, const char* path) {
   if (!((dlen == 4 || (dlen == 5 && keybuf[4] == '.')) && 
        (validDrive(keybuf, "DSK", '0', '4') || validDrive(keybuf, "URI", '1', '3'))))
   {
-    tputs("error, bad drive specification\n");
+    tputs_rom("error, bad drive specification\n");
     return;
   }
 
@@ -199,7 +199,7 @@ static void setDriveMapping(const char* drive, const char* path) {
     }
   } else {
     if (!str_startswith(path, "HTTP")) {
-      tputs("error path must be a URL prefix\n");
+      tputs_rom("error path must be a URL prefix\n");
       return;
     }
     strcpy(namebuf, path);
@@ -219,7 +219,7 @@ void handleTipimap() {
   char* drive = strtok(0, " ");
   if (!drive) {
     if (clear) {
-      tputs("error, no mapping drive specified\n");
+      tputs_rom("error, no mapping drive specified\n");
     } else {
       listDrives();
     }

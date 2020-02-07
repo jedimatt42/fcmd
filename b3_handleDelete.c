@@ -11,7 +11,7 @@
 void handleDelete() {
   char* filename = strtok(0, " ");
   if (filename == 0) {
-    tputs("error, must specify a file name\n");
+    tputs_rom("error, must specify a file name\n");
     return;
   }
 
@@ -21,8 +21,8 @@ void handleDelete() {
   
   unsigned int exists = bk_existsFile(currentDsr, buffer);
   if (!exists) {
-    tputs("file not found ");
-    tputs(buffer);
+    tputs_rom("file not found ");
+    tputs_ram(buffer);
     tputc('\n');
     return;
   }
@@ -33,9 +33,9 @@ void handleDelete() {
 
   unsigned int err = bk_dsr_delete(currentDsr, &pab);
   if (err) {
-    tputs("cannot delete file ");
-    tputs(currentPath);
-    tputs(filename);
+    tputs_rom("cannot delete file ");
+    tputs_ram(currentPath);
+    tputs_ram(filename);
     tputc('\n');
   }
 }

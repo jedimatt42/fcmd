@@ -16,7 +16,7 @@ void handleColor() {
   if (fore && fc >= 0 && fc <= 15) {
     foreground = fc;
   } else {
-    tputs("must specify a foreground color 0-15\n");
+    tputs_rom("must specify a foreground color 0-15\n");
     return;
   }
   if (back) {
@@ -24,7 +24,7 @@ void handleColor() {
     if (back && bg >= 0 && bg <= 15) {
       background = bg;
     } else {
-      tputs("background must be between 0-15 if specified\n");
+      tputs_rom("background must be between 0-15 if specified\n");
       foreground = oldfc;
       return;
     }

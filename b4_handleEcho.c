@@ -18,7 +18,7 @@ void handleEcho() {
   }
 
   char* tok = strtok(0, 0);
-  tputs(tok);
+  tputs_ram(tok);
 
   if (newline) {
     tputc('\n');

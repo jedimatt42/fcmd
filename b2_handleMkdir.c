@@ -12,7 +12,7 @@
 void handleMkdir() {
   char* dirname = strtok(0, " ");
   if (dirname == 0) {
-    tputs("error, must specify a directory name\n");
+    tputs_rom("error, must specify a directory name\n");
     return;
   }
 
@@ -22,9 +22,9 @@ void handleMkdir() {
 
   unsigned int err = lvl2_mkdir(currentDsr->crubase, unit, dirname);
   if (err) {
-    tputs("cannot create directory ");
-    tputs(currentPath);
-    tputs(dirname);
+    tputs_rom("cannot create directory ");
+    tputs_ram(currentPath);
+    tputs_ram(dirname);
     tputc('\n');
   }
 }

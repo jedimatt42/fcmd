@@ -54,7 +54,7 @@ static void optional_pause() {
   more_on = 0;
   more_count++;
   if (more_count >= 22) {
-    tputs("\n-- press any key for more --");
+    tputs_rom("\n-- press any key for more --");
     cgetc();
     more_count = 0;
     cclearxy(0,22,termWidth);
@@ -463,7 +463,7 @@ void charout(unsigned char ch) {
   }
 }
 
-void terminalDisplay(unsigned char c) {
+void tputc(unsigned char c) {
   if (stage == STAGE_OPEN) {
     if (c == 27) {
       stage = STAGE_ESC;
@@ -504,8 +504,8 @@ void terminalDisplay(unsigned char c) {
   }
 }
 
-void tputs(const char* str) {
+void tputs_ram(const char* str) {
   while(*str) {
-    terminalDisplay(*str++);
+    tputc(*str++);
   }
 }

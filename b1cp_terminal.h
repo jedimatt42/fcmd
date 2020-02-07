@@ -3,9 +3,14 @@
 
 void initTerminal();
 
-#define tputc(x) terminalDisplay(x)
-void terminalDisplay(unsigned char c);
-void tputs(const char* str);
+void tputc(unsigned char c);
+void tputs_ram(const char* str);
+
+inline void tputs_rom(const char* str) {
+  while(*str) {
+    tputc(*str++);
+  }
+}
 
 extern int termWidth;
 extern unsigned char foreground;

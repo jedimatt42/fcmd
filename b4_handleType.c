@@ -25,7 +25,7 @@ void handleType() {
   struct DeviceServiceRoutine* dsr;
   bk_parsePathParam(&dsr, namebuf, PR_REQUIRED);
   if (dsr == 0) {
-    tputs("error, no file specified\n");
+    tputs_rom("error, no file specified\n");
     return;
   }
 
@@ -42,8 +42,8 @@ void handleType() {
   int err = bk_dsr_open(dsr, &pab, namebuf, flags, 0);
   
   if (err) {
-    tputs("could not open ");
-    tputs(namebuf);
+    tputs_rom("could not open ");
+    tputs_ram(namebuf);
     tputc('\n');
     return;
   }

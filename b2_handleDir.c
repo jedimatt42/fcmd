@@ -46,8 +46,8 @@ void handleDir() {
 
   unsigned int stat = existsDir(dsr, path);
   if (stat != 0) {
-    tputs("error, device/folder not found: ");
-    tputs(path);
+    tputs_rom("error, device/folder not found: ");
+    tputs_ram(path);
     tputc('\n');
     return;
   }
@@ -63,20 +63,20 @@ void handleDir() {
 }
 
 void onLongVolInfo(struct VolInfo* volInfo) {
-  tputs("Diskname: ");
-  tputs(volInfo->volname);
+  tputs_rom("Diskname: ");
+  tputs_ram(volInfo->volname);
   if (displayWidth == 40) {
     tputc('\n');
   } else {
     tputc(' ');
   }
-  tputs("Available: ");
-  tputs(uint2str(volInfo->available));
-  tputs(" Used: ");
-  tputs(uint2str(volInfo->total - volInfo->available));
-  tputs("\n\n");
-  tputs("Name       Type    P Reclen Sectors\n");
-  tputs("-----------------------------------\n");
+  tputs_rom("Available: ");
+  tputs_ram(uint2str(volInfo->available));
+  tputs_rom(" Used: ");
+  tputs_ram(uint2str(volInfo->total - volInfo->available));
+  tputs_rom("\n\n");
+  tputs_rom("Name       Type    P Reclen Sectors\n");
+  tputs_rom("-----------------------------------\n");
 }
 
 const char* file_types[] = {
@@ -92,31 +92,32 @@ void onLongDirEntry(struct DirEntry* dirEntry) {
   if (!bk_globMatches(dirEntry->name)) {
     return;
   }
-  tputs(dirEntry->name);
+  tputs_ram(dirEntry->name);
   cputpad(11, dirEntry->name);
 
   int de_type = (0x0007 & dirEntry->type) - 1;
 
   char* ftype = (char*) file_types[de_type];
   
-  tputs(ftype);
+  tputs_rom(ftype);
   cputpad(8, ftype);
 
   if (dirEntry->type < 0) {
-    tputs("P ");
+    tputc('P'); 
   } else {
-    tputs("  ");
+    tputc(' ');
   }
+  tputc(' ');
 
   if (de_type >= 5) { // is program or dir? skip record details.
     cputpad(7, "");
   } else {
     char* sizestr = uint2str(dirEntry->reclen);
-    tputs(sizestr);
+    tputs_ram(sizestr);
     cputpad(7, sizestr);
   }
 
-  tputs(uint2str(dirEntry->sectors));
+  tputs_ram(uint2str(dirEntry->sectors));
 
   tputc('\n');
 }
@@ -130,7 +131,7 @@ void onWideDirEntry(struct DirEntry* dirEntry) {
     return;
   }
   int collimit = displayWidth / 11;
-  tputs(dirEntry->name);
+  tputs_ram(dirEntry->name);
   col++;
   if (col < collimit) {
     cputpad(11, dirEntry->name);

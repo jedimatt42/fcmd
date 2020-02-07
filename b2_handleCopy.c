@@ -13,7 +13,7 @@
 void handleCopy() {
   char* filename = strtok(0, " ");
   if (filename == 0) {
-    tputs("error, must specify a file name\n");
+    tputs_rom("error, must specify a file name\n");
     return;
   }
   char path[256];
@@ -24,7 +24,7 @@ void handleCopy() {
   struct DeviceServiceRoutine* dsr = 0;
   bk_parsePathParam(&dsr, path, PR_REQUIRED);
   if (dsr == 0) {
-    tputs("no path: drive or folder specified\n");
+    tputs_rom("no path: drive or folder specified\n");
     return;
   }
   if (path[strlen(path)-1] != '.') {
@@ -32,8 +32,8 @@ void handleCopy() {
   }
   unsigned int stat = existsDir(dsr, path);
   if (stat != 0) {
-    tputs("error, device/folder not found: ");
-    tputs(path);
+    tputs_rom("error, device/folder not found: ");
+    tputs_ram(path);
     tputc('\n');
     return;
   }
@@ -54,15 +54,15 @@ void handleCopy() {
   lvl2_setdir(source_crubase, source_unit, currentPath);
   unsigned int err = lvl2_input(source_crubase, source_unit, filename, 0, addInfoPtr);
   if (err) {
-    tputs("error reading file: ");
-    tputs(uint2hex(err));
+    tputs_rom("error reading file: ");
+    tputs_ram(uint2hex(err));
     tputc('\n');
     return;
   }
 
   int totalBlocks = addInfoPtr->first_sector;
   if (totalBlocks == 0) {
-    tputs("error, source file is empty.\n");
+    tputs_rom("error, source file is empty.\n");
     return;
   }
 
@@ -72,8 +72,8 @@ void handleCopy() {
   lvl2_setdir(dest_crubase, dest_unit, path);
   err = lvl2_output(dest_crubase, dest_unit, filename, 0, addInfoPtr);
   if (err) {
-    tputs("error writing file: ");
-    tputs(uint2hex(err));
+    tputs_rom("error writing file: ");
+    tputs_ram(uint2hex(err));
     tputc('\n');
     return;
   }
@@ -84,8 +84,8 @@ void handleCopy() {
     lvl2_setdir(source_crubase, source_unit, currentPath);
     err = lvl2_input(source_crubase, source_unit, filename, 1, addInfoPtr);
     if (err) {
-      tputs("\nerror reading file: ");
-      tputs(uint2hex(err));
+      tputs_rom("\nerror reading file: ");
+      tputs_ram(uint2hex(err));
       tputc('\n');
       return;
     }
@@ -93,17 +93,17 @@ void handleCopy() {
     lvl2_setdir(dest_crubase, dest_unit, path);
     err = lvl2_output(dest_crubase, dest_unit, filename, 1, addInfoPtr);
     if (err) {
-      tputs("\nerror reading file: ");
-      tputs(uint2hex(err));
+      tputs_rom("\nerror reading file: ");
+      tputs_ram(uint2hex(err));
       tputc('\n');
       return;
     }
 
     blockId++;
-    tputs("\rcopied block ");
-    tputs(uint2str(blockId));
-    tputs(" of ");
-    tputs(uint2str(totalBlocks));
+    tputs_rom("\rcopied block ");
+    tputs_ram(uint2str(blockId));
+    tputs_rom(" of ");
+    tputs_ram(uint2str(totalBlocks));
   }
   tputc('\n'); // end status line.
 }

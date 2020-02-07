@@ -12,12 +12,12 @@
 void handleRename() {
   char* filename = strtok(0, " ");
   if (filename == 0) {
-    tputs("error, must specify source file name\n");
+    tputs_rom("error, must specify source file name\n");
     return;
   }
   char* newname = strtok(0, " ");
   if (newname == 0) {
-    tputs("error, must specify new file name\n");
+    tputs_rom("error, must specify new file name\n");
     return;
   }
 
@@ -39,9 +39,9 @@ void handleRename() {
   }
 
   if (ferr) {
-    tputs("cannot rename file ");
-    tputs(currentPath);
-    tputs(filename);
+    tputs_rom("cannot rename file ");
+    tputs_ram(currentPath);
+    tputs_ram(filename);
     tputc('\n');
   }
 }

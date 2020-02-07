@@ -12,11 +12,11 @@ void handleDrives() {
   
   while(dsrList[i].name[0] != 0) {
     cb = dsrList[i].crubase;
-    tputs(uint2hex(cb));
-    tputs(" -");
+    tputs_ram(uint2hex(cb));
+    tputs_rom(" -");
     while (cb == dsrList[i].crubase) {
       tputc(' ');
-      tputs(dsrList[i].name);
+      tputs_ram(dsrList[i].name);
       i++;
     }
     tputc('\n');

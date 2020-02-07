@@ -12,14 +12,14 @@
 
 void handleGoto() {
   if (!scripton) {
-    tputs("Error, 'goto' only valid in a script\n");
+    tputs_rom("Error, 'goto' only valid in a script\n");
     return;
   }
 
   char* label = strtok(0, " ");
  
   if (!label) {
-    tputs("Error, label required\n");
+    tputs_rom("Error, label required\n");
     return;
   } 
 
@@ -45,9 +45,9 @@ void handleGoto() {
   }
 
   if (-1 == gotoline) {
-    tputs("Error, no label named: ");
-    tputs(label);
-    tputs("\n");
+    tputs_rom("Error, no label named: ");
+    tputs_ram(label);
+    tputc('\n');
     return;
   } else {
     // scriptPab should point to script name

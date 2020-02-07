@@ -55,7 +55,7 @@ unsigned char loadDir(struct DeviceServiceRoutine* dsr, const char* pathname, vo
       if (recNo == 0) {
         int namlen = basicToCstr(cbuf, volInfo.volname);
         if (namlen == 0) {
-          tputs("no device\n");
+          tputs_rom("no device\n");
           break;
         }
         int a = ti_floatToInt(cbuf+1+namlen);

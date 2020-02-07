@@ -28,14 +28,14 @@ void handleIf() {
   }
   
   if (!tok) {
-    tputs("Error, missing left-hand value\n");
+    tputs_rom("Error, missing left-hand value\n");
     return;
   }
 
   if (strlen(tok) < 30) {
     strcpy(left, tok);
   } else {
-    tputs("Error, left of expression too long, must be less than 30\n");
+    tputs_rom("Error, left of expression too long, must be less than 30\n");
     return;
   }
 
@@ -44,33 +44,33 @@ void handleIf() {
   if (str_equals("==", tok)) {
     operator = EQ;
   } else {
-    tputs("Error, unsupported operator\n");
+    tputs_rom("Error, unsupported operator\n");
     return;
   }
 
   tok = strtok(0, " ");
 
   if (!tok) {
-    tputs("Error, missing right-hand value\n");
+    tputs_rom("Error, missing right-hand value\n");
     return;
   }
 
   if (strlen(tok) < 30) {
     strcpy(right, tok);
   } else {
-    tputs("Error, right of expression too long, must be less than 30\n");
+    tputs_rom("Error, right of expression too long, must be less than 30\n");
     return;
   }
 
   tok = strtok(0, " ");
   if (strcmpi("then", tok)) {
-    tputs("Error, missing \'then\' in statement\n");
+    tputs_rom("Error, missing \'then\' in statement\n");
     return;
   }
 
   tok = strtok(0, ""); // to end of line
   if (!tok) {
-    tputs("Error, missing <command> in statement\n");
+    tputs_rom("Error, missing <command> in statement\n");
     return;
   }
   strcpy(command, tok);

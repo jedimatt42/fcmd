@@ -99,11 +99,11 @@ void setupScreen(int width) {
 }
 
 void titleScreen() {
-  tputs("Force Command v");
-  tputs(APP_VER);
+  tputs_rom("Force Command v");
+  tputs_rom(APP_VER);
   tputc(' ');
-  tputs(__DATE__);
-  tputs("\nwww.jedimatt42.com\n\n");
+  tputs_rom(__DATE__);
+  tputs_rom("\nwww.jedimatt42.com\n\n");
 }
 
 void main()
@@ -136,12 +136,12 @@ void main()
     VDP_INT_POLL;
     strset(commandbuf, 0, 255);
     tputc('[');
-    tputs(uint2hex(currentDsr->crubase));
+    tputs_ram(uint2hex(currentDsr->crubase));
     tputc('.');
-    tputs(currentPath);
-    tputs("]\n$ ");
+    tputs_ram(currentPath);
+    tputs_rom("]\n$ ");
     getstr(2, conio_y, commandbuf, displayWidth - 3, backspace);
-    tputs("\n");
+    tputc('\n');
     enable_more();
     handleCommand(commandbuf);
   }

@@ -55,6 +55,12 @@ struct __attribute__((__packed__)) TiFiles {
 
 int isTiFiles(struct TiFiles* buffer);
 
+// this file got too big with all the inlined tputs_rom calls...
+void tputs(const char* str) {
+  while(*str) {
+    tputc(*str++);
+  }
+}
 
 void handleFtp() {
   char commandbuf[120];

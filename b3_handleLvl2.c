@@ -12,7 +12,7 @@ void handleLvl2() {
   int crubase = htoi(tok);
 
   if (crubase == 0) {
-    tputs("no crubase specified\n");
+    tputs_rom("no crubase specified\n");
     return;
   }
 
@@ -22,10 +22,10 @@ void handleLvl2() {
   struct NameLink* link = rom->basiclnk;
   while(link != 0) {
     if (link->name[0] == 1) {
-      tputs(" >");
+      tputs_rom(" >");
       register unsigned int opname = 0;
       opname = link->name[1];
-      tputs(uint2hex(opname)+2);
+      tputs_ram(uint2hex(opname)+2);
     }
     link = link->next;
   }

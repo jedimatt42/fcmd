@@ -16,12 +16,12 @@ void handleFg99() {
   char* cart = strtok(0, " ");
 
   if (cart == 0) {
-    tputs("error, no cartridge image name specified\n");
+    tputs_rom("error, no cartridge image name specified\n");
     return;
   }
 
   if (strlen(cart) > 8) {
-    tputs("error, name too long\n");
+    tputs_rom("error, name too long\n");
     return;
   }
 

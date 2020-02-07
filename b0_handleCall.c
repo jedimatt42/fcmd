@@ -14,8 +14,8 @@ void handleCall() {
 
   int ran = runScript(dsr, filename);
   if (!ran) {
-    tputs("error, file not found: ");
-    tputs(filename);
+    tputs_rom("error, file not found: ");
+    tputs_ram(filename);
     tputc('\n');
   }
 }

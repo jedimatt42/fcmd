@@ -27,7 +27,7 @@ static int vars_find(char* name) {
 
 static void vars_add(char* name, char* value) {
   if (vars_next >= VAR_COUNT) {
-    tputs("Error, no more room in variable dictionary\n");
+    tputs_rom("Error, no more room in variable dictionary\n");
     return;
   }
   strcpy(var_map[vars_next].name, name);
@@ -37,15 +37,15 @@ static void vars_add(char* name, char* value) {
 
 void vars_set(char* name, char* value) {
   if (strlen(name) > MAX_VAR_NAME) {
-    tputs("Error, variable name too long, limit is ");
-    tputs(uint2str(MAX_VAR_NAME));
-    tputs("\n");
+    tputs_rom("Error, variable name too long, limit is ");
+    tputs_ram(uint2str(MAX_VAR_NAME));
+    tputc('\n');
     return;
   }
   if (strlen(value) > MAX_VAR_VAL) {
-    tputs("Error, variable value too long, limit is ");
-    tputs(uint2str(MAX_VAR_VAL));
-    tputs("\n");
+    tputs_rom("Error, variable value too long, limit is ");
+    tputs_ram(uint2str(MAX_VAR_VAL));
+    tputc('\n');
     return;
   }
   int i = vars_find(name);
@@ -66,9 +66,9 @@ char* vars_get(char* name) {
 
 void printVars() {
   for(int i=0; i<vars_next; i++) {
-    tputs(var_map[i].name);
+    tputs_ram(var_map[i].name);
     tputc('=');
-    tputs(var_map[i].value);
+    tputs_ram(var_map[i].value);
     tputc('\n');
   }
   tputc('\n');

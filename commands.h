@@ -46,8 +46,6 @@ void handleFtp();
 
 #include "banking.h"
 
-DECLARE_BANKED_VOID(handleCd, BANK_2, bk_handleCd, (), ())
-DECLARE_BANKED_VOID(handleChecksum, BANK_2, bk_handleChecksum, (), ())
 DECLARE_BANKED_VOID(handleCopy, BANK_2, bk_handleCopy, (), ())
 DECLARE_BANKED_VOID(handleDir, BANK_2, bk_handleDir, (), ())
 DECLARE_BANKED_VOID(handleMkdir, BANK_2, bk_handleMkdir, (), ())
@@ -60,6 +58,8 @@ DECLARE_BANKED_VOID(handleLvl2, BANK_3, bk_handleLvl2, (), ())
 DECLARE_BANKED_VOID(handleRename, BANK_3, bk_handleRename, (), ())
 DECLARE_BANKED_VOID(handleRmdir, BANK_3, bk_handleRmdir, (), ())
 
+DECLARE_BANKED_VOID(handleCd, BANK_4, bk_handleCd, (), ())
+DECLARE_BANKED_VOID(handleChecksum, BANK_4, bk_handleChecksum, (), ())
 DECLARE_BANKED_VOID(handleEcho, BANK_4, bk_handleEcho, (), ())
 DECLARE_BANKED_VOID(handleEnv, BANK_4, bk_handleEnv, (), ())
 DECLARE_BANKED_VOID(handleDrives, BANK_4, bk_handleDrives, (), ())

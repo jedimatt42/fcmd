@@ -20,7 +20,7 @@ void handleUnprotect() {
 static void doProtect(char mode) {
   char* filename = strtok(0, " ");
   if (filename == 0) {
-    tputs("error, must specify a file name\n");
+    tputs_rom("error, must specify a file name\n");
     return;
   }
 
@@ -30,9 +30,9 @@ static void doProtect(char mode) {
 
   unsigned int err = lvl2_protect(currentDsr->crubase, unit, filename, mode);
   if (err) {
-    tputs("cannot protect file ");
-    tputs(currentPath);
-    tputs(filename);
+    tputs_rom("cannot protect file ");
+    tputs_ram(currentPath);
+    tputs_ram(filename);
     tputc('\n');
   }
 }
