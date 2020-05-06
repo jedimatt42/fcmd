@@ -10,7 +10,7 @@
 #include <vdp.h>
 #include <kscan.h>
 
-int CTRLZ = 0x001A;
+#define CTRLZ 0x001A
 
 void handleType() {
   int ansi = 0;
