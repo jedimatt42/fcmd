@@ -6,7 +6,6 @@ objects
 *.s
 *.elf
 mapfile
-.vscode
 api.asm
 api.h
 api.banks

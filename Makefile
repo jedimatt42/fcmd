@@ -102,7 +102,7 @@ objects/%.o: %.asm
 
 objects/%.o: %.c
 	mkdir -p objects
-	cd objects; $(CC) -c ../$< $(CFLAGS) -I/home/matthew/dev/gcc-9900/lib/gcc/tms9900/4.4.0/include -o $(notdir $@)
+	cd objects; $(CC) -c ../$< $(CFLAGS) -o $(notdir $@)
 
 api.asm: api.lst makeapi.py
 	rm -f api.asm
