@@ -32,7 +32,7 @@ unsigned int existsFile(struct DeviceServiceRoutine* dsr, const char* pathname) 
 
 unsigned char loadDir(struct DeviceServiceRoutine* dsr, const char* pathname, vol_entry_cb vol_cb, dir_entry_cb dir_cb) {
   struct PAB pab;
-  
+
   struct VolInfo volInfo;
   struct DirEntry dirEntry;
 
@@ -49,7 +49,7 @@ unsigned char loadDir(struct DeviceServiceRoutine* dsr, const char* pathname, vo
     unsigned char cbuf[150];
     ferr = dsr_read(dsr, &pab, recNo);
     if (ferr == DSR_ERR_NONE) {
-      // Now FBUF has the data... 
+      // Now FBUF has the data...
       vdpmemread(FBUF, cbuf, pab.CharCount);
       // process Record
       if (recNo == 0) {
@@ -134,7 +134,7 @@ unsigned int dsr_reset(struct DeviceServiceRoutine* dsr, struct PAB* pab, int re
 
 // the data read is in FBUF, the length read in pab->CharCount
 // typically passing 0 in for record number will let the controller
-// auto-increment it. 
+// auto-increment it.
 unsigned int dsr_read(struct DeviceServiceRoutine* dsr, struct PAB* pab, int recordNumber) {
   pab->OpCode = DSR_READ;
   pab->RecordNumber = recordNumber;
@@ -152,7 +152,7 @@ unsigned int dsr_write(struct DeviceServiceRoutine* dsr, struct PAB* pab, unsign
   pab->OpCode = DSR_WRITE;
   pab->CharCount = reclen;
   vdpmemcpy(pab->VDPBuffer, record, reclen);
-  
+
   unsigned char result = mds_dsrlnk(dsr->crubase, pab, VPAB, DSR_MODE_LVL3);
   return result;
 }
@@ -187,14 +187,14 @@ void loadDriveDSRs() {
       struct NameLink* dsrlinks = dsrrom->dsrlnk;
 
       while(dsrlinks != 0) {
-        
+
         if (isDrive(dsrlinks->name)) {
           basicToCstr(dsrlinks->name, listHead->name);
           listHead->crubase = cruscan;
           listHead->addr = dsrlinks->routine;
           listHead += 1;
         }
-        
+
         dsrlinks = dsrlinks->next;
       }
     }
@@ -214,6 +214,8 @@ int isDrive(char* basicstr) {
     if (0 == basic_strcmp(basicstr, tipi)) {
       return 1;
     } else if (basicstr[1] >= 'A' && basicstr[1] <= 'Z' && basicstr[4] >= '0' && basicstr[4] <= '9') {
+      return 1;
+    } else if (basicstr[1] == 'D' && basicstr[4] >= 'A' && basicstr[4] <= 'F') {
       return 1;
     }
   } else if (basicstr[0] == 2) {

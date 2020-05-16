@@ -1,5 +1,6 @@
 #!/bin/bash
 
 rm FCMD.RPK 
-zip FCMD.RPK layout.xml FCMDC.bin
+python ./2meg.py
+zip FCMD.RPK layout.xml FCMD2MEG.bin
 

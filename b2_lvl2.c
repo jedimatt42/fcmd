@@ -20,7 +20,7 @@
 #define OPNAME(x,y) ((x & 0xF0)|(y & 0x0F))
 
 // Returns lvl2 base code in left nibble, and unit number in right nibble
-// 	Floppy disk controllers:	DSK	>1x	
+// 	Floppy disk controllers:	DSK	>1x
 //	Myarc harddisk controller:	WDS	>2x
 //	Scuzzy controller		SCS	>2x
 //	IDE controller:			IDE	>8x
@@ -35,7 +35,11 @@ unsigned int path2unitmask(char* currentPath) {
     return 0x0010;
   }
   l--;
-  unsigned char unit = drive[l] - '0' & 0x0F;
+  char offset = '0';
+  if (drive[l] >= 'A') {
+    offset = 'A' + 10;
+  }
+  unsigned char unit = drive[l] - offset & 0x0F;
 
   drive[l] = 0;
 

@@ -82,7 +82,7 @@ $(FNAME)C.bin: bank0.bin bank1.bin bank2.bin bank3.bin bank4.bin bank5.bin bank6
 	cat $^ >$@
 
 $(FNAME)G.bin: gpl-boot.g99 $(FNAME).elf
-	python2 $(XGA99) -D "CART=$(shell echo -n '>' ; grep _cart mapfile | sed 's/^\s*0x0*\([0-9a-f]*\) *_cart/\1/')" -o $@ $<
+	python3 $(XGA99) -D "CART=$(shell echo -n '>' ; grep _cart mapfile | sed 's/^\s*0x0*\([0-9a-f]*\) *_cart/\1/')" -o $@ $<
 
 $(FNAME).elf: $(LINK_OBJECTS)
 	$(LD) $(LINK_OBJECTS) $(LDFLAGS) -o $(FNAME).elf -Map=mapfile
