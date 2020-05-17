@@ -36,10 +36,7 @@ unsigned int path2unitmask(char* currentPath) {
   }
   l--;
   char offset = '0';
-  if (drive[l] >= 'A') {
-    offset = 'A' + 10;
-  }
-  unsigned char unit = drive[l] - offset & 0x0F;
+  unsigned char unit = (drive[l] - offset) & 0x0F;
 
   drive[l] = 0;
 
@@ -139,9 +136,10 @@ unsigned char __attribute__((noinline)) base_lvl2(int crubase, char unit, char o
   return LVL2_STATUS;
 }
 
-unsigned int __attribute__((noinline)) subroutine(int crubase, unsigned char operation) {
+void __attribute__((noinline)) call_lvl2(int crubase, unsigned char operation) {
   enableROM(crubase);
   unsigned int addr = 0;
+  unsigned int link = 0;
 
   struct DeviceRomHeader* dsrrom = (struct DeviceRomHeader*) 0x4000;
   struct NameLink* entry = (struct NameLink*) dsrrom->basiclnk;
@@ -150,20 +148,26 @@ unsigned int __attribute__((noinline)) subroutine(int crubase, unsigned char ope
     unsigned int entryname = *((int*)entry->name);
     if (entryname == searchname) {
       addr = entry->routine;
+      link = (unsigned int) entry; // ??? not correct yet
       break;
     }
     entry = entry->next;
   }
   disableROM(crubase);
-  return addr;
-}
 
-void __attribute__((noinline)) call_lvl2(int crubase, unsigned char operation) {
-  unsigned int addr = subroutine(crubase, operation);
   if (addr == 0) {
     LVL2_STATUS = 0xFF;
     return;
   }
+
+  // Setup scratchpad ram to look like traditional DSRLNK had occured
+  __asm__(
+      " mov %0,@>83D0   ; fill in cru tracking address - some apps and HRD DSR rely on this\n"
+      " mov %1,@>83D2   ; store dsr list link address for HDR ROS hack\n"
+      :
+      : "r"(crubase), "r"(link)
+  );
+  //      " mov %2,@>834A   ; subroutine name assumed by HDR ROS to be here\n"  , "r"(searchname)
 
   __asm__(
     	" mov %0,@>83F8		; prepare GPLWS r12 with crubase\n"

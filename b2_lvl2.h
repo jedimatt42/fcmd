@@ -22,7 +22,7 @@ struct __attribute__((__packed__)) AddInfo {
   unsigned char eof_offset;
   unsigned char rec_length;
   unsigned int records; // swizzled
-}; 
+};
 
 unsigned int path2unitmask(char* currentPath);
 
@@ -37,7 +37,6 @@ unsigned int lvl2_output(int crubase, int unit, char* filename, unsigned int blo
 
 unsigned char __attribute__((noinline)) base_lvl2(int crubase, char unit, char operation, char* name1, char* name2, char param0);
 unsigned char __attribute__((noinline)) direct_io(int crubase, char unit, char operation, char* filename, unsigned char blockcount, struct AddInfo* addInfoPtr);
-unsigned int __attribute__((noinline)) subroutine(int crubase, unsigned char operation);
 void __attribute__((noinline)) call_lvl2(int crubase, unsigned char operation);
 
 #include "banking.h"

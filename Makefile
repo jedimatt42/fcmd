@@ -97,12 +97,10 @@ $(FNAME).elf: $(LINK_OBJECTS)
 	rm -f api.banks
 
 objects/%.o: %.asm
-	mkdir -p objects
-	cd objects; $(GAS) ../$< -o $(notdir $@)
+	mkdir -p objects; cd objects; $(GAS) ../$< -o $(notdir $@)
 
 objects/%.o: %.c
-	mkdir -p objects
-	cd objects; $(CC) -c ../$< $(CFLAGS) -o $(notdir $@)
+	mkdir -p objects; cd objects; $(CC) -c ../$< $(CFLAGS) -o $(notdir $@)
 
 api.asm: api.lst makeapi.py
 	rm -f api.asm

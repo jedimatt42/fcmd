@@ -215,7 +215,7 @@ int isDrive(char* basicstr) {
       return 1;
     } else if (basicstr[1] >= 'A' && basicstr[1] <= 'Z' && basicstr[4] >= '0' && basicstr[4] <= '9') {
       return 1;
-    } else if (basicstr[1] == 'D' && basicstr[4] >= 'A' && basicstr[4] <= 'F') {
+    } else if (basicstr[1] == 'D' && basicstr[4] >= 'A' && basicstr[4] <= 'Z') {
       return 1;
     }
   } else if (basicstr[0] == 2) {

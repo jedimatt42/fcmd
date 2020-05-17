@@ -15,7 +15,7 @@
 
 void mds_dsrlnkraw(int crubase, unsigned int vdp, int mode) {
 	// modified version of the e/a DSRLNK, for data >8 (DSR) only (MDS: adding >A lvl2/subroutine list support)
-	
+
 	// this one does not modify data in low memory expansion so "boot tracking" there may not work.
 	unsigned char *buf = (unsigned char*)0x8380;	// 8 bytes of memory for a name buffer
 	unsigned int status = vdp + 1;
@@ -46,7 +46,7 @@ void mds_dsrlnkraw(int crubase, unsigned int vdp, int mode) {
 		cnt = 1;
 	}
 	// save off the device name length (asm below uses it!)
-	DSR_LEN_COUNT=cnt;	
+	DSR_LEN_COUNT=cnt;
 	DSR_NAME_LEN = cnt;
 	++cnt;
 	DSR_PAB_POINTER += cnt;
@@ -87,7 +87,6 @@ void mds_dsrlnkraw(int crubase, unsigned int vdp, int mode) {
 	"	ai   r2,0x4000		; add in dsr base address - now we point at dsr list or subroutine list\n"
 	"       jmp  a2340		; always jump into the loop from here\n"
 	"a233a  mov  @0x83d2,r2         ; next sub\n"
-	"       sbo  0                  ; card on - already is, isn't it?\n"
 	"a2340  mov  *r2,r2             ; grab link pointer to next\n"
 	"       jeq  a2310              ; if no pointer, link back to get next card\n"
 	"       mov  r2,@0x83d2         ; save link address in >83d2\n"
