@@ -96,13 +96,13 @@ ver
 
 ```
 
-# External Commands
+# External Commands (intent, not yet released)
 
 Force Command allows loading external commands that can receive command line arguments and utilize an API provided by the Force Command ROM. 
 
 External commands are loaded into the top 16k of memory expansion 0xC000 - 0xFFFF. 
 
-## API
+## API (intent, not yet released)
 
 Force Command has a table of ROM routines in BANK_0, starting at address 0x6070. Each entry is the function address and the bank switch write address. The api covers the following categories of routines:
 
