@@ -10,7 +10,12 @@
 #include <string.h>
 #include <vdp.h>
 
-#define LVL2_STATUS *((volatile unsigned char*)0x8350)
+#define GPLWSR9 *((volatile unsigned int *)0x83F2)
+#define GPLWSR12 *((volatile unsigned int *)0x83F8)
+#define LVL2_CRULST *((volatile unsigned int *)0x83D0)
+#define LVL2_SADDR *((volatile unsigned int *)0x83D2)
+
+#define LVL2_STATUS *((volatile unsigned char *)0x8350)
 #define LVL2_UNIT *((volatile unsigned char*)0x834C)
 #define LVL2_PROTECT *((volatile unsigned char*)0x834D)
 #define LVL2_PARAMADDR1 *((volatile unsigned int*)0x834E)
@@ -19,13 +24,14 @@
 #define UNITNO(x) (unsigned char)(x >> 8 & 0xFF)
 #define OPNAME(x,y) (unsigned char)((x & 0x00F0)|(y & 0x00F))
 
-// Returns lvl2 base code in LSB, and unit number in MSB
-// 	Floppy disk controllers:	DSK	>1x
-//	Myarc harddisk controller:	WDS	>2x
-//	Scuzzy controller		SCS	>2x
-//	IDE controller:			IDE	>8x
-//	Ti to PC serial connection:	HDX	>9x
-unsigned int path2unitmask(char* currentPath) {
+    // Returns lvl2 base code in LSB, and unit number in MSB
+    // 	Floppy disk controllers:	DSK	>1x
+    //	Myarc harddisk controller:	WDS	>2x
+    //	Scuzzy controller		SCS	>2x
+    //	IDE controller:			IDE	>8x
+    //	Ti to PC serial connection:	HDX	>9x
+    unsigned int
+    path2unitmask(char *currentPath) {
   unsigned int operationSet = 0x0010;
   char drive[9];
   strncpy(drive, currentPath, 9);
@@ -163,23 +169,21 @@ void __attribute__((noinline)) call_lvl2(int crubase, unsigned char operation) {
   }
 
   // Setup scratchpad ram to look like traditional DSRLNK had occured
-  __asm__(
-      " mov %0,@>83D2   ; store dsr list link address for HDR ROS extension\n"
-      :
-      : "r"(link)
-  );
+  // - console ROM dsrlnk leaves crubase at this address, too many people know about it.
+  LVL2_CRULST = crubase;
+  // - HRD ROS expects this to find ros extension to the subroutine name list.
+  LVL2_SADDR = link;
+
+  // - GPL WS setup so we can swap workspace and then run the routine.
+  GPLWSR12 = crubase;
+  GPLWSR9 = addr;
 
   __asm__(
-    	" mov %0,@>83F8		; prepare GPLWS r12 with crubase\n"
-      " mov %1,@>83F2   ; set r9 to subroutine address\n"
     	"	lwpi 0x83e0     ; get gplws\n"
       " sbo 0           ; turn on card dsr\n"
       " bl *r9          ; call rubroutine\n"
       " nop             ; lvl2 routines never 'skip' request\n"
       " sbz 0           ; turn off card dsr\n"
       " lwpi 0x8300     ; assuming gcc workspace is here\n"
-      :
-      : "r" (crubase), "r" (addr)
-      : "r12"
   );
 }
