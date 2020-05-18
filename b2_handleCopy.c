@@ -45,11 +45,11 @@ void handleCopy() {
   addInfoPtr->rec_length = 0;
   addInfoPtr->records = 0;
   addInfoPtr->recs_per_sec = 0;
-  
+
   unsigned int source_crubase = currentDsr->crubase;
-  unsigned char source_unit = path2unitmask(currentPath);
+  unsigned int source_unit = path2unitmask(currentPath);
   unsigned int dest_crubase = dsr->crubase;
-  unsigned char dest_unit = path2unitmask(path);
+  unsigned int dest_unit = path2unitmask(path);
 
   lvl2_setdir(source_crubase, source_unit, currentPath);
   unsigned int err = lvl2_input(source_crubase, source_unit, filename, 0, addInfoPtr);

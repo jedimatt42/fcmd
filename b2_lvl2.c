@@ -16,10 +16,10 @@
 #define LVL2_PARAMADDR1 *((volatile unsigned int*)0x834E)
 #define LVL2_PARAMADDR2 *((volatile unsigned int*)0x8350)
 
-#define UNITNO(x) (x & 0x0F)
-#define OPNAME(x,y) ((x & 0xF0)|(y & 0x0F))
+#define UNITNO(x) (unsigned char)(x >> 8 & 0xFF)
+#define OPNAME(x,y) (unsigned char)((x & 0x00F0)|(y & 0x00F))
 
-// Returns lvl2 base code in left nibble, and unit number in right nibble
+// Returns lvl2 base code in LSB, and unit number in MSB
 // 	Floppy disk controllers:	DSK	>1x
 //	Myarc harddisk controller:	WDS	>2x
 //	Scuzzy controller		SCS	>2x
@@ -32,11 +32,12 @@ unsigned int path2unitmask(char* currentPath) {
   int l = indexof(drive, '.');
   drive[l] = 0;
   if (str_equals("TIPI", drive)) {
+    // unit 0x00 operation set 0x10
     return 0x0010;
   }
   l--;
   char offset = '0';
-  unsigned char unit = (drive[l] - offset) & 0x0F;
+  unsigned char unit = (drive[l] - offset) & 0xFF;
 
   drive[l] = 0;
 
@@ -50,14 +51,14 @@ unsigned int path2unitmask(char* currentPath) {
     operationSet = 0x0090;
   }
 
-  return operationSet | unit;
+  return operationSet | (unit << 8);
 }
 
-unsigned int lvl2_protect(int crubase, int unit, char* filename, int protect) {
+unsigned int lvl2_protect(int crubase, unsigned int unit, char* filename, int protect) {
   return base_lvl2(crubase, unit, LVL2_OP_PROTECT, filename, 0, protect ? 0xff : 0x00);
 }
 
-unsigned int lvl2_setdir(int crubase, int unit, char* path) {
+unsigned int lvl2_setdir(int crubase, unsigned int unit, char* path) {
   LVL2_PARAMADDR1 = FBUF;
   int len = strlen(path);
   if (len > 39) {
@@ -74,31 +75,31 @@ unsigned int lvl2_setdir(int crubase, int unit, char* path) {
   return LVL2_STATUS;
 }
 
-unsigned int lvl2_mkdir(int crubase, int unit, char* dirname) {
+unsigned int lvl2_mkdir(int crubase, unsigned int unit, char* dirname) {
   return base_lvl2(crubase, unit, LVL2_OP_MKDIR, dirname, 0, 0);
 }
 
-unsigned int lvl2_rmdir(int crubase, int unit, char* dirname) {
+unsigned int lvl2_rmdir(int crubase, unsigned int unit, char* dirname) {
   return base_lvl2(crubase, unit, LVL2_OP_DELDIR, dirname, 0, 0);
 }
 
-unsigned int lvl2_rename(int crubase, int unit, char* oldname, char* newname) {
+unsigned int lvl2_rename(int crubase, unsigned int unit, char* oldname, char* newname) {
   return base_lvl2(crubase, unit, LVL2_OP_RENAME, newname, oldname, 0);
 }
 
-unsigned int lvl2_rendir(int crubase, int unit, char* oldname, char* newname) {
+unsigned int lvl2_rendir(int crubase, unsigned int unit, char* oldname, char* newname) {
   return base_lvl2(crubase, unit, LVL2_OP_RENDIR, newname, oldname, 0);
 }
 
-unsigned int lvl2_input(int crubase, int unit, char* filename, unsigned int blockcount, struct AddInfo* addInfoPtr) {
+unsigned int lvl2_input(int crubase, unsigned int unit, char* filename, unsigned int blockcount, struct AddInfo* addInfoPtr) {
   return direct_io(crubase, unit, LVL2_OP_INPUT, filename, blockcount, addInfoPtr);
 }
 
-unsigned int lvl2_output(int crubase, int unit, char* filename, unsigned int blockcount, struct AddInfo* addInfoPtr) {
+unsigned int lvl2_output(int crubase, unsigned int unit, char* filename, unsigned int blockcount, struct AddInfo* addInfoPtr) {
   return direct_io(crubase, unit, LVL2_OP_OUTPUT, filename, blockcount, addInfoPtr);
 }
 
-unsigned char direct_io(int crubase, char unit, char operation, char* filename, unsigned char blockcount, struct AddInfo* addInfoPtr) {
+unsigned char direct_io(int crubase, unsigned int unit, char operation, char* filename, unsigned char blockcount, struct AddInfo* addInfoPtr) {
   LVL2_PARAMADDR1 = FBUF;
   strpad(filename, 10, ' ');
   vdpmemcpy(FBUF, filename, 10);
@@ -108,14 +109,14 @@ unsigned char direct_io(int crubase, char unit, char operation, char* filename, 
   LVL2_STATUS = ((unsigned int) addInfoPtr) - 0x8300;
 
   addInfoPtr->buffer = VDPFBUF; // safe from file and path name overwrites.
-
-  call_lvl2(crubase, OPNAME(unit, operation));
+  unsigned char opname = OPNAME(unit, operation);
+  call_lvl2(crubase, opname);
 
   return LVL2_STATUS;
 }
 
 // Setup parameters suitably for most lvl2 calls.
-unsigned char __attribute__((noinline)) base_lvl2(int crubase, char unit, char operation, char* name1, char* name2, char param0) {
+unsigned char __attribute__((noinline)) base_lvl2(int crubase, unsigned int unit, char operation, char* name1, char* name2, char param0) {
   LVL2_UNIT = UNITNO(unit);
   LVL2_PROTECT = param0;
   LVL2_PARAMADDR1 = FBUF;
@@ -131,7 +132,8 @@ unsigned char __attribute__((noinline)) base_lvl2(int crubase, char unit, char o
     vdpmemcpy(LVL2_PARAMADDR2, name2, 10);
   }
 
-  call_lvl2(crubase, OPNAME(unit, operation));
+  unsigned char opname = OPNAME(unit, operation);
+  call_lvl2(crubase, OPNAME(unit, opname));
 
   return LVL2_STATUS;
 }
@@ -148,7 +150,7 @@ void __attribute__((noinline)) call_lvl2(int crubase, unsigned char operation) {
     unsigned int entryname = *((int*)entry->name);
     if (entryname == searchname) {
       addr = entry->routine;
-      link = (unsigned int) entry; // ??? not correct yet
+      link = (unsigned int) entry;
       break;
     }
     entry = entry->next;
@@ -162,12 +164,10 @@ void __attribute__((noinline)) call_lvl2(int crubase, unsigned char operation) {
 
   // Setup scratchpad ram to look like traditional DSRLNK had occured
   __asm__(
-      " mov %0,@>83D0   ; fill in cru tracking address - some apps and HRD DSR rely on this\n"
-      " mov %1,@>83D2   ; store dsr list link address for HDR ROS hack\n"
+      " mov %0,@>83D2   ; store dsr list link address for HDR ROS extension\n"
       :
-      : "r"(crubase), "r"(link)
+      : "r"(link)
   );
-  //      " mov %2,@>834A   ; subroutine name assumed by HDR ROS to be here\n"  , "r"(searchname)
 
   __asm__(
     	" mov %0,@>83F8		; prepare GPLWS r12 with crubase\n"
