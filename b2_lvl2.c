@@ -24,14 +24,13 @@
 #define UNITNO(x) (unsigned char)(x >> 8 & 0xFF)
 #define OPNAME(x,y) (unsigned char)((x & 0x00F0)|(y & 0x00F))
 
-    // Returns lvl2 base code in LSB, and unit number in MSB
-    // 	Floppy disk controllers:	DSK	>1x
-    //	Myarc harddisk controller:	WDS	>2x
-    //	Scuzzy controller		SCS	>2x
-    //	IDE controller:			IDE	>8x
-    //	Ti to PC serial connection:	HDX	>9x
-    unsigned int
-    path2unitmask(char *currentPath) {
+// Returns lvl2 base code in LSB, and unit number in MSB
+// 	Floppy disk controllers:	DSK	>1x
+//	Myarc harddisk controller:	WDS	>2x
+//	Scuzzy controller		SCS	>2x
+//	IDE controller:			IDE	>8x
+//	Ti to PC serial connection:	HDX	>9x
+unsigned int path2unitmask(char *currentPath) {
   unsigned int operationSet = 0x0010;
   char drive[9];
   strncpy(drive, currentPath, 9);

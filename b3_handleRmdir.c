@@ -15,7 +15,7 @@ void handleRmdir() {
     return;
   }
 
-  unsigned char unit = bk_path2unitmask(currentPath);
+  unsigned int unit = bk_path2unitmask(currentPath);
 
   bk_lvl2_setdir(currentDsr->crubase, unit, currentPath);
 

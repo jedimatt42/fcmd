@@ -51,7 +51,7 @@ struct __attribute__((__packed__)) TiFiles {
   unsigned char eof_offset;
   unsigned char rec_length;
   unsigned int records; // swizzled
-}; 
+};
 
 int isTiFiles(struct TiFiles* buffer);
 
@@ -229,7 +229,7 @@ void ftpGet() {
   char safetiname[12];
   strset(safetiname, 0, 12);
   char* tiname = strtok(0, "");
-  if (!tiname) {  
+  if (!tiname) {
     for(int i=0; i<10;i++) {
       if (tok[i] == '.') {
         safetiname[i] = '/';
@@ -245,8 +245,8 @@ void ftpGet() {
   tputs("tiname: ");
   tputs(tiname);
   tputs("\n");
-  
-  unsigned char unit = bk_path2unitmask(currentPath);
+
+  unsigned int unit = bk_path2unitmask(currentPath);
 
   sendFtpCommand("TYPE", "I");
   unsigned int port = sendFtpPasv();

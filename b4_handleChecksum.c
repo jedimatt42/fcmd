@@ -24,9 +24,9 @@ void handleChecksum() {
   addInfoPtr->rec_length = 0;
   addInfoPtr->records = 0;
   addInfoPtr->recs_per_sec = 0;
-  
+
   unsigned int source_crubase = currentDsr->crubase;
-  unsigned char source_unit = bk_path2unitmask(currentPath);
+  unsigned int source_unit = bk_path2unitmask(currentPath);
 
   bk_lvl2_setdir(source_crubase, source_unit, currentPath);
   unsigned int err = bk_lvl2_input(source_crubase, source_unit, filename, 0, addInfoPtr);
