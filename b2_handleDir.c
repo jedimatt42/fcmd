@@ -70,10 +70,10 @@ void onLongVolInfo(struct VolInfo* volInfo) {
   } else {
     tputc(' ');
   }
-  tputs_rom("Available: ");
-  tputs_ram(uint2str(volInfo->available));
-  tputs_rom(" Used: ");
+  tputs_rom("Used: ");
   tputs_ram(uint2str(volInfo->total - volInfo->available));
+  tputs_rom(" Available: ");
+  tputs_ram(uint2str(volInfo->available));
   tputs_rom("\n\n");
   tputs_rom("Name       Type    P Reclen Sectors\n");
   tputs_rom("-----------------------------------\n");
@@ -98,12 +98,12 @@ void onLongDirEntry(struct DirEntry* dirEntry) {
   int de_type = (0x0007 & dirEntry->type) - 1;
 
   char* ftype = (char*) file_types[de_type];
-  
+
   tputs_rom(ftype);
   cputpad(8, ftype);
 
   if (dirEntry->type < 0) {
-    tputc('P'); 
+    tputc('P');
   } else {
     tputc(' ');
   }

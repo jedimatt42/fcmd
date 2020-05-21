@@ -61,8 +61,8 @@ unsigned char loadDir(struct DeviceServiceRoutine* dsr, const char* pathname, vo
         int a = ti_floatToInt(cbuf+1+namlen);
         int j = ti_floatToInt(cbuf+10+namlen);
         int k = ti_floatToInt(cbuf+19+namlen);
-        volInfo.available = j;
-        volInfo.total = k;
+        volInfo.total = j;
+        volInfo.available = k;
         vol_cb(&volInfo);
       } else {
         int namlen = basicToCstr(cbuf, dirEntry.name);
