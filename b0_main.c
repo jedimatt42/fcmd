@@ -19,7 +19,7 @@
 #include "b1cp_terminal.h"
 #include "b4_labellist.h"
 
-#define APP_VER "0.C"
+#define APP_VER "0.D"
 
 char commandbuf[256];
 
@@ -65,7 +65,7 @@ int isF18A() {
       return 1;
     }
   }
-  
+
   return 0;
 }
 

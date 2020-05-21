@@ -6,7 +6,7 @@
 #define VPAB 0x3200
 #define FBUF 0x3000
 
-// Casting rom locations to the next 3 structs should ease 
+// Casting rom locations to the next 3 structs should ease
 // reasoning about any code accessing the rom header and
 // lists.
 
@@ -18,7 +18,7 @@ struct __attribute__((__packed__)) EntryLink {
 struct __attribute__((__packed__)) NameLink {
   struct NameLink* next;
   unsigned int routine;
-  char name[8]; // length byte + [upto] 7 characters. 
+  char name[8]; // length byte + [upto] 7 characters.
 };
 
 struct __attribute__((__packed__)) DeviceRomHeader {
@@ -39,7 +39,7 @@ struct __attribute__((__packed__)) DeviceServiceRoutine {
   int crubase;
   unsigned int addr;
   char unit;
-}; 
+};
 
 // A cache of dsr names and addresses.
 extern struct DeviceServiceRoutine dsrList[40];
@@ -53,8 +53,8 @@ struct __attribute__((__packed__)) DirEntry {
 
 struct __attribute__((__packed__)) VolInfo {
   char volname[11];
-  int available;
   int total;
+  int available;
   struct DeviceServiceRoutine* dsr;
 };
 

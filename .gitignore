@@ -9,3 +9,6 @@ mapfile
 api.asm
 api.h
 api.banks
+*.zip
+*.RPK
+*.DSK
