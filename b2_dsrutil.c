@@ -116,20 +116,20 @@ unsigned int dsr_open(struct DeviceServiceRoutine* dsr, struct PAB* pab, const c
   }
   pab->pName = (char*)fname;
 
-  int res = mds_dsrlnk(dsr->crubase, pab, VPAB, DSR_MODE_LVL3);
+  int res = mds_lvl3_dsrlnk(dsr->crubase, pab, VPAB);
   vdpmemread(VPAB + 4, (&pab->RecordLength), 1);
   return res;
 }
 
 unsigned int dsr_close(struct DeviceServiceRoutine* dsr, struct PAB* pab) {
   pab->OpCode = DSR_CLOSE;
-  return mds_dsrlnk(dsr->crubase, pab, VPAB, DSR_MODE_LVL3);
+  return mds_lvl3_dsrlnk(dsr->crubase, pab, VPAB);
 }
 
 unsigned int dsr_reset(struct DeviceServiceRoutine* dsr, struct PAB* pab, int record) {
   pab->OpCode = DSR_REWIND;
   pab->RecordNumber = record;
-  return mds_dsrlnk(dsr->crubase, pab, VPAB, DSR_MODE_LVL3);
+  return mds_lvl3_dsrlnk(dsr->crubase, pab, VPAB);
 }
 
 // the data read is in FBUF, the length read in pab->CharCount
@@ -140,7 +140,7 @@ unsigned int dsr_read(struct DeviceServiceRoutine* dsr, struct PAB* pab, int rec
   pab->RecordNumber = recordNumber;
   pab->CharCount = 0;
 
-  unsigned char result = mds_dsrlnk(dsr->crubase, pab, VPAB, DSR_MODE_LVL3);
+  unsigned char result = mds_lvl3_dsrlnk(dsr->crubase, pab, VPAB);
   vdpmemread(VPAB + 5, (&pab->CharCount), 1);
   if (! (pab->Status & DSR_TYPE_VARIABLE)) {
     pab->CharCount = pab->RecordLength;
@@ -153,14 +153,14 @@ unsigned int dsr_write(struct DeviceServiceRoutine* dsr, struct PAB* pab, unsign
   pab->CharCount = reclen;
   vdpmemcpy(pab->VDPBuffer, record, reclen);
 
-  unsigned char result = mds_dsrlnk(dsr->crubase, pab, VPAB, DSR_MODE_LVL3);
+  unsigned char result = mds_lvl3_dsrlnk(dsr->crubase, pab, VPAB);
   return result;
 }
 
 unsigned int dsr_status(struct DeviceServiceRoutine* dsr, struct PAB* pab) {
   pab->OpCode = DSR_STATUS;
 
-  unsigned int result = (int) mds_dsrlnk(dsr->crubase, pab, VPAB, DSR_MODE_LVL3);
+  unsigned int result = (int)mds_lvl3_dsrlnk(dsr->crubase, pab, VPAB);
   if (result) {
     return result << 8;
   } else {
@@ -171,7 +171,7 @@ unsigned int dsr_status(struct DeviceServiceRoutine* dsr, struct PAB* pab) {
 unsigned int dsr_delete(struct DeviceServiceRoutine* dsr, struct PAB* pab) {
   pab->OpCode = DSR_DELETE;
 
-  unsigned char result = mds_dsrlnk(dsr->crubase, pab, VPAB, DSR_MODE_LVL3);
+  unsigned char result = mds_lvl3_dsrlnk(dsr->crubase, pab, VPAB);
   return result;
 }
 

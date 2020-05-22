@@ -13,8 +13,8 @@
 
 #define DSR_NAME_LEN	*((volatile unsigned int*)0x8354)
 
-void mds_dsrlnkraw(int crubase, unsigned int vdp, int mode) {
-	// modified version of the e/a DSRLNK, for data >8 (DSR) only (MDS: adding >A lvl2/subroutine list support)
+void mds_lvl3_dsrlnkraw(int crubase, unsigned int vdp) {
+	// modified version of the e/a DSRLNK, for data >8 (DSR) only
 
 	// this one does not modify data in low memory expansion so "boot tracking" there may not work.
 	unsigned char *buf = (unsigned char*)0x8380;	// 8 bytes of memory for a name buffer
@@ -28,23 +28,21 @@ void mds_dsrlnkraw(int crubase, unsigned int vdp, int mode) {
 	unsigned char size = VDPRD;
 
 	unsigned char cnt=0;
-	if (mode == DSR_MODE_LVL3) {
-		while (cnt < 8) {
-			buf[cnt] = VDPRD;	// still in the right place after the readchar above got the length
-			if (buf[cnt] == '.') {
-				break;
-			}
-			cnt++;
+
+	while (cnt < 8) {
+		buf[cnt] = VDPRD;	// still in the right place after the readchar above got the length
+		if (buf[cnt] == '.') {
+			break;
 		}
-		if ((cnt == 0) || (cnt > 7)) {
-			// illegal device name length
-			VDP_SET_ADDRESS_WRITE(status);
-			VDPWD=DSR_ERR_FILEERROR;
-			return;
-		}
-	} else {
-		cnt = 1;
+		cnt++;
 	}
+	if ((cnt == 0) || (cnt > 7)) {
+		// illegal device name length
+		VDP_SET_ADDRESS_WRITE(status);
+		VDPWD=DSR_ERR_FILEERROR;
+		return;
+	}
+
 	// save off the device name length (asm below uses it!)
 	DSR_LEN_COUNT=cnt;
 	DSR_NAME_LEN = cnt;
@@ -61,7 +59,7 @@ void mds_dsrlnkraw(int crubase, unsigned int vdp, int mode) {
 	"	mov %1,@>83F8		; prepare GPLWS r12 with crubase\n"
 	"	mov %1,r12		; prepare terminate crubase to end loop (this is in C workspace)\n"
 	"	ai r12,0x0200\n"
-	"	mov %2,r9		; store the list offset in a well known address >8312\n"
+	"	li r9,8			; store the list offset in a well known address >8312\n"
 	"	ai r10,-34		; make stack room to save workspace & zero word\n"
 	"	lwpi 0x83e0		; get gplws\n"
 	"	li r0,0x8300		; source wp for backup\n"
@@ -114,7 +112,7 @@ void mds_dsrlnkraw(int crubase, unsigned int vdp, int mode) {
 	"a2388  lwpi 0x8300             ; restore workspace\n"
 	"	ai r10,34		; restore stack\n"
 		:
-		: "i" (buf), "r" (crubase-0x0100), "r" (mode)
+		: "i" (buf), "r" (crubase-0x0100)
 		: "r12", "r9"
 	);
 

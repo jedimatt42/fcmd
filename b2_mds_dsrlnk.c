@@ -18,7 +18,7 @@
 // ---------- Matthew Splett -----------------
 // This routine is modified handle error:0 as an error instead of
 // cascading on to other devices.
-unsigned char mds_dsrlnk(int crubase, struct PAB *pab, unsigned int vdp, int mode) {
+unsigned char mds_lvl3_dsrlnk(int crubase, struct PAB *pab, unsigned int vdp) {
 	unsigned char x;
 
 	// copies your PAB to VDP and then executes the call through dsrlnkraw
@@ -38,7 +38,7 @@ unsigned char mds_dsrlnk(int crubase, struct PAB *pab, unsigned int vdp, int mod
 	}
 
 	// now we can call it
-	mds_dsrlnkraw(crubase, vdp, mode);
+	mds_lvl3_dsrlnkraw(crubase, vdp);
 
 	// if GPLWS(R12) is not crubase, then the dsr skipped the request
 	if (GPLWSR12 != crubase) {
