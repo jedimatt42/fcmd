@@ -154,16 +154,13 @@ void parsePathParam(struct DeviceServiceRoutine** dsr, char* buffer, int require
       }
     }
   }
-  // Todo: test for existance and matching requirements
-
   // separate path and filter if wildcards are supported.
   if (requirements & PR_WILDCARD) {
     int len = strlen(buffer);
     int dotidx = lindexof(buffer, '.', len);
-    if (indexof(buffer + dotidx, '*') != -1) {
-      strcpy(filterglob, buffer+dotidx+1);
-      buffer[dotidx] = 0;
-    }
+
+    strcpy(filterglob, buffer+dotidx+1);
+    buffer[dotidx] = 0;
   }
 }
 

@@ -23,6 +23,8 @@ int copycount;
 int matched;
 
 void handleCopy() {
+  disable_more();
+
   copycount = 0;
   matched = 0;
   srcdsr = 0;
