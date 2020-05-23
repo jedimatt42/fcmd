@@ -81,9 +81,11 @@ void handleCommand(char *buffer) {
     char* value = strtokpeek(0, ""); // to end of line
     bk_vars_set(name, value);
   } else {
-    tputs_rom("unknown command: ");
-    tputs_ram(tok);
-    tputc('\n');
+    if (tok) {
+      tputs_rom("unknown command: ");
+      tputs_ram(tok);
+      tputc('\n');
+    }
   }
 }
 
@@ -135,7 +137,7 @@ void parsePathParam(struct DeviceServiceRoutine** dsr, char* buffer, int require
         crubase = parsePath(buffer, devicename);
         *dsr = bk_findDsr(devicename, crubase);
         // if still not found, then give up.
-        if (*dsr == 0) {  
+        if (*dsr == 0) {
           tputs_rom("device not found.\n");
           return;
         }
@@ -153,7 +155,7 @@ void parsePathParam(struct DeviceServiceRoutine** dsr, char* buffer, int require
     }
   }
   // Todo: test for existance and matching requirements
-  
+
   // separate path and filter if wildcards are supported.
   if (requirements & PR_WILDCARD) {
     int len = strlen(buffer);
