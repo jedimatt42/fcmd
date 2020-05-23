@@ -10,33 +10,97 @@
 #include "b1cp_terminal.h"
 #include <string.h>
 
-void handleCopy() {
-  char* filename = strtok(0, " ");
-  if (filename == 0) {
-    tputs_rom("error, must specify a file name\n");
-    return;
-  }
-  char path[256];
-  // check that file exists
-  strcpy(path, currentPath);
-  strcat(path, filename);
+void onIgnoreVolInfo(struct VolInfo *volInfo);
+void onCopyDirEntry(struct DirEntry *dirEntry);
 
-  struct DeviceServiceRoutine* dsr = 0;
-  bk_parsePathParam(&dsr, path, PR_REQUIRED);
-  if (dsr == 0) {
+struct DeviceServiceRoutine *srcdsr;
+char* srcpath;
+
+struct DeviceServiceRoutine *dstdsr;
+char* dstpath;
+
+int copycount;
+int matched;
+
+void handleCopy() {
+  copycount = 0;
+  matched = 0;
+  srcdsr = 0;
+  dstdsr = 0;
+
+  // allocate some buffer on the stack, set the global pointers.
+  char srcn[256];
+  char dstn[256];
+  srcpath = srcn;
+  dstpath = dstn;
+
+  for(int i = 0; i<256; i++) {
+    srcpath[i] = 0;
+    dstpath[i] = 0;
+  }
+
+  char tmpsrc[256];
+  strcpy(tmpsrc, strtok(0, " "));
+
+  // parse destination first, so glob pattern is preserved on source.
+  bk_parsePathParam(&dstdsr, dstpath, PR_REQUIRED);
+  if (dstdsr == 0)
+  {
     tputs_rom("no path: drive or folder specified\n");
     return;
   }
-  if (path[strlen(path)-1] != '.') {
-    strcat(path, ".");
+
+  // parse source and set glob pattern
+  setstrtok(tmpsrc);
+  bk_parsePathParam(&srcdsr, srcpath, PR_OPTIONAL | PR_WILDCARD);
+  if (srcdsr == 0)
+  {
+    tputs_rom("error, no device found.\n");
+    return;
   }
-  unsigned int stat = existsDir(dsr, path);
+
+  // ensure devices are a device path
+  if (srcpath[strlen(srcpath)-1] != '.') {
+    strcat(srcpath, ".");
+  }
+  if (dstpath[strlen(dstpath) - 1] != '.') {
+    strcat(dstpath, ".");
+  }
+
+  unsigned int stat = existsDir(dstdsr, dstpath);
   if (stat != 0) {
     tputs_rom("error, device/folder not found: ");
-    tputs_ram(path);
+    tputs_ram(dstpath);
     tputc('\n');
     return;
   }
+
+  loadDir(srcdsr, srcpath, onIgnoreVolInfo, onCopyDirEntry);
+  if (matched == 0) {
+    tputs_rom("error, no matching file found.\n");
+  } else {
+    tputs_rom("copied ");
+    tputs_ram(int2str(copycount));
+    tputs_rom(" files.\n");
+  }
+}
+
+void onIgnoreVolInfo(struct VolInfo *volInfo) {
+  return;
+}
+
+void onCopyDirEntry(struct DirEntry *dirEntry) {
+  if (!bk_globMatches(dirEntry->name)) {
+    return;
+  }
+  matched = 1;
+
+  tputs_rom("copying ");
+  tputs_ram(srcpath);
+  tputs_ram(dirEntry->name);
+  tputs_rom(" to ");
+  tputs_ram(dstpath);
+  tputc('\n');
 
   struct AddInfo* addInfoPtr = (struct AddInfo*) 0x8320;
   addInfoPtr->first_sector = 0;
@@ -46,13 +110,14 @@ void handleCopy() {
   addInfoPtr->records = 0;
   addInfoPtr->recs_per_sec = 0;
 
-  unsigned int source_crubase = currentDsr->crubase;
-  unsigned int source_unit = path2unitmask(currentPath);
-  unsigned int dest_crubase = dsr->crubase;
-  unsigned int dest_unit = path2unitmask(path);
+  unsigned int source_crubase = srcdsr->crubase;
+  unsigned int source_unit = path2unitmask(srcpath);
+  unsigned int dest_crubase = dstdsr->crubase;
+  unsigned int dest_unit = path2unitmask(dstpath);
 
-  lvl2_setdir(source_crubase, source_unit, currentPath);
-  unsigned int err = lvl2_input(source_crubase, source_unit, filename, 0, addInfoPtr);
+  // get file meta data
+  lvl2_setdir(source_crubase, source_unit, srcpath);
+  unsigned int err = lvl2_input(source_crubase, source_unit, dirEntry->name, 0, addInfoPtr);
   if (err) {
     tputs_rom("error reading file: ");
     tputs_ram(uint2hex(err));
@@ -66,11 +131,9 @@ void handleCopy() {
     return;
   }
 
-  tputc('\n'); // prepare status line
-
   // write file meta data
-  lvl2_setdir(dest_crubase, dest_unit, path);
-  err = lvl2_output(dest_crubase, dest_unit, filename, 0, addInfoPtr);
+  lvl2_setdir(dest_crubase, dest_unit, dstpath);
+  err = lvl2_output(dest_crubase, dest_unit, dirEntry->name, 0, addInfoPtr);
   if (err) {
     tputs_rom("error writing file: ");
     tputs_ram(uint2hex(err));
@@ -78,11 +141,14 @@ void handleCopy() {
     return;
   }
 
+  // copy all the data blocks
   int blockId = 0;
   while(blockId < totalBlocks) {
     addInfoPtr->first_sector = blockId;
-    lvl2_setdir(source_crubase, source_unit, currentPath);
-    err = lvl2_input(source_crubase, source_unit, filename, 1, addInfoPtr);
+
+    // read a block
+    lvl2_setdir(source_crubase, source_unit, srcpath);
+    err = lvl2_input(source_crubase, source_unit, dirEntry->name, 1, addInfoPtr);
     if (err) {
       tputs_rom("\nerror reading file: ");
       tputs_ram(uint2hex(err));
@@ -90,20 +156,17 @@ void handleCopy() {
       return;
     }
 
-    lvl2_setdir(dest_crubase, dest_unit, path);
-    err = lvl2_output(dest_crubase, dest_unit, filename, 1, addInfoPtr);
+    // write it back out
+    lvl2_setdir(dest_crubase, dest_unit, dstpath);
+    err = lvl2_output(dest_crubase, dest_unit, dirEntry->name, 1, addInfoPtr);
     if (err) {
-      tputs_rom("\nerror reading file: ");
+      tputs_rom("\nerror writing file: ");
       tputs_ram(uint2hex(err));
       tputc('\n');
       return;
     }
 
     blockId++;
-    tputs_rom("\rcopied block ");
-    tputs_ram(uint2str(blockId));
-    tputs_rom(" of ");
-    tputs_ram(uint2str(totalBlocks));
   }
-  tputc('\n'); // end status line.
+  copycount++;
 }

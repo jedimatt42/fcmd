@@ -123,6 +123,10 @@ int basicToCstr(const char* str, char* buf) {
 
 char *lasts;
 
+void setstrtok(char* str) {
+  lasts = str;
+}
+
 char* strtok(char* str, char* delim) {
   int ch;
 
@@ -157,7 +161,7 @@ char* strtokpeek(char* str, char* delim) {
   return peekbuf;
 }
 
-char* strchr(char* str, int delim) 
+char* strchr(char* str, int delim)
 {
   int x;
 

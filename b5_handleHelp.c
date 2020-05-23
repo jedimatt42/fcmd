@@ -76,12 +76,19 @@ void handleHelp() {
     wraptext("In 40 column mode, it sets the full screen colors.\n");
     wraptext("colors are TI \n");
   } else if (matchcmd(tok, "copy")) {
-    wraptext("copy <filename> <path> - copy a file to a different directory or device\n");
+    wraptext("copy <fileset> <path> - copy a file set to a different directory or device\n");
+    wraptext("  <fileset> - path and file pattern for source files to copy\n");
+    wraptext("              wildcard '*' may be at beginning or end of name but not both\n");
+    wraptext("              examples: DSK1.*BAS, DSK1.MUNCHM*, TELN*, *S\n");
+    wraptext("  <path>    - destination device and directory path\n");
   } else if (matchcmd(tok, "delete")) {
     wraptext("delete <filename> - delete file in current directory\n");
   } else if (matchcmd(tok, "dir")) {
     wraptext("dir [/w] [path] - list current directory or directory for given path\n");
     wraptext("  /w : optional. Output a simplified listing in multiple columns\n");
+    wraptext("  [path] - full or relative path to directory or file pattern\n");
+    wraptext("           wildcard '*' may be at beginning or end of name but not both\n");
+    wraptext("           examples: DSK1.*BAS, DSK1.MUNCHM*, TELN*, *S\n");
   } else if (matchcmd(tok, "drives")) {
     wraptext("drives - list device names grouped by CRU base address\n");
   } else if (matchcmd(tok, "echo")) {
