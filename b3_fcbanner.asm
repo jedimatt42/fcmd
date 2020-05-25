@@ -1,6 +1,8 @@
 	DEF	bandata
 
 bandata:
+    BYTE    0x0A
+	BYTE    0x0A
 	BYTE	0x1b
 	BYTE	0x5b
 	BYTE	0x30

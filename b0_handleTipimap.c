@@ -30,7 +30,7 @@ static void visitLines(line_cb onLine, char* filterArg1) {
   strcpy(namebuf, "PI.CONFIG");
 
   int err = bk_dsr_open(dsr, &pab, namebuf, DSR_TYPE_INPUT | DSR_TYPE_DISPLAY | DSR_TYPE_VARIABLE | DSR_TYPE_SEQUENTIAL, 0);
-  
+
   if (err) {
     tputs_rom("could no open PI.CONFIG\n");
     return;
@@ -60,7 +60,7 @@ static void writeConfigItem(const char* key, const char* value) {
   strcpy(namebuf, "PI.CONFIG");
 
   int err = bk_dsr_open(dsr, &pab, namebuf, DSR_TYPE_APPEND | DSR_TYPE_VARIABLE, 0);
-  
+
   if (err) {
     tputs_rom("could no open PI.CONFIG\n");
     return;
@@ -89,7 +89,9 @@ void onLineShowMapping(char* linebuf, char* extra) {
         tputs_ram(drive);
         tputs_rom(". => TIPI.");
       }
-      tputs_ram(path);
+      if (path[0] != '.') {
+        tputs_ram(path);
+      }
       tputc('\n');
     }
   }
@@ -105,7 +107,9 @@ void onLineIfDriveShowMapping(char* linebuf, char* drivePrefix) {
     char* path = strtok(0, " ");
     if (path) {
       tputs_rom("TIPI.");
-      tputs_ram(path);
+      if (path[0] != '.') {
+        tputs_ram(path);
+      }
     } else {
       tputs_rom("not mapped\n");
     }
@@ -161,7 +165,7 @@ static void setAutoMap() {
 }
 
 static int validDrive(const char* keybuf, const char* prefix, char min, char max) {
-  return (0==str_startswith(keybuf, prefix) && 
+  return (0==str_startswith(keybuf, prefix) &&
        keybuf[3] >= min && keybuf[3] <= max);
 }
 
@@ -170,8 +174,8 @@ static void setDriveMapping(const char* drive, const char* path) {
   int dlen = strlen(drive);
   memcpy(keybuf, drive, dlen < 9 ? dlen : 9);
   keybuf[9] = 0;
-  
-  if (!((dlen == 4 || (dlen == 5 && keybuf[4] == '.')) && 
+
+  if (!((dlen == 4 || (dlen == 5 && keybuf[4] == '.')) &&
        (validDrive(keybuf, "DSK", '0', '4') || validDrive(keybuf, "URI", '1', '3'))))
   {
     tputs_rom("error, bad drive specification\n");
@@ -183,9 +187,9 @@ static void setDriveMapping(const char* drive, const char* path) {
   } else if (str_startswith(keybuf, "URI")) {
     keybuf[4] = 0;
   }
-  
+
   char namebuf[256];
-  
+
   if (str_startswith(keybuf, "DSK")) {
     strcpy(namebuf, "TIPI");
     struct DeviceServiceRoutine* dsr = bk_findDsr(namebuf, 0);
@@ -211,7 +215,7 @@ void handleTipimap() {
   //  [/c] [drive] [path]
   char* peek = strtokpeek(0, " ");
   int clear = 0 == strcmpi("/C", peek);
- 
+
   if (clear) {
     strtok(0, " "); // consume the optional /c
   }

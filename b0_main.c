@@ -19,7 +19,7 @@
 #include "b1cp_terminal.h"
 #include "b4_labellist.h"
 
-#define APP_VER "0.E"
+#define APP_VER "1.0"
 
 char commandbuf[256];
 
@@ -77,7 +77,7 @@ void setupScreen(int width) {
   resetF18A();
   if (width == 80) {
     displayWidth = 80;
-    set_text80_color();
+    set_text80x30_color();
   } else { // 40 is the only other allowed value.
     displayWidth = 40;
     set_text();

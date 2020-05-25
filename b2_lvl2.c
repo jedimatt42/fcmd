@@ -30,10 +30,10 @@
 //	Scuzzy controller		SCS	>2x
 //	IDE controller:			IDE	>8x
 //	Ti to PC serial connection:	HDX	>9x
-unsigned int path2unitmask(char *currentPath) {
+unsigned int path2unitmask(char *dirpath) {
   unsigned int operationSet = 0x0010;
   char drive[9];
-  strncpy(drive, currentPath, 9);
+  strncpy(drive, dirpath, 9);
   int l = indexof(drive, '.');
   drive[l] = 0;
   if (str_equals("TIPI", drive)) {
