@@ -53,13 +53,15 @@ static void optional_pause() {
   // disable more_on to avoid infinate recursion
   more_on = 0;
   more_count++;
-  if (more_count >= 22) {
+  int limit = termWidth == 40 ? 22 : 28;
+
+  if (more_count >= limit) {
     tputs_rom("\n-- press any key for more --");
     cgetc();
     more_count = 0;
-    cclearxy(0,22,termWidth);
-    cclearxy(0,23,termWidth);
-    gotoxy(0,22);
+    cclearxy(0,limit,termWidth);
+    cclearxy(0,limit+1,termWidth);
+    gotoxy(0,limit);
   }
   more_on = 1;
 }
@@ -218,7 +220,7 @@ unsigned char colors[16] = {
   COLOR_LTYELLOW,
   COLOR_LTBLUE,
   COLOR_DKRED, // bold magenta?
-  COLOR_CYAN, // ??? 
+  COLOR_CYAN, // ???
   COLOR_WHITE
 };
 
@@ -423,7 +425,7 @@ int doEscCommand(unsigned char c) {
       } else if (esc_state == ESC_SIX) {
         return 1;
       }
-    } 
+    }
   }
   return 0;
 }
@@ -485,7 +487,7 @@ void tputc(unsigned char c) {
         esc_state = ESC_CLOSED;
       }
     }
-  } else if (stage == STAGE_CSI) { 
+  } else if (stage == STAGE_CSI) {
     if (c >= 0x40 && c <= 0x7E) {
       // command complete
       doCsiCommand(c);
