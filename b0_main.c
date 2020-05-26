@@ -19,7 +19,7 @@
 #include "b1cp_terminal.h"
 #include "b4_labellist.h"
 
-#define APP_VER "1.0beta"
+#define APP_VER "0.F"
 
 char commandbuf[256];
 

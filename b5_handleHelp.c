@@ -9,7 +9,7 @@
 #include <string.h>
 #include <conio.h>
 
-#define HELP_COMMANDS "call cd checksum cls color copy delete drives echo env exit fg99 ftp goto help if label load lvl2 mkdir protect readkey rename rmdir tipibeeps tipimap type unprotect ver width"
+#define HELP_COMMANDS "call cd checksum cls color copy delete drives echo env exit fg99 ftp goto help if label load lvl2 mkdir protect readkey rename rmdir tipibeeps tipihalt tipimap tipireboot type unprotect ver width"
 
 int matchcmd(char* input, char* exp) {
   char stackstr[80];
@@ -145,6 +145,8 @@ void handleHelp() {
     wraptext("rmdir <dirname> - remove a child directory from the current directory\n");
   } else if (matchcmd(tok,"tipibeeps")) {
     wraptext("tipibeeps - play tipi styled sound list\n");
+  } else if (matchcmd(tok,"tipihalt")) {
+    wraptext("tipihalt - halt Raspberry PI operating system\n");
   } else if (matchcmd(tok,"tipimap")) {
     wraptext("tipimap [/c] [ auto on|off ] [ <drive> [path] ] - set or get a tipi drive mapping\n");
     wraptext("    If no drive is specified, all configuration items are listed\n");
@@ -152,6 +154,8 @@ void handleHelp() {
     wraptext("  drive - the name of the drive\n");
     wraptext("  path - the directory to set\n");
     wraptext("  auto - set to on or off to map DSK1 when PROGRAM image is loaded\n");
+  } else if (matchcmd(tok,"tipireboot")) {
+    wraptext("tipireboot - reboot Raspberry PI operating sytem\n");
   } else if (matchcmd(tok,"type")) {
     wraptext("type [/ansi] <filepath> - copy the contents of the file to the screen\n");
     wraptext("  /ansi - optional. Open in DISPLAY/FIXED mode instead of DISPLAY/VARIABLE\n");

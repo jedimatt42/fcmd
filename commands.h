@@ -8,7 +8,6 @@ void handleExit();
 void handleFg99();
 void handleLoad();
 void handleWidth();
-void handleTipimap();
 
 // in bank 2
 void handleCd();
@@ -25,6 +24,8 @@ void handleDelete();
 void handleLvl2();
 void handleRename();
 void handleRmdir();
+void handleTipiHalt();
+void handleTipiReboot();
 
 // in bank 4
 void handleEcho();
@@ -39,6 +40,7 @@ void handleType();
 void handleHelp();
 
 // in bank 6
+void handleTipimap();
 
 // in bank 7
 void handleFtp();
@@ -57,6 +59,8 @@ DECLARE_BANKED_VOID(handleDelete, BANK_3, bk_handleDelete, (), ())
 DECLARE_BANKED_VOID(handleLvl2, BANK_3, bk_handleLvl2, (), ())
 DECLARE_BANKED_VOID(handleRename, BANK_3, bk_handleRename, (), ())
 DECLARE_BANKED_VOID(handleRmdir, BANK_3, bk_handleRmdir, (), ())
+DECLARE_BANKED_VOID(handleTipiHalt, BANK_3, bk_handleTipiHalt, (), ())
+DECLARE_BANKED_VOID(handleTipiReboot, BANK_3, bk_handleTipiReboot, (), ())
 
 DECLARE_BANKED_VOID(handleCd, BANK_4, bk_handleCd, (), ())
 DECLARE_BANKED_VOID(handleChecksum, BANK_4, bk_handleChecksum, (), ())
@@ -69,6 +73,8 @@ DECLARE_BANKED_VOID(handleReadkey, BANK_4, bk_handleReadkey, (), ())
 DECLARE_BANKED_VOID(handleType, BANK_4, bk_handleType, (), ())
 
 DECLARE_BANKED_VOID(handleHelp, BANK_5, bk_handleHelp, (), ())
+
+DECLARE_BANKED_VOID(handleTipimap, BANK_6, bk_handleTipimap, (), ())
 
 DECLARE_BANKED_VOID(handleFtp, BANK_7, bk_handleFtp, (), ())
 
