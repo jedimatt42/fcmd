@@ -26,7 +26,7 @@ all: $(FNAME)C.bin $(FNAME)G.bin
 
 # The size of the cart_rom segment in decimal
 # must agree with linkfile
-COMMON_SIZE = 112
+COMMON_SIZE = 128
 
 HEADBIN:=objects/header.bin
 

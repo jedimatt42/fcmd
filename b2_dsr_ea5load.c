@@ -10,10 +10,12 @@
 #include <conio.h>
 #include <string.h>
 
-
+#define GPLWSR11  *((volatile unsigned int*)0x83F6)
 #define GPLWSR12	*((volatile unsigned int*)0x83F8)
 
 void finish_load(int crubase, int VDPPAB, int lastcharaddr, int namelen);
+
+extern int* GOEA5;
 
 // Handle full of libti99 functions need to be replicated in ROM here
 inline static void ea5_vdpmemread(int pAddr, unsigned char *pDest, int cnt) {
@@ -76,9 +78,10 @@ unsigned int dsr_ea5load(struct DeviceServiceRoutine* dsr, const char* fname) {
     // - The C stack cannot be used.
     ea5_vdpmemread(0x1386, (char*) ADDR, BSIZE);
     if (FLAG == 0) {
+      GPLWSR11 = FADDR;
+      // We aren't comming back from this, so feel free to lie to gcc.
       __asm__(
-        "bl *%0"
-        : : "r" (FADDR)
+        "b @GOEA5"
       );
     } else {
       // increment name in vdp pab...
