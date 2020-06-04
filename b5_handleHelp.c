@@ -9,8 +9,6 @@
 #include <string.h>
 #include <conio.h>
 
-#define HELP_COMMANDS "call cd checksum cls color copy delete drives echo env exit fg99 ftp goto help if label load lvl2 mkdir protect readkey rename rmdir tipibeeps tipihalt tipimap tipireboot type unprotect ver width"
-
 int matchcmd(char* input, char* exp) {
   char stackstr[80];
   int len = 0;
@@ -34,7 +32,7 @@ void wraptext(char* str) {
   int i=0;
   while(str[i] != 0) {
     if (str[i] == ' ') {
-      if (displayWidth-1 < wherex() + wordlen(str+i+1)) {
+      if ((1 + wherex() + wordlen(str + (i+1))) >= displayWidth) {
         tputc('\n');
       } else {
         tputc(str[i]);
@@ -51,7 +49,12 @@ void handleHelp() {
   if (tok == 0) {
     wraptext("help <command>\n");
     wraptext("\nAvailable commands:\n");
-    wraptext(HELP_COMMANDS);
+
+    wraptext("call cd checksum cls color copy delete drives echo env exit ");
+    wraptext("fg99 ftp goto help if label load lvl2 mkdir protect readkey ");
+    wraptext("rename rmdir tipibeeps tipihalt tipimap tipireboot type ");
+    wraptext("unprotect ver width ");
+
     wraptext("\n\n");
     return;
   }
@@ -95,7 +98,7 @@ void handleHelp() {
     wraptext("echo [/n] [text] - print text to ANSI terminal screen\n");
     wraptext("  /n : optional, do not print newline after text\n");
     wraptext("substitutions:\n");
-    wraptext(" * '\e' : will output an ESCAPE, ascii 27 character\n");
+    wraptext("  \\e : will output an ESCAPE, ascii 27 character\n");
   } else if (matchcmd(tok, "env")) {
     wraptext("env - list all variables and their values\n");
     wraptext("\nVariables are set by assigning a name of up to 10 characters a value, or by specific commands.\n");
@@ -108,9 +111,11 @@ void handleHelp() {
     wraptext("  echo $(NAME1)A99\n");
   } else if (matchcmd(tok, "exit")) {
     wraptext("exit - quit Force Command\n");
+    wraptext("       If you are running in the auto start mode, Force Command will restart\n");
   } else if (matchcmd(tok, "fg99")) {
     wraptext("fg99 <cart> - load cartridge from FinalGROM99 sd card\n");
     wraptext("  cart - maximum 8 character name without the '.bin'\n");
+    wraptext("         cart must be in the same directory on the sd card as Force Command\n");
   } else if (matchcmd(tok, "ftp")) {
     wraptext("ftp - open an ftp prompt. Data connection will be in passive mode only.\n");
   } else if (matchcmd(tok, "goto")) {
@@ -118,6 +123,8 @@ void handleHelp() {
   } else if (matchcmd(tok, "help")) {
     wraptext("help - list available commands\n");
     wraptext("help <command> - show help for individual command\n");
+    wraptext("  command names and options are case insensitive.\n");
+    wraptext("  device, file and directory name or path parameters are case sensitive.\n");
   } else if (matchcmd(tok, "if")) {
     wraptext("if <expr> then <command> - conditional statement\n");
     wraptext("expression following 'if' is evaluated. If the expression evaluates to true, the rest of the command is executed.\n");
