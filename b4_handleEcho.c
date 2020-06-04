@@ -11,14 +11,16 @@
 
 void handleEcho() {
   char* peek = strtokpeek(0, " ");
-  int newline = 0 != strcmpi("/N", peek);
- 
+  int newline = (0 != strcmpi("/N", peek));
+
   if (!newline) {
     strtok(0, " "); // consume the optional /n
   }
 
   char* tok = strtok(0, 0);
-  tputs_ram(tok);
+  if (tok) {
+    tputs_ram(tok);
+  }
 
   if (newline) {
     tputc('\n');
