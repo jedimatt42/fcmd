@@ -48,15 +48,10 @@ void wraptext(char* str) {
 void handleHelp() {
   char* tok = strtok(0, " ");
   if (tok == 0) {
-    wraptext("help <command>\n");
-    wraptext("\nAvailable commands:\n");
-
-    wraptext("call cd checksum cls color copy delete drives echo env exit ");
-    wraptext("fg99 ftp goto help if label load lvl2 mkdir protect readkey ");
-    wraptext("rename rmdir tipibeeps tipihalt tipimap tipireboot type ");
-    wraptext("unprotect ver width ");
-
-    wraptext("\n\n");
+    wraptext("==Help==\n\n");
+    wraptext("help <command>\n\n");
+    wraptext("Commands:\n\n");
+    wraptext("call cd checksum cls color copy delete drives echo env exit fg99 ftp goto help if label load lvl2 mkdir protect readkey rename rmdir tipibeeps tipihalt tipimap tipireboot type unprotect ver width\n");
     return;
   }
 
