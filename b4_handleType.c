@@ -33,14 +33,14 @@ void handleType() {
 
   int flags = DSR_TYPE_INPUT | DSR_TYPE_DISPLAY | DSR_TYPE_SEQUENTIAL;
   if (ansi) {
-    flags |= DSR_TYPE_FIXED;
+    // bitwise or of zero: flags |= DSR_TYPE_FIXED;
     disable_more();
   } else {
     flags |= DSR_TYPE_VARIABLE;
   }
 
   int err = bk_dsr_open(dsr, &pab, namebuf, flags, 0);
-  
+
   if (err) {
     tputs_rom("could not open ");
     tputs_ram(namebuf);
@@ -68,7 +68,7 @@ void handleType() {
             err = 1;
             break;
           }
-        } 
+        }
         tputc(linebuf[i]);
         i++;
       }
