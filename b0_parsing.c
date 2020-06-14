@@ -65,7 +65,7 @@ void handleCommand(char *buffer) {
   else COMMAND("rmdir", bk_handleRmdir)
   else COMMAND("tipibeeps", playtipi)
   else COMMAND("tipihalt", bk_handleTipiHalt)
-  else COMMAND("tipimap", handleTipimap)
+  else COMMAND("tipimap", bk_handleTipimap)
   else COMMAND("tipireboot", bk_handleTipiReboot)
   else COMMAND("type", bk_handleType)
   else COMMAND("unprotect", bk_handleUnprotect)
