@@ -16,7 +16,7 @@ void handleMkdir() {
   bk_parsePathParam(&dsr, path, PR_REQUIRED);
   if (dsr == 0)
   {
-    tputs_rom("no path name specified\n");
+    tputs_rom("no directory path name specified\n");
     return;
   }
 
@@ -29,9 +29,9 @@ void handleMkdir() {
 
   lvl2_setdir(dsr->crubase, unit, path);
 
-  unsigned int err = lvl2_mkdir(currentDsr->crubase, unit, dirname);
+  unsigned int err = lvl2_mkdir(dsr->crubase, unit, dirname);
   if (err) {
-    tputs_rom("cannot create directory ");
+    tputs_rom("failed to create directory ");
     tputs_ram(path);
     tputs_ram(dirname);
     tputc('\n');

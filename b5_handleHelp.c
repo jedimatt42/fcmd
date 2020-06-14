@@ -179,8 +179,8 @@ void handleHelp() {
     wraptext("Create new directory with the given path name or relative to the current location\n");
   } else if (matchcmd(tok,"protect")) {
     wraptext("==Protect File==\n\n");
-    wraptext("protect <filename>\n\n");
-    wraptext("Set protect flag for a file at the current location\n");
+    wraptext("protect <filepath>\n\n");
+    wraptext("Set protect flag for the specified file path\n");
   } else if (matchcmd(tok,"readkey")) {
     wraptext("==Read Keyboard==\n\n");
     wraptext("readkey <varname>\n\n");
@@ -221,8 +221,8 @@ void handleHelp() {
     wraptext("/ansi - optional. Open in DISPLAY/FIXED mode instead of DISPLAY/VARIABLE and terminate output on CTRL-Z character (26)\n");
   } else if (matchcmd(tok,"unprotect")) {
     wraptext("==Unprotect File==\n\n");
-    wraptext("unprotect <filename>\n\n");
-    wraptext("Unprotect a file in current path\n");
+    wraptext("unprotect <filepath>\n\n");
+    wraptext("Remove protect flag for the specified file path\n");
   } else if (matchcmd(tok,"ver")) {
     wraptext("==Print Version==\n\n");
     wraptext("ver\n\n");
