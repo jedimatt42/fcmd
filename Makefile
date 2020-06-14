@@ -18,7 +18,7 @@ CFLAGS=\
 SRCS:=$(sort $(wildcard *.c) $(wildcard *.asm))
 
 OBJECT_LIST:=$(SRCS:.c=.o)
-OBJECT_LIST:=$(filter-out api.o,$(OBJECT_LIST:.asm=.o)) api.o
+OBJECT_LIST:=$(filter-out api.o b3_fcbanner.o,$(OBJECT_LIST:.asm=.o)) api.o b3_fcbanner.o
 
 LINK_OBJECTS:=$(addprefix objects/,$(OBJECT_LIST))
 
