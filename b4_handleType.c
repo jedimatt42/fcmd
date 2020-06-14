@@ -64,8 +64,7 @@ void handleType() {
       int i = 0;
       while(i<pab.CharCount) {
         if (ansi) {
-          volatile int val = linebuf[i];
-          if (val == CTRLZ) {
+          if (linebuf[i] == CTRLZ) {
             err = 1;
             break;
           }
@@ -74,8 +73,10 @@ void handleType() {
         i++;
       }
 
-      if (!ansi && i==0 || i!=80) {
-        tputc('\n');
+      if (!ansi) {
+        if (i==0 || i!=80) {
+          tputc('\n');
+        }
       }
     }
   }

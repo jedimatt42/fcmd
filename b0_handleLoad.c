@@ -18,12 +18,13 @@ void handleLoad() {
   struct DeviceServiceRoutine* dsr = 0;
 
   char path[256];
-  bk_parsePathParam(&dsr, path, PR_OPTIONAL);
+  bk_parsePathParam(&dsr, path, PR_REQUIRED);
   if (dsr == 0) {
+    tputs_rom("no file specified\n");
     return;
   }
 
-  // TODO, don't require exists if a PI.HTTP URL... 
+  // TODO, don't require exists if a PI.HTTP URL...
   if (path[0] != 'P' || path[1] != 'I') {
     if (!bk_existsFile(dsr, path)) {
       tputs_rom("error, file not found: ");
@@ -41,7 +42,7 @@ void handleLoad() {
   // erase first 4k of vdp
   vdpmemset(0,0,4192);
 
-  // ea clears screen with 0x20 (space characters)  
+  // ea clears screen with 0x20 (space characters)
   clrscr();
   // load character set
   charset();
@@ -53,4 +54,4 @@ void handleLoad() {
   // TODO load ea-utils into >2000
 
   bk_dsr_ea5load(dsr, path);
-} 
+}

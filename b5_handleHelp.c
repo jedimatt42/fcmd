@@ -175,8 +175,8 @@ void handleHelp() {
     wraptext("List level 2 I/O subprograms in DSR ROM at the specified CRU base address\n");
   } else if (matchcmd(tok,"mkdir")) {
     wraptext("==Make Directory==\n\n");
-    wraptext("mkdir <dirname>\n\n");
-    wraptext("Create new directory at the current location\n");
+    wraptext("mkdir <pathname>\n\n");
+    wraptext("Create new directory with the given path name or relative to the current location\n");
   } else if (matchcmd(tok,"protect")) {
     wraptext("==Protect File==\n\n");
     wraptext("protect <filename>\n\n");

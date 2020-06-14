@@ -9,13 +9,17 @@
 
 void handleCall() {
   struct DeviceServiceRoutine* dsr;
-  char filename[60];
-  parsePathParam(&dsr, filename, PR_REQUIRED);
+  char path[256];
+  bk_parsePathParam(&dsr, path, PR_REQUIRED);
+  if (dsr == 0) {
+    tputs_rom("no file specified\n");
+    return;
+  }
 
-  int ran = runScript(dsr, filename);
+  int ran = runScript(dsr, path);
   if (!ran) {
     tputs_rom("error, file not found: ");
-    tputs_ram(filename);
+    tputs_ram(path);
     tputc('\n');
   }
 }

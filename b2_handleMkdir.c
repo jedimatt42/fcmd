@@ -6,24 +6,33 @@
 #include <string.h>
 #include "b1cp_strutil.h"
 #include "b0_globals.h"
+#include "b0_parsing.h"
 #include "b2_dsrutil.h"
 #include "b2_lvl2.h"
 
 void handleMkdir() {
-  char* dirname = strtok(0, " ");
-  if (dirname == 0) {
-    tputs_rom("error, must specify a directory name\n");
+  struct DeviceServiceRoutine *dsr;
+  char path[256];
+  bk_parsePathParam(&dsr, path, PR_REQUIRED);
+  if (dsr == 0)
+  {
+    tputs_rom("no path name specified\n");
     return;
   }
 
-  unsigned int unit = path2unitmask(currentPath);
+  unsigned int unit = path2unitmask(path);
 
-  lvl2_setdir(currentDsr->crubase, unit, currentPath);
+  int parent_idx = lindexof(path, '.', strlen(path)-1);
+  char dirname[11];
+  strncpy(dirname, path+parent_idx+1, 11);
+  path[parent_idx+1] = 0x00;
+
+  lvl2_setdir(dsr->crubase, unit, path);
 
   unsigned int err = lvl2_mkdir(currentDsr->crubase, unit, dirname);
   if (err) {
     tputs_rom("cannot create directory ");
-    tputs_ram(currentPath);
+    tputs_ram(path);
     tputs_ram(dirname);
     tputc('\n');
   }
