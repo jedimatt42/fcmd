@@ -108,3 +108,6 @@ api.asm: api.lst makeapi.py
 	for f in `cat api.lst`; do grep $$f b*.h; done | grep BANK_ | cut -d'(' -f2 | cut -d',' -f1-2 >api.banks
 	python2 makeapi.py api.lst api.banks api.asm
 
+b3_fcbanner.asm: fcbanner.ans ans2asm.py
+	python ./ans2asm.py
+
