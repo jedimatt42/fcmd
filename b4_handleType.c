@@ -54,10 +54,11 @@ void handleType() {
       break;
     }
 
+    char linebuf[256];
+
     err = bk_dsr_read(dsr, &pab, rec++);
     if (!err) {
       // print the line...
-      char linebuf[256];
       vdpmemread(pab.VDPBuffer, linebuf, pab.CharCount);
 
       int i = 0;
@@ -73,7 +74,7 @@ void handleType() {
         i++;
       }
 
-      if (!ansi) {
+      if (!ansi && i==0 || i!=80) {
         tputc('\n');
       }
     }

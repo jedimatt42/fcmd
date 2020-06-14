@@ -19,8 +19,6 @@
 #include "b1cp_terminal.h"
 #include "b4_labellist.h"
 
-#define APP_VER "0.H"
-
 char commandbuf[256];
 
 const char tipibeeps[] = {

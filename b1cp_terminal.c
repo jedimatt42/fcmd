@@ -432,9 +432,6 @@ int doEscCommand(unsigned char c) {
 
 void charout(unsigned char ch) {
   switch (ch) {
-    case '\r': // carriage return
-      conio_x=0;
-      break;
     case '\n': // line feed
       conio_x=0;
       inc_row();
@@ -442,24 +439,16 @@ void charout(unsigned char ch) {
         optional_pause();
       }
       break;
-    case '\b': // backspace
-      --conio_x;
-      if (conio_x < 0) {
-        conio_x = nTextEnd-nTextRow+1;
-        if (conio_y > 0) --conio_y;
-      }
-      break;
     default: // it is important to handle control codes before choosing to wrap to next line.
       if (ch >= ' ') {
-        if (conio_x >= nTextEnd-nTextRow) {
+        if (conio_x > nTextEnd-nTextRow) {
           conio_x=0;
           inc_row();
           if (more_on) {
             optional_pause();
           }
         }
-        vdpchar(conio_getvram(), ch);
-        ++conio_x;
+        cputc(ch);
       }
     break;
   }

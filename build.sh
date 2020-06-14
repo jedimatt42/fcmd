@@ -12,4 +12,4 @@ function build_all() {
 
 time build_all
 
-
+cp FCMD?.bin ~/Documents/data/retro/TI99/

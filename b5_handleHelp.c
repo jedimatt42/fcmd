@@ -112,7 +112,9 @@ void handleHelp() {
     wraptext("echo [/n] [text]\n\n");
     wraptext("Print text to ANSI terminal screen\n\n");
     wraptext("/n : optional, do not print newline after text\n\n");
-    wraptext("substitutions: \\e will output an ESCAPE, ascii 27 character\n");
+    wraptext("substitutions: ");
+    tputc(92); // a FS - File Separator '\' character.
+    wraptext("e will output an ESCAPE, ascii 27 character\n");
   } else if (matchcmd(tok, "env")) {
     wraptext("==Environment Variables==\n\n");
     wraptext("env\n\n");

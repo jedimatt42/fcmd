@@ -86,6 +86,7 @@ $(FNAME)G.bin: gpl-boot.g99 $(FNAME).elf
 
 $(FNAME).elf: $(LINK_OBJECTS)
 	$(LD) $(LINK_OBJECTS) $(LDFLAGS) -o $(FNAME).elf -Map=mapfile
+	if grep 0xfffff mapfile | grep -q __STATS_BANK; then echo "FAIL: Bank Overflow"; false; fi
 
 .phony clean:
 	rm -fr objects

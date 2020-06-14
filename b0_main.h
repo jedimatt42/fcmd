@@ -3,6 +3,8 @@
 
 #include "b2_dsrutil.h"
 
+#define APP_VER "0.I"
+
 void initGlobals();
 void main();
 int isF18A();
