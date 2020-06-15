@@ -96,7 +96,8 @@ void onLongDirEntry(struct DirEntry* dirEntry) {
   tputs_ram(dirEntry->name);
   cputpad(11, dirEntry->name);
 
-  int de_type = (0x0007 & dirEntry->type) - 1;
+  int de_type = dirEntry->type < 0 ? -1 * dirEntry->type : dirEntry->type;
+  de_type--;
 
   char* ftype = (char*) file_types[de_type];
 
