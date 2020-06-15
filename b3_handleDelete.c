@@ -1,41 +1,40 @@
 #include "banks.h"
 #define MYBANK BANK_3
 
-#include "b0_globals.h"
 #include "commands.h"
+#include "b0_globals.h"
+#include "b0_parsing.h"
 #include "b1cp_strutil.h"
 #include "b1cp_terminal.h"
 #include "b2_dsrutil.h"
 #include <string.h>
 
 void handleDelete() {
-  char* filename = strtok(0, " ");
-  if (filename == 0) {
-    tputs_rom("error, must specify a file name\n");
+  struct DeviceServiceRoutine *dsr;
+  char path[256];
+  bk_parsePathParam(&dsr, path, PR_REQUIRED);
+  if (dsr == 0)
+  {
+    tputs_rom("no file path name specified\n");
     return;
   }
 
-  char buffer[256];
-  strcpy(buffer, currentPath);
-  strcat(buffer, filename);
-  
-  unsigned int exists = bk_existsFile(currentDsr, buffer);
+  unsigned int exists = bk_existsFile(dsr, path);
   if (!exists) {
     tputs_rom("file not found ");
-    tputs_ram(buffer);
+    tputs_ram(path);
     tputc('\n');
     return;
   }
 
   struct PAB pab;
   bk_initPab(&pab);
-  pab.pName = buffer;
+  pab.pName = path;
 
-  unsigned int err = bk_dsr_delete(currentDsr, &pab);
+  unsigned int err = bk_dsr_delete(dsr, &pab);
   if (err) {
     tputs_rom("cannot delete file ");
-    tputs_ram(currentPath);
-    tputs_ram(filename);
+    tputs_ram(path);
     tputc('\n');
   }
 }

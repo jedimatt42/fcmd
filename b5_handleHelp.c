@@ -72,8 +72,8 @@ void handleHelp() {
     "..   - go to parent directory\n");
   } else if (matchcmd(tok, "checksum")) {
     wraptext("==File Checksum==\n\n"
-    "checksum <file>\n\n"
-    "Calculate 16 bit checksum of a file in the current directory\n");
+    "checksum <filepath>\n\n"
+    "Calculate 16 bit checksum of a file\n");
   } else if (matchcmd(tok, "cls")) {
     wraptext("==Clear Screen==\n\n"
     "cls\n\n"
@@ -180,7 +180,7 @@ void handleHelp() {
   } else if (matchcmd(tok,"mkdir")) {
     wraptext("==Make Directory==\n\n"
     "mkdir <pathname>\n\n"
-    "Create new directory with the given path name or relative to the current location\n");
+    "Create new directory with the given path name\n");
   } else if (matchcmd(tok,"protect")) {
     wraptext("==Protect File==\n\n"
     "protect <filepath>\n\n"
@@ -195,8 +195,8 @@ void handleHelp() {
     "Rename a file or directory at the current location\n");
   } else if (matchcmd(tok,"rmdir")) {
     wraptext("==Remove Directory==\n\n"
-    "rmdir <dirname>\n\n"
-    "Remove a child directory from the current directory\n");
+    "rmdir <dirpath>\n\n"
+    "Remove a given directory path\n");
   } else if (matchcmd(tok,"tipibeeps")) {
     wraptext("==Play TIPI Beeps==\n\n"
     "tipibeeps\n\n"
