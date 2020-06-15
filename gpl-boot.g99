@@ -28,10 +28,16 @@ bootvec:
 start:
 	exit
 
-; boot code will just branch over to machine code in 
+; boot code will just branch over to machine code in
 ; cartridge rom.
 
 boot:
+	dclr	@>83CE		; clear sound bytes
+	st		>70,@>9400	; load speech write
+	st		>9F,@>8400	; Set sound generators
+	st		>BF,@>8400
+	st		>DF,@>8400
+	st		>FF,@>8400
 	dst CART,@>8300	; source value is symbol _cart in rom
 	xml >F0
 
