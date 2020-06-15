@@ -30,7 +30,7 @@ void handleDir() {
   struct DeviceServiceRoutine* dsr = 0;
 
   char* peek = strtokpeek(0, " ");
-  int wideFormat = 0 == strcmpi("/W", peek);
+  int wideFormat = strcmpi("/w", peek) == 0 ? 1 : 0;
   if (wideFormat) {
     strtok(0, " "); // consume the option token.
   }

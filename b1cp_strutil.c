@@ -29,9 +29,9 @@ int str_equals(char* a, char* b) {
   return 1;
 }
 
-char lowerchar(char c) {
+char lowerchar(unsigned char c) {
   if (c >= 'A' && c <= 'Z') {
-    return c - 'A' + 'a';
+    return c + ('a' - 'A');
   }
   return c;
 }
@@ -66,17 +66,15 @@ int str_endswith(const char* str, const char* suffix) {
   return 1;
 }
 
-int strcmpi(const char* a, const char* b) {
-  int i=0;
-  char ch = lowerchar(a[i]);
-  do {
-    if (ch == '\0') {
-      return ch - lowerchar(b[i]);
+int strcmpi(const char *a, const char *b) {
+  while(*a) { // a is not 0 termination character
+    if (lowerchar(*a) != lowerchar(*b)) {
+      break;
     }
-    i++;
-    ch = lowerchar(a[i]);
-  } while(ch == lowerchar(b[i]));
-  return ch - lowerchar(b[i]);
+    a++;
+    b++;
+  }
+  return lowerchar(*(const unsigned char*)a) - lowerchar(*(const unsigned char*)b);
 }
 
 int indexof(const char* str, char c) {
