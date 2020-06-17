@@ -155,7 +155,7 @@ char* strtokpeek(char* str, char* delim) {
   --str;
   char* plasts = str + strcspn(str, delim);
 
-  strncpy(peekbuf, str, plasts + 1 - str);
+  strncpy(peekbuf, str, plasts - str);
   return peekbuf;
 }
 
@@ -205,7 +205,7 @@ char* strcat(char* dest, const char* add) {
 
 char* strncpy(char* dest, char* src, int limit) {
   int i = 0;
-  while(src[i] != 0 && i < (limit -1)) {
+  while(src[i] != 0 && i < (limit)) {
     dest[i] = src[i];
     i++;
   }

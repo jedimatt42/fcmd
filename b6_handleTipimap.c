@@ -2,6 +2,7 @@
 #define MYBANK BANK_6
 
 #include "commands.h"
+#include "b0_parsing.h"
 #include "b1cp_strutil.h"
 #include "b2_dsrutil.h"
 #include "b1cp_terminal.h"
@@ -164,19 +165,27 @@ static void setAutoMap() {
   }
 }
 
-static int validDrive(const char* keybuf, const char* prefix, char min, char max) {
-  return (0==str_startswith(keybuf, prefix) &&
-       keybuf[3] >= min && keybuf[3] <= max);
+static int __attribute__((noinline)) validDrive(const unsigned char *keybuf, const unsigned char *prefix, char min, char max)
+{
+  int l = strlen(keybuf);
+  int form = (l == 5 && keybuf[4] == '.') || (l == 4);
+  return str_startswith(keybuf, prefix) &&
+       keybuf[3] >= min &&
+       keybuf[3] <= max &&
+       form;
+}
+
+static int __attribute__((noinline)) isMappable(const char *drive)
+{
+  return validDrive(drive, "DSK", '1', '4') || validDrive(drive, "URI", '1', '3');
 }
 
 static void setDriveMapping(const char* drive, const char* path) {
-  char keybuf[10];
+  unsigned char keybuf[10];
   int dlen = strlen(drive);
-  memcpy(keybuf, drive, dlen < 9 ? dlen : 9);
-  keybuf[9] = 0;
+  strncpy(keybuf, (char*) drive, dlen < 9 ? dlen : 9);
 
-  if (!((dlen == 4 || (dlen == 5 && keybuf[4] == '.')) &&
-       (validDrive(keybuf, "DSK", '0', '4') || validDrive(keybuf, "URI", '1', '3'))))
+  if (!isMappable(keybuf))
   {
     tputs_rom("error, bad drive specification\n");
     return;
@@ -234,9 +243,16 @@ void handleTipimap() {
       if (!strcmpi("auto", drive)) {
         setAutoMap();
       } else {
-        char* path = strtok(0, " ");
-        if (path) {
-          setDriveMapping(drive, path);
+        char* peek = strtokpeek(0, " ");
+        if (peek) {
+          struct DeviceServiceRoutine *dsr;
+          char path[256];
+          bk_parsePathParam(&dsr, path, PR_OPTIONAL);
+          if (dsr == 0) {
+            tputs_rom("bad path specified\n");
+          } else {
+            setDriveMapping(drive, path);
+          }
         } else {
           showDriveMapping(drive);
         }

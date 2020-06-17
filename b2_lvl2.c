@@ -33,7 +33,7 @@
 unsigned int path2unitmask(char *dirpath) {
   unsigned int operationSet = 0x0010;
   char drive[9];
-  strncpy(drive, dirpath, 9);
+  strncpy(drive, dirpath, 8);
   int l = indexof(drive, '.');
   drive[l] = 0;
   if (str_equals("TIPI", drive)) {

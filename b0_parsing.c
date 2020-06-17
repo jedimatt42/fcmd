@@ -94,7 +94,7 @@ void handleCommand(char *buffer) {
 int parsePath(char* path, char* devicename) {
   char workbuf[14];
   int crubase = 0;
-  strncpy(workbuf, path, 14);
+  strncpy(workbuf, path, 13);
   char* tok = strtok(workbuf, ". ");
   if (tok != 0 && tok[0] == '1' && strlen(tok) == 4) {
     crubase = htoi(tok);
@@ -127,7 +127,7 @@ void parsePathParam(struct DeviceServiceRoutine** dsr, char* buffer, int require
         tputs_rom("No parent folder\n");
         return;
       }
-      strncpy(buffer, currentPath, ldot + 1);
+      strncpy(buffer, currentPath, ldot);
       return;
     } else {
       int crubase = parsePath(path, devicename);
@@ -172,12 +172,12 @@ int globMatches(char* filename) {
     return 1;
   }
 
-  int prelen = indexof(filterglob, '*') + 1;
+  int prelen = indexof(filterglob, '*');
   char prefix[12];
   strncpy(prefix, filterglob, prelen);
 
   char suffix[12];
-  strcpy(suffix, filterglob+prelen);
+  strcpy(suffix, filterglob+prelen+1);
 
   return str_startswith(filename, prefix) && str_endswith(filename, suffix);
 }

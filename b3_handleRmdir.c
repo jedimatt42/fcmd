@@ -23,7 +23,7 @@ void handleRmdir() {
 
   int parent_idx = lindexof(path, '.', strlen(path) - 1);
   char dirname[11];
-  strncpy(dirname, path + parent_idx + 1, 11);
+  strncpy(dirname, path + parent_idx, 11);
   path[parent_idx + 1] = 0x00;
 
   bk_lvl2_setdir(dsr->crubase, unit, path);
