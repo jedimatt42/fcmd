@@ -33,7 +33,7 @@ static void doProtect(char mode) {
 
   int parent_idx = lindexof(path, '.', strlen(path) - 1);
   char filename[11];
-  strncpy(filename, path + parent_idx, 11);
+  strncpy(filename, path + parent_idx + 1, 10);
   path[parent_idx + 1] = 0x00;
 
   lvl2_setdir(dsr->crubase, unit, path);
