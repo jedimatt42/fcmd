@@ -9,7 +9,6 @@
 
 void handleCommand(char * buffer);
 
-int parsePath(char* path, char* devicename);
 void parsePathParam(struct DeviceServiceRoutine** dsr, char* buffer, int requirements);
 int globMatches(char* filename);
 
