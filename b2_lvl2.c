@@ -64,12 +64,13 @@ unsigned int lvl2_protect(int crubase, unsigned int unit, char* filename, int pr
 }
 
 unsigned int lvl2_setdir(int crubase, unsigned int unit, char* path) {
-  LVL2_PARAMADDR1 = FBUF;
   int len = strlen(path);
   if (len > 39) {
     return 0xFE;
   }
-  vdpchar(FBUF,(unsigned char) len);
+  LVL2_PARAMADDR1 = FBUF;
+  VDP_SET_ADDRESS_WRITE(FBUF);
+  VDPWD = len;
   vdpmemcpy(FBUF+1, path, len);
 
   LVL2_UNIT = UNITNO(unit);
