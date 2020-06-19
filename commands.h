@@ -40,6 +40,7 @@ void handleType();
 void handleHelp();
 
 // in bank 6
+void handleCFMount();
 void handleTipimap();
 
 // in bank 7
@@ -74,6 +75,7 @@ DECLARE_BANKED_VOID(handleType, BANK_4, bk_handleType, (), ())
 
 DECLARE_BANKED_VOID(handleHelp, BANK_5, bk_handleHelp, (), ())
 
+DECLARE_BANKED_VOID(handleCFMount, BANK_6, bk_handleCFMount, (), ())
 DECLARE_BANKED_VOID(handleTipimap, BANK_6, bk_handleTipimap, (), ())
 
 DECLARE_BANKED_VOID(handleFtp, BANK_7, bk_handleFtp, (), ())

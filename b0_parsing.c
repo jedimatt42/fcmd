@@ -42,6 +42,7 @@ void handleCommand(char *buffer) {
   COMMAND("call", handleCall)
   else COMMAND("cls", handleCls)
   else COMMAND("cd", bk_handleCd)
+  else COMMAND("cfmount", bk_handleCFMount)
   else COMMAND("checksum", bk_handleChecksum)
   else COMMAND("color", bk_handleColor)
   else COMMAND("copy", bk_handleCopy)
