@@ -51,7 +51,7 @@ void handleHelp() {
     wraptext("==Help==\n\n"
     "help <command>\n\n"
     "Commands:\n\n"
-    "call cd checksum cls color copy delete drives echo env exit fg99 ftp goto help if "
+    "call cd cfmount checksum cls color copy delete drives echo env exit fg99 ftp goto help if "
     "label load lvl2 mkdir protect readkey rename rmdir tipibeeps tipihalt tipimap "
     "tipireboot type unprotect ver width\n");
     return;
@@ -70,6 +70,16 @@ void handleHelp() {
     "cd <path>|..\n\n"
     "path - A device or directory path. The path may be a subdirectory of the current location, or a fully qualified path starting with a device name or crubase and device name\n"
     "..   - go to parent directory\n");
+  } else if (matchcmd(tok, "cfmount")) {
+    wraptext("==Mount Compact Flash Volumes==\n\n"
+    "cfmount\n"
+    "cfmount /v [begin end]\n"
+    "cfmount <drive> <volume>\n\n"
+    "With no arguments, list current mapping info\n"
+    "/v - optional, list all volumes with an option range of volumes specified. "
+    "Stops after several empty slots unless a range is specified.\n\n"
+    "drive - (1,2,3) DSK device unit number for volume mapping\n"
+    "volume - compact flash volume number to map\n");
   } else if (matchcmd(tok, "checksum")) {
     wraptext("==File Checksum==\n\n"
     "checksum <filepath>\n\n"
