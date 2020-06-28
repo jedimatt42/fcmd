@@ -38,6 +38,7 @@ unsigned int lvl2_output(int crubase, unsigned int unit, char *filename, unsigne
 unsigned char __attribute__((noinline)) base_lvl2(int crubase, unsigned int unit, char operation, char* name1, char* name2, char param0);
 unsigned char __attribute__((noinline)) direct_io(int crubase, unsigned int unit, char operation, char* filename, unsigned char blockcount, struct AddInfo* addInfoPtr);
 void __attribute__((noinline)) call_lvl2(int crubase, unsigned char operation);
+void call_basic_sub(int crubase, char* subroutine);
 
 #include "banking.h"
 
@@ -50,5 +51,7 @@ DECLARE_BANKED(lvl2_rendir, BANK_2, unsigned int, bk_lvl2_rendir, (int crubase, 
 DECLARE_BANKED(lvl2_rmdir, BANK_2, unsigned int, bk_lvl2_rmdir, (int crubase, unsigned int unit, char *dirname), (crubase, unit, dirname))
 DECLARE_BANKED(lvl2_input, BANK_2, unsigned int, bk_lvl2_input, (int crubase, unsigned int unit, char *filename, unsigned int blockcount, struct AddInfo *addInfoPtr), (crubase, unit, filename, blockcount, addInfoPtr))
 DECLARE_BANKED(lvl2_output, BANK_2, unsigned int, bk_lvl2_output, (int crubase, unsigned int unit, char *filename, unsigned int blockcount, struct AddInfo *addInfoPtr), (crubase, unit, filename, blockcount, addInfoPtr))
+
+DECLARE_BANKED_VOID(call_basic_sub, BANK_2, bk_call_basic_sub, (int crubase, char *subroutine), (crubase, subroutine))
 
 #endif

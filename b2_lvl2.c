@@ -24,13 +24,16 @@
 #define UNITNO(x) (unsigned char)(x >> 8 & 0xFF)
 #define OPNAME(x,y) (unsigned char)((x & 0x00F0)|(y & 0x00F))
 
+static void call_addr(int crubase, int addr, int link);
+
 // Returns lvl2 base code in LSB, and unit number in MSB
 // 	Floppy disk controllers:	DSK	>1x
 //	Myarc harddisk controller:	WDS	>2x
 //	Scuzzy controller		SCS	>2x
 //	IDE controller:			IDE	>8x
 //	Ti to PC serial connection:	HDX	>9x
-unsigned int path2unitmask(char *dirpath) {
+unsigned int path2unitmask(char *dirpath)
+{
   unsigned int operationSet = 0x0010;
   char drive[9];
   strncpy(drive, dirpath, 8);
@@ -144,6 +147,31 @@ unsigned char __attribute__((noinline)) base_lvl2(int crubase, unsigned int unit
   return LVL2_STATUS;
 }
 
+void call_basic_sub(int crubase, char *subroutine) {
+  enableROM(crubase);
+  unsigned int addr = 0;
+  unsigned int link = 0;
+
+  struct DeviceRomHeader *dsrrom = (struct DeviceRomHeader *)0x4000;
+  struct NameLink *entry = (struct NameLink *)dsrrom->basiclnk;
+  while (entry != 0) {
+    int elen = entry->name[0];
+    char* entryname = entry->name + 1;
+    char ebuf[8];
+    strncpy(ebuf, entryname, elen);
+
+    if (0 == strcmp(ebuf, subroutine)) {
+      addr = entry->routine;
+      link = (unsigned int)entry;
+      break;
+    }
+    entry = entry->next;
+  }
+  disableROM(crubase);
+
+  call_addr(crubase, addr, link);
+}
+
 void __attribute__((noinline)) call_lvl2(int crubase, unsigned char operation) {
   enableROM(crubase);
   unsigned int addr = 0;
@@ -163,6 +191,10 @@ void __attribute__((noinline)) call_lvl2(int crubase, unsigned char operation) {
   }
   disableROM(crubase);
 
+  call_addr(crubase, addr, link);
+}
+
+static void call_addr(int crubase, int addr, int link) {
   if (addr == 0) {
     LVL2_STATUS = 0xFF;
     return;
@@ -172,14 +204,16 @@ void __attribute__((noinline)) call_lvl2(int crubase, unsigned char operation) {
   // - console ROM dsrlnk leaves crubase at this address, too many people know about it.
   LVL2_CRULST = crubase;
   // - HRD ROS expects this to find ros extension to the subroutine name list.
-  LVL2_SADDR = link;
+  if (link != 0) {
+    LVL2_SADDR = link;
+  }
 
   // - GPL WS setup so we can swap workspace and then run the routine.
   GPLWSR12 = crubase;
   GPLWSR9 = addr;
 
   __asm__(
-    	"	lwpi 0x83e0     ; get gplws\n"
+      "	lwpi 0x83e0     ; get gplws\n"
       " sbo 0           ; turn on card dsr\n"
       " bl *r9          ; call rubroutine\n"
       " nop             ; lvl2 routines never 'skip' request\n"

@@ -6,6 +6,7 @@
 #include "b1cp_strutil.h"
 #include "b2_dsrutil.h"
 #include "b2_tifloat.h"
+#include "b2_lvl2.h"
 #include "b1cp_terminal.h"
 #include <string.h>
 #include <vdp.h>
@@ -18,6 +19,9 @@
  *  0x3FFC-D    | volume# of DSK2
  *  0x3FFE-F    | volume# of DSK3
  */
+
+// https://atariage.com/forums/topic/290966-force-command-ver-0k-kinda-like-commandcom-from-1985/?do=findComment&comment=4557648
+//  ^--- Lee provides details on calling the basic MOUNT subroutine
 
 static void tmp_mount(int drive, int volume);
 
@@ -68,7 +72,6 @@ static void listAllVolumes(int begin, int end) {
 
     char volumeName[11];
 
-    int blanks = 0;
     for (int i = begin; i <= end; i++)
     {
         // mount the volume into DSK1.
@@ -79,12 +82,6 @@ static void listAllVolumes(int begin, int end) {
             tputs_rom(" : ");
             tputs_ram(volumeName);
             tputc('\n');
-            blanks = 0;
-        } else {
-            blanks++;
-            if (blanks > 10) {
-                break;
-            }
         }
     }
 
@@ -108,8 +105,40 @@ static void listCurrentVolumes() {
     }
 }
 
-static void call_mount(int drive, int volume) {
+#define PADDR *((volatile int*)0x832C)
+#define FACADDR *((volatile int*)0x834A)
+#define PARAMS *((volatile int*)0x8356)
 
+static void call_mount(int drive, int volume) {
+    // setup parameters -
+    // PADDR <- FBUF: (VDP) 05 "MOUNT" B7 C8 01 <drive> B3 C8 <vlen> <volstr> B6
+    // 0x834A <- "MOUNT"
+    // 0x8356 <- FBUF + 6
+    PADDR = FBUF;
+    PARAMS = FBUF+6;
+    strncpy((char*)FACADDR, "MOUNT", 5);
+
+    // build FBUF up
+    unsigned char command[30];
+    int i = 0;
+    command[i++] = 5;
+    strcpy(command+i, "MOUNT");
+    i += 5;
+    command[i++] = 0xB7;
+    command[i++] = 0xC8;
+    command[i++] = 1;
+    command[i++] = '0' + drive;
+    command[i++] = 0xB3;
+    command[i++] = 0xC8;
+    char* vol = int2str(volume);
+    command[i++] = strlen(vol);
+    strcpy(command+(i++), vol);
+    vdpmemcpy(FBUF, command, 30);
+
+    // call persistent mount routine
+    char subname[6] = "MOUNT";
+    // Warning: hardcoded crubase for physical... classic99 uses >1000
+    bk_call_basic_sub(0x1100, subname);
 }
 
 static void tmp_mount(int drive, int volume) {
@@ -124,11 +153,15 @@ static void tmp_mount(int drive, int volume) {
 void handleCFMount() {
     //  CFMOUNT
     //  CFMOUNT [/v] [begin] [end]
-    //  CFMOUNT [/p] DSKn. vol
+    //  CFMOUNT [/p] 1-3 vol
     char *peek = strtokpeek(0, " ");
     int list = peek == 0;
     int volumes = 0 == strcmpi("/v", peek);
     int persist = 0 == strcmpi("/p", peek);
+    if (persist || volumes)
+    {
+        strtok(0, " "); // consume the optional /c
+    }
 
     // test for CF7/nanopeb
     VDP_SET_ADDRESS(0x3FF8);
@@ -147,13 +180,22 @@ void handleCFMount() {
     }
 
     if (volumes) {
-        listAllVolumes(1, 312);
-        return;
-    }
+        int begin = 1;
+        int end = 312;
+        peek = strtokpeek(0, " ");
+        if (peek) {
+            peek = strtok(0, " ");
+            begin = atoi(peek);
+            peek = strtok(0, " ");
+            end = atoi(peek);
+            if (end < begin || begin == 0 || end == 0) {
+                tputs_rom("illegal range specified\n");
+                return;
+            }
+        }
 
-    if (persist)
-    {
-        strtok(0, " "); // consume the optional /c
+        listAllVolumes(begin, end);
+        return;
     }
 
     int drive = atoi(strtok(0, " "));
