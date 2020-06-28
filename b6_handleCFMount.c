@@ -25,8 +25,11 @@
 
 static void tmp_mount(int drive, int volume);
 
+// Warning: hardcoded crubase for physical... classic99 uses >1000
+#define CFNANO_CRUBASE 0x1100
 
-static int getVolume(int drive, int volume, char* volumeName) {
+
+static int getVolume(int drive, char* volumeName) {
     // it seems a directory listing of an unformatted volume
     // will just show trash...
     // but the used + available should be 1598
@@ -35,19 +38,21 @@ static int getVolume(int drive, int volume, char* volumeName) {
     unsigned char path[6]; // paranoid about the parse command.
     strcpy(path, "DSKx");
     path[3] = drive + '0';
-    struct DeviceServiceRoutine *dsr = bk_findDsr(path, 0x1100);
+    struct DeviceServiceRoutine *dsr = bk_findDsr(path, CFNANO_CRUBASE);
     strcat(path, ".");
 
     struct VolInfo volInfo;
     // basically just read the first record from the catalog.
     struct PAB pab;
-    unsigned char cbuf[150];
 
     int result = 0;
     unsigned int ferr = bk_dsr_open(dsr, &pab, path, DSR_TYPE_INPUT | DSR_TYPE_DISPLAY | DSR_TYPE_FIXED | DSR_TYPE_INTERNAL | DSR_TYPE_RELATIVE, 0);
     if (ferr == DSR_ERR_NONE) {
         ferr = bk_dsr_read(dsr, &pab, 0);
         if (ferr == DSR_ERR_NONE) {
+            // this is excessively large to avoid trouble when reading from unitialized volumes.
+            unsigned char cbuf[256];
+
             vdpmemread(FBUF, cbuf, pab.CharCount);
             int namlen = basicToCstr(cbuf, volInfo.volname);
             int a = bk_ti_floatToInt(cbuf + 1 + namlen);
@@ -77,7 +82,7 @@ static void listAllVolumes(int begin, int end) {
         // mount the volume into DSK1.
         tmp_mount(1, i);
 
-        if (1 == getVolume(1, i, volumeName)) {
+        if (1 == getVolume(1, volumeName)) {
             tputs_ram(int2str(i));
             tputs_rom(" : ");
             tputs_ram(volumeName);
@@ -98,7 +103,7 @@ static void listCurrentVolumes() {
         tputs_rom(". -> ");
         tputs_ram(int2str(mapping[i]));
         char volumeName[11];
-        getVolume(i + 1, mapping[i], volumeName);
+        getVolume(i + 1, volumeName);
         tputs_rom(" : ");
         tputs_ram(volumeName);
         tputc('\n');
@@ -137,8 +142,7 @@ static void call_mount(int drive, int volume) {
 
     // call persistent mount routine
     char subname[6] = "MOUNT";
-    // Warning: hardcoded crubase for physical... classic99 uses >1000
-    bk_call_basic_sub(0x1100, subname);
+    bk_call_basic_sub(CFNANO_CRUBASE, subname);
 }
 
 static void tmp_mount(int drive, int volume) {
