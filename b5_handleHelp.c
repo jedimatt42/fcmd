@@ -76,8 +76,7 @@ void handleHelp() {
     "cfmount /v [begin end]\n"
     "cfmount [/p] <drive> <volume>\n\n"
     "With no arguments, list current mapping info\n"
-    "/v - optional, list all volumes with an option range of volumes specified. "
-    "Stops after several empty slots unless a range is specified.\n\n"
+    "/v - optional, list all volumes with an option range of volumes specified.\n"
     "/p - optional, persist drive mapping\n"
     "drive - (1,2,3) DSK device unit number for volume mapping\n"
     "volume - compact flash volume number to map\n");
