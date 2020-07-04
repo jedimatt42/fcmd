@@ -37,7 +37,16 @@ void handleLoad() {
   // TODO - test that it is ea5-ish
 
   resetF18A();
-  set_graphics(0);
+  set_graphics(0); // This is mostly write, but we have
+  // to override some VDP registers for EA5 compatibility
+  // VDP_SET_REGISTER(VDP_REG_MODE0, 0x00);
+  VDP_SET_REGISTER(VDP_REG_MODE1, 0xE0);
+  // VDP_SET_REGISTER(VDP_REG_SIT, 0x00);
+  // VDP_SET_REGISTER(VDP_REG_CT, 0x0E);
+  // VDP_SET_REGISTER(VDP_REG_PDT, 0x01);
+  // VDP_SET_REGISTER(VDP_REG_SAL, 0x06);
+  VDP_SET_REGISTER(VDP_REG_SDT, 0x00);
+  VDP_SET_REGISTER(VDP_REG_COL, 0xF3);
 
   // erase first 4k of vdp
   vdpmemset(0,0,4192);
