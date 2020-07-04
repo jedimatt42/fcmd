@@ -26,6 +26,7 @@ void handleRename();
 void handleRmdir();
 void handleTipiHalt();
 void handleTipiReboot();
+void handleXb();
 
 // in bank 4
 void handleEcho();
@@ -62,6 +63,7 @@ DECLARE_BANKED_VOID(handleRename, BANK_3, bk_handleRename, (), ())
 DECLARE_BANKED_VOID(handleRmdir, BANK_3, bk_handleRmdir, (), ())
 DECLARE_BANKED_VOID(handleTipiHalt, BANK_3, bk_handleTipiHalt, (), ())
 DECLARE_BANKED_VOID(handleTipiReboot, BANK_3, bk_handleTipiReboot, (), ())
+DECLARE_BANKED_VOID(handleXb, BANK_3, bk_handleXb, (), ())
 
 DECLARE_BANKED_VOID(handleCd, BANK_4, bk_handleCd, (), ())
 DECLARE_BANKED_VOID(handleChecksum, BANK_4, bk_handleChecksum, (), ())

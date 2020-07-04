@@ -1,6 +1,3 @@
-       def fg99
-       def fg99_msg
-
 fg99:
        li   r0, fgmenu_seq    ; this is the only non-relocatable instruction
        li   r2, 20            ; sequence length: prefix (8) + sender (12)
@@ -18,8 +15,8 @@ fgsend:
 
        clr  @>6000            ; done
 
-fgwait:
        ; wait for image to be loaded
+fgwait:
        src  r0, 8             ; burn at least 21 cycles
        src  r0, 8             ; burn at least 21 cycles
        src  r0, 8             ; burn at least 21 cycles
@@ -42,6 +39,8 @@ fgmenu_seq:
        text 'OKFG99'
        byte >99
 fg99_msg:
-       data >0000, >0000, >0000, >0000    ; file to load (8 chars, pad with \00)
+       ; file to load (8 chars, pad with \00)
+       text "FCMDG"
+       byte >00, >00, >00
        data >0000                         ; >0000 for GROM/mixed, >FFFF for ROM
        data >0000

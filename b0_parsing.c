@@ -72,6 +72,7 @@ void handleCommand(char *buffer) {
   else COMMAND("unprotect", bk_handleUnprotect)
   else COMMAND("ver", titleScreen)
   else COMMAND("width", handleWidth)
+  else COMMAND("xb", bk_handleXb)
   else if (tok[strlen(tok)-1] == ':') {
     if (scripton) {
       tok[strlen(tok)-1] = 0; // shorten to just the name
