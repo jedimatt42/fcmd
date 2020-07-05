@@ -14,6 +14,8 @@ extern void fg99();
 
 extern char fg99_msg;
 
+extern unsigned int fg99_addr;
+
 void handleXb() {
     struct DeviceServiceRoutine *xbdsr;
     char path[256];
@@ -66,6 +68,8 @@ void handleXb() {
 
     // Launch XB
     strcpy(&fg99_msg, "TIXB_G");
+    // 0x6372 - grom start address
+    fg99_addr = 0x6372;
 
     lock_f18a();
     fg99();

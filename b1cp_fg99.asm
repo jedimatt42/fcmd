@@ -1,5 +1,6 @@
        def fg99
        def fg99_msg
+       def fg99_addr
 
 fg99:
        li   r0, fgmenu_seq    ; this is the only non-relocatable instruction
@@ -34,6 +35,13 @@ fgl1   mov  *r0+, r1
 
        ; image has been loaded
 fgdone:
+       ; blwp @>0000  -- reset console
+       lwpi >83E0
+       mov  @fg99_addr,r6
+       jeq  fgrst
+       li   r7, >60
+       b    *r7
+fgrst:
        blwp @>0000
 
 fgmenu_seq:
@@ -43,5 +51,7 @@ fgmenu_seq:
        byte >99
 fg99_msg:
        data >0000, >0000, >0000, >0000    ; file to load (8 chars, pad with \00)
+gr_flag:
        data >0000                         ; >0000 for GROM/mixed, >FFFF for ROM
+fg99_addr:
        data >0000
