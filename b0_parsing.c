@@ -121,7 +121,7 @@ void parsePathParam(struct DeviceServiceRoutine** dsr, char* buffer, int require
     strcpy(buffer, currentPath); // if not required, use current path
     return;
   } else {
-    char devicename[8];
+    char devicename[20];
     if (0 == strcmp("..", path)) {
       int ldot = lindexof(currentPath, '.', strlen(currentPath) - 2);
       if (ldot == -1) {
