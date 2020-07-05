@@ -53,7 +53,7 @@ void handleHelp() {
     "Commands:\n\n"
     "call cd cfmount checksum cls color copy delete drives echo env exit fg99 ftp goto help if "
     "label load lvl2 mkdir protect readkey rename rmdir tipibeeps tipihalt tipimap "
-    "tipireboot type unprotect ver width\n");
+    "tipireboot type unprotect ver width xb\n");
     return;
   }
 
@@ -245,6 +245,12 @@ void handleHelp() {
     wraptext("==Set Screen Width==\n\n"
     "width <40|80>\n\n"
     "Change display to 40x24 or 80x30 mode. 80 column mode requires F18A video enhancement\n");
+  } else if (matchcmd(tok,"xb")) {
+    wraptext("==Run XB program==\n\n"
+    "xb <program-path>\n\n"
+    "Switch a FinalGROM99 to an Extended BASIC cartridge, configured to RUN the specified program.\n"
+    "Default cartridge name is TIXB_G with start address 25474.\n"
+    "Use variable XBMOD to override cartridge name, and XBADDR to override start address.\n");
   } else {
     wraptext("no help for command: ");
     tputs_ram(tok);

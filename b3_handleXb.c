@@ -6,6 +6,7 @@
 #include "b0_globals.h"
 #include "b1cp_strutil.h"
 #include "b1cp_terminal.h"
+#include "b4_variables.h"
 #include <conio.h>
 #include <vdp.h>
 #include <string.h>
@@ -67,9 +68,21 @@ void handleXb() {
     bk_dsr_close(dsr, &pab);
 
     // Launch XB
-    strcpy(&fg99_msg, "TIXB_G");
-    // 0x6372 - grom start address
-    fg99_addr = 0x6372;
+    strcpy(namebuf, "XBMOD");
+    char* xb_module = bk_vars_get(namebuf);
+    if (-1 == (int)xb_module) {
+        strcpy(&fg99_msg, "TIXB_G");
+    } else {
+        strcpy(&fg99_msg, xb_module);
+    }
+    // 0x6372 - grom start address of standard TI XB version 110
+    strcpy(namebuf, "XBADDR");
+    char* xb_addr = bk_vars_get(namebuf);
+    if (-1 == (int)xb_addr) {
+        fg99_addr = (unsigned int)0x6372;
+    } else {
+        fg99_addr = (unsigned int)atoi(xb_addr);
+    }
 
     lock_f18a();
     fg99();
