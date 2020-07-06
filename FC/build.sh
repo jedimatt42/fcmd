@@ -1,7 +1,10 @@
 #!/bin/sh
 
+rm -f FCMD.ea5 FCMD
+rm -f LOAD.xb LOAD
+rm -f FC.DSK 
+
 # FCMD - (EA5) causes FinalGROM99 to reload Force Command module
-rm -f FCMD*
 xas99.py -i -R -L assemble.lst -o FCMD.ea5 reload_fcmd.asm
 xdm99.py -T FCMD.ea5 -t -f PROGRAM -n FCMD -o FCMD
 

@@ -25,6 +25,14 @@ Supports:
 * ANSI display
 * TIPIMAP to control DSKx, URIx, and AUTO mapping
 
+## Installation
+
+The FCMDG.bin and FCMDC.bin go on a FinalGROM99 - or if you know what you are doing, an UberGROM
+The FC directory goes on your TIPI as TIPI.FC. It contains LOAD and FCMD
+
+LOAD - shim for the XB command, requires FinalGROM99 and TIPI
+FCMD - EA5 utility for FinalGROM99 to reload FCMDG.bin
+
 ## Help
 
 There is a help command, it will list the commands/topics, then `help <topic>` for further help.
