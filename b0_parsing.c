@@ -101,9 +101,9 @@ int parsePath(char* path, char* devicename) {
   if (tok != 0 && tok[0] == '1' && strlen(tok) == 4) {
     crubase = htoi(tok);
     tok = strtok(0, ". ");
-    strcpy(devicename, tok);
+    strncpy(devicename, tok, 8);
   } else {
-    strcpy(devicename, tok);
+    strncpy(devicename, tok, 8);
   }
   return crubase;
 }
@@ -121,7 +121,7 @@ void parsePathParam(struct DeviceServiceRoutine** dsr, char* buffer, int require
     strcpy(buffer, currentPath); // if not required, use current path
     return;
   } else {
-    char devicename[20];
+    char devicename[8];
     if (0 == strcmp("..", path)) {
       int ldot = lindexof(currentPath, '.', strlen(currentPath) - 2);
       if (ldot == -1) {
