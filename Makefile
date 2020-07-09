@@ -9,6 +9,8 @@ XGA99?=$(shell which xga99.py)
 FNAME=FCMD
 UCFNAME=$(shell echo -n $(FNAME) | tr 'a-z' 'A-Z')
 
+BANKBINS:=$(shell seq -s ' ' -f "bank%1g.page" 0 15)
+
 LDFLAGS=\
   --script=linkfile -L$(LIBTI99) -lti99
 
@@ -37,48 +39,23 @@ $(HEADBIN): $(FNAME).elf
 objects/libti99_tmp: $(FNAME).elf
 	$(OBJCOPY) -O binary -j .libti99 $< $@
 
-bank0.bin: $(FNAME).elf $(HEADBIN)
+bank0.page: $(FNAME).elf $(HEADBIN)
 	$(OBJCOPY) -O binary -j .data $< objects/data.bin_tmp
 	$(OBJCOPY) -O binary -j .bank0 $< objects/$@_tmp
 	cat $(HEADBIN) objects/$@_tmp objects/data.bin_tmp >$@
 	@dd if=/dev/null of=$@ bs=8192 seek=1
 
-bank1.bin: $(FNAME).elf $(HEADBIN) objects/libti99_tmp
+bank1.page: $(FNAME).elf $(HEADBIN) objects/libti99_tmp
 	$(OBJCOPY) -O binary -j .bank1 $< objects/$@_tmp
 	cat $(HEADBIN) objects/$@_tmp objects/libti99_tmp >$@
 	@dd if=/dev/null of=$@ bs=8192 seek=1
 
-bank2.bin: $(FNAME).elf $(HEADBIN)
-	$(OBJCOPY) -O binary -j .bank2 $< objects/$@_tmp
+%.page: $(FNAME).elf $(HEADBIN)
+	$(OBJCOPY) -O binary -j .$(basename $@) $< objects/$@_tmp
 	cat $(HEADBIN) objects/$@_tmp >$@
 	@dd if=/dev/null of=$@ bs=8192 seek=1
 
-bank3.bin: $(FNAME).elf $(HEADBIN)
-	$(OBJCOPY) -O binary -j .bank3 $< objects/$@_tmp
-	cat $(HEADBIN) objects/$@_tmp >$@
-	@dd if=/dev/null of=$@ bs=8192 seek=1
-
-bank4.bin: $(FNAME).elf $(HEADBIN)
-	$(OBJCOPY) -O binary -j .bank4 $< objects/$@_tmp
-	cat $(HEADBIN) objects/$@_tmp >$@
-	@dd if=/dev/null of=$@ bs=8192 seek=1
-
-bank5.bin: $(FNAME).elf $(HEADBIN)
-	$(OBJCOPY) -O binary -j .bank5 $< objects/$@_tmp
-	cat $(HEADBIN) objects/$@_tmp >$@
-	@dd if=/dev/null of=$@ bs=8192 seek=1
-
-bank6.bin: $(FNAME).elf $(HEADBIN)
-	$(OBJCOPY) -O binary -j .bank6 $< objects/$@_tmp
-	cat $(HEADBIN) objects/$@_tmp >$@
-	@dd if=/dev/null of=$@ bs=8192 seek=1
-
-bank7.bin: $(FNAME).elf $(HEADBIN)
-	$(OBJCOPY) -O binary -j .bank7 $< objects/$@_tmp
-	cat $(HEADBIN) objects/$@_tmp >$@
-	@dd if=/dev/null of=$@ bs=8192 seek=1
-
-$(FNAME)C.bin: bank0.bin bank1.bin bank2.bin bank3.bin bank4.bin bank5.bin bank6.bin bank7.bin
+$(FNAME)C.bin: $(BANKBINS)
 	cat $^ >$@
 
 $(FNAME)G.bin: gpl-boot.g99 $(FNAME).elf
