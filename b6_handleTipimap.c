@@ -118,10 +118,25 @@ void onLineIfDriveShowMapping(char* linebuf, char* drivePrefix) {
   }
 }
 
+void onLineIfUriShowMapping(char* linebuf, char* uriPrefix) {
+  char *key = strtok(linebuf, "=");
+  if (str_startswith(key, uriPrefix)) {
+    char* path = strtok(0, " ");
+    if (path) {
+      tputs_ram(path);
+    } else {
+      tputs_rom("not mapped\n");
+    }
+  }
+}
+
 static void showDriveMapping(const char* drive) {
   char* drivePrefix = strtok((char*) drive, ".");
-
-  visitLines(onLineIfDriveShowMapping, drivePrefix);
+  if (str_startswith(drivePrefix, "DSK")) {
+    visitLines(onLineIfDriveShowMapping, drivePrefix);
+  } else {
+    visitLines(onLineIfUriShowMapping, drivePrefix);
+  }
 }
 
 static void clearDriveMapping(const char* drive) {
@@ -245,15 +260,23 @@ void handleTipimap() {
       } else {
         char* peek = strtokpeek(0, " ");
         if (peek) {
-          struct DeviceServiceRoutine *dsr;
-          char path[256];
-          bk_parsePathParam(&dsr, path, PR_OPTIONAL);
-          if (dsr == 0) {
-            tputs_rom("bad path specified\n");
+          if (str_startswith(drive, "DSK")) {
+            struct DeviceServiceRoutine *dsr;
+            char path[256];
+            bk_parsePathParam(&dsr, path, PR_OPTIONAL);
+            if (dsr == 0)
+            {
+              tputs_rom("bad path specified\n");
+            } else {
+              setDriveMapping(drive, path);
+            }
           } else {
-            setDriveMapping(drive, path);
+            char* tok = strtok(0, " ");
+            setDriveMapping(drive, tok);
           }
-        } else {
+        }
+        else
+        {
           showDriveMapping(drive);
         }
       }
