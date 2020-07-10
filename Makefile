@@ -72,6 +72,8 @@ linkfile: linkfile.m4
 	rm -fr objects
 	rm -f *.elf
 	rm -f *.bin
+	rm -f *.page
+	rm -f linkfile
 	rm -f mapfile
 	rm -f *.RPK
 	rm -f api.asm
