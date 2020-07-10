@@ -1,3 +1,11 @@
+define(BANKSECTION, .bank$1 { objects/b$1_*.o(.text) } )
+define(BANKSUMMARY, __STATS_BANK_$1 = 0x1F90 - SIZEOF(.bank$1); )
+define(`BANKSECTIONS', `BANKSECTION($1) ifelse(eval($1 > $2), 1, `
+    BANKSECTIONS(decr($1), $2)', `')')dnl
+define(`BANKSUMMARIES', `BANKSUMMARY($1) ifelse(eval($1 > $2), 1, `
+  BANKSUMMARIES(decr($1), $2)', `')')dnl
+
+
 MEMORY
 {
   cart_rom   (rx) : ORIGIN = 0x6000, LENGTH = 0x0080 /* 128 bytes up front of common code */
@@ -30,48 +38,7 @@ SECTIONS
       objects/b1_*.o(.text)
       __LIB_COPY = .;
     }                    /*   modules should be linked into the same bank */
-    .bank2 {
-      objects/b2_*.o(.text)
-    }                    /*   modules should be linked into the same bank */
-    .bank3 {
-      objects/b3_*.o(.text)
-    }                    /*   modules should be linked into the same bank */
-    .bank4 {
-      objects/b4_*.o(.text)
-    }                    /*   modules should be linked into the same bank */
-    .bank5 {
-      objects/b5_*.o(.text)
-    }                    /*   modules should be linked into the same bank */
-    .bank6 {
-      objects/b6_*.o(.text)
-    }                    /*   modules should be linked into the same bank */
-    .bank7 {
-      objects/b7_*.o(.text)
-    }                    /*   modules should be linked into the same bank */
-    .bank8 {
-      objects/b8_*.o(.text)
-    }                    /*   modules should be linked into the same bank */
-    .bank9 {
-      objects/b9_*.o(.text)
-    }                    /*   modules should be linked into the same bank */
-    .bank10 {
-      objects/b10_*.o(.text)
-    }                    /*   modules should be linked into the same bank */
-    .bank11 {
-      objects/b11_*.o(.text)
-    }                    /*   modules should be linked into the same bank */
-    .bank12 {
-      objects/b12_*.o(.text)
-    }                    /*   modules should be linked into the same bank */
-    .bank13 {
-      objects/b13_*.o(.text)
-    }                    /*   modules should be linked into the same bank */
-    .bank14 {
-      objects/b14_*.o(.text)
-    }                    /*   modules should be linked into the same bank */
-    .bank15 {
-      objects/b15_*.o(.text)
-    }                    /*   modules should be linked into the same bank */
+    BANKSECTIONS(15,2)
   } >bank_rom
 
   . = 0x2000;            /* b1cp code (libti99 + term) and data + bss */
@@ -98,22 +65,8 @@ SECTIONS
 
   __STATS_HEAD = SIZEOF(.text);
   __STATS_LIBTI99 = SIZEOF(.libti99);
-  __STATS_BANK_0 = 0x1F90 - SIZEOF(.bank0);
-  __STATS_BANK_1 = 0x1F90 - SIZEOF(.bank1) - SIZEOF(.libti99);
-  __STATS_BANK_2 = 0x1F90 - SIZEOF(.bank2);
-  __STATS_BANK_3 = 0x1F90 - SIZEOF(.bank3);
-  __STATS_BANK_4 = 0x1F90 - SIZEOF(.bank4);
-  __STATS_BANK_5 = 0x1F90 - SIZEOF(.bank5);
-  __STATS_BANK_6 = 0x1F90 - SIZEOF(.bank6);
-  __STATS_BANK_7 = 0x1F90 - SIZEOF(.bank7);
-  __STATS_BANK_8 = 0x1F90 - SIZEOF(.bank8);
-  __STATS_BANK_9 = 0x1F90 - SIZEOF(.bank9);
-  __STATS_BANK_10 = 0x1F90 - SIZEOF(.bank10);
-  __STATS_BANK_11 = 0x1F90 - SIZEOF(.bank11);
-  __STATS_BANK_12 = 0x1F90 - SIZEOF(.bank12);
-  __STATS_BANK_13 = 0x1F90 - SIZEOF(.bank13);
-  __STATS_BANK_14 = 0x1F90 - SIZEOF(.bank14);
-  __STATS_BANK_15 = 0x1F90 - SIZEOF(.bank15);
+  __STATS_REAL_BANK_1 = 0x1F90 - SIZEOF(.bank1) - SIZEOF(.libti99);
+  BANKSUMMARIES(15,0)
   __STATS_RAM = SIZEOF(.bss) + SIZEOF(.data);
   __STATS_STACK = __STACK_TOP - __BSS_END;
 }

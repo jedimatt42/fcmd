@@ -61,9 +61,12 @@ $(FNAME)C.bin: $(BANKBINS)
 $(FNAME)G.bin: gpl-boot.g99 $(FNAME).elf
 	python3 $(XGA99) -D "CART=$(shell echo -n '>' ; grep _cart mapfile | sed 's/^\s*0x0*\([0-9a-f]*\) *_cart/\1/')" -o $@ $<
 
-$(FNAME).elf: $(LINK_OBJECTS)
+$(FNAME).elf: $(LINK_OBJECTS) linkfile
 	$(LD) $(LINK_OBJECTS) $(LDFLAGS) -o $(FNAME).elf -Map=mapfile
 	if grep 0xfffff mapfile | grep -q __STATS_BANK; then echo "FAIL: Bank Overflow"; false; fi
+
+linkfile: linkfile.m4
+	m4 $< > $@
 
 .phony clean:
 	rm -fr objects
