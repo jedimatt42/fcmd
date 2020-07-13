@@ -1,5 +1,5 @@
 #include "banks.h"
-#define MYBANK BANK_3
+#define MYBANK BANK(3)
 
 #include "b3_oem.h"
 #include <vdp.h>

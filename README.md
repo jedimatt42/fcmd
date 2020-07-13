@@ -20,7 +20,7 @@ Supports:
 * 40 column mode is used by default if F18A is not detected.
 * FinalGROM cartridge switching (limited)
 * EA5 load command
-* 'call' to run scripts. 
+* 'call' to run scripts.
 * AUTOCMD script on first drive is run on startup.
 * ANSI display
 * TIPIMAP to control DSKx, URIx, and AUTO mapping
@@ -32,6 +32,7 @@ The FC directory goes on your TIPI as TIPI.FC. It contains LOAD and FCMD
 
 LOAD - shim for the XB command, requires FinalGROM99 and TIPI
 FCMD - EA5 utility for FinalGROM99 to reload FCMDG.bin
+FCMDXB - XB INT/VAR 254 program for FinalGROM99 to reload FCMDG.bin
 
 ## Help
 
@@ -80,23 +81,23 @@ if $(K) == A then goto ARTIST
 if $(K) == C then goto CAVES
 if $(K) == Q then goto END
 goto INPUT
- 
+
 LFB:
 tipimap DSK1 TIPI.FB4TH210
 fg99 FBFORTH
- 
+
 TOD:
 tipimap DSK1 TIPI.GAMES.TOD
 load TIPI.GAMES.TODM.TOD:1
- 
+
 ARTIST:
 tipimap DSK1 TIPI.DISKS.INSCEBOT
 fg99 TIXB_G
- 
+
 CAVES:
 tipimap DSK1 TIPI.DISKS.CAVES
 fg99 TIXB_G
- 
+
 END:
 color 15 4
 cls
@@ -106,13 +107,13 @@ ver
 
 # External Commands (intent, not yet released)
 
-Force Command allows loading external commands that can receive command line arguments and utilize an API provided by the Force Command ROM. 
+Force Command allows loading external commands that can receive command line arguments and utilize an API provided by the Force Command ROM.
 
-External commands are loaded into the top 16k of memory expansion 0xC000 - 0xFFFF. 
+External commands are loaded into the top 16k of memory expansion 0xC000 - 0xFFFF.
 
 ## API (intent, not yet released)
 
-Force Command has a table of ROM routines in BANK_0, starting at address 0x6070. Each entry is the function address and the bank switch write address. The api covers the following categories of routines:
+Force Command has a table of ROM routines in BANK(0), starting at address 0x6070. Each entry is the function address and the bank switch write address. The api covers the following categories of routines:
 
 > tputs, getstr, level2 disk routines, level 3 disk routines, tipi messaging and tcp routines
 
@@ -129,16 +130,16 @@ External commands are PROGRAM image files but, instead of the EA5 header, they h
 | 0, 1        | 0xFCFC | Tag indicating a Force Command binary |
 | 2, 3        | start  | Start address of program entry point |
 
-Files should be single file PROGRAM image format. Only upto the first 16k of the file will be loaded. Regardless of the start address, the image will be loaded into address 0xC000 (without the 6 byte header). Force Command will call your start address as though it had the C function signature: 
+Files should be single file PROGRAM image format. Only upto the first 16k of the file will be loaded. Regardless of the start address, the image will be loaded into address 0xC000 (without the 6 byte header). Force Command will call your start address as though it had the C function signature:
 
 > void main(int argc, const char** argv)
 
 If the external command is written in C, it should use the same workspace and C stack. The C stack is limited to about 2k. No crt.asm/crt.c is needed, your function will be called with the workspace and your C stack set for you.
 
 * WP = 0x8300
-* C stack top of ram is 0xC000. 
+* C stack top of ram is 0xC000.
 
-Force Command uses memory from 0x2000 - 0x3FFF, and 0xA000 - 0xBFFF, and scratchpad 0x8300 - 0x831F.  
+Force Command uses memory from 0x2000 - 0x3FFF, and 0xA000 - 0xBFFF, and scratchpad 0x8300 - 0x831F.
 
 | Address Range | Usage |
 | ------------- | ----- |
@@ -150,8 +151,8 @@ Force Command uses memory from 0x2000 - 0x3FFF, and 0xA000 - 0xBFFF, and scratch
 | 0xA000-0xBFFF | 8k Force Command RAM data and stack |
 | 0xC000-0xFFFF | 16k available for external command |
 
-Force Command uses a stack for bank switching the cartridge ROM. When you function is called, you will be first switched to bank_0, where the api address table is present.
+Force Command uses a stack for bank switching the cartridge ROM. When you function is called, you will be first switched to BANK(0), where the api address table is present.
 
 ## fc_api.h
 
-Force Command provides a C header with macros to make life easier. API calls 
+Force Command provides a C header with macros to make life easier. API calls

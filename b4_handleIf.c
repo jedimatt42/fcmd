@@ -1,5 +1,5 @@
 #include "banks.h"
-#define MYBANK BANK_4
+#define MYBANK BANK(4)
 
 #include "b1cp_strutil.h"
 #include "b1cp_terminal.h"
@@ -26,7 +26,7 @@ void handleIf() {
     negate = 1;
     tok = strtok(0, " ");
   }
-  
+
   if (!tok) {
     tputs_rom("Error, missing left-hand value\n");
     return;
@@ -89,4 +89,4 @@ static int getTruth(int operator, char* left, char* right, int negate) {
   }
   return negate ? !opres : opres;
 }
-   
+

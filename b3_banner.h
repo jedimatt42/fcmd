@@ -5,6 +5,6 @@
 
 void banner();
 
-DECLARE_BANKED_VOID(banner, BANK_3, bk_banner, (), ())
+DECLARE_BANKED_VOID(banner, BANK(3), bk_banner, (), ())
 
 #endif

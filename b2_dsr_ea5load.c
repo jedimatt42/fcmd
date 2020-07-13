@@ -1,5 +1,5 @@
 #include "banks.h"
-#define MYBANK BANK_2
+#define MYBANK BANK(2)
 
 #include "b0_globals.h"
 #include "b0_main.h"

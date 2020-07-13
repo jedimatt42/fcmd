@@ -1,5 +1,5 @@
 #include "banks.h"
-#define MYBANK BANK_0
+#define MYBANK BANK(0)
 
 #include "b0_getstr.h"
 #include <conio.h>
@@ -137,6 +137,6 @@ static unsigned char mycgetc() {
     } while ((k == 255) || ((KSCAN_STATUS&KSCAN_MASK) == 0));
     // restore display incase we put a cursor on it.
     vdpchar(vdpaddr, screenChar);
-    
+
     return k;
 }

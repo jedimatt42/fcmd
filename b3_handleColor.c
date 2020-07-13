@@ -1,5 +1,5 @@
 #include "banks.h"
-#define MYBANK BANK_3
+#define MYBANK BANK(3)
 
 #include "commands.h"
 #include "b0_globals.h"
@@ -29,7 +29,7 @@ void handleColor() {
       return;
     }
   }
-  
+
   if (termWidth == 80) {
     bgcolor(background);
     textcolor(foreground);

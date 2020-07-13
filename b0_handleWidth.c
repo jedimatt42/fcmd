@@ -1,5 +1,5 @@
 #include "banks.h"
-#define MYBANK BANK_0
+#define MYBANK BANK(0)
 
 #include "commands.h"
 
@@ -21,7 +21,7 @@ void handleWidth() {
     setupScreen(40);
     return;
   }
-  
+
   tputs_rom("no supported width specified\n");
 }
 

@@ -5,7 +5,7 @@ void libtoram();
 
 #include "banking.h"
 
-DECLARE_BANKED_VOID(libtoram, BANK_1, bk_libtoram, (), ())
+DECLARE_BANKED_VOID(libtoram, BANK(1), bk_libtoram, (), ())
 
 #endif
 

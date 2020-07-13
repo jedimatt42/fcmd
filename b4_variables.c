@@ -1,5 +1,5 @@
 #include "banks.h"
-#define MYBANK BANK_4
+#define MYBANK BANK(4)
 
 #include "b4_variables.h"
 #include "b1cp_terminal.h"
@@ -7,7 +7,7 @@
 #include "string.h"
 
 struct __attribute__((__packed__)) VarEntry {
-  char name[MAX_VAR_NAME+1]; // 
+  char name[MAX_VAR_NAME+1]; //
   char value[MAX_VAR_VAL+1]; // value
 };
 

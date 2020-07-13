@@ -1,5 +1,5 @@
 #include "banks.h"
-#define MYBANK BANK_7
+#define MYBANK BANK(7)
 
 #include "b7_ti_socket.h"
 #include "b7_tipi_msg.h"

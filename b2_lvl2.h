@@ -42,16 +42,16 @@ void call_basic_sub(int crubase, char* subroutine);
 
 #include "banking.h"
 
-DECLARE_BANKED(path2unitmask, BANK_2, unsigned int, bk_path2unitmask, (char* currentPath), (currentPath))
+DECLARE_BANKED(path2unitmask, BANK(2), unsigned int, bk_path2unitmask, (char* currentPath), (currentPath))
 
-DECLARE_BANKED(lvl2_setdir, BANK_2, unsigned int, bk_lvl2_setdir, (int crubase, unsigned int unit, char* path), (crubase, unit, path))
-DECLARE_BANKED(lvl2_protect, BANK_2, unsigned int, bk_lvl2_protect, (int crubase, unsigned int unit, char *filename, int protect), (crubase, unit, filename, protect))
-DECLARE_BANKED(lvl2_rename, BANK_2, unsigned int, bk_lvl2_rename, (int crubase, unsigned int unit, char *oldname, char *newname), (crubase, unit, oldname, newname))
-DECLARE_BANKED(lvl2_rendir, BANK_2, unsigned int, bk_lvl2_rendir, (int crubase, unsigned int unit, char *oldname, char *newname), (crubase, unit, oldname, newname))
-DECLARE_BANKED(lvl2_rmdir, BANK_2, unsigned int, bk_lvl2_rmdir, (int crubase, unsigned int unit, char *dirname), (crubase, unit, dirname))
-DECLARE_BANKED(lvl2_input, BANK_2, unsigned int, bk_lvl2_input, (int crubase, unsigned int unit, char *filename, unsigned int blockcount, struct AddInfo *addInfoPtr), (crubase, unit, filename, blockcount, addInfoPtr))
-DECLARE_BANKED(lvl2_output, BANK_2, unsigned int, bk_lvl2_output, (int crubase, unsigned int unit, char *filename, unsigned int blockcount, struct AddInfo *addInfoPtr), (crubase, unit, filename, blockcount, addInfoPtr))
+DECLARE_BANKED(lvl2_setdir, BANK(2), unsigned int, bk_lvl2_setdir, (int crubase, unsigned int unit, char* path), (crubase, unit, path))
+DECLARE_BANKED(lvl2_protect, BANK(2), unsigned int, bk_lvl2_protect, (int crubase, unsigned int unit, char *filename, int protect), (crubase, unit, filename, protect))
+DECLARE_BANKED(lvl2_rename, BANK(2), unsigned int, bk_lvl2_rename, (int crubase, unsigned int unit, char *oldname, char *newname), (crubase, unit, oldname, newname))
+DECLARE_BANKED(lvl2_rendir, BANK(2), unsigned int, bk_lvl2_rendir, (int crubase, unsigned int unit, char *oldname, char *newname), (crubase, unit, oldname, newname))
+DECLARE_BANKED(lvl2_rmdir, BANK(2), unsigned int, bk_lvl2_rmdir, (int crubase, unsigned int unit, char *dirname), (crubase, unit, dirname))
+DECLARE_BANKED(lvl2_input, BANK(2), unsigned int, bk_lvl2_input, (int crubase, unsigned int unit, char *filename, unsigned int blockcount, struct AddInfo *addInfoPtr), (crubase, unit, filename, blockcount, addInfoPtr))
+DECLARE_BANKED(lvl2_output, BANK(2), unsigned int, bk_lvl2_output, (int crubase, unsigned int unit, char *filename, unsigned int blockcount, struct AddInfo *addInfoPtr), (crubase, unit, filename, blockcount, addInfoPtr))
 
-DECLARE_BANKED_VOID(call_basic_sub, BANK_2, bk_call_basic_sub, (int crubase, char *subroutine), (crubase, subroutine))
+DECLARE_BANKED_VOID(call_basic_sub, BANK(2), bk_call_basic_sub, (int crubase, char *subroutine), (crubase, subroutine))
 
 #endif

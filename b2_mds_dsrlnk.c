@@ -1,5 +1,5 @@
 #include "banks.h"
-#define MYBANK BANK_2
+#define MYBANK BANK(2)
 
 // DSR interface code for the TI-99/4A by Tursi
 // You can copy this file and use it at will ;)
@@ -44,6 +44,8 @@ unsigned char mds_lvl3_dsrlnk(int crubase, struct PAB *pab, unsigned int vdp) {
 	if (GPLWSR12 != crubase) {
 		return 0xff;
 	}
+
+	vdpmemread(vdp, (unsigned char*)pab, 9);
 
 	// now return the result
 	return GET_ERROR(vdpreadchar(vdp+1));

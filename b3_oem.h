@@ -8,6 +8,6 @@ void defineChars();
 
 #include "banking.h"
 
-DECLARE_BANKED_VOID(defineChars, BANK_3, bk_defineChars, (), ())
+DECLARE_BANKED_VOID(defineChars, BANK(3), bk_defineChars, (), ())
 
 #endif

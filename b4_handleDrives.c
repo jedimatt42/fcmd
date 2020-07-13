@@ -1,5 +1,5 @@
 #include "banks.h"
-#define MYBANK BANK_4
+#define MYBANK BANK(4)
 
 #include "commands.h"
 #include "b2_dsrutil.h"
@@ -9,7 +9,7 @@
 void handleDrives() {
   int i = 0;
   int cb = 0;
-  
+
   while(dsrList[i].name[0] != 0) {
     cb = dsrList[i].crubase;
     tputs_ram(uint2hex(cb));

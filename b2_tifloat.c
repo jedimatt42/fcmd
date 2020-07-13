@@ -1,8 +1,8 @@
 #include "banks.h"
-#define MYBANK BANK_2
+#define MYBANK BANK(2)
 
 #include "b2_tifloat.h"
- 
+
 int ti_floatToInt(unsigned char* bytes) {
   if (bytes[0] == 8) {
     int word0 = (bytes[1] << 8) + bytes[2];

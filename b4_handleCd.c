@@ -1,5 +1,5 @@
 #include "banks.h"
-#define MYBANK BANK_4
+#define MYBANK BANK(4)
 
 #include "b1cp_strutil.h"
 #include "b0_parsing.h"
@@ -26,7 +26,7 @@ void handleCd() {
     tputc('\n');
     return;
   }
-  
+
   currentDsr = dsr;
   strcpy(currentPath, path);
 }
