@@ -1,4 +1,5 @@
 fg99:
+       limi 0
        li   r0, fgmenu_seq    ; this is the only non-relocatable instruction
        li   r2, 20            ; sequence length: prefix (8) + sender (12)
 fgsend:
@@ -16,10 +17,12 @@ fgsend:
        clr  @>6000            ; done
 
        ; wait for image to be loaded
+       li   r2, >100          ; larger images take more time to load
+prewait:
+       src  r0, 8
+       dec  r2
+       jeq  prewait
 fgwait:
-       src  r0, 8             ; burn at least 21 cycles
-       src  r0, 8             ; burn at least 21 cycles
-       src  r0, 8             ; burn at least 21 cycles
        src  r0, 8             ; burn at least 21 cycles
        li   r0, >6000         ; check >6000->6200
        li   r2, >100
