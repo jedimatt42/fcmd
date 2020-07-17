@@ -7,7 +7,7 @@
 #include "b1cp_strutil.h"
 #include "b2_dsrutil.h"
 #include "b2_lvl2.h"
-#include "b1cp_terminal.h"
+#include "b8_terminal.h"
 #include <string.h>
 
 void onIgnoreVolInfo(struct VolInfo *volInfo);
@@ -23,7 +23,7 @@ int copycount;
 int matched;
 
 void handleCopy() {
-  disable_more();
+  bk_disable_more();
 
   copycount = 0;
   matched = 0;
@@ -72,8 +72,8 @@ void handleCopy() {
   unsigned int stat = existsDir(dstdsr, dstpath);
   if (stat != 0) {
     tputs_rom("error, device/folder not found: ");
-    tputs_ram(dstpath);
-    tputc('\n');
+    bk_tputs_ram(dstpath);
+    bk_tputc('\n');
     return;
   }
 
@@ -82,7 +82,7 @@ void handleCopy() {
     tputs_rom("error, no matching file found.\n");
   } else {
     tputs_rom("copied ");
-    tputs_ram(int2str(copycount));
+    bk_tputs_ram(int2str(copycount));
     tputs_rom(" files.\n");
   }
 }
@@ -98,11 +98,11 @@ void onCopyDirEntry(struct DirEntry *dirEntry) {
   matched = 1;
 
   tputs_rom("copying ");
-  tputs_ram(srcpath);
-  tputs_ram(dirEntry->name);
+  bk_tputs_ram(srcpath);
+  bk_tputs_ram(dirEntry->name);
   tputs_rom(" to ");
-  tputs_ram(dstpath);
-  tputc('\n');
+  bk_tputs_ram(dstpath);
+  bk_tputc('\n');
 
   struct AddInfo* addInfoPtr = (struct AddInfo*) 0x8320;
   addInfoPtr->first_sector = 0;
@@ -122,8 +122,8 @@ void onCopyDirEntry(struct DirEntry *dirEntry) {
   unsigned int err = lvl2_input(source_crubase, source_unit, dirEntry->name, 0, addInfoPtr);
   if (err) {
     tputs_rom("error reading file: ");
-    tputs_ram(uint2hex(err));
-    tputc('\n');
+    bk_tputs_ram(uint2hex(err));
+    bk_tputc('\n');
     return;
   }
 
@@ -138,8 +138,8 @@ void onCopyDirEntry(struct DirEntry *dirEntry) {
   err = lvl2_output(dest_crubase, dest_unit, dirEntry->name, 0, addInfoPtr);
   if (err) {
     tputs_rom("error writing file: ");
-    tputs_ram(uint2hex(err));
-    tputc('\n');
+    bk_tputs_ram(uint2hex(err));
+    bk_tputc('\n');
     return;
   }
 
@@ -153,8 +153,8 @@ void onCopyDirEntry(struct DirEntry *dirEntry) {
     err = lvl2_input(source_crubase, source_unit, dirEntry->name, 1, addInfoPtr);
     if (err) {
       tputs_rom("\nerror reading file: ");
-      tputs_ram(uint2hex(err));
-      tputc('\n');
+      bk_tputs_ram(uint2hex(err));
+      bk_tputc('\n');
       return;
     }
 
@@ -163,8 +163,8 @@ void onCopyDirEntry(struct DirEntry *dirEntry) {
     err = lvl2_output(dest_crubase, dest_unit, dirEntry->name, 1, addInfoPtr);
     if (err) {
       tputs_rom("\nerror writing file: ");
-      tputs_ram(uint2hex(err));
-      tputc('\n');
+      bk_tputs_ram(uint2hex(err));
+      bk_tputc('\n');
       return;
     }
 

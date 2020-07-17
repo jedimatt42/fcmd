@@ -1,5 +1,5 @@
 #include "banks.h"
-#define MYBANK BANK(2)
+#define MYBANK BANK(4)
 
 #include <string.h>
 #include "commands.h"
@@ -7,7 +7,7 @@
 #include "b0_parsing.h"
 #include "b1cp_strutil.h"
 #include "b2_lvl2.h"
-#include "b1cp_terminal.h"
+#include "b8_terminal.h"
 
 static void doProtect(char mode);
 
@@ -41,8 +41,8 @@ static void doProtect(char mode) {
   unsigned int err = lvl2_protect(dsr->crubase, unit, filename, mode);
   if (err) {
     tputs_rom("failed to modify file ");
-    tputs_ram(path);
-    tputs_ram(filename);
-    tputc('\n');
+    bk_tputs_ram(path);
+    bk_tputs_ram(filename);
+    bk_tputc('\n');
   }
 }

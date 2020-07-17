@@ -8,7 +8,7 @@
 #include "b0_parsing.h"
 #include "b1cp_strutil.h"
 #include "b2_dsrutil.h"
-#include "b1cp_terminal.h"
+#include "b8_terminal.h"
 #include <string.h>
 
 void onLongVolInfo(struct VolInfo* volInfo);
@@ -48,33 +48,33 @@ void handleDir() {
   unsigned int stat = existsDir(dsr, path);
   if (stat != 0) {
     tputs_rom("error, device/folder not found: ");
-    tputs_ram(path);
-    tputc('\n');
+    bk_tputs_ram(path);
+    bk_tputc('\n');
     return;
   }
 
   if (wideFormat) {
     col = 0;
     loadDir(dsr, path, onWideVolInfo, onWideDirEntry);
-    tputc('\n');
+    bk_tputc('\n');
   } else {
     loadDir(dsr, path, onLongVolInfo, onLongDirEntry);
   }
-  tputc('\n');
+  bk_tputc('\n');
 }
 
 void onLongVolInfo(struct VolInfo* volInfo) {
   tputs_rom("Diskname: ");
-  tputs_ram(volInfo->volname);
+  bk_tputs_ram(volInfo->volname);
   if (displayWidth == 40) {
-    tputc('\n');
+    bk_tputc('\n');
   } else {
-    tputc(' ');
+    bk_tputc(' ');
   }
   tputs_rom("Used: ");
-  tputs_ram(uint2str(volInfo->total - volInfo->available));
+  bk_tputs_ram(uint2str(volInfo->total - volInfo->available));
   tputs_rom(" Available: ");
-  tputs_ram(uint2str(volInfo->available));
+  bk_tputs_ram(uint2str(volInfo->available));
   tputs_rom("\n\n");
   tputs_rom("Name       Type    P Reclen Sectors\n");
   tputs_rom("-----------------------------------\n");
@@ -89,11 +89,27 @@ const char* file_types[] = {
   "DIR"
 };
 
+void cputpad(int padding, char *str)
+{
+  int c = 0;
+  for (int i = 0; i < padding; i++)
+  {
+    if (c == 0 && str[i] == 0)
+    {
+      c = 1;
+    }
+    if (c == 1)
+    {
+      bk_tputc(' ');
+    }
+  }
+}
+
 void onLongDirEntry(struct DirEntry* dirEntry) {
   if (!bk_globMatches(dirEntry->name)) {
     return;
   }
-  tputs_ram(dirEntry->name);
+  bk_tputs_ram(dirEntry->name);
   cputpad(11, dirEntry->name);
 
   int de_type = dirEntry->type < 0 ? -1 * dirEntry->type : dirEntry->type;
@@ -105,23 +121,23 @@ void onLongDirEntry(struct DirEntry* dirEntry) {
   cputpad(8, ftype);
 
   if (dirEntry->type < 0) {
-    tputc('P');
+    bk_tputc('P');
   } else {
-    tputc(' ');
+    bk_tputc(' ');
   }
-  tputc(' ');
+  bk_tputc(' ');
 
   if (de_type >= 5) { // is program or dir? skip record details.
     cputpad(7, "");
   } else {
     char* sizestr = uint2str(dirEntry->reclen);
-    tputs_ram(sizestr);
+    bk_tputs_ram(sizestr);
     cputpad(7, sizestr);
   }
 
-  tputs_ram(uint2str(dirEntry->sectors));
+  bk_tputs_ram(uint2str(dirEntry->sectors));
 
-  tputc('\n');
+  bk_tputc('\n');
 }
 
 void onWideVolInfo(struct VolInfo* volInfo) {
@@ -133,12 +149,12 @@ void onWideDirEntry(struct DirEntry* dirEntry) {
     return;
   }
   int collimit = displayWidth / 11;
-  tputs_ram(dirEntry->name);
+  bk_tputs_ram(dirEntry->name);
   col++;
   if (col < collimit) {
     cputpad(11, dirEntry->name);
   } else {
     col = 0;
-    tputc('\n');
+    bk_tputc('\n');
   }
 }

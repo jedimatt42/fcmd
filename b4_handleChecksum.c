@@ -7,7 +7,7 @@
 #include "b1cp_strutil.h"
 #include "b2_dsrutil.h"
 #include "b2_lvl2.h"
-#include "b1cp_terminal.h"
+#include "b8_terminal.h"
 #include <string.h>
 #include <vdp.h>
 
@@ -41,8 +41,8 @@ void handleChecksum() {
   unsigned int err = bk_lvl2_input(dsr->crubase, unit, filename, 0, addInfoPtr);
   if (err) {
     tputs_rom("error reading file: ");
-    tputs_ram(uint2hex(err));
-    tputc('\n');
+    bk_tputs_ram(uint2hex(err));
+    bk_tputc('\n');
     return;
   }
 
@@ -62,8 +62,8 @@ void handleChecksum() {
     err = bk_lvl2_input(dsr->crubase, unit, filename, 1, addInfoPtr);
     if (err) {
       tputs_rom("error reading file: ");
-      tputs_ram(uint2hex(err));
-      tputc('\n');
+      bk_tputs_ram(uint2hex(err));
+      bk_tputc('\n');
       return;
     }
 
@@ -84,7 +84,7 @@ void handleChecksum() {
   result <<= 8;
   result += sum1;
   tputs_rom("checksum: ");
-  tputs_ram(uint2hex(result));
-  tputc('\n');
+  bk_tputs_ram(uint2hex(result));
+  bk_tputc('\n');
 }
 

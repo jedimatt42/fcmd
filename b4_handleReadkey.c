@@ -5,7 +5,7 @@
 #include <conio.h>
 #include "commands.h"
 #include "b1cp_strutil.h"
-#include "b1cp_terminal.h"
+#include "b8_terminal.h"
 #include "b4_variables.h"
 #include <string.h>
 

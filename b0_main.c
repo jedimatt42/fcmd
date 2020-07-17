@@ -16,7 +16,7 @@
 #include <vdp.h>
 #include <conio.h>
 #include <kscan.h>
-#include "b1cp_terminal.h"
+#include "b8_terminal.h"
 #include "b4_labellist.h"
 
 char commandbuf[256];
@@ -80,7 +80,7 @@ void setupScreen(int width) {
     displayWidth = 40;
     set_text();
   }
-  initTerminal();
+  bk_initTerminal();
   termWidth = displayWidth;
 
   if (termWidth == 80) {
@@ -99,7 +99,7 @@ void setupScreen(int width) {
 void titleScreen() {
   tputs_rom("Force Command v");
   tputs_rom(APP_VER);
-  tputc(' ');
+  bk_tputc(' ');
   tputs_rom(__DATE__);
   tputs_rom("\nwww.jedimatt42.com\n\n");
 }
@@ -133,20 +133,20 @@ void main()
   while(1) {
     VDP_INT_POLL;
     strset(commandbuf, 0, 255);
-    tputc('[');
-    tputs_ram(uint2hex(currentDsr->crubase));
-    tputc('.');
-    tputs_ram(currentPath);
+    bk_tputc('[');
+    bk_tputs_ram(uint2hex(currentDsr->crubase));
+    bk_tputc('.');
+    bk_tputs_ram(currentPath);
     tputs_rom("]\n$ ");
     getstr(2, conio_y, commandbuf, displayWidth - 3, backspace);
-    tputc('\n');
-    enable_more();
+    bk_tputc('\n');
+    bk_enable_more();
     handleCommand(commandbuf);
   }
 }
 
 int runScript(struct DeviceServiceRoutine* dsr, char* scriptName) {
-  disable_more();
+  bk_disable_more();
   int ran = 0;
   struct DeviceServiceRoutine* oldDsr = scriptDsr;
   scriptDsr = dsr;

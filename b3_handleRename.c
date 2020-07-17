@@ -4,7 +4,7 @@
 #include "commands.h"
 #include "b0_globals.h"
 #include "b1cp_strutil.h"
-#include "b1cp_terminal.h"
+#include "b8_terminal.h"
 #include "b2_lvl2.h"
 #include <string.h>
 
@@ -40,8 +40,8 @@ void handleRename() {
 
   if (ferr) {
     tputs_rom("cannot rename file ");
-    tputs_ram(currentPath);
-    tputs_ram(filename);
-    tputc('\n');
+    bk_tputs_ram(currentPath);
+    bk_tputs_ram(filename);
+    bk_tputc('\n');
   }
 }

@@ -5,7 +5,7 @@
 #include "b0_parsing.h"
 #include "b0_globals.h"
 #include "commands.h"
-#include "b1cp_terminal.h"
+#include "b8_terminal.h"
 #include <string.h>
 
 void handleCd() {
@@ -22,8 +22,8 @@ void handleCd() {
   unsigned int stat = bk_existsDir(dsr, path);
   if (stat != 0) {
     tputs_rom("error, device/folder not found: ");
-    tputs_ram(path);
-    tputc('\n');
+    bk_tputs_ram(path);
+    bk_tputc('\n');
     return;
   }
 

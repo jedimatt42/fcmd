@@ -2,7 +2,7 @@
 #define MYBANK BANK(4)
 
 #include "b4_variables.h"
-#include "b1cp_terminal.h"
+#include "b8_terminal.h"
 #include "b1cp_strutil.h"
 #include "string.h"
 
@@ -38,14 +38,14 @@ static void vars_add(char* name, char* value) {
 void vars_set(char* name, char* value) {
   if (strlen(name) > MAX_VAR_NAME) {
     tputs_rom("Error, variable name too long, limit is ");
-    tputs_ram(uint2str(MAX_VAR_NAME));
-    tputc('\n');
+    bk_tputs_ram(uint2str(MAX_VAR_NAME));
+    bk_tputc('\n');
     return;
   }
   if (strlen(value) > MAX_VAR_VAL) {
     tputs_rom("Error, variable value too long, limit is ");
-    tputs_ram(uint2str(MAX_VAR_VAL));
-    tputc('\n');
+    bk_tputs_ram(uint2str(MAX_VAR_VAL));
+    bk_tputc('\n');
     return;
   }
   int i = vars_find(name);
@@ -66,10 +66,10 @@ char* vars_get(char* name) {
 
 void printVars() {
   for(int i=0; i<vars_next; i++) {
-    tputs_ram(var_map[i].name);
-    tputc('=');
-    tputs_ram(var_map[i].value);
-    tputc('\n');
+    bk_tputs_ram(var_map[i].name);
+    bk_tputc('=');
+    bk_tputs_ram(var_map[i].value);
+    bk_tputc('\n');
   }
-  tputc('\n');
+  bk_tputc('\n');
 }

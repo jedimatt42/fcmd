@@ -3,7 +3,7 @@
 
 #include "b4_preprocess.h"
 #include "b1cp_strutil.h"
-#include "b1cp_terminal.h"
+#include "b8_terminal.h"
 #include "string.h"
 #include "b4_variables.h"
 

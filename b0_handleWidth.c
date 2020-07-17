@@ -5,7 +5,7 @@
 
 #include "b0_main.h"
 #include "b1cp_strutil.h"
-#include "b1cp_terminal.h"
+#include "b8_terminal.h"
 #include <string.h>
 
 void handleWidth() {

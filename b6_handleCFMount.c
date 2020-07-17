@@ -7,7 +7,7 @@
 #include "b2_dsrutil.h"
 #include "b2_tifloat.h"
 #include "b2_lvl2.h"
-#include "b1cp_terminal.h"
+#include "b8_terminal.h"
 #include <string.h>
 #include <vdp.h>
 
@@ -83,10 +83,10 @@ static void listAllVolumes(int begin, int end) {
         tmp_mount(1, i);
 
         if (1 == getVolume(1, volumeName)) {
-            tputs_ram(int2str(i));
+            bk_tputs_ram(int2str(i));
             tputs_rom(" : ");
-            tputs_ram(volumeName);
-            tputc('\n');
+            bk_tputs_ram(volumeName);
+            bk_tputc('\n');
         }
     }
 
@@ -99,14 +99,14 @@ static void listCurrentVolumes() {
     vdpmemread(0x3FFA, (unsigned char*)mapping, 6);
     for (int i=0; i<3; i++) {
         tputs_rom("DSK");
-        tputs_ram(int2str(i + 1));
+        bk_tputs_ram(int2str(i + 1));
         tputs_rom(". -> ");
-        tputs_ram(int2str(mapping[i]));
+        bk_tputs_ram(int2str(mapping[i]));
         char volumeName[11];
         getVolume(i + 1, volumeName);
         tputs_rom(" : ");
-        tputs_ram(volumeName);
-        tputc('\n');
+        bk_tputs_ram(volumeName);
+        bk_tputc('\n');
     }
 }
 

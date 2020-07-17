@@ -5,7 +5,7 @@
 #include "b0_globals.h"
 #include "b0_parsing.h"
 #include "b1cp_strutil.h"
-#include "b1cp_terminal.h"
+#include "b8_terminal.h"
 #include "b2_dsrutil.h"
 #include <string.h>
 
@@ -22,8 +22,8 @@ void handleDelete() {
   unsigned int exists = bk_existsFile(dsr, path);
   if (!exists) {
     tputs_rom("file not found ");
-    tputs_ram(path);
-    tputc('\n');
+    bk_tputs_ram(path);
+    bk_tputc('\n');
     return;
   }
 
@@ -34,7 +34,7 @@ void handleDelete() {
   unsigned int err = bk_dsr_delete(dsr, &pab);
   if (err) {
     tputs_rom("cannot delete file ");
-    tputs_ram(path);
-    tputc('\n');
+    bk_tputs_ram(path);
+    bk_tputc('\n');
   }
 }

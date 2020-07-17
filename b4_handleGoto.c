@@ -4,7 +4,7 @@
 
 #include "commands.h"
 #include "b1cp_strutil.h"
-#include "b1cp_terminal.h"
+#include "b8_terminal.h"
 #include "b4_labellist.h"
 #include "b0_globals.h"
 #include <vdp.h>
@@ -46,8 +46,8 @@ void handleGoto() {
 
   if (-1 == gotoline) {
     tputs_rom("Error, no label named: ");
-    tputs_ram(label);
-    tputc('\n');
+    bk_tputs_ram(label);
+    bk_tputc('\n');
     return;
   } else {
     // scriptPab should point to script name

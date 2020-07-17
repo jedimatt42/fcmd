@@ -4,7 +4,7 @@
 #include "commands.h"
 #include "b7_ti_socket.h"
 #include "b1cp_strutil.h"
-#include "b1cp_terminal.h"
+#include "b8_terminal.h"
 #include "b0_globals.h"
 #include "b0_getstr.h"
 #include "b2_lvl2.h"
@@ -58,7 +58,7 @@ int isTiFiles(struct TiFiles* buffer);
 // this file got too big with all the inlined tputs_rom calls...
 void tputs(const char* str) {
   while(*str) {
-    tputc(*str++);
+    bk_tputc(*str++);
   }
 }
 
@@ -68,8 +68,8 @@ void handleFtp() {
     tputs("ftp> ");
     strset(commandbuf, 0, 120);
     bk_getstr(5, conio_y, commandbuf, displayWidth - 3, backspace);
-    tputc('\n');
-    enable_more();
+    bk_tputc('\n');
+    bk_enable_more();
     char* tok = strtok(commandbuf, " ");
     if (!strcmpi("open", tok)) {
       ftpOpen();
@@ -147,7 +147,7 @@ void ftpOpen() {
       strset(login, 0, 20);
       tputs("login: ");
       bk_getstr(7, conio_y, login, 20, backspace);
-      tputc('\n');
+      bk_tputc('\n');
       code = sendFtpCommand("USER", login);
     }
 
@@ -160,12 +160,12 @@ void ftpOpen() {
       int plen = strlen(passwd);
 
       for(int i=0; i<plen; i++) {
-        tputc(8); // backspace
+        bk_tputc(8); // backspace
       }
       for(int i=0; i<plen; i++) {
-        tputc('*');
+        bk_tputc('*');
       }
-      tputc('\n');
+      bk_tputc('\n');
       code = sendFtpCommand("PASS", passwd);
     }
   }
@@ -471,7 +471,7 @@ void ftpLcd() {
   bk_handleCd();
   tputs("local dir: ");
   tputs(uint2hex(currentDsr->crubase));
-  tputc('.');
+  bk_tputc('.');
   tputs(currentPath);
-  tputc('\n');
+  bk_tputc('\n');
 }

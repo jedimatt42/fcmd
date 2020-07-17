@@ -7,7 +7,7 @@
 #include "commands.h"
 #include "b2_dsrutil.h"
 #include "b1cp_strutil.h"
-#include "b1cp_terminal.h"
+#include "b8_terminal.h"
 #include "b4_labellist.h"
 #include "b4_variables.h"
 #include "b4_preprocess.h"
@@ -87,8 +87,8 @@ void handleCommand(char *buffer) {
   } else {
     if (tok) {
       tputs_rom("unknown command: ");
-      tputs_ram(tok);
-      tputc('\n');
+      bk_tputs_ram(tok);
+      bk_tputc('\n');
     }
   }
 }

@@ -5,7 +5,7 @@
 #include "b0_main.h"
 #include "b2_dsrutil.h"
 #include "b0_parsing.h"
-#include "b1cp_terminal.h"
+#include "b8_terminal.h"
 
 void handleCall() {
   struct DeviceServiceRoutine* dsr;
@@ -19,7 +19,7 @@ void handleCall() {
   int ran = runScript(dsr, path);
   if (!ran) {
     tputs_rom("error, file not found: ");
-    tputs_ram(path);
-    tputc('\n');
+    bk_tputs_ram(path);
+    bk_tputc('\n');
   }
 }

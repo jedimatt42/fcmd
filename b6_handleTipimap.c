@@ -5,7 +5,7 @@
 #include "b0_parsing.h"
 #include "b1cp_strutil.h"
 #include "b2_dsrutil.h"
-#include "b1cp_terminal.h"
+#include "b8_terminal.h"
 #include <string.h>
 #include <vdp.h>
 
@@ -83,17 +83,17 @@ void onLineShowMapping(char* linebuf, char* extra) {
     char* path = strtok(0, " ");
     if (path) {
       if (str_startswith(key, "URI")) {
-        tputs_ram(key);
+        bk_tputs_ram(key);
         tputs_rom(". => ");
       } else {
         char* drive = strtok(key, "_");
-        tputs_ram(drive);
+        bk_tputs_ram(drive);
         tputs_rom(". => TIPI.");
       }
       if (path[0] != '.') {
-        tputs_ram(path);
+        bk_tputs_ram(path);
       }
-      tputc('\n');
+      bk_tputc('\n');
     }
   }
 }
@@ -109,12 +109,12 @@ void onLineIfDriveShowMapping(char* linebuf, char* drivePrefix) {
     if (path) {
       tputs_rom("TIPI.");
       if (path[0] != '.') {
-        tputs_ram(path);
+        bk_tputs_ram(path);
       }
     } else {
       tputs_rom("not mapped\n");
     }
-    tputc('\n');
+    bk_tputc('\n');
   }
 }
 
@@ -123,7 +123,7 @@ void onLineIfUriShowMapping(char* linebuf, char* uriPrefix) {
   if (str_startswith(key, uriPrefix)) {
     char* path = strtok(0, " ");
     if (path) {
-      tputs_ram(path);
+      bk_tputs_ram(path);
     } else {
       tputs_rom("not mapped\n");
     }
@@ -160,8 +160,8 @@ void onLineAuto(char* linebuf, char* extra) {
     char* val = strtok(linebuf, "=");
     val = strtok(0, " ");
     tputs_rom("AUTO ");
-    tputs_ram(val);
-    tputc('\n');
+    bk_tputs_ram(val);
+    bk_tputc('\n');
   }
 }
 
@@ -282,5 +282,5 @@ void handleTipimap() {
       }
     }
   }
-  tputc('\n');
+  bk_tputc('\n');
 }

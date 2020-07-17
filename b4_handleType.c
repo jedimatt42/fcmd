@@ -4,7 +4,7 @@
 #include <string.h>
 #include "commands.h"
 #include "b1cp_strutil.h"
-#include "b1cp_terminal.h"
+#include "b8_terminal.h"
 #include "b2_dsrutil.h"
 #include "b0_parsing.h"
 #include <vdp.h>
@@ -34,7 +34,7 @@ void handleType() {
   int flags = DSR_TYPE_INPUT | DSR_TYPE_DISPLAY | DSR_TYPE_SEQUENTIAL;
   if (ansi) {
     // bitwise or of zero: flags |= DSR_TYPE_FIXED;
-    disable_more();
+    bk_disable_more();
   } else {
     flags |= DSR_TYPE_VARIABLE;
   }
@@ -43,8 +43,8 @@ void handleType() {
 
   if (err) {
     tputs_rom("could not open ");
-    tputs_ram(namebuf);
-    tputc('\n');
+    bk_tputs_ram(namebuf);
+    bk_tputc('\n');
     return;
   }
   int rec = 0;
@@ -69,13 +69,13 @@ void handleType() {
             break;
           }
         }
-        tputc(linebuf[i]);
+        bk_tputc(linebuf[i]);
         i++;
       }
 
       if (!ansi) {
         if (i==0 || i!=80) {
-          tputc('\n');
+          bk_tputc('\n');
         }
       }
     }

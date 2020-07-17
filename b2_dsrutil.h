@@ -42,7 +42,7 @@ struct __attribute__((__packed__)) DeviceServiceRoutine {
 };
 
 // A cache of dsr names and addresses.
-extern struct DeviceServiceRoutine dsrList[40];
+extern struct DeviceServiceRoutine dsrList[20];
 
 struct __attribute__((__packed__)) DirEntry {
   char name[11];

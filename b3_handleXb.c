@@ -5,7 +5,7 @@
 #include "b0_parsing.h"
 #include "b0_globals.h"
 #include "b1cp_strutil.h"
-#include "b1cp_terminal.h"
+#include "b8_terminal.h"
 #include "b4_variables.h"
 #include <conio.h>
 #include <vdp.h>

@@ -1,7 +1,5 @@
 #include "b1cp_strutil.h"
-#include "b1cp_terminal.h"
 
-#include <conio.h>
 #include <string.h>
 
 
@@ -141,7 +139,7 @@ char* strtok(char* str, char* delim) {
   return str;
 }
 
-char peekbuf[40];
+char peekbuf[256];
 
 char* strtokpeek(char* str, char* delim) {
   int ch;
@@ -260,14 +258,3 @@ void strpad(char* dest, int limit, char pad) {
   dest[limit] = 0;
 }
 
-void cputpad(int padding, char* str) {
-  int c = 0;
-  for(int i=0; i < padding; i++) {
-    if (c == 0 && str[i] == 0) {
-      c = 1;
-    }
-    if (c == 1) {
-      cputc(' ');
-    }
-  }
-}

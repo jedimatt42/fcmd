@@ -5,7 +5,7 @@
 #include "b2_dsrutil.h"
 #include "b1cp_strutil.h"
 #include <string.h>
-#include "b1cp_terminal.h"
+#include "b8_terminal.h"
 
 void handleLvl2() {
   char* tok = strtok(0, " ");
@@ -25,11 +25,11 @@ void handleLvl2() {
       tputs_rom(" >");
       register unsigned int opname = 0;
       opname = link->name[1];
-      tputs_ram(uint2hex(opname)+2);
+      bk_tputs_ram(uint2hex(opname)+2);
     }
     link = link->next;
   }
-  tputc('\n');
+  bk_tputc('\n');
 
   bk_disableROM(crubase);
 }

@@ -5,7 +5,7 @@
 #include "b0_main.h"
 #include "b0_globals.h"
 #include "b1cp_strutil.h"
-#include "b1cp_terminal.h"
+#include "b8_terminal.h"
 #include <string.h>
 #include <conio.h>
 
@@ -33,12 +33,12 @@ void wraptext(char* str) {
   while(str[i] != 0) {
     if (str[i] == ' ') {
       if ((1 + wherex() + wordlen(str + (i+1))) >= displayWidth) {
-        tputc('\n');
+        bk_tputc('\n');
       } else {
-        tputc(str[i]);
+        bk_tputc(str[i]);
       }
     } else {
-      tputc(str[i]);
+      bk_tputc(str[i]);
     }
     i++;
   }
@@ -125,7 +125,7 @@ void handleHelp() {
     "Print text to ANSI terminal screen\n\n"
     "/n : optional, do not print newline after text\n\n"
     "substitutions: ");
-    tputc(92); // a FS - File Separator '\' character.
+    bk_tputc(92); // a FS - File Separator '\' character.
     wraptext("e will output an ESCAPE, ascii 27 character\n");
   } else if (matchcmd(tok, "env")) {
     wraptext("==Environment Variables==\n\n"
@@ -253,8 +253,8 @@ void handleHelp() {
     "Use variable XBMOD to override cartridge name, and XBADDR to override start address.\n");
   } else {
     wraptext("no help for command: ");
-    tputs_ram(tok);
-    tputc('\n');
+    bk_tputs_ram(tok);
+    bk_tputc('\n');
   }
-  tputc('\n');
+  bk_tputc('\n');
 }

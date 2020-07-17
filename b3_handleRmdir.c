@@ -5,7 +5,7 @@
 #include "b0_parsing.h"
 #include "b0_globals.h"
 #include "b1cp_strutil.h"
-#include "b1cp_terminal.h"
+#include "b8_terminal.h"
 #include "b2_lvl2.h"
 #include <string.h>
 
@@ -31,8 +31,8 @@ void handleRmdir() {
   unsigned int err = bk_lvl2_rmdir(dsr->crubase, unit, dirname);
   if (err) {
     tputs_rom("cannot remove directory ");
-    tputs_ram(path);
-    tputs_ram(dirname);
-    tputc('\n');
+    bk_tputs_ram(path);
+    bk_tputs_ram(dirname);
+    bk_tputc('\n');
   }
 }

@@ -19,7 +19,6 @@ void strset(char* buffer, char value, int limit);
 char* strcat(char* dst, const char* add);
 char* strncpy(char* dest, char* src, int limit);
 void strpad(char* dest, int limit, char pad);
-void cputpad(int padding, char* str); // print spaces for padding - strlen(str)
 int htoi(char* s);
 
 #endif

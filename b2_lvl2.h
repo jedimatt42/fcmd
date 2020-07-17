@@ -44,6 +44,7 @@ void call_basic_sub(int crubase, char* subroutine);
 
 DECLARE_BANKED(path2unitmask, BANK(2), unsigned int, bk_path2unitmask, (char* currentPath), (currentPath))
 
+DECLARE_BANKED(lvl2_mkdir, BANK(2), unsigned int, bk_lvl2_mkdir, (int crubase, unsigned int unit, char *dirname), (crubase, unit, dirname))
 DECLARE_BANKED(lvl2_setdir, BANK(2), unsigned int, bk_lvl2_setdir, (int crubase, unsigned int unit, char* path), (crubase, unit, path))
 DECLARE_BANKED(lvl2_protect, BANK(2), unsigned int, bk_lvl2_protect, (int crubase, unsigned int unit, char *filename, int protect), (crubase, unit, filename, protect))
 DECLARE_BANKED(lvl2_rename, BANK(2), unsigned int, bk_lvl2_rename, (int crubase, unsigned int unit, char *oldname, char *newname), (crubase, unit, oldname, newname))

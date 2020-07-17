@@ -1,9 +1,31 @@
 #include "banks.h"
-#define MYBANK BANK(3)
+#define MYBANK BANK(8)
 
-#include "b1cp_terminal.h"
+#include "b8_terminal.h"
 #include <conio.h>
 #include <string.h>
+
+extern unsigned char colors[];
+extern unsigned char isBold;
+
+void resetState();
+int getParamA(int def);
+int getParamB(int def);
+void cursorUp(int lines);
+void cursorDown(int lines);
+void cursorRight(int cols);
+void cursorLeft(int cols);
+void cursorGoto(int x, int y);
+void eraseDisplay(int opt);
+void eraseLine(int opt);
+void scrollUp(int lc);
+void sendTermCoord();
+void sendTermType();
+void setColors();
+void doSGRCommand();
+void doCsiCommand(unsigned char c);
+int doEscCommand(unsigned char c);
+void charout(unsigned char ch);
 
 // Cheating, and reaching into conio_cputc.c
 void inc_row();
@@ -454,7 +476,7 @@ void charout(unsigned char ch) {
   }
 }
 
-void tputc(unsigned char c) {
+void tputc(int c) {
   if (stage == STAGE_OPEN) {
     if (c == 27) {
       stage = STAGE_ESC;

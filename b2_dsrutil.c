@@ -7,11 +7,11 @@
 #include "b2_mds_dsrlnk.h"
 #include "b2_tifloat.h"
 #include "b1cp_strutil.h"
-#include "b1cp_terminal.h"
+#include "b8_terminal.h"
 #include <vdp.h>
 #include <string.h>
 
-struct DeviceServiceRoutine dsrList[40];
+struct DeviceServiceRoutine dsrList[20];
 
 unsigned int existsDir(struct DeviceServiceRoutine* dsr, const char* pathname) {
   struct PAB pab;

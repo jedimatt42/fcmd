@@ -2,7 +2,7 @@
 #define MYBANK BANK(4)
 
 #include "b4_labellist.h"
-#include "b1cp_terminal.h"
+#include "b8_terminal.h"
 #include "b1cp_strutil.h"
 #include "string.h"
 
@@ -35,8 +35,8 @@ void labels_add(char* name, int gotoline) {
   int existing = labels_get(name);
   if (existing != -1) {
     tputs_rom("Error, label already defined at line: ");
-    tputs_ram(uint2str(existing));
-    tputc('\n');
+    bk_tputs_ram(uint2str(existing));
+    bk_tputc('\n');
     return;
   }
 
