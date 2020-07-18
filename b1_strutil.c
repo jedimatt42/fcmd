@@ -1,4 +1,4 @@
-#include "b1cp_strutil.h"
+#include "b1_strutil.h"
 
 #include <string.h>
 

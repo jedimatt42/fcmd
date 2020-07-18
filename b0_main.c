@@ -3,21 +3,20 @@
 
 #include "b0_main.h"
 
-#include "b0_getstr.h"
-#include "b0_parsing.h"
-#include "b0_globals.h"
-#include "b1_libtoram.h"
-#include "b1cp_strutil.h"
-#include "b2_dsrutil.h"
-#include "b3_oem.h"
-#include "b3_banner.h"
 #include <sound.h>
 #include <string.h>
 #include <vdp.h>
 #include <conio.h>
 #include <kscan.h>
-#include "b8_terminal.h"
+#include "b0_parsing.h"
+#include "b0_globals.h"
+#include "b1_strutil.h"
+#include "b2_dsrutil.h"
+#include "b3_oem.h"
+#include "b3_banner.h"
 #include "b4_labellist.h"
+#include "b8_terminal.h"
+#include "b8_getstr.h"
 
 char commandbuf[256];
 
@@ -106,7 +105,6 @@ void titleScreen() {
 
 void main()
 {
-  bk_libtoram();
   MUTE_SOUND();
 
   foreground = 15;
@@ -138,7 +136,7 @@ void main()
     bk_tputc('.');
     bk_tputs_ram(currentPath);
     tputs_rom("]\n$ ");
-    getstr(2, conio_y, commandbuf, displayWidth - 3, backspace);
+    bk_getstr(2, conio_y, commandbuf, displayWidth - 3, backspace);
     bk_tputc('\n');
     bk_enable_more();
     handleCommand(commandbuf);

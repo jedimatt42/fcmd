@@ -3,7 +3,7 @@
 
 #include "commands.h"
 #include "b0_globals.h"
-#include "b1cp_strutil.h"
+#include "b1_strutil.h"
 #include "b8_terminal.h"
 #include <conio.h>
 #include <string.h>

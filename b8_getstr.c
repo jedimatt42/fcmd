@@ -1,11 +1,11 @@
 #include "banks.h"
-#define MYBANK BANK(0)
+#define MYBANK BANK(8)
 
-#include "b0_getstr.h"
+#include "b8_getstr.h"
 #include <conio.h>
 #include <string.h>
 #include <kscan.h>
-#include "b1cp_strutil.h"
+#include "b1_strutil.h"
 
 static unsigned char mycgetc(unsigned char cursor);
 #define CUR_OVERWRITE 219

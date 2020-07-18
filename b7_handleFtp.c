@@ -1,15 +1,15 @@
 #include "banks.h"
 #define MYBANK BANK(7)
 
-#include "commands.h"
-#include "b7_ti_socket.h"
-#include "b1cp_strutil.h"
-#include "b8_terminal.h"
-#include "b0_globals.h"
-#include "b0_getstr.h"
-#include "b2_lvl2.h"
 #include <conio.h>
 #include <string.h>
+#include "commands.h"
+#include "b0_globals.h"
+#include "b1_strutil.h"
+#include "b2_lvl2.h"
+#include "b7_ti_socket.h"
+#include "b8_terminal.h"
+#include "b8_getstr.h"
 
 int connected = 0;
 

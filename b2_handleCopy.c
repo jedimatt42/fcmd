@@ -4,7 +4,7 @@
 #include "commands.h"
 #include "b0_globals.h"
 #include "b0_parsing.h"
-#include "b1cp_strutil.h"
+#include "b1_strutil.h"
 #include "b2_dsrutil.h"
 #include "b2_lvl2.h"
 #include "b8_terminal.h"

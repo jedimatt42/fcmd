@@ -4,7 +4,7 @@
 #include "commands.h"
 #include "b0_main.h"
 #include "b0_globals.h"
-#include "b1cp_strutil.h"
+#include "b1_strutil.h"
 #include "b8_terminal.h"
 #include <string.h>
 #include <conio.h>

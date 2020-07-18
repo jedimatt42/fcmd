@@ -23,7 +23,7 @@ SECTIONS
     objects/trampoline.o(.text)
     objects/bankdata.o(.text)
     objects/ea5_reset.o(.text)
-    str_memcpy.o(.text)  /* gcc will implicity call this to initialize strings on stack */
+    objects/str_memcpy.o(.text)  /* gcc will implicity call this to initialize strings on stack */
   } >cart_rom
 
   /* overlays */
@@ -34,38 +34,24 @@ SECTIONS
       objects/b0_*.o(.text)
       __LOAD_DATA = .;   /* .data segment is copied here so initial values can be loaded in RAM */
     }
-    .bank1 {
-      objects/b1_*.o(.text)
-      __LIB_COPY = .;
-    }                    /*   modules should be linked into the same bank */
-    BANKSECTIONS(15,2)
+    BANKSECTIONS(15,1)
   } >bank_rom
-
-  . = 0x2000;            /* b1cp code (libti99 + term) and data + bss */
-
-  .libti99 : {
-    __LIB_START = .;     /* note the address so we can copy starting from here in ROM */
-    libti99.a(.text)     /* vdp routines from libti99 */
-    objects/b1cp_*.o(.text)
-  } >lower_exp
 
   .data : {
     __DATA_START = .;    /* define RAM location symbol so __LOAD_DATA can be copied from ROM */
     * (.data);
     __DATA_END = .;      /* identifies end of data for initialization routine. */
-  } >upper_exp
+  } >lower_exp
 
   .bss  ALIGN(2) : {
     __BSS_START = .;     /* _crt0 will initialize RAM from here to __BSS_END to 0x00 values */
     *(.bss);
     __BSS_END = .;
-  } >upper_exp
+  } >lower_exp
 
   __STACK_TOP = 0xFF00;
 
   __STATS_HEAD = SIZEOF(.text);
-  __STATS_LIBTI99 = SIZEOF(.libti99);
-  __STATS_REAL_BANK_1 = 0x1F90 - SIZEOF(.bank1) - SIZEOF(.libti99);
   BANKSUMMARIES(15,0)
   __STATS_RAM = SIZEOF(.bss) + SIZEOF(.data);
   __STATS_STACK = __STACK_TOP - __BSS_END;

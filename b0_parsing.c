@@ -6,7 +6,7 @@
 #include "b0_globals.h"
 #include "commands.h"
 #include "b2_dsrutil.h"
-#include "b1cp_strutil.h"
+#include "b1_strutil.h"
 #include "b8_terminal.h"
 #include "b4_labellist.h"
 #include "b4_variables.h"

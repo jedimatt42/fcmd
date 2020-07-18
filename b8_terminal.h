@@ -2,7 +2,7 @@
 #define _terminal_h 1
 
 #include "banking.h"
-#include "b1cp_strutil.h"
+#include "b1_strutil.h"
 
 void initTerminal();
 

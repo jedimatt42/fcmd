@@ -1,7 +1,6 @@
 GAS=tms9900-as
 LD=tms9900-ld
 CC=tms9900-gcc
-LIBTI99?=/home/matthew/dev/github/jedimatt42/libti99
 OBJCOPY=tms9900-objcopy
 OBJDUMP=tms9900-objdump
 XGA99?=$(shell which xga99.py)
@@ -12,14 +11,16 @@ UCFNAME=$(shell echo -n $(FNAME) | tr 'a-z' 'A-Z')
 BANKBINS:=$(shell seq -s ' ' -f "bank%1g.page" 0 15)
 
 LDFLAGS=\
-  --script=linkfile -L$(LIBTI99) -lti99
+  --script=linkfile
 
 CFLAGS=\
-  -std=gnu99 -O2 -Werror --save-temp -I$(LIBTI99) -DBANK_STACK_SIZE=15
+  -std=gnu99 -O2 -Werror --save-temp -I../libti99 -DBANK_STACK_SIZE=15
 
-SRCS:=$(sort $(wildcard *.c) $(wildcard *.asm))
+SRCS:=$(sort $(wildcard *.c) $(wildcard *.asm)) 
+LIBTI99_SRCS=$(sort $(wildcard libti99/*.c))
 
-OBJECT_LIST:=$(SRCS:.c=.o)
+LIBTI99_OBJS:=$(notdir $(LIBTI99_SRCS:.c=.o))
+OBJECT_LIST:=$(SRCS:.c=.o) $(LIBTI99_OBJS)
 OBJECT_LIST:=$(filter-out api.o b3_fcbanner.o,$(OBJECT_LIST:.asm=.o)) api.o b3_fcbanner.o
 
 LINK_OBJECTS:=$(addprefix objects/,$(OBJECT_LIST))
@@ -36,18 +37,10 @@ $(HEADBIN): $(FNAME).elf
 	$(OBJCOPY) -O binary -j .text $< $(HEADBIN)
 	@dd if=/dev/null of=$(HEADBIN) bs=$(COMMON_SIZE) seek=1
 
-objects/libti99_tmp: $(FNAME).elf
-	$(OBJCOPY) -O binary -j .libti99 $< $@
-
 bank0.page: $(FNAME).elf $(HEADBIN)
 	$(OBJCOPY) -O binary -j .data $< objects/data.bin_tmp
 	$(OBJCOPY) -O binary -j .bank0 $< objects/$@_tmp
 	cat $(HEADBIN) objects/$@_tmp objects/data.bin_tmp >$@
-	@dd if=/dev/null of=$@ bs=8192 seek=1
-
-bank1.page: $(FNAME).elf $(HEADBIN) objects/libti99_tmp
-	$(OBJCOPY) -O binary -j .bank1 $< objects/$@_tmp
-	cat $(HEADBIN) objects/$@_tmp objects/libti99_tmp >$@
 	@dd if=/dev/null of=$@ bs=8192 seek=1
 
 %.page: $(FNAME).elf $(HEADBIN)
@@ -83,6 +76,9 @@ objects/%.o: %.asm
 	mkdir -p objects; cd objects; $(GAS) ../$< -o $(notdir $@)
 
 objects/%.o: %.c
+	mkdir -p objects; cd objects; $(CC) -c ../$< $(CFLAGS) -o $(notdir $@)
+
+objects/%.o: libti99/%.c
 	mkdir -p objects; cd objects; $(CC) -c ../$< $(CFLAGS) -o $(notdir $@)
 
 api.asm: api.lst makeapi.py

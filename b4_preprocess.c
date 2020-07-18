@@ -2,7 +2,7 @@
 #define MYBANK BANK(4)
 
 #include "b4_preprocess.h"
-#include "b1cp_strutil.h"
+#include "b1_strutil.h"
 #include "b8_terminal.h"
 #include "string.h"
 #include "b4_variables.h"

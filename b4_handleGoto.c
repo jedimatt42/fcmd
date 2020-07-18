@@ -3,7 +3,7 @@
 #define MYBANK BANK(4)
 
 #include "commands.h"
-#include "b1cp_strutil.h"
+#include "b1_strutil.h"
 #include "b8_terminal.h"
 #include "b4_labellist.h"
 #include "b0_globals.h"

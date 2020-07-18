@@ -6,7 +6,7 @@
 #include "b2_dsrutil.h"
 #include "b2_mds_dsrlnk.h"
 #include "b2_tifloat.h"
-#include "b1cp_strutil.h"
+#include "b1_strutil.h"
 #include <conio.h>
 #include <string.h>
 

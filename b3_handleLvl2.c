@@ -3,7 +3,7 @@
 
 #include "commands.h"
 #include "b2_dsrutil.h"
-#include "b1cp_strutil.h"
+#include "b1_strutil.h"
 #include <string.h>
 #include "b8_terminal.h"
 
