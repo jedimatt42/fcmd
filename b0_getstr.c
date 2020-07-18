@@ -7,13 +7,9 @@
 #include <kscan.h>
 #include "b1cp_strutil.h"
 
-static unsigned char mycgetc();
+static unsigned char mycgetc(unsigned char cursor);
 #define CUR_OVERWRITE 219
 #define CUR_INSERT '_'
-unsigned char cursor = CUR_OVERWRITE;
-
-int insertMode = 0;
-
 
 // Requirements:
 //  Act like TI BASIC keyboard input as much as logical
@@ -26,6 +22,9 @@ int insertMode = 0;
 //  FCTN-S LEFT  - if backspace is set, then delete a character to the left.
 //                 else, move cursor to the left.
 void getstr(int x, int y, char* var, int limit, int backspace) {
+  int insertMode = 0;
+  unsigned char cursor = CUR_OVERWRITE;
+
   gotoxy(x,y);
   cputs(var);
 
@@ -33,7 +32,7 @@ void getstr(int x, int y, char* var, int limit, int backspace) {
   int idx = strlen(var);
   while(key != 13) {
     gotoxy(x+idx,y);
-    key = mycgetc();
+    key = mycgetc(cursor);
 
     switch(key) {
       case 3: // F1 - delete
@@ -110,7 +109,7 @@ void getstr(int x, int y, char* var, int limit, int backspace) {
 extern unsigned char last_conio_key;
 #define BLINK_DELAY 230
 
-static unsigned char mycgetc() {
+static unsigned char mycgetc(unsigned char cursor) {
     unsigned char k = -1;
 
     unsigned int blinkCounter = BLINK_DELAY;

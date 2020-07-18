@@ -69,4 +69,5 @@ SECTIONS
   BANKSUMMARIES(15,0)
   __STATS_RAM = SIZEOF(.bss) + SIZEOF(.data);
   __STATS_STACK = __STACK_TOP - __BSS_END;
+  __STATS_DATA_BSS = SIZEOF(.data) + SIZEOF(.bss);
 }
