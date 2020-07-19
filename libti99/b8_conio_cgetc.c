@@ -12,7 +12,7 @@ extern unsigned char last_conio_key;    // in kbhit
 // requires a NEW keypress (or buffered from kbhit)
 // Note this will turn interrupts OFF (if they were on) unless conio_allowInts is 0
 // If you have interrupts ON, then you MUST disable the blinking cursor.
-unsigned char cgetc() {
+unsigned int cgetc() {
     unsigned char k = -1;
     int blink = -BLINK_RATE;
 

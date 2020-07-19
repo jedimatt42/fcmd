@@ -35,7 +35,7 @@ void cclearxy(int col, int row, int v);
 // read a character from the keyboard
 extern int conio_cursorFlag;
 extern int conio_cursorChar;
-unsigned char cgetc();
+unsigned int cgetc();
 
 // output a horizonal line
 void chline(int v);

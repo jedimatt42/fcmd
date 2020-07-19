@@ -7,6 +7,7 @@
 unsigned int bgcolor(unsigned int color); // from conio
 unsigned int textcolor(unsigned int color); // from conio
 unsigned int bordercolor(unsigned int x); // from conio
+unsigned int cgetc(); // from conio
 
 void initTerminal();
 void tputc(int c);
@@ -28,6 +29,7 @@ DECLARE_BANKED_VOID(disable_more, BANK(8), bk_disable_more, (), ())
 DECLARE_BANKED(bgcolor, BANK(8), unsigned int, bk_bgcolor, (unsigned int color), (color))
 DECLARE_BANKED(textcolor, BANK(8), unsigned int, bk_textcolor, (unsigned int color), (color))
 DECLARE_BANKED(bordercolor, BANK(8), unsigned int, bk_bordercolor, (unsigned int x), (x))
+DECLARE_BANKED(cgetc, BANK(8), unsigned int, bk_cgetc, (), ())
 
 #define tputs_rom(x)        \
 {                           \
