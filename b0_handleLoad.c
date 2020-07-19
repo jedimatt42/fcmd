@@ -15,6 +15,15 @@
 #include <vdp.h>
 #include <conio.h>
 
+static void st_vdpmemset(int pAddr, int ch, int cnt)
+{
+  VDP_SET_ADDRESS_WRITE(pAddr);
+  while (cnt--)
+  {
+    VDPWD = ch;
+  }
+}
+
 void handleLoad() {
   struct DeviceServiceRoutine* dsr = 0;
 
@@ -47,7 +56,7 @@ void handleLoad() {
   VDP_SET_REGISTER(VDP_REG_COL, 0xF3);
 
   // erase first 4k of vdp
-  vdpmemset(0,0,4192);
+  st_vdpmemset(0,0,4192);
 
   // ea clears screen with 0x20 (space characters)
   // clrscr(); // moved to inside setupScreen for convenience.
@@ -56,7 +65,7 @@ void handleLoad() {
   // TODO load ea copyright and cursor
 
   // set colors
-  vdpmemset(0x0380, 0x13, 32);
+  st_vdpmemset(0x0380, 0x13, 32);
 
   // TODO load ea-utils into >2000
 
