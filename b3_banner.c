@@ -13,7 +13,7 @@ void banner() {
     bk_tputc(*bd++);
   }
   tputs_rom("\n");
-  bgcolor(4);
-  textcolor(15);
+  bk_bgcolor(4);
+  bk_textcolor(15);
 }
 

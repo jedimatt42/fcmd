@@ -31,8 +31,8 @@ void handleColor() {
   }
 
   if (termWidth == 80) {
-    bgcolor(background);
-    textcolor(foreground);
+    bk_bgcolor(background);
+    bk_textcolor(foreground);
     VDP_SET_REGISTER(VDP_REG_COL, background & 0x0f);
   } else {
     VDP_SET_REGISTER(VDP_REG_COL, foreground << 4 | background);
