@@ -50,7 +50,7 @@ void handleLoad() {
   vdpmemset(0,0,4192);
 
   // ea clears screen with 0x20 (space characters)
-  clrscr();
+  // clrscr(); // moved to insided setupScreen for convenience.
   // load character set
   charset();
   // TODO load ea copyright and cursor

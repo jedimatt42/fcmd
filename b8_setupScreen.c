@@ -33,6 +33,7 @@ void setupScreen(int width) {
   lock_f18a();
   if (width == 0) {
     set_graphics(0);
+    clrscr();
     return;
   } else if (width == 80) {
     displayWidth = 80;
