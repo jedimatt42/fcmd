@@ -218,7 +218,7 @@ static void setDriveMapping(const char* drive, const char* path) {
     strcpy(namebuf, "TIPI");
     struct DeviceServiceRoutine* dsr = bk_findDsr(namebuf, 0);
     strcat(namebuf, ".");
-    if (str_equals((char*) path, "TIPI.") || str_equals((char*) path, ".")) {
+    if (bk_str_equals((char*) path, str2ram("TIPI.")) || bk_str_equals((char*) path, str2ram("."))) {
       strcpy(namebuf, ".");
     } else if (str_startswith(path, "TIPI.")) {
       strcpy(namebuf, path+5);

@@ -18,7 +18,7 @@
 // ---------- Matthew Splett -----------------
 // This routine is modified handle error:0 as an error instead of
 // cascading on to other devices.
-unsigned char mds_lvl3_dsrlnk(int crubase, struct PAB *pab, unsigned int vdp) {
+unsigned int mds_lvl3_dsrlnk(int crubase, struct PAB *pab, unsigned int vdp) {
 	unsigned char x;
 
 	// copies your PAB to VDP and then executes the call through dsrlnkraw

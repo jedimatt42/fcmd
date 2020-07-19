@@ -41,7 +41,7 @@ void handleIf() {
 
   tok = strtok(0, " ");
 
-  if (str_equals("==", tok)) {
+  if (bk_str_equals(str2ram("=="), tok)) {
     operator = EQ;
   } else {
     tputs_rom("Error, unsupported operator\n");
@@ -83,7 +83,7 @@ void handleIf() {
 static int getTruth(int operator, char* left, char* right, int negate) {
   int opres = 0;
   if (operator == EQ) {
-    opres = str_equals(left, right);
+    opres = bk_str_equals(left, right);
   } else {
     return 0;
   }

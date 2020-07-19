@@ -20,7 +20,7 @@ void labels_clear() {
 
 int labels_get(char* name) {
   for(int i = 0; i < label_next; i++) {
-    if (str_equals(name, labels[i].name)) {
+    if (bk_str_equals(name, labels[i].name)) {
       return labels[i].lineno;
     }
   }

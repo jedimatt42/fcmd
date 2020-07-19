@@ -37,9 +37,9 @@ unsigned int path2unitmask(char *dirpath)
   unsigned int operationSet = 0x0010;
   char drive[9];
   strncpy(drive, dirpath, 8);
-  int l = indexof(drive, '.');
+  int l = bk_indexof(drive, '.');
   drive[l] = 0;
-  if (str_equals("TIPI", drive)) {
+  if (bk_str_equals(str2ram("TIPI"), drive)) {
     // unit 0x00 operation set 0x10
     return 0x0010;
   }
@@ -49,13 +49,13 @@ unsigned int path2unitmask(char *dirpath)
 
   drive[l] = 0;
 
-  if (str_equals(drive, "WDS")) {
+  if (bk_str_equals(drive, str2ram("WDS"))) {
     operationSet = 0x0020;
-  } else if (str_equals(drive, "SCS")) {
+  } else if (bk_str_equals(drive, str2ram("SCS"))) {
     operationSet = 0x0020; // yep, same as Myarc
-  } else if (str_equals(drive, "IDE")) {
+  } else if (bk_str_equals(drive, str2ram("IDE"))) {
     operationSet = 0x0080;
-  } else if (str_equals(drive, "HDX")) {
+  } else if (bk_str_equals(drive, str2ram("HDX"))) {
     operationSet = 0x0090;
   }
 

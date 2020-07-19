@@ -1,5 +1,5 @@
 #include "banks.h"
-#define MYBANK BANK(2)
+#define MYBANK BANK(9)
 
 #include "b0_globals.h"
 #include "b0_main.h"
@@ -58,7 +58,7 @@ unsigned int dsr_ea5load(struct DeviceServiceRoutine* dsr, const char* fname) {
 
   vdpmemcpy(0, fname, pab->NameLength);
 
-  unsigned char err = mds_lvl3_dsrlnk(crubase, pab, VDPPAB);
+  unsigned int err = mds_lvl3_dsrlnk(crubase, pab, VDPPAB);
   if (err) {
     reboot();
   }
