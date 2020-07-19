@@ -10,6 +10,7 @@ unsigned int textcolor(unsigned int color); // from conio
 unsigned int bordercolor(unsigned int x); // from conio
 unsigned int cgetc(); // from conio
 unsigned int kscan(unsigned int mode); // from kscan
+void gplvdp(int vect, int adr, int cnt); // from vdp_gplvdp
 
 void initTerminal();
 void tputc(int c);
@@ -27,6 +28,7 @@ DECLARE_BANKED_VOID(tputc, BANK(8), bk_tputc, (int c), (c))
 DECLARE_BANKED_VOID(tputs_ram, BANK(8), bk_tputs_ram, (const char* str), (str))
 DECLARE_BANKED_VOID(enable_more, BANK(8), bk_enable_more, (), ())
 DECLARE_BANKED_VOID(disable_more, BANK(8), bk_disable_more, (), ())
+DECLARE_BANKED_VOID(gplvdp, BANK(8), bk_gplvdp, (int vect, int adr, int cnt), (vect, adr, cnt))
 
 DECLARE_BANKED(bgcolor, BANK(8), unsigned int, bk_bgcolor, (unsigned int color), (color))
 DECLARE_BANKED(textcolor, BANK(8), unsigned int, bk_textcolor, (unsigned int color), (color))

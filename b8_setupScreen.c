@@ -34,6 +34,7 @@ void setupScreen(int width) {
   if (width == 0) {
     set_graphics(0);
     clrscr();
+    charset();
     return;
   } else if (width == 80) {
     displayWidth = 80;

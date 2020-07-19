@@ -1,5 +1,9 @@
+#include "banks.h"
+#define MYBANK BANK(3)
 
 #include "vdp.h"
+#include <b8_terminal.h>
+
 
 const unsigned char TrueLowerCase[] = {				// chars 96-122
 	 0x20,0x10,0x08,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x38,0x04,0x3C,0x44,0x3C,0x00,
@@ -22,7 +26,7 @@ const unsigned char TrueLowerCase[] = {				// chars 96-122
 
 void charsetlc() {
 	vdpmemcpy(gPattern+0x300, TrueLowerCase, sizeof(TrueLowerCase));
-	gplvdp(0x0018, gPattern+0x100-1, 64);	// the rest of the character set (-1 to shift it up to match lowercase)
+	bk_gplvdp(0x0018, gPattern+0x100-1, 64);	// the rest of the character set (-1 to shift it up to match lowercase)
 	vdpmemset(gPattern+(30*8), 0xfc, 8);	// cursor
 }
 

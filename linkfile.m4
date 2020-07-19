@@ -1,5 +1,5 @@
 define(BANKSECTION, .bank$1 { objects/b$1_*.o(.text) } )
-define(BANKSUMMARY, __STATS_BANK_$1 = 0x1F90 - SIZEOF(.bank$1); )
+define(BANKSUMMARY, __STATS_BANK_$1 = 0x1F80 - SIZEOF(.bank$1); )
 define(`BANKSECTIONS', `BANKSECTION($1) ifelse(eval($1 > $2), 1, `
     BANKSECTIONS(decr($1), $2)', `')')dnl
 define(`BANKSUMMARIES', `BANKSUMMARY($1) ifelse(eval($1 > $2), 1, `

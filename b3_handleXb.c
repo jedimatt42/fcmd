@@ -6,6 +6,7 @@
 #include "b0_globals.h"
 #include "b1_strutil.h"
 #include "b8_terminal.h"
+#include "b8_setupScreen.h"
 #include "b4_variables.h"
 #include <conio.h>
 #include <vdp.h>
@@ -84,6 +85,6 @@ void handleXb() {
         fg99_addr = (unsigned int)atoi(xb_addr);
     }
 
-    lock_f18a();
+    bk_setupScreen(0);
     fg99();
 }

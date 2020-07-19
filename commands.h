@@ -53,7 +53,6 @@ void handleFtp();
 DECLARE_BANKED_VOID(handleCopy, BANK(2), bk_handleCopy, (), ())
 DECLARE_BANKED_VOID(handleDir, BANK(2), bk_handleDir, (), ())
 
-DECLARE_BANKED_VOID(handleColor, BANK(3), bk_handleColor, (), ())
 DECLARE_BANKED_VOID(handleDelete, BANK(3), bk_handleDelete, (), ())
 DECLARE_BANKED_VOID(handleLvl2, BANK(3), bk_handleLvl2, (), ())
 DECLARE_BANKED_VOID(handleRename, BANK(3), bk_handleRename, (), ())
@@ -77,6 +76,7 @@ DECLARE_BANKED_VOID(handleUnprotect, BANK(4), bk_handleUnprotect, (), ())
 
 DECLARE_BANKED_VOID(handleHelp, BANK(5), bk_handleHelp, (), ())
 
+DECLARE_BANKED_VOID(handleColor, BANK(6), bk_handleColor, (), ())
 DECLARE_BANKED_VOID(handleCFMount, BANK(6), bk_handleCFMount, (), ())
 DECLARE_BANKED_VOID(handleTipimap, BANK(6), bk_handleTipimap, (), ())
 
