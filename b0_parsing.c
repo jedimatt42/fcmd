@@ -123,7 +123,7 @@ void parsePathParam(struct DeviceServiceRoutine** dsr, char* buffer, int require
   } else {
     char devicename[8];
     if (0 == bk_strcmp(str2ram(".."), path)) {
-      int ldot = lindexof(currentPath, '.', strlen(currentPath) - 2);
+      int ldot = bk_lindexof(currentPath, '.', strlen(currentPath) - 2);
       if (ldot == -1) {
         *dsr = 0;
         tputs_rom("No parent folder\n");
@@ -161,7 +161,7 @@ void parsePathParam(struct DeviceServiceRoutine** dsr, char* buffer, int require
   // separate path and filter if wildcards are supported.
   if (requirements & PR_WILDCARD) {
     int len = strlen(buffer);
-    int dotidx = lindexof(buffer, '.', len);
+    int dotidx = bk_lindexof(buffer, '.', len);
 
     strcpy(filterglob, buffer+dotidx+1);
     buffer[dotidx] = 0;
