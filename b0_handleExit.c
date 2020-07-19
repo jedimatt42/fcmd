@@ -4,10 +4,10 @@
 
 #include "commands.h"
 #include "b0_main.h"
+#include "b8_setupScreen.h"
 
 void handleExit() {
-  resetF18A();
-
+  bk_setupScreen(0);
   reboot();
 }
 

@@ -17,6 +17,7 @@
 #include "b4_labellist.h"
 #include "b8_terminal.h"
 #include "b8_getstr.h"
+#include "b8_setupScreen.h"
 
 char commandbuf[256];
 
@@ -45,56 +46,6 @@ void playtipi() {
   VDP_INT_POLL;
 }
 
-int isF18A() {
-  unlock_f18a();
-  unsigned char testcode[6] = { 0x04, 0xE0, 0x3F, 0x00, 0x03, 0x40 };
-  vdpmemcpy(0x3F00, testcode, 6);
-  {
-    VDP_SET_REGISTER(0x36, 0x3F);
-    VDP_SET_REGISTER(0x37, 0x00);
-  }
-
-  int frames = 3;
-  while(frames--) {
-    VDP_SET_ADDRESS(0x3F00);
-    int res = VDPRD;
-    if (!res) {
-      return 1;
-    }
-  }
-
-  return 0;
-}
-
-void resetF18A() {
-  lock_f18a();
-}
-
-void setupScreen(int width) {
-  resetF18A();
-  if (width == 80) {
-    displayWidth = 80;
-    set_text80x30_color();
-  } else { // 40 is the only other allowed value.
-    displayWidth = 40;
-    set_text();
-  }
-  bk_initTerminal();
-  termWidth = displayWidth;
-
-  if (termWidth == 80) {
-    bgcolor(background);
-    textcolor(foreground);
-    VDP_SET_REGISTER(VDP_REG_COL, background & 0x0f);
-  } else {
-    VDP_SET_REGISTER(VDP_REG_COL, foreground << 4 | background);
-  }
-
-  clrscr();
-  gotoxy(0,0);
-  bk_defineChars();
-}
-
 void titleScreen() {
   tputs_rom("Force Command v");
   tputs_rom(APP_VER);
@@ -109,7 +60,7 @@ void main()
 
   foreground = 15;
   background = 4;
-  setupScreen(isF18A() ? 80 : 40);
+  bk_setupScreen(bk_isF18A() ? 80 : 40);
 
   bk_loadDriveDSRs();
   scripton = 0;

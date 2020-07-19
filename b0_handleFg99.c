@@ -6,6 +6,7 @@
 #include "b1_strutil.h"
 #include <string.h>
 #include "b8_terminal.h"
+#include "b8_setupScreen.h"
 #include <system.h>
 
 extern void fg99();
@@ -27,6 +28,6 @@ void handleFg99() {
 
   strcpy( &fg99_msg, cart);
 
-  resetF18A();
+  bk_setupScreen(0);
   fg99();
 }

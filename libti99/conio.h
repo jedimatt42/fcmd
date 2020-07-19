@@ -3,7 +3,7 @@
 // This code and library released into the Public Domain
 // You can copy this file and use it at will ;)
 // this code assumes 40 columns but much of it will probably work in 32 or 80.
-// this code maintains its own cursor position and is not compatible with the 
+// this code maintains its own cursor position and is not compatible with the
 // vdp_put functions directly.
 
 // TODO: do something to bring the nTextRow/etc in better synchronicity
@@ -83,7 +83,7 @@ void cvlinexy(int x, int y, int len);
 unsigned char kbhit();
 
 // reverses the text display - not supported but you could make your own character set
-unsigned char reverse(unsigned char x);
+// unsigned char reverse(unsigned char x);
 
 // returns the dimensions of the screen -- this is not valid until you have called set_graphics(), set_text() or set_text80() (80 for F18/9938 only)
 void screensize(unsigned char *x, unsigned char *y);

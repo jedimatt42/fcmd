@@ -6,6 +6,7 @@
 #include "b0_main.h"
 #include "b1_strutil.h"
 #include "b8_terminal.h"
+#include "b8_setupScreen.h"
 #include <string.h>
 
 void handleWidth() {
@@ -13,12 +14,12 @@ void handleWidth() {
   int width = atoi(tok);
 
   if (width == 80 && isF18A()) {
-    setupScreen(80);
+    bk_setupScreen(80);
     return;
   }
 
   if (width == 40) {
-    setupScreen(40);
+    bk_setupScreen(40);
     return;
   }
 

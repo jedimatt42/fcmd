@@ -10,6 +10,7 @@
 #include "b8_terminal.h"
 #include "b2_dsrutil.h"
 #include "b2_lvl2.h"
+#include "b8_setupScreen.h"
 #include <string.h>
 #include <vdp.h>
 #include <conio.h>
@@ -34,10 +35,7 @@ void handleLoad() {
     }
   }
 
-  // TODO - test that it is ea5-ish
-
-  resetF18A();
-  set_graphics(0); // This is mostly write, but we have
+  bk_setupScreen(0);
   // to override some VDP registers for EA5 compatibility
   // VDP_SET_REGISTER(VDP_REG_MODE0, 0x00);
   VDP_SET_REGISTER(VDP_REG_MODE1, 0xE0);

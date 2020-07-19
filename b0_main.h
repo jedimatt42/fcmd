@@ -7,9 +7,6 @@
 
 void initGlobals();
 void main();
-int isF18A();
-void resetF18A();
-void setupScreen(int width);
 void sleep(int jiffies);
 void titleScreen();
 void playtipi();
