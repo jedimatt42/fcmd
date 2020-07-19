@@ -11,7 +11,7 @@
 
 void handleEcho() {
   char* peek = strtokpeek(0, " ");
-  int newline = (0 != strcmpi("/n", peek));
+  int newline = (0 != bk_strcmpi(str2ram("/n"), peek));
 
   if (!newline) {
     strtok(0, " "); // consume the optional /n

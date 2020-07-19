@@ -17,7 +17,7 @@ int matchcmd(char* input, char* exp) {
     len++;
   }
   stackstr[len] = 0;
-  return 0 == strcmpi(input, stackstr);
+  return 0 == bk_strcmpi(input, stackstr);
 }
 
 int wordlen(char* str) {

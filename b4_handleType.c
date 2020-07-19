@@ -16,7 +16,7 @@ void handleType() {
   int ansi = 0;
 
   char* tok = strtokpeek(0, " ");
-  if (!strcmpi("/ansi", tok)) {
+  if (!bk_strcmpi(str2ram("/ansi"), tok)) {
     ansi = 1;
     strtok(0, " "); // consume optional token
   }

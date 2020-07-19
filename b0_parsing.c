@@ -13,7 +13,7 @@
 #include "b4_preprocess.h"
 #include <string.h>
 
-#define MATCH(x,y) (!(strcmpi(x,y)))
+#define MATCH(x,y) (!(bk_strcmpi(str2ram(x),y)))
 
 #define COMMAND(x, y) if (MATCH(tok, x)) y();
 
@@ -122,7 +122,7 @@ void parsePathParam(struct DeviceServiceRoutine** dsr, char* buffer, int require
     return;
   } else {
     char devicename[8];
-    if (0 == strcmp("..", path)) {
+    if (0 == bk_strcmp(str2ram(".."), path)) {
       int ldot = lindexof(currentPath, '.', strlen(currentPath) - 2);
       if (ldot == -1) {
         *dsr = 0;

@@ -22,7 +22,7 @@ void handleIf() {
   char command[100];
 
   char* tok = strtok(0, " ");
-  if (!strcmpi("not", tok)) {
+  if (!bk_strcmpi(str2ram("not"), tok)) {
     negate = 1;
     tok = strtok(0, " ");
   }
@@ -63,7 +63,7 @@ void handleIf() {
   }
 
   tok = strtok(0, " ");
-  if (strcmpi("then", tok)) {
+  if (bk_strcmpi(str2ram("then"), tok)) {
     tputs_rom("Error, missing \'then\' in statement\n");
     return;
   }

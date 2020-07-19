@@ -1,7 +1,11 @@
+#include "banks.h"
+#define MYBANK BANK(1)
+
 #include "b1_strutil.h"
 
 #include <string.h>
 
+char str2ram_buf[128]; // for the inlined str2ram function
 
 int strcmp(const char* a, const char* b) {
   int i=0;
@@ -75,7 +79,7 @@ int strcmpi(const char *a, const char *b) {
   return lowerchar(*(const unsigned char*)a) - lowerchar(*(const unsigned char*)b);
 }
 
-int indexof(const char* str, char c) {
+int indexof(const char* str, int c) {
   int i=0;
   while(str[i] != 0) {
     if (str[i] == c) {
@@ -86,7 +90,7 @@ int indexof(const char* str, char c) {
   return -1;
 }
 
-int lindexof(const char* str, char c, int start) {
+int lindexof(const char* str, int c, int start) {
   int i = start;
   while(i != -1) {
     if (str[i] == c) {
@@ -185,7 +189,7 @@ int strcspn(char* string, char* chars) {
   return s-string;
 }
 
-void strset(char* buffer, char value, int limit) {
+void strset(char* buffer, int value, int limit) {
   for(int i=0; i<limit; i++) {
     buffer[i] = value;
   }
@@ -245,7 +249,7 @@ int htoi(char* s) {
   return out;
 }
 
-void strpad(char* dest, int limit, char pad) {
+void strpad(char* dest, int limit, int pad) {
   int dopad = 0;
   for(int i = 0; i < limit; i++) {
     if (dest[i] == 0) {

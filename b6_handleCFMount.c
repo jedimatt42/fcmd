@@ -160,8 +160,8 @@ void handleCFMount() {
     //  CFMOUNT [/p] 1-3 vol
     char *peek = strtokpeek(0, " ");
     int list = peek == 0;
-    int volumes = 0 == strcmpi("/v", peek);
-    int persist = 0 == strcmpi("/p", peek);
+    int volumes = 0 == bk_strcmpi(str2ram("/v"), peek);
+    int persist = 0 == bk_strcmpi(str2ram("/p"), peek);
     if (persist || volumes)
     {
         strtok(0, " "); // consume the optional /c

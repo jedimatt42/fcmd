@@ -240,11 +240,11 @@ struct DeviceServiceRoutine* findDsr(char* devicename, int crubase) {
 
   while(dsrList[i].name[0] != 0) {
     if (crubase != 0) {
-      if (dsrList[i].crubase == crubase && 0 == strcmp(dsrList[i].name, devicename)) {
+      if (dsrList[i].crubase == crubase && 0 == bk_strcmp(dsrList[i].name, devicename)) {
         return &dsrList[i];
       }
     } else {
-      if (0 == strcmp(dsrList[i].name, devicename)) {
+      if (0 == bk_strcmp(dsrList[i].name, devicename)) {
         return &dsrList[i];
       }
     }

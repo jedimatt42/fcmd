@@ -71,14 +71,14 @@ void handleFtp() {
     bk_tputc('\n');
     bk_enable_more();
     char* tok = strtok(commandbuf, " ");
-    if (!strcmpi("open", tok)) {
+    if (!bk_strcmpi(str2ram("open"), tok)) {
       ftpOpen();
-    } else if (!strcmpi("bye", tok) || !strcmpi("quit", tok) || !strcmpi("exit", tok)) {
+    } else if (!bk_strcmpi(str2ram("bye"), tok) || !bk_strcmpi(str2ram("quit"), tok) || !bk_strcmpi(str2ram("exit"), tok)) {
       if (connected) {
         ftpQuit();
       }
       return;
-    } else if (!strcmpi("help", tok)) {
+    } else if (!bk_strcmpi(str2ram("help"), tok)) {
       tputs("open <hostname> [port] - connect to an ftp server, defaults to port 21\n");
       tputs("dir [/w] [pathname] - list directory\n");
       tputs("  alias: ls\n");
@@ -90,17 +90,17 @@ void handleFtp() {
       tputs("bye - close connection\n");
       tputs("  aliases: exit, quit\n");
     } else if (connected) {
-      if (!strcmpi("pwd", tok)) {
+      if (!bk_strcmpi(str2ram("pwd"), tok)) {
         ftpPwd();
-      } else if (!strcmpi("cd", tok)) {
+      } else if (!bk_strcmpi(str2ram("cd"), tok)) {
         ftpCd();
-      } else if (!strcmpi("dir", tok) || !strcmpi("ls", tok)) {
+      } else if (!bk_strcmpi(str2ram("dir"), tok) || !strcmpi("ls", tok)) {
         ftpDir();
-      } else if (!strcmpi("get", tok)) {
+      } else if (!bk_strcmpi(str2ram("get"), tok)) {
         ftpGet();
-      } else if (!strcmpi("lcd", tok)) {
+      } else if (!bk_strcmpi(str2ram("lcd"), tok)) {
         ftpLcd();
-      } else if (!strcmpi("ldir", tok)) {
+      } else if (!bk_strcmpi(str2ram("ldir"), tok)) {
         bk_handleDir();
       } else {
         tputs("Error, unknown command.\n");

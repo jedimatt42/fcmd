@@ -18,7 +18,7 @@ static int vars_next = 0;
 
 static int vars_find(char* name) {
   for(int i = 0; i < vars_next; i++) {
-    if (0 == strcmpi(name, var_map[i].name)) {
+    if (0 == bk_strcmpi(name, var_map[i].name)) {
       return i;
     }
   }

@@ -168,9 +168,9 @@ void onLineAuto(char* linebuf, char* extra) {
 static void setAutoMap() {
   char* onoff = strtok(0, " ");
   if (onoff) {
-    if (!strcmpi("on", onoff)) {
+    if (!bk_strcmpi(str2ram("on"), onoff)) {
       writeConfigItem("AUTO", "on");
-    } else if (!strcmpi("off", onoff)) {
+    } else if (!bk_strcmpi(str2ram("off"), onoff)) {
       writeConfigItem("AUTO", "off");
     } else {
       tputs_rom("error, value must be one of: on, off\n");
@@ -238,7 +238,7 @@ static void setDriveMapping(const char* drive, const char* path) {
 void handleTipimap() {
   //  [/c] [drive] [path]
   char* peek = strtokpeek(0, " ");
-  int clear = 0 == strcmpi("/c", peek);
+  int clear = 0 == bk_strcmpi(str2ram("/c"), peek);
 
   if (clear) {
     strtok(0, " "); // consume the optional /c
@@ -255,7 +255,7 @@ void handleTipimap() {
     if (clear) {
       clearDriveMapping(drive);
     } else {
-      if (!strcmpi("auto", drive)) {
+      if (!bk_strcmpi(str2ram("auto"), drive)) {
         setAutoMap();
       } else {
         char* peek = strtokpeek(0, " ");
