@@ -51,7 +51,7 @@
 
 // call the console SCAN function, supports all the regular keyboard modes, debounce, joysticks, etc.
 // requires console ROM and GROM to be present.
-unsigned char kscan(unsigned char mode);
+unsigned int kscan(unsigned int mode);
 
 // does a simple read of the keyboard with no shifts and no debounce. Mode 0 is keyboard,
 // mode 1 is joystick 1 fire button (only!) and mode 2 is joystick 2 fire button (only!)

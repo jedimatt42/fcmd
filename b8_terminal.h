@@ -4,10 +4,12 @@
 #include "banking.h"
 #include "b1_strutil.h"
 // #include "conio.h"
+
 unsigned int bgcolor(unsigned int color); // from conio
 unsigned int textcolor(unsigned int color); // from conio
 unsigned int bordercolor(unsigned int x); // from conio
 unsigned int cgetc(); // from conio
+unsigned int kscan(unsigned int mode); // from kscan
 
 void initTerminal();
 void tputc(int c);
@@ -30,6 +32,7 @@ DECLARE_BANKED(bgcolor, BANK(8), unsigned int, bk_bgcolor, (unsigned int color),
 DECLARE_BANKED(textcolor, BANK(8), unsigned int, bk_textcolor, (unsigned int color), (color))
 DECLARE_BANKED(bordercolor, BANK(8), unsigned int, bk_bordercolor, (unsigned int x), (x))
 DECLARE_BANKED(cgetc, BANK(8), unsigned int, bk_cgetc, (), ())
+DECLARE_BANKED(kscan, BANK(8), unsigned int, bk_kscan, (unsigned int mode), (mode))
 
 #define tputs_rom(x)        \
 {                           \

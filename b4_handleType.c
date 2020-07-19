@@ -49,7 +49,7 @@ void handleType() {
   }
   int rec = 0;
   while(!err) {
-    char k = kscan(5);
+    char k = bk_kscan(5);
     if (k == 131 || k == 2) { // control-c or alt-4
       break;
     }
