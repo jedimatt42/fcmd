@@ -181,5 +181,5 @@ int globMatches(char* filename) {
   char suffix[12];
   strcpy(suffix, filterglob+prelen+1);
 
-  return str_startswith(filename, prefix) && str_endswith(filename, suffix);
+  return bk_str_startswith(filename, prefix) && str_endswith(filename, suffix);
 }

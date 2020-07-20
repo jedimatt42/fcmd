@@ -79,10 +79,10 @@ static void writeConfigItem(const char* key, const char* value) {
 
 void onLineShowMapping(char* linebuf, char* extra) {
   char* key = strtok(linebuf, "=");
-  if (strlen(key) > 3 && (str_startswith(key, "DSK") || str_startswith(key, "URI"))) {
+  if (strlen(key) > 3 && (bk_str_startswith(key, str2ram("DSK")) || bk_str_startswith(key, str2ram("URI")))) {
     char* path = strtok(0, " ");
     if (path) {
-      if (str_startswith(key, "URI")) {
+      if (bk_str_startswith(key, str2ram("URI"))) {
         bk_tputs_ram(key);
         tputs_rom(". => ");
       } else {
@@ -104,7 +104,7 @@ static void listDrives() {
 
 void onLineIfDriveShowMapping(char* linebuf, char* drivePrefix) {
   char* key = strtok(linebuf, "=");
-  if (strlen(key) > 4 && str_startswith(key, drivePrefix)) {
+  if (strlen(key) > 4 && bk_str_startswith(key, drivePrefix)) {
     char* path = strtok(0, " ");
     if (path) {
       tputs_rom("TIPI.");
@@ -120,7 +120,7 @@ void onLineIfDriveShowMapping(char* linebuf, char* drivePrefix) {
 
 void onLineIfUriShowMapping(char* linebuf, char* uriPrefix) {
   char *key = strtok(linebuf, "=");
-  if (str_startswith(key, uriPrefix)) {
+  if (bk_str_startswith(key, uriPrefix)) {
     char* path = strtok(0, " ");
     if (path) {
       bk_tputs_ram(path);
@@ -132,7 +132,7 @@ void onLineIfUriShowMapping(char* linebuf, char* uriPrefix) {
 
 static void showDriveMapping(const char* drive) {
   char* drivePrefix = strtok((char*) drive, ".");
-  if (str_startswith(drivePrefix, "DSK")) {
+  if (bk_str_startswith(drivePrefix, str2ram("DSK"))) {
     visitLines(onLineIfDriveShowMapping, drivePrefix);
   } else {
     visitLines(onLineIfUriShowMapping, drivePrefix);
@@ -141,7 +141,7 @@ static void showDriveMapping(const char* drive) {
 
 static void clearDriveMapping(const char* drive) {
   char keybuf[10];
-  if (str_startswith(drive, "URI")) {
+  if (bk_str_startswith(drive, str2ram("URI"))) {
     strcpy(keybuf, drive);
     keybuf[4] = 0;
   } else {
@@ -156,7 +156,7 @@ static void clearDriveMapping(const char* drive) {
 }
 
 void onLineAuto(char* linebuf, char* extra) {
-  if (str_startswith(linebuf, "AUTO=")) {
+  if (bk_str_startswith(linebuf, str2ram("AUTO="))) {
     char* val = strtok(linebuf, "=");
     val = strtok(0, " ");
     tputs_rom("AUTO ");
@@ -184,7 +184,7 @@ static int __attribute__((noinline)) validDrive(const unsigned char *keybuf, con
 {
   int l = strlen(keybuf);
   int form = (l == 5 && keybuf[4] == '.') || (l == 4);
-  return str_startswith(keybuf, prefix) &&
+  return bk_str_startswith(keybuf, prefix) &&
        keybuf[3] >= min &&
        keybuf[3] <= max &&
        form;
@@ -206,27 +206,29 @@ static void setDriveMapping(const char* drive, const char* path) {
     return;
   }
 
-  if (str_startswith(keybuf, "DSK")) {
+  int diskmapping = 0;
+  if (bk_str_startswith(keybuf, str2ram("DSK"))) {
     strcpy(keybuf+4, "_DIR");
-  } else if (str_startswith(keybuf, "URI")) {
+    diskmapping = 1;
+  } else if (bk_str_startswith(keybuf, str2ram("URI"))) {
     keybuf[4] = 0;
   }
 
   char namebuf[256];
 
-  if (str_startswith(keybuf, "DSK")) {
+  if (diskmapping) {
     strcpy(namebuf, "TIPI");
     struct DeviceServiceRoutine* dsr = bk_findDsr(namebuf, 0);
     strcat(namebuf, ".");
     if (bk_str_equals((char*) path, str2ram("TIPI.")) || bk_str_equals((char*) path, str2ram("."))) {
       strcpy(namebuf, ".");
-    } else if (str_startswith(path, "TIPI.")) {
+    } else if (bk_str_startswith(path, str2ram("TIPI."))) {
       strcpy(namebuf, path+5);
     } else {
       strcpy(namebuf, path);
     }
   } else {
-    if (!str_startswith(path, "HTTP")) {
+    if (!bk_str_startswith(path, str2ram("HTTP"))) {
       tputs_rom("error path must be a URL prefix\n");
       return;
     }
@@ -260,7 +262,7 @@ void handleTipimap() {
       } else {
         char* peek = strtokpeek(0, " ");
         if (peek) {
-          if (str_startswith(drive, "DSK")) {
+          if (bk_str_startswith(drive, str2ram("DSK"))) {
             struct DeviceServiceRoutine *dsr;
             char path[256];
             bk_parsePathParam(&dsr, path, PR_OPTIONAL);

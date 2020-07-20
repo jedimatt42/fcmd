@@ -193,7 +193,7 @@ void ftpCd() {
 void ftpDir() {
   char* tok = strtokpeek(0, "");
   int nlist = 0;
-  if (str_startswith("/w ", tok)) {
+  if (bk_str_startswith(str2ram("/w "), tok)) {
     nlist = 1;
     tok = strtok(0, " "); // consume the "/w"
     tok = strtokpeek(0, "");
@@ -370,7 +370,7 @@ unsigned int sendFtpPasv() {
 
   char* line = readline(0);
   tputs(line);
-  if (!str_startswith(line, "227")) {
+  if (!bk_str_startswith(line, str2ram("227"))) {
     return 0;
   }
   char* tok = strtok(line, "(");
