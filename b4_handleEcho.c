@@ -10,14 +10,14 @@
 
 
 void handleEcho() {
-  char* peek = strtokpeek(0, " ");
+  char* peek = bk_strtokpeek(0, ' ');
   int newline = (0 != bk_strcmpi(str2ram("/n"), peek));
 
   if (!newline) {
-    strtok(0, " "); // consume the optional /n
+    bk_strtok(0, ' '); // consume the optional /n
   }
 
-  char* tok = strtok(0, 0);
+  char* tok = bk_strtok(0, 0);
   if (tok) {
     bk_tputs_ram(tok);
   }

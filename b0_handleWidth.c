@@ -10,7 +10,7 @@
 #include <string.h>
 
 void handleWidth() {
-  char* tok = strtok(0, " ");
+  char* tok = bk_strtok(0, ' ');
   int width = atoi(tok);
 
   if (width == 80 && isF18A()) {

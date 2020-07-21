@@ -70,7 +70,7 @@ void handleFtp() {
     bk_getstr(5, conio_y, commandbuf, displayWidth - 3, backspace);
     bk_tputc('\n');
     bk_enable_more();
-    char* tok = strtok(commandbuf, " ");
+    char* tok = bk_strtok(commandbuf, ' ');
     if (!bk_strcmpi(str2ram("open"), tok)) {
       ftpOpen();
     } else if (!bk_strcmpi(str2ram("bye"), tok) || !bk_strcmpi(str2ram("quit"), tok) || !bk_strcmpi(str2ram("exit"), tok)) {
@@ -112,13 +112,13 @@ void handleFtp() {
 }
 
 void ftpOpen() {
-  char* host = strtok(0, " ");
+  char* host = bk_strtok(0, ' ');
   if (!host) {
     tputs("Error, no host provided.\n");
     return;
   }
   strcpy(hostname, host); // store for pasv connections later.
-  char* port = strtok(0, " ");
+  char* port = bk_strtok(0, ' ');
   if (!port) {
     port = "21";
   } else {
@@ -185,18 +185,18 @@ void ftpPwd() {
 }
 
 void ftpCd() {
-  char* tok = strtokpeek(0, "");
+  char* tok = bk_strtokpeek(0, 0);
   int code = 0;
   sendFtpCommand("CWD", tok);
 }
 
 void ftpDir() {
-  char* tok = strtokpeek(0, "");
+  char* tok = bk_strtokpeek(0, 0);
   int nlist = 0;
   if (bk_str_startswith(str2ram("/w "), tok)) {
     nlist = 1;
-    tok = strtok(0, " "); // consume the "/w"
-    tok = strtokpeek(0, "");
+    tok = bk_strtok(0, ' '); // consume the "/w"
+    tok = bk_strtokpeek(0, 0);
   }
   sendFtpCommand("TYPE", "A");
   unsigned int port = sendFtpPasv();
@@ -221,14 +221,14 @@ void ftpDir() {
 }
 
 void ftpGet() {
-  char* tok = strtok(0, " ");
+  char* tok = bk_strtok(0, ' ');
   if (!tok) {
     tputs("Error, no file specified.\n");
     return;
   }
   char safetiname[12];
   strset(safetiname, 0, 12);
-  char* tiname = strtok(0, "");
+  char* tiname = bk_strtok(0, ' ');
   if (!tiname) {
     for(int i=0; i<10;i++) {
       if (tok[i] == '.') {
@@ -373,13 +373,13 @@ unsigned int sendFtpPasv() {
   if (!bk_str_startswith(line, str2ram("227"))) {
     return 0;
   }
-  char* tok = strtok(line, "(");
+  char* tok = bk_strtok(line, '(');
   for(int i=0; i<4; i++) {
-    tok = strtok(0, ",");
+    tok = bk_strtok(0, ',');
   }
-  tok = strtok(0, ",");
+  tok = bk_strtok(0, ',');
   unsigned int port = ((unsigned int)atoi(tok)) << 8;
-  tok = strtok(0, ")");
+  tok = bk_strtok(0, ')');
   port += (unsigned int)atoi(tok);
 
   return port;
@@ -464,7 +464,7 @@ void drainChannel(unsigned char socketId) {
 }
 
 int isTiFiles(struct TiFiles* tifiles) {
-  return !basic_strcmp((char*) tifiles, "TIFILES");
+  return !bk_basic_strcmp((char*) tifiles, str2ram("TIFILES"));
 }
 
 void ftpLcd() {

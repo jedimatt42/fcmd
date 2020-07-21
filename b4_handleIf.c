@@ -21,10 +21,10 @@ void handleIf() {
   int operator = 0;
   char command[100];
 
-  char* tok = strtok(0, " ");
+  char* tok = bk_strtok(0, ' ');
   if (!bk_strcmpi(str2ram("not"), tok)) {
     negate = 1;
-    tok = strtok(0, " ");
+    tok = bk_strtok(0, ' ');
   }
 
   if (!tok) {
@@ -39,7 +39,7 @@ void handleIf() {
     return;
   }
 
-  tok = strtok(0, " ");
+  tok = bk_strtok(0, ' ');
 
   if (bk_str_equals(str2ram("=="), tok)) {
     operator = EQ;
@@ -48,7 +48,7 @@ void handleIf() {
     return;
   }
 
-  tok = strtok(0, " ");
+  tok = bk_strtok(0, ' ');
 
   if (!tok) {
     tputs_rom("Error, missing right-hand value\n");
@@ -62,13 +62,13 @@ void handleIf() {
     return;
   }
 
-  tok = strtok(0, " ");
+  tok = bk_strtok(0, ' ');
   if (bk_strcmpi(str2ram("then"), tok)) {
     tputs_rom("Error, missing \'then\' in statement\n");
     return;
   }
 
-  tok = strtok(0, ""); // to end of line
+  tok = bk_strtok(0, 0); // to end of line
   if (!tok) {
     tputs_rom("Error, missing <command> in statement\n");
     return;

@@ -8,7 +8,7 @@
 #include "b8_terminal.h"
 
 void handleLvl2() {
-  char* tok = strtok(0, " ");
+  char* tok = bk_strtok(0, ' ');
   int crubase = htoi(tok);
 
   if (crubase == 0) {

@@ -10,12 +10,12 @@
 
 
 void handleRename() {
-  char* filename = strtok(0, " ");
+  char* filename = bk_strtok(0, ' ');
   if (filename == 0) {
     tputs_rom("error, must specify source file name\n");
     return;
   }
-  char* newname = strtok(0, " ");
+  char* newname = bk_strtok(0, ' ');
   if (newname == 0) {
     tputs_rom("error, must specify new file name\n");
     return;

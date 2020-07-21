@@ -16,7 +16,7 @@ void handleGoto() {
     return;
   }
 
-  char* label = strtok(0, " ");
+  char* label = bk_strtok(0, ' ');
 
   if (!label) {
     tputs_rom("Error, label required\n");
@@ -34,7 +34,7 @@ void handleGoto() {
         lineno++;
         strset(commandbuf, 0, 255);
         vdpmemread(scriptPab->VDPBuffer, commandbuf, scriptPab->CharCount);
-        char* tok = strtok(commandbuf, " ");
+        char* tok = bk_strtok(commandbuf, ' ');
         if (tok[strlen(tok)-1] == ':') {
           tok[strlen(tok)-1] = 0; // shorten to just the name
           bk_labels_add(tok, lineno);

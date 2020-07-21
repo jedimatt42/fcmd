@@ -9,8 +9,8 @@
 #include <string.h>
 
 void handleColor() {
-  char* fore = strtok(0, " ");
-  char* back = strtok(0, " ");
+  char* fore = bk_strtok(0, ' ');
+  char* back = bk_strtok(0, ' ');
   int fc = atoi(fore);
   int oldfc = foreground;
   if (fore && fc >= 0 && fc <= 15) {

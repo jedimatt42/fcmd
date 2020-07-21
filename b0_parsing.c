@@ -38,7 +38,7 @@ void handleCommand(char *buffer) {
   // perform any escaping, variable substitutions, etc...
   char* procbuf = bk_preprocess(buffer);
 
-  char* tok = strtok(procbuf, " ");
+  char* tok = bk_strtok(procbuf, ' ');
   COMMAND("call", handleCall)
   else COMMAND("cls", handleCls)
   else COMMAND("cd", bk_handleCd)
@@ -81,8 +81,8 @@ void handleCommand(char *buffer) {
       tputs_rom("error, label only supported in script\n");
     }
   } else if (isAssignment(tok)) {
-    char* name = strtok(procbuf, "=");
-    char* value = strtokpeek(0, ""); // to end of line
+    char* name = bk_strtok(procbuf, '=');
+    char* value = bk_strtokpeek(0, 0); // to end of line
     bk_vars_set(name, value);
   } else {
     if (tok) {
@@ -97,10 +97,10 @@ int parsePath(char* path, char* devicename) {
   char workbuf[14];
   int crubase = 0;
   strncpy(workbuf, path, 13);
-  char* tok = strtok(workbuf, ". ");
+  char* tok = bk_strtok(workbuf, '.');
   if (tok != 0 && tok[0] == '1' && strlen(tok) == 4) {
     crubase = htoi(tok);
-    tok = strtok(0, ". ");
+    tok = bk_strtok(0, '.');
     strncpy(devicename, tok, 8);
   } else {
     strncpy(devicename, tok, 8);
@@ -111,7 +111,7 @@ int parsePath(char* path, char* devicename) {
 void parsePathParam(struct DeviceServiceRoutine** dsr, char* buffer, int requirements) {
   filterglob[0] = 0;
   buffer[0] = 0; // null terminate so later we can tell if it is prepared or not.
-  char* path = strtok(0, " ");
+  char* path = bk_strtok(0, ' ');
   *dsr = currentDsr;
   if (path == 0) {
     if (requirements & PR_REQUIRED) {
@@ -148,8 +148,8 @@ void parsePathParam(struct DeviceServiceRoutine** dsr, char* buffer, int require
         // at this stage, buffer is set with result device name.
       }
       if (crubase != 0) {
-        path = strtok(path, ".");
-        path = strtok(0, " ");
+        path = bk_strtok(path, '.');
+        path = bk_strtok(0, ' ');
         strcpy(buffer, path);
       } else {
         if (buffer[0] == 0) {
@@ -181,5 +181,5 @@ int globMatches(char* filename) {
   char suffix[12];
   strcpy(suffix, filterglob+prelen+1);
 
-  return bk_str_startswith(filename, prefix) && str_endswith(filename, suffix);
+  return bk_str_startswith(filename, prefix) && bk_str_endswith(filename, suffix);
 }

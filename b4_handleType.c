@@ -15,10 +15,10 @@
 void handleType() {
   int ansi = 0;
 
-  char* tok = strtokpeek(0, " ");
+  char* tok = bk_strtokpeek(0, ' ');
   if (!bk_strcmpi(str2ram("/ansi"), tok)) {
     ansi = 1;
-    strtok(0, " "); // consume optional token
+    bk_strtok(0, ' '); // consume optional token
   }
 
   char namebuf[256];

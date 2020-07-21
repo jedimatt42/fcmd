@@ -29,10 +29,10 @@ static int col = 0;
 void handleDir() {
   struct DeviceServiceRoutine* dsr = 0;
 
-  char* peek = strtokpeek(0, " ");
+  char* peek = bk_strtokpeek(0, ' ');
   int wideFormat = bk_strcmpi(str2ram("/w"), peek) == 0 ? 1 : 0;
   if (wideFormat) {
-    strtok(0, " "); // consume the option token.
+    bk_strtok(0, ' '); // consume the option token.
   }
 
   char path[256];

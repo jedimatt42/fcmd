@@ -122,22 +122,23 @@ int basicToCstr(const char* str, char* buf) {
 }
 
 char *lasts;
+int strcspn(char *string, char *chars);
+char *strchr(char *str, int delim);
 
-void setstrtok(char* str) {
-  lasts = str;
-}
-
-char* strtok(char* str, char* delim) {
+char* strtok(char* str, int delim) {
   int ch;
+  char delim_str[2];
+  delim_str[0] = delim;
+  delim_str[1] = 0;
 
   if (str == 0)
 	  str = lasts;
   do {
 	  if ((ch = *str++) == '\0')
 	    return 0;
-  } while (strchr(delim, ch));
+  } while (strchr(delim_str, ch));
   --str;
-  lasts = str + strcspn(str, delim);
+  lasts = str + strcspn(str, delim_str);
   if (*lasts != 0)
 	  *lasts++ = 0;
   return str;
@@ -145,17 +146,20 @@ char* strtok(char* str, char* delim) {
 
 char peekbuf[256];
 
-char* strtokpeek(char* str, char* delim) {
+char* strtokpeek(char* str, int delim) {
   int ch;
+  char delim_str[2];
+  delim_str[0] = delim;
+  delim_str[1] = 0;
 
   if (str == 0)
 	  str = lasts;
   do {
 	  if ((ch = *str++) == '\0')
 	    return 0;
-  } while (strchr(delim, ch));
+  } while (strchr(delim_str, ch));
   --str;
-  char* plasts = str + strcspn(str, delim);
+  char* plasts = str + strcspn(str, delim_str);
 
   strncpy(peekbuf, str, plasts - str);
   return peekbuf;

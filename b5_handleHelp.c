@@ -46,7 +46,7 @@ void wraptext(char* str) {
 
 /* ##########|----.----1----.----2----.----3----.----4|######## */
 void handleHelp() {
-  char* tok = strtok(0, " ");
+  char* tok = bk_strtok(0, ' ');
   if (tok == 0) {
     wraptext("==Help==\n\n"
     "help <command>\n\n"

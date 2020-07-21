@@ -78,15 +78,15 @@ static void writeConfigItem(const char* key, const char* value) {
 }
 
 void onLineShowMapping(char* linebuf, char* extra) {
-  char* key = strtok(linebuf, "=");
+  char* key = bk_strtok(linebuf, '=');
   if (strlen(key) > 3 && (bk_str_startswith(key, str2ram("DSK")) || bk_str_startswith(key, str2ram("URI")))) {
-    char* path = strtok(0, " ");
+    char* path = bk_strtok(0, ' ');
     if (path) {
       if (bk_str_startswith(key, str2ram("URI"))) {
         bk_tputs_ram(key);
         tputs_rom(". => ");
       } else {
-        char* drive = strtok(key, "_");
+        char* drive = bk_strtok(key, '_');
         bk_tputs_ram(drive);
         tputs_rom(". => TIPI.");
       }
@@ -103,9 +103,9 @@ static void listDrives() {
 }
 
 void onLineIfDriveShowMapping(char* linebuf, char* drivePrefix) {
-  char* key = strtok(linebuf, "=");
+  char* key = bk_strtok(linebuf, '=');
   if (strlen(key) > 4 && bk_str_startswith(key, drivePrefix)) {
-    char* path = strtok(0, " ");
+    char* path = bk_strtok(0, ' ');
     if (path) {
       tputs_rom("TIPI.");
       if (path[0] != '.') {
@@ -119,9 +119,9 @@ void onLineIfDriveShowMapping(char* linebuf, char* drivePrefix) {
 }
 
 void onLineIfUriShowMapping(char* linebuf, char* uriPrefix) {
-  char *key = strtok(linebuf, "=");
+  char *key = bk_strtok(linebuf, '=');
   if (bk_str_startswith(key, uriPrefix)) {
-    char* path = strtok(0, " ");
+    char* path = bk_strtok(0, ' ');
     if (path) {
       bk_tputs_ram(path);
     } else {
@@ -131,7 +131,7 @@ void onLineIfUriShowMapping(char* linebuf, char* uriPrefix) {
 }
 
 static void showDriveMapping(const char* drive) {
-  char* drivePrefix = strtok((char*) drive, ".");
+  char* drivePrefix = bk_strtok((char*) drive, '.');
   if (bk_str_startswith(drivePrefix, str2ram("DSK"))) {
     visitLines(onLineIfDriveShowMapping, drivePrefix);
   } else {
@@ -157,8 +157,8 @@ static void clearDriveMapping(const char* drive) {
 
 void onLineAuto(char* linebuf, char* extra) {
   if (bk_str_startswith(linebuf, str2ram("AUTO="))) {
-    char* val = strtok(linebuf, "=");
-    val = strtok(0, " ");
+    char* val = bk_strtok(linebuf, '=');
+    val = bk_strtok(0, ' ');
     tputs_rom("AUTO ");
     bk_tputs_ram(val);
     bk_tputc('\n');
@@ -166,7 +166,7 @@ void onLineAuto(char* linebuf, char* extra) {
 }
 
 static void setAutoMap() {
-  char* onoff = strtok(0, " ");
+  char* onoff = bk_strtok(0, ' ');
   if (onoff) {
     if (!bk_strcmpi(str2ram("on"), onoff)) {
       writeConfigItem("AUTO", "on");
@@ -239,14 +239,14 @@ static void setDriveMapping(const char* drive, const char* path) {
 
 void handleTipimap() {
   //  [/c] [drive] [path]
-  char* peek = strtokpeek(0, " ");
+  char* peek = bk_strtokpeek(0, ' ');
   int clear = 0 == bk_strcmpi(str2ram("/c"), peek);
 
   if (clear) {
-    strtok(0, " "); // consume the optional /c
+    bk_strtok(0, ' '); // consume the optional /c
   }
 
-  char* drive = strtok(0, " ");
+  char* drive = bk_strtok(0, ' ');
   if (!drive) {
     if (clear) {
       tputs_rom("error, no mapping drive specified\n");
@@ -260,7 +260,7 @@ void handleTipimap() {
       if (!bk_strcmpi(str2ram("auto"), drive)) {
         setAutoMap();
       } else {
-        char* peek = strtokpeek(0, " ");
+        char* peek = bk_strtokpeek(0, ' ');
         if (peek) {
           if (bk_str_startswith(drive, str2ram("DSK"))) {
             struct DeviceServiceRoutine *dsr;
@@ -273,7 +273,7 @@ void handleTipimap() {
               setDriveMapping(drive, path);
             }
           } else {
-            char* tok = strtok(0, " ");
+            char* tok = bk_strtok(0, ' ');
             setDriveMapping(drive, tok);
           }
         }

@@ -10,7 +10,7 @@
 #include <string.h>
 
 void handleReadkey() {
-  char* name = strtok(0, " ");
+  char* name = bk_strtok(0, ' ');
   if (!name) {
     tputs_rom("Error, variable name must be given\n");
     return;

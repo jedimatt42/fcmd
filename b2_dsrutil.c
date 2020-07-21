@@ -53,7 +53,7 @@ unsigned char loadDir(struct DeviceServiceRoutine* dsr, const char* pathname, vo
       vdpmemread(FBUF, cbuf, pab.CharCount);
       // process Record
       if (recNo == 0) {
-        int namlen = basicToCstr(cbuf, volInfo.volname);
+        int namlen = bk_basicToCstr(cbuf, volInfo.volname);
         if (namlen == 0) {
           tputs_rom("no device\n");
           break;
@@ -65,7 +65,7 @@ unsigned char loadDir(struct DeviceServiceRoutine* dsr, const char* pathname, vo
         volInfo.available = k;
         vol_cb(&volInfo);
       } else {
-        int namlen = basicToCstr(cbuf, dirEntry.name);
+        int namlen = bk_basicToCstr(cbuf, dirEntry.name);
         if (namlen == 0) {
           break;
         }
@@ -189,7 +189,7 @@ void loadDriveDSRs() {
       while(dsrlinks != 0) {
 
         if (isDrive(dsrlinks->name)) {
-          basicToCstr(dsrlinks->name, listHead->name);
+          bk_basicToCstr(dsrlinks->name, listHead->name);
           listHead->crubase = cruscan;
           listHead->addr = dsrlinks->routine;
           listHead += 1;
@@ -211,7 +211,7 @@ void loadDriveDSRs() {
 int isDrive(char* basicstr) {
   if (basicstr[0] == 4) {
     char tipi[] = "TIPI";
-    if (0 == basic_strcmp(basicstr, tipi)) {
+    if (0 == bk_basic_strcmp(basicstr, tipi)) {
       return 1;
     } else if (basicstr[1] >= 'A' && basicstr[1] <= 'Z' && basicstr[4] >= '0' && basicstr[4] <= '9') {
       return 1;
@@ -220,7 +220,7 @@ int isDrive(char* basicstr) {
     }
   } else if (basicstr[0] == 2) {
     char pi[] = "PI";
-    if (0 == basic_strcmp(basicstr, pi)) {
+    if (0 == bk_basic_strcmp(basicstr, pi)) {
       return 1;
     }
   }

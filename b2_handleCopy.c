@@ -42,7 +42,7 @@ void handleCopy() {
   }
 
   char tmpsrc[256];
-  strcpy(tmpsrc, strtok(0, " "));
+  strcpy(tmpsrc, bk_strtok(0, ' '));
 
   // parse destination first, so glob pattern is preserved on source.
   bk_parsePathParam(&dstdsr, dstpath, PR_REQUIRED);

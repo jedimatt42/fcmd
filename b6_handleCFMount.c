@@ -54,7 +54,7 @@ static int getVolume(int drive, char* volumeName) {
             unsigned char cbuf[256];
 
             vdpmemread(FBUF, cbuf, pab.CharCount);
-            int namlen = basicToCstr(cbuf, volInfo.volname);
+            int namlen = bk_basicToCstr(cbuf, volInfo.volname);
             int a = bk_ti_floatToInt(cbuf + 1 + namlen);
             int j = bk_ti_floatToInt(cbuf + 10 + namlen);
             int k = bk_ti_floatToInt(cbuf + 19 + namlen);
@@ -158,13 +158,13 @@ void handleCFMount() {
     //  CFMOUNT
     //  CFMOUNT [/v] [begin] [end]
     //  CFMOUNT [/p] 1-3 vol
-    char *peek = strtokpeek(0, " ");
+    char *peek = bk_strtokpeek(0, ' ');
     int list = peek == 0;
     int volumes = 0 == bk_strcmpi(str2ram("/v"), peek);
     int persist = 0 == bk_strcmpi(str2ram("/p"), peek);
     if (persist || volumes)
     {
-        strtok(0, " "); // consume the optional /c
+        bk_strtok(0, ' '); // consume the optional /c
     }
 
     // test for CF7/nanopeb
@@ -186,11 +186,11 @@ void handleCFMount() {
     if (volumes) {
         int begin = 1;
         int end = 312;
-        peek = strtokpeek(0, " ");
+        peek = bk_strtokpeek(0, ' ');
         if (peek) {
-            peek = strtok(0, " ");
+            peek = bk_strtok(0, ' ');
             begin = atoi(peek);
-            peek = strtok(0, " ");
+            peek = bk_strtok(0, ' ');
             end = atoi(peek);
             if (end < begin || begin == 0 || end == 0) {
                 tputs_rom("illegal range specified\n");
@@ -202,13 +202,13 @@ void handleCFMount() {
         return;
     }
 
-    int drive = atoi(strtok(0, " "));
+    int drive = atoi(bk_strtok(0, ' '));
     if (drive < 1 || drive > 3) {
         tputs_rom("drive number must be 1, 2 or 3\n");
         return;
     }
 
-    int volume = atoi(strtok(0, " "));
+    int volume = atoi(bk_strtok(0, ' '));
     if (volume == 0) {
         tputs_rom("volume number must be > 0\n");
         return;

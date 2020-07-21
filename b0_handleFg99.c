@@ -14,7 +14,7 @@ extern void fg99();
 extern char fg99_msg;
 
 void handleFg99() {
-  char* cart = strtok(0, " ");
+  char* cart = bk_strtok(0, ' ');
 
   if (cart == 0) {
     tputs_rom("error, no cartridge image name specified\n");
@@ -26,7 +26,7 @@ void handleFg99() {
     return;
   }
 
-  strcpy( &fg99_msg, cart);
+  strcpy(&fg99_msg, cart);
 
   bk_setupScreen(0);
   fg99();
