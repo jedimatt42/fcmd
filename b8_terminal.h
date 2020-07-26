@@ -39,7 +39,7 @@ DECLARE_BANKED(kscan, BANK(8), unsigned int, bk_kscan, (unsigned int mode), (mod
 #define tputs_rom(x)        \
 {                           \
   unsigned char y[256];     \
-  strncpy(y, x, 255);       \
+  bk_strncpy(y, x, 255);    \
   bk_tputs_ram(y);          \
 }                           \
 

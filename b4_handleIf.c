@@ -32,7 +32,7 @@ void handleIf() {
     return;
   }
 
-  if (strlen(tok) < 30) {
+  if (bk_strlen(tok) < 30) {
     strcpy(left, tok);
   } else {
     tputs_rom("Error, left of expression too long, must be less than 30\n");
@@ -55,7 +55,7 @@ void handleIf() {
     return;
   }
 
-  if (strlen(tok) < 30) {
+  if (bk_strlen(tok) < 30) {
     strcpy(right, tok);
   } else {
     tputs_rom("Error, right of expression too long, must be less than 30\n");

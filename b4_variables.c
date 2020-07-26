@@ -36,13 +36,13 @@ static void vars_add(char* name, char* value) {
 }
 
 void vars_set(char* name, char* value) {
-  if (strlen(name) > MAX_VAR_NAME) {
+  if (bk_strlen(name) > MAX_VAR_NAME) {
     tputs_rom("Error, variable name too long, limit is ");
     bk_tputs_ram(uint2str(MAX_VAR_NAME));
     bk_tputc('\n');
     return;
   }
-  if (strlen(value) > MAX_VAR_VAL) {
+  if (bk_strlen(value) > MAX_VAR_VAL) {
     tputs_rom("Error, variable value too long, limit is ");
     bk_tputs_ram(uint2str(MAX_VAR_VAL));
     bk_tputc('\n');

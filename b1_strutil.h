@@ -53,12 +53,5 @@ DECLARE_BANKED(strncpy, BANK(1), char *, bk_strncpy, (char *dest, char *src, int
 DECLARE_BANKED_VOID(strpad, BANK(1), bk_strpad, (char *dest, int limit, int pad), (dest, limit, pad))
 DECLARE_BANKED(htoi, BANK(1), int, bk_htoi, (char* s), (s))
 
-// from string.h
-DECLARE_BANKED(strlen, BANK(1), int, bk_strlen, (const char *s), (s))
-DECLARE_BANKED(atoi, BANK(1), int, bk_atoi, (char* s), (s))
-DECLARE_BANKED(strcpy, BANK(1), char*, bk_strcpy, (char* d, const char* s), (d, s))
-DECLARE_BANKED(uint2str, BANK(1), char*, bk_uint2str, (unsigned int x), (x))
-DECLARE_BANKED(int2str, BANK(1), char*, bk_int2str, (int x), (x))
-DECLARE_BANKED(uint2hex, BANK(1), char*, bk_uint2hex, (unsigned int x), (x))
 
 #endif

@@ -70,16 +70,16 @@ static void writeConfigItem(const char* key, const char* value) {
 
   char linebuf[250];
   strcpy(linebuf, key);
-  strcat(linebuf, "=");
-  strcat(linebuf, (char*) value);
-  err = bk_dsr_write(dsr, &pab, linebuf, strlen(linebuf));
+  bk_strcat(linebuf, str2ram("="));
+  bk_strcat(linebuf, (char*) value);
+  err = bk_dsr_write(dsr, &pab, linebuf, bk_strlen(linebuf));
 
   bk_dsr_close(dsr, &pab);
 }
 
 void onLineShowMapping(char* linebuf, char* extra) {
   char* key = bk_strtok(linebuf, '=');
-  if (strlen(key) > 3 && (bk_str_startswith(key, str2ram("DSK")) || bk_str_startswith(key, str2ram("URI")))) {
+  if (bk_strlen(key) > 3 && (bk_str_startswith(key, str2ram("DSK")) || bk_str_startswith(key, str2ram("URI")))) {
     char* path = bk_strtok(0, ' ');
     if (path) {
       if (bk_str_startswith(key, str2ram("URI"))) {
@@ -104,7 +104,7 @@ static void listDrives() {
 
 void onLineIfDriveShowMapping(char* linebuf, char* drivePrefix) {
   char* key = bk_strtok(linebuf, '=');
-  if (strlen(key) > 4 && bk_str_startswith(key, drivePrefix)) {
+  if (bk_strlen(key) > 4 && bk_str_startswith(key, drivePrefix)) {
     char* path = bk_strtok(0, ' ');
     if (path) {
       tputs_rom("TIPI.");
@@ -182,7 +182,7 @@ static void setAutoMap() {
 
 static int __attribute__((noinline)) validDrive(const unsigned char *keybuf, const unsigned char *prefix, char min, char max)
 {
-  int l = strlen(keybuf);
+  int l = bk_strlen(keybuf);
   int form = (l == 5 && keybuf[4] == '.') || (l == 4);
   return bk_str_startswith(keybuf, prefix) &&
        keybuf[3] >= min &&
@@ -197,8 +197,8 @@ static int __attribute__((noinline)) isMappable(const char *drive)
 
 static void setDriveMapping(const char* drive, const char* path) {
   unsigned char keybuf[10];
-  int dlen = strlen(drive);
-  strncpy(keybuf, (char*) drive, dlen < 9 ? dlen : 9);
+  int dlen = bk_strlen(drive);
+  bk_strncpy(keybuf, (char*) drive, dlen < 9 ? dlen : 9);
 
   if (!isMappable(keybuf))
   {
@@ -219,7 +219,7 @@ static void setDriveMapping(const char* drive, const char* path) {
   if (diskmapping) {
     strcpy(namebuf, "TIPI");
     struct DeviceServiceRoutine* dsr = bk_findDsr(namebuf, 0);
-    strcat(namebuf, ".");
+    bk_strcat(namebuf, str2ram("."));
     if (bk_str_equals((char*) path, str2ram("TIPI.")) || bk_str_equals((char*) path, str2ram("."))) {
       strcpy(namebuf, ".");
     } else if (bk_str_startswith(path, str2ram("TIPI."))) {

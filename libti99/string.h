@@ -4,6 +4,8 @@
 #ifndef STRING_H
 #define STRING_H
 
+#include "banking.h"
+
 // strlen - returns the length of a zero terminated string
 int strlen(const char *s);
 
@@ -44,5 +46,13 @@ char* uint2hex(unsigned int x);
 // Displays a solid cursor. The only edit key supported is Fctn-S. Stops
 // at maxlen, returned string is zero-terminated. Needs KSCAN, VDP, etc.
 void gets(char *buf, int maxlen);
+
+// bank switchable routines
+DECLARE_BANKED(strlen, BANK(1), int, bk_strlen, (const char *s), (s))
+DECLARE_BANKED(atoi, BANK(1), int, bk_atoi, (char *s), (s))
+DECLARE_BANKED(strcpy, BANK(1), char *, bk_strcpy, (char *d, const char *s), (d, s))
+DECLARE_BANKED(uint2str, BANK(1), char *, bk_uint2str, (unsigned int x), (x))
+DECLARE_BANKED(int2str, BANK(1), char *, bk_int2str, (int x), (x))
+DECLARE_BANKED(uint2hex, BANK(1), char *, bk_uint2hex, (unsigned int x), (x))
 
 #endif /* STRING_H */

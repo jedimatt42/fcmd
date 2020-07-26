@@ -47,7 +47,7 @@ unsigned int dsr_ea5load(struct DeviceServiceRoutine* dsr, const char* fname) {
   );
   struct PAB* pab = (struct PAB*) 0x8320;
   initPab(pab);
-  int namelen = strlen(fname);
+  int namelen = bk_strlen(fname);
   pab->OpCode = DSR_LOAD;
   pab->pName = (char*)fname;
   pab->NameLength = namelen;

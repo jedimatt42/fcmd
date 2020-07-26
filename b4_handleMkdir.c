@@ -22,9 +22,9 @@ void handleMkdir() {
 
   unsigned int unit = bk_path2unitmask(path);
 
-  int parent_idx = bk_lindexof(path, '.', strlen(path)-1);
+  int parent_idx = bk_lindexof(path, '.', bk_strlen(path)-1);
   char dirname[11];
-  strncpy(dirname, path+parent_idx + 1, 10);
+  bk_strncpy(dirname, path+parent_idx + 1, 10);
   path[parent_idx+1] = 0x00;
 
   bk_lvl2_setdir(dsr->crubase, unit, path);

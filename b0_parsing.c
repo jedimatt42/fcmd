@@ -73,9 +73,9 @@ void handleCommand(char *buffer) {
   else COMMAND("ver", titleScreen)
   else COMMAND("width", handleWidth)
   else COMMAND("xb", bk_handleXb)
-  else if (tok[strlen(tok)-1] == ':') {
+  else if (tok[bk_strlen(tok)-1] == ':') {
     if (scripton) {
-      tok[strlen(tok)-1] = 0; // shorten to just the name
+      tok[bk_strlen(tok)-1] = 0; // shorten to just the name
       bk_labels_add(tok, lineno);
     } else {
       tputs_rom("error, label only supported in script\n");
@@ -96,14 +96,14 @@ void handleCommand(char *buffer) {
 int parsePath(char* path, char* devicename) {
   char workbuf[14];
   int crubase = 0;
-  strncpy(workbuf, path, 13);
+  bk_strncpy(workbuf, path, 13);
   char* tok = bk_strtok(workbuf, '.');
-  if (tok != 0 && tok[0] == '1' && strlen(tok) == 4) {
-    crubase = htoi(tok);
+  if (tok != 0 && tok[0] == '1' && bk_strlen(tok) == 4) {
+    crubase = bk_htoi(tok);
     tok = bk_strtok(0, '.');
-    strncpy(devicename, tok, 8);
+    bk_strncpy(devicename, tok, 8);
   } else {
-    strncpy(devicename, tok, 8);
+    bk_strncpy(devicename, tok, 8);
   }
   return crubase;
 }
@@ -123,13 +123,13 @@ void parsePathParam(struct DeviceServiceRoutine** dsr, char* buffer, int require
   } else {
     char devicename[8];
     if (0 == bk_strcmp(str2ram(".."), path)) {
-      int ldot = bk_lindexof(currentPath, '.', strlen(currentPath) - 2);
+      int ldot = bk_lindexof(currentPath, '.', bk_strlen(currentPath) - 2);
       if (ldot == -1) {
         *dsr = 0;
         tputs_rom("No parent folder\n");
         return;
       }
-      strncpy(buffer, currentPath, ldot);
+      bk_strncpy(buffer, currentPath, ldot);
       return;
     } else {
       int crubase = parsePath(path, devicename);
@@ -137,7 +137,7 @@ void parsePathParam(struct DeviceServiceRoutine** dsr, char* buffer, int require
       if (*dsr == 0) {
         // not a base device, so try subdir
         strcpy(buffer, currentPath);
-        strcat(buffer, path);
+        bk_strcat(buffer, path);
         parsePath(buffer, devicename);
         *dsr = bk_findDsr(devicename, currentDsr->crubase);
         // if still not found, then give up.
@@ -160,7 +160,7 @@ void parsePathParam(struct DeviceServiceRoutine** dsr, char* buffer, int require
   }
   // separate path and filter if wildcards are supported.
   if (requirements & PR_WILDCARD) {
-    int len = strlen(buffer);
+    int len = bk_strlen(buffer);
     int dotidx = bk_lindexof(buffer, '.', len);
 
     strcpy(filterglob, buffer+dotidx+1);
@@ -176,7 +176,7 @@ int globMatches(char* filename) {
 
   int prelen = indexof(filterglob, '*');
   char prefix[12];
-  strncpy(prefix, filterglob, prelen);
+  bk_strncpy(prefix, filterglob, prelen);
 
   char suffix[12];
   strcpy(suffix, filterglob+prelen+1);

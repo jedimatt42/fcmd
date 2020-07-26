@@ -39,7 +39,7 @@ static int getVolume(int drive, char* volumeName) {
     strcpy(path, "DSKx");
     path[3] = drive + '0';
     struct DeviceServiceRoutine *dsr = bk_findDsr(path, CFNANO_CRUBASE);
-    strcat(path, ".");
+    bk_strcat(path, str2ram("."));
 
     struct VolInfo volInfo;
     // basically just read the first record from the catalog.
@@ -61,7 +61,7 @@ static int getVolume(int drive, char* volumeName) {
             volInfo.total = j;
             volInfo.available = k;
             if (j == 1598) {
-                strncpy(volumeName, volInfo.volname, 10);
+                bk_strncpy(volumeName, volInfo.volname, 10);
                 result = 1;
             }
         }
@@ -121,7 +121,7 @@ static void call_mount(int drive, int volume) {
     // 0x8356 <- FBUF + 6
     PADDR = FBUF;
     PARAMS = FBUF+6;
-    strncpy((char*)FACADDR, "MOUNT", 5);
+    bk_strncpy((char*)FACADDR, "MOUNT", 5);
 
     // build FBUF up
     unsigned char command[30];
@@ -136,7 +136,7 @@ static void call_mount(int drive, int volume) {
     command[i++] = 0xB3;
     command[i++] = 0xC8;
     char* vol = int2str(volume);
-    command[i++] = strlen(vol);
+    command[i++] = bk_strlen(vol);
     strcpy(command+(i++), vol);
     vdpmemcpy(FBUF, command, 30);
 

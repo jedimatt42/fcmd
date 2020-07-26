@@ -21,7 +21,7 @@ void handleFg99() {
     return;
   }
 
-  if (strlen(cart) > 8) {
+  if (bk_strlen(cart) > 8) {
     tputs_rom("error, name too long\n");
     return;
   }

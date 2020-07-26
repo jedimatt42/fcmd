@@ -62,9 +62,9 @@ void handleXb() {
     } else {
         unsigned char line[81];
         strcpy(line, "10 RUN \"");
-        strncpy(line+8, path, 72);
-        strcpy(line+8+strlen(path), "\"");
-        bk_dsr_write(dsr, &pab, line, strlen(line));
+        bk_strncpy(line+8, path, 72);
+        strcpy(line+8+bk_strlen(path), "\"");
+        bk_dsr_write(dsr, &pab, line, bk_strlen(line));
     }
     bk_dsr_close(dsr, &pab);
 

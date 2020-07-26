@@ -62,11 +62,11 @@ void handleCopy() {
   }
 
   // ensure devices are a device path
-  if (srcpath[strlen(srcpath)-1] != '.') {
-    strcat(srcpath, ".");
+  if (srcpath[bk_strlen(srcpath)-1] != '.') {
+    bk_strcat(srcpath, str2ram("."));
   }
-  if (dstpath[strlen(dstpath) - 1] != '.') {
-    strcat(dstpath, ".");
+  if (dstpath[bk_strlen(dstpath) - 1] != '.') {
+    bk_strcat(dstpath, str2ram("."));
   }
 
   unsigned int stat = existsDir(dstdsr, dstpath);

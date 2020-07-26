@@ -67,7 +67,7 @@ void main()
 
   char autocmd[13];
   strcpy(autocmd, currentPath);
-  strcat(autocmd, "AUTOCMD");
+  bk_strcat(autocmd, str2ram("AUTOCMD"));
   struct DeviceServiceRoutine* autodsr = currentDsr;
   int ranauto = runScript(autodsr, autocmd);
 
@@ -81,7 +81,7 @@ void main()
 
   while(1) {
     VDP_INT_POLL;
-    strset(commandbuf, 0, 255);
+    bk_strset(commandbuf, 0, 255);
     bk_tputc('[');
     bk_tputs_ram(uint2hex(currentDsr->crubase));
     bk_tputc('.');
@@ -110,7 +110,7 @@ int runScript(struct DeviceServiceRoutine* dsr, char* scriptName) {
     ran = 1;
     while(!ferr) {
       VDP_INT_POLL;
-      strset(commandbuf, 0, 255);
+      bk_strset(commandbuf, 0, 255);
       ferr = bk_dsr_read(dsr, &pab, 0);
       char k = bk_kscan(5);
       if (k == 131 || k == 2) { // control-c or alt-4
@@ -119,7 +119,7 @@ int runScript(struct DeviceServiceRoutine* dsr, char* scriptName) {
       if (!ferr) {
         lineno++;
         vdpmemread(pab.VDPBuffer, commandbuf, pab.CharCount);
-        int l = strlen(commandbuf);
+        int l = bk_strlen(commandbuf);
         // TI-Writer adds \r to lines, so erase those automatically if at end of line.
         if (commandbuf[l-1] == 13) {
           commandbuf[l-1] = 0;

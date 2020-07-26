@@ -36,7 +36,7 @@ unsigned int path2unitmask(char *dirpath)
 {
   unsigned int operationSet = 0x0010;
   char drive[9];
-  strncpy(drive, dirpath, 8);
+  bk_strncpy(drive, dirpath, 8);
   int l = bk_indexof(drive, '.');
   drive[l] = 0;
   if (bk_str_equals(str2ram("TIPI"), drive)) {
@@ -67,7 +67,7 @@ unsigned int lvl2_protect(int crubase, unsigned int unit, char* filename, int pr
 }
 
 unsigned int lvl2_setdir(int crubase, unsigned int unit, char* path) {
-  int len = strlen(path);
+  int len = bk_strlen(path);
   if (len > 39) {
     return 0xFE;
   }
@@ -110,7 +110,7 @@ unsigned int lvl2_output(int crubase, unsigned int unit, char* filename, unsigne
 
 unsigned char direct_io(int crubase, unsigned int unit, char operation, char* filename, unsigned char blockcount, struct AddInfo* addInfoPtr) {
   LVL2_PARAMADDR1 = FBUF;
-  strpad(filename, 10, ' ');
+  bk_strpad(filename, 10, ' ');
   vdpmemcpy(FBUF, filename, 10);
 
   LVL2_UNIT = UNITNO(unit);
@@ -130,14 +130,14 @@ unsigned char __attribute__((noinline)) base_lvl2(int crubase, unsigned int unit
   LVL2_PROTECT = param0;
   LVL2_PARAMADDR1 = FBUF;
 
-  strpad(name1, 10, ' ');
+  bk_strpad(name1, 10, ' ');
   vdpmemcpy(LVL2_PARAMADDR1, name1, 10);
 
   if (name2 == 0) {
     LVL2_STATUS = 0;
   } else {
     LVL2_PARAMADDR2 = FBUF + 10;
-    strpad(name2, 10, ' ');
+    bk_strpad(name2, 10, ' ');
     vdpmemcpy(LVL2_PARAMADDR2, name2, 10);
   }
 
@@ -158,7 +158,7 @@ void call_basic_sub(int crubase, char *subroutine) {
     int elen = entry->name[0];
     char* entryname = entry->name + 1;
     char ebuf[8];
-    strncpy(ebuf, entryname, elen);
+    bk_strncpy(ebuf, entryname, elen);
 
     if (0 == strcmp(ebuf, subroutine)) {
       addr = entry->routine;

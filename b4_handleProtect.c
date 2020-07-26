@@ -31,9 +31,9 @@ static void doProtect(char mode) {
 
   unsigned int unit = path2unitmask(path);
 
-  int parent_idx = bk_lindexof(path, '.', strlen(path) - 1);
+  int parent_idx = bk_lindexof(path, '.', bk_strlen(path) - 1);
   char filename[11];
-  strncpy(filename, path + parent_idx + 1, 10);
+  bk_strncpy(filename, path + parent_idx + 1, 10);
   path[parent_idx + 1] = 0x00;
 
   lvl2_setdir(dsr->crubase, unit, path);

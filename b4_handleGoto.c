@@ -32,11 +32,11 @@ void handleGoto() {
       int ferr = bk_dsr_read(scriptDsr, scriptPab, 0);
       if (!ferr) {
         lineno++;
-        strset(commandbuf, 0, 255);
+        bk_strset(commandbuf, 0, 255);
         vdpmemread(scriptPab->VDPBuffer, commandbuf, scriptPab->CharCount);
         char* tok = bk_strtok(commandbuf, ' ');
-        if (tok[strlen(tok)-1] == ':') {
-          tok[strlen(tok)-1] = 0; // shorten to just the name
+        if (tok[bk_strlen(tok)-1] == ':') {
+          tok[bk_strlen(tok)-1] = 0; // shorten to just the name
           bk_labels_add(tok, lineno);
         }
       }

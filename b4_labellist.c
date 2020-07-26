@@ -28,7 +28,7 @@ int labels_get(char* name) {
 }
 
 void labels_add(char* name, int gotoline) {
-  if (strlen(name) > 10) {
+  if (bk_strlen(name) > 10) {
     tputs_rom("Error, label name too long, limit is 10\n");
     return;
   }

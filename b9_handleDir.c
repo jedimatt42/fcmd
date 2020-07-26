@@ -41,8 +41,8 @@ void handleDir() {
     tputs_rom("error, no device found.\n");
     return;
   }
-  if (path[strlen(path)-1] != '.') {
-    strcat(path, ".");
+  if (path[bk_strlen(path)-1] != '.') {
+    bk_strcat(path, str2ram("."));
   }
 
   unsigned int stat = existsDir(dsr, path);

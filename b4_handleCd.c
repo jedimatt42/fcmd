@@ -16,8 +16,8 @@ void handleCd() {
     tputs_rom("no path: drive or folder specified\n");
     return;
   }
-  if (path[strlen(path)-1] != '.') {
-    strcat(path, ".");
+  if (path[bk_strlen(path)-1] != '.') {
+    bk_strcat(path, str2ram("."));
   }
   unsigned int stat = bk_existsDir(dsr, path);
   if (stat != 0) {

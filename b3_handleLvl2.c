@@ -9,7 +9,7 @@
 
 void handleLvl2() {
   char* tok = bk_strtok(0, ' ');
-  int crubase = htoi(tok);
+  int crubase = bk_htoi(tok);
 
   if (crubase == 0) {
     tputs_rom("no crubase specified\n");

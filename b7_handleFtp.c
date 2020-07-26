@@ -66,7 +66,7 @@ void handleFtp() {
   char commandbuf[120];
   while(1) {
     tputs("ftp> ");
-    strset(commandbuf, 0, 120);
+    bk_strset(commandbuf, 0, 120);
     bk_getstr(5, conio_y, commandbuf, displayWidth - 3, backspace);
     bk_tputc('\n');
     bk_enable_more();
@@ -144,7 +144,7 @@ void ftpOpen() {
   while(code != 230) {
     while(code != 331) {
       char login[20];
-      strset(login, 0, 20);
+      bk_strset(login, 0, 20);
       tputs("login: ");
       bk_getstr(7, conio_y, login, 20, backspace);
       bk_tputc('\n');
@@ -153,11 +153,11 @@ void ftpOpen() {
 
     while(!(code == 230 || code == 530)) {
       char passwd[20];
-      strset(passwd, 0, 20);
+      bk_strset(passwd, 0, 20);
       tputs("password: ");
       int y = conio_y;
       bk_getstr(10, y, passwd, 20, backspace);
-      int plen = strlen(passwd);
+      int plen = bk_strlen(passwd);
 
       for(int i=0; i<plen; i++) {
         bk_tputc(8); // backspace
@@ -227,7 +227,7 @@ void ftpGet() {
     return;
   }
   char safetiname[12];
-  strset(safetiname, 0, 12);
+  bk_strset(safetiname, 0, 12);
   char* tiname = bk_strtok(0, ' ');
   if (!tiname) {
     for(int i=0; i<10;i++) {
@@ -302,7 +302,7 @@ void ftpGet() {
       }
       char fullfilename[256];
       strcpy(fullfilename, currentPath);
-      strcat(fullfilename, tiname);
+      bk_strcat(fullfilename, tiname);
 
       struct PAB pab;
       int ferr = bk_dsr_open(currentDsr, &pab, fullfilename, DSR_TYPE_DISPLAY | DSR_TYPE_FIXED | DSR_TYPE_OUTPUT | DSR_TYPE_SEQUENTIAL, 128);
@@ -338,11 +338,11 @@ int sendFtpCommand(char* command, char* argstring) {
   char ftpcmd[80];
   strcpy(ftpcmd, command);
   if (argstring != 0) {
-    strcat(ftpcmd, " ");
-    strcat(ftpcmd, argstring);
+    bk_strcat(ftpcmd, str2ram(" "));
+    bk_strcat(ftpcmd, argstring);
   }
-  strcat(ftpcmd, EOL);
-  int len = strlen(ftpcmd);
+  bk_strcat(ftpcmd, str2ram(EOL));
+  int len = bk_strlen(ftpcmd);
   int res = tcp_send_chars(0, ftpcmd, len);
   if (!res) {
     tputs("Error, server disconnected\n");
@@ -360,8 +360,8 @@ unsigned int sendFtpPasv() {
   */
   char ftpcmd[8];
   strcpy(ftpcmd, "PASV");
-  strcat(ftpcmd, EOL);
-  int len = strlen(ftpcmd);
+  bk_strcat(ftpcmd, str2ram(EOL));
+  int len = bk_strlen(ftpcmd);
   int res = tcp_send_chars(0, ftpcmd, len);
   if (!res) {
     tputs("Error, server disconnected\n");
@@ -386,7 +386,7 @@ unsigned int sendFtpPasv() {
 }
 
 char* readline(unsigned char socketId) {
-  strset(commandresponse, 0, 100);
+  bk_strset(commandresponse, 0, 100);
   linebufload = 0;
   crlfstate = 0;
   while (tcpbufavail == 0) {
@@ -411,7 +411,7 @@ char* readline(unsigned char socketId) {
 }
 
 int readstream(unsigned char socketId, int limit) {
-  strset(block, 0, 256);
+  bk_strset(block, 0, 256);
   blockload = 0;
   int retries = 0;
 

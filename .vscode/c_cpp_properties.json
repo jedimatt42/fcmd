@@ -3,8 +3,7 @@
         {
             "name": "ti994a",
             "includePath": [
-                "${workspaceFolder}/**",
-                "/home/matthew/dev/github/jedimatt42/libti99"
+                "${workspaceFolder}/**"
             ],
             "defines": [
                 "BANK_STACK_SIZE=10"

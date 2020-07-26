@@ -29,7 +29,7 @@ void getstr(int x, int y, char* var, int limit, int backspace) {
   cputs(var);
 
   unsigned char key = 0;
-  int idx = strlen(var);
+  int idx = bk_strlen(var);
   while(key != 13) {
     gotoxy(x+idx,y);
     key = mycgetc(cursor);
@@ -51,8 +51,8 @@ void getstr(int x, int y, char* var, int limit, int backspace) {
           }
         break;
       case 7: // F3 - erase line
-        idx = strlen(var);
-        strset(var, 0, limit);
+        idx = bk_strlen(var);
+        bk_strset(var, 0, limit);
         cclearxy(x, y, idx);
         gotoxy(x,y);
         idx = 0;
@@ -86,7 +86,7 @@ void getstr(int x, int y, char* var, int limit, int backspace) {
       default: // alpha numeric
         if (key >= 32 && key <= 122) {
           if (insertMode) {
-            int end = strlen(var);
+            int end = bk_strlen(var);
             if (end != limit) {
               for(int i=end; i>idx; i--) {
                 var[i] = var[i-1];

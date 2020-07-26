@@ -25,7 +25,7 @@ unsigned int mds_lvl3_dsrlnk(int crubase, struct PAB *pab, unsigned int vdp) {
 	vdpmemcpy(vdp, (const unsigned char*)pab, 9);
 	// assumes vdpmemcpy leaves the VDP address in the right place!
 	if (pab->NameLength == 0) {
-		x = strlen(pab->pName);
+		x = bk_strlen(pab->pName);
 	} else {
 		x= pab->NameLength;
 	}

@@ -19,11 +19,11 @@ unsigned int tcp_connect(unsigned int socketId, unsigned char* hostname, unsigne
   tcpbuf[2] = TI_SOCKET_OPEN;
   unsigned char* cursor = tcpbuf + 3;
   strcpy(cursor, hostname);
-  cursor += strlen(hostname);
+  cursor += bk_strlen(hostname);
   *cursor = ':';
   cursor++;
   strcpy(cursor, port);
-  cursor += strlen(port);
+  cursor += bk_strlen(port);
   int bufsize = cursor - tcpbuf;
 
   tipi_on();

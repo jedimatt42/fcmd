@@ -30,68 +30,6 @@ unsigned int existsFile(struct DeviceServiceRoutine* dsr, const char* pathname) 
   return dsr_status(dsr, &pab) != 0x0080;
 }
 
-unsigned char loadDir(struct DeviceServiceRoutine* dsr, const char* pathname, vol_entry_cb vol_cb, dir_entry_cb dir_cb) {
-  struct PAB pab;
-
-  struct VolInfo volInfo;
-  struct DirEntry dirEntry;
-
-  // specifying record length is not recommended (by TI)
-  // CATALOG file must be INPUT | INTERNAL | RELATIVE
-  unsigned int ferr = dsr_open(dsr, &pab, pathname, DSR_TYPE_INPUT | DSR_TYPE_DISPLAY | DSR_TYPE_FIXED | DSR_TYPE_INTERNAL | DSR_TYPE_RELATIVE, 0);
-  if (ferr) {
-    return ferr;
-  }
-
-  int recNo = 0;
-  ferr = DSR_ERR_NONE;
-  while(ferr == DSR_ERR_NONE) {
-    unsigned char cbuf[150];
-    ferr = dsr_read(dsr, &pab, recNo);
-    if (ferr == DSR_ERR_NONE) {
-      // Now FBUF has the data...
-      vdpmemread(FBUF, cbuf, pab.CharCount);
-      // process Record
-      if (recNo == 0) {
-        int namlen = bk_basicToCstr(cbuf, volInfo.volname);
-        if (namlen == 0) {
-          tputs_rom("no device\n");
-          break;
-        }
-        int a = ti_floatToInt(cbuf+1+namlen);
-        int j = ti_floatToInt(cbuf+10+namlen);
-        int k = ti_floatToInt(cbuf+19+namlen);
-        volInfo.total = j;
-        volInfo.available = k;
-        vol_cb(&volInfo);
-      } else {
-        int namlen = bk_basicToCstr(cbuf, dirEntry.name);
-        if (namlen == 0) {
-          break;
-        }
-        int a = ti_floatToInt(cbuf+1+namlen);
-        int j = ti_floatToInt(cbuf+10+namlen);
-        int k = ti_floatToInt(cbuf+19+namlen);
-        dirEntry.type = a;
-        dirEntry.sectors = j;
-        dirEntry.reclen = k;
-        if (dirEntry.name[0] != 0) {
-          dir_cb(&dirEntry);
-        }
-      }
-      recNo++;
-    } else {
-      break;
-    }
-  }
-
-  ferr = dsr_close(dsr, &pab);
-  if (ferr) {
-    return ferr;
-  }
-}
-
-
 //---- the following are meant to be easy, not fast ----
 
 void initPab(struct PAB* pab) {
@@ -205,7 +143,7 @@ void loadDriveDSRs() {
 
   currentDsr = dsrList;
   strcpy(currentPath, currentDsr->name);
-  strcat(currentPath, ".");
+  bk_strcat(currentPath, str2ram("."));
 }
 
 int isDrive(char* basicstr) {
