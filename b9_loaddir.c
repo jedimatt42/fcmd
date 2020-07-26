@@ -19,7 +19,7 @@ unsigned char loadDir(struct DeviceServiceRoutine* dsr, const char* pathname, vo
 
   // specifying record length is not recommended (by TI)
   // CATALOG file must be INPUT | INTERNAL | RELATIVE
-  unsigned int ferr = dsr_open(dsr, &pab, pathname, DSR_TYPE_INPUT | DSR_TYPE_DISPLAY | DSR_TYPE_FIXED | DSR_TYPE_INTERNAL | DSR_TYPE_RELATIVE, 0);
+  unsigned int ferr = bk_dsr_open(dsr, &pab, pathname, DSR_TYPE_INPUT | DSR_TYPE_DISPLAY | DSR_TYPE_FIXED | DSR_TYPE_INTERNAL | DSR_TYPE_RELATIVE, 0);
   if (ferr) {
     return ferr;
   }
@@ -28,7 +28,7 @@ unsigned char loadDir(struct DeviceServiceRoutine* dsr, const char* pathname, vo
   ferr = DSR_ERR_NONE;
   while(ferr == DSR_ERR_NONE) {
     unsigned char cbuf[150];
-    ferr = dsr_read(dsr, &pab, recNo);
+    ferr = bk_dsr_read(dsr, &pab, recNo);
     if (ferr == DSR_ERR_NONE) {
       // Now FBUF has the data...
       vdpmemread(FBUF, cbuf, pab.CharCount);
@@ -39,9 +39,9 @@ unsigned char loadDir(struct DeviceServiceRoutine* dsr, const char* pathname, vo
           tputs_rom("no device\n");
           break;
         }
-        int a = ti_floatToInt(cbuf+1+namlen);
-        int j = ti_floatToInt(cbuf+10+namlen);
-        int k = ti_floatToInt(cbuf+19+namlen);
+        int a = bk_ti_floatToInt(cbuf+1+namlen);
+        int j = bk_ti_floatToInt(cbuf+10+namlen);
+        int k = bk_ti_floatToInt(cbuf+19+namlen);
         volInfo.total = j;
         volInfo.available = k;
         vol_cb(&volInfo);
@@ -50,9 +50,9 @@ unsigned char loadDir(struct DeviceServiceRoutine* dsr, const char* pathname, vo
         if (namlen == 0) {
           break;
         }
-        int a = ti_floatToInt(cbuf+1+namlen);
-        int j = ti_floatToInt(cbuf+10+namlen);
-        int k = ti_floatToInt(cbuf+19+namlen);
+        int a = bk_ti_floatToInt(cbuf+1+namlen);
+        int j = bk_ti_floatToInt(cbuf+10+namlen);
+        int k = bk_ti_floatToInt(cbuf+19+namlen);
         dirEntry.type = a;
         dirEntry.sectors = j;
         dirEntry.reclen = k;
@@ -66,7 +66,7 @@ unsigned char loadDir(struct DeviceServiceRoutine* dsr, const char* pathname, vo
     }
   }
 
-  ferr = dsr_close(dsr, &pab);
+  ferr = bk_dsr_close(dsr, &pab);
   if (ferr) {
     return ferr;
   }

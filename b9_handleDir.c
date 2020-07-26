@@ -1,5 +1,5 @@
 #include "banks.h"
-#define MYBANK BANK(2)
+#define MYBANK BANK(9)
 
 #include "commands.h"
 
@@ -45,7 +45,7 @@ void handleDir() {
     bk_strcat(path, str2ram("."));
   }
 
-  unsigned int stat = existsDir(dsr, path);
+  unsigned int stat = bk_existsDir(dsr, path);
   if (stat != 0) {
     tputs_rom("error, device/folder not found: ");
     bk_tputs_ram(path);
@@ -72,9 +72,9 @@ void onLongVolInfo(struct VolInfo* volInfo) {
     bk_tputc(' ');
   }
   tputs_rom("Used: ");
-  bk_tputs_ram(uint2str(volInfo->total - volInfo->available));
+  bk_tputs_ram(bk_uint2str(volInfo->total - volInfo->available));
   tputs_rom(" Available: ");
-  bk_tputs_ram(uint2str(volInfo->available));
+  bk_tputs_ram(bk_uint2str(volInfo->available));
   tputs_rom("\n\n");
   tputs_rom("Name       Type    P Reclen Sectors\n");
   tputs_rom("-----------------------------------\n");
@@ -130,7 +130,7 @@ void onLongDirEntry(struct DirEntry* dirEntry) {
   if (de_type >= 5) { // is program or dir? skip record details.
     cputpad(7, "");
   } else {
-    char* sizestr = uint2str(dirEntry->reclen);
+    char* sizestr = bk_uint2str(dirEntry->reclen);
     bk_tputs_ram(sizestr);
     cputpad(7, sizestr);
   }

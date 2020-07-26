@@ -1,5 +1,5 @@
 #include "banks.h"
-#define MYBANK BANK(2)
+#define MYBANK BANK(9)
 
 #include "commands.h"
 #include "b0_globals.h"
@@ -69,7 +69,7 @@ void handleCopy() {
     bk_strcat(dstpath, str2ram("."));
   }
 
-  unsigned int stat = existsDir(dstdsr, dstpath);
+  unsigned int stat = bk_existsDir(dstdsr, dstpath);
   if (stat != 0) {
     tputs_rom("error, device/folder not found: ");
     bk_tputs_ram(dstpath);
@@ -118,11 +118,11 @@ void onCopyDirEntry(struct DirEntry *dirEntry) {
   unsigned int dest_unit = path2unitmask(dstpath);
 
   // get file meta data
-  lvl2_setdir(source_crubase, source_unit, srcpath);
-  unsigned int err = lvl2_input(source_crubase, source_unit, dirEntry->name, 0, addInfoPtr);
+  bk_lvl2_setdir(source_crubase, source_unit, srcpath);
+  unsigned int err = bk_lvl2_input(source_crubase, source_unit, dirEntry->name, 0, addInfoPtr);
   if (err) {
     tputs_rom("error reading file: ");
-    bk_tputs_ram(uint2hex(err));
+    bk_tputs_ram(bk_uint2hex(err));
     bk_tputc('\n');
     return;
   }
@@ -134,11 +134,11 @@ void onCopyDirEntry(struct DirEntry *dirEntry) {
   }
 
   // write file meta data
-  lvl2_setdir(dest_crubase, dest_unit, dstpath);
-  err = lvl2_output(dest_crubase, dest_unit, dirEntry->name, 0, addInfoPtr);
+  bk_lvl2_setdir(dest_crubase, dest_unit, dstpath);
+  err = bk_lvl2_output(dest_crubase, dest_unit, dirEntry->name, 0, addInfoPtr);
   if (err) {
     tputs_rom("error writing file: ");
-    bk_tputs_ram(uint2hex(err));
+    bk_tputs_ram(bk_uint2hex(err));
     bk_tputc('\n');
     return;
   }
@@ -149,21 +149,21 @@ void onCopyDirEntry(struct DirEntry *dirEntry) {
     addInfoPtr->first_sector = blockId;
 
     // read a block
-    lvl2_setdir(source_crubase, source_unit, srcpath);
-    err = lvl2_input(source_crubase, source_unit, dirEntry->name, 1, addInfoPtr);
+    bk_lvl2_setdir(source_crubase, source_unit, srcpath);
+    err = bk_lvl2_input(source_crubase, source_unit, dirEntry->name, 1, addInfoPtr);
     if (err) {
       tputs_rom("\nerror reading file: ");
-      bk_tputs_ram(uint2hex(err));
+      bk_tputs_ram(bk_uint2hex(err));
       bk_tputc('\n');
       return;
     }
 
     // write it back out
-    lvl2_setdir(dest_crubase, dest_unit, dstpath);
-    err = lvl2_output(dest_crubase, dest_unit, dirEntry->name, 1, addInfoPtr);
+    bk_lvl2_setdir(dest_crubase, dest_unit, dstpath);
+    err = bk_lvl2_output(dest_crubase, dest_unit, dirEntry->name, 1, addInfoPtr);
     if (err) {
       tputs_rom("\nerror writing file: ");
-      bk_tputs_ram(uint2hex(err));
+      bk_tputs_ram(bk_uint2hex(err));
       bk_tputc('\n');
       return;
     }
