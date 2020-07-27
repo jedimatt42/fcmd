@@ -26,7 +26,7 @@ void handleFg99() {
     return;
   }
 
-  strcpy(&fg99_msg, cart);
+  bk_strcpy(&fg99_msg, cart);
 
   bk_setupScreen(0);
   fg99();

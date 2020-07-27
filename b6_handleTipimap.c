@@ -22,13 +22,13 @@ static void writeConfigItem(const char* key, const char* value);
 
 static void visitLines(line_cb onLine, char* filterArg1) {
   char namebuf[14];
-  strcpy(namebuf, "PI");
+  bk_strcpy(namebuf, "PI");
 
   struct DeviceServiceRoutine* dsr = bk_findDsr(namebuf, 0);
 
   struct PAB pab;
 
-  strcpy(namebuf, "PI.CONFIG");
+  bk_strcpy(namebuf, "PI.CONFIG");
 
   int err = bk_dsr_open(dsr, &pab, namebuf, DSR_TYPE_INPUT | DSR_TYPE_DISPLAY | DSR_TYPE_VARIABLE | DSR_TYPE_SEQUENTIAL, 0);
 
@@ -52,13 +52,13 @@ static void visitLines(line_cb onLine, char* filterArg1) {
 
 static void writeConfigItem(const char* key, const char* value) {
   char namebuf[14];
-  strcpy(namebuf, "PI");
+  bk_strcpy(namebuf, "PI");
 
   struct DeviceServiceRoutine* dsr = bk_findDsr(namebuf, 0);
 
   struct PAB pab;
 
-  strcpy(namebuf, "PI.CONFIG");
+  bk_strcpy(namebuf, "PI.CONFIG");
 
   int err = bk_dsr_open(dsr, &pab, namebuf, DSR_TYPE_APPEND | DSR_TYPE_VARIABLE, 0);
 
@@ -69,7 +69,7 @@ static void writeConfigItem(const char* key, const char* value) {
   bk_initPab(&pab);
 
   char linebuf[250];
-  strcpy(linebuf, key);
+  bk_strcpy(linebuf, key);
   bk_strcat(linebuf, str2ram("="));
   bk_strcat(linebuf, (char*) value);
   err = bk_dsr_write(dsr, &pab, linebuf, bk_strlen(linebuf));
@@ -142,11 +142,11 @@ static void showDriveMapping(const char* drive) {
 static void clearDriveMapping(const char* drive) {
   char keybuf[10];
   if (bk_str_startswith(drive, str2ram("URI"))) {
-    strcpy(keybuf, drive);
+    bk_strcpy(keybuf, drive);
     keybuf[4] = 0;
   } else {
-    strcpy(keybuf, drive);
-    strcpy(keybuf+4, "_DIR");
+    bk_strcpy(keybuf, drive);
+    bk_strcpy(keybuf+4, "_DIR");
   }
 
   char empty[1];
@@ -208,7 +208,7 @@ static void setDriveMapping(const char* drive, const char* path) {
 
   int diskmapping = 0;
   if (bk_str_startswith(keybuf, str2ram("DSK"))) {
-    strcpy(keybuf+4, "_DIR");
+    bk_strcpy(keybuf+4, "_DIR");
     diskmapping = 1;
   } else if (bk_str_startswith(keybuf, str2ram("URI"))) {
     keybuf[4] = 0;
@@ -217,22 +217,22 @@ static void setDriveMapping(const char* drive, const char* path) {
   char namebuf[256];
 
   if (diskmapping) {
-    strcpy(namebuf, "TIPI");
+    bk_strcpy(namebuf, "TIPI");
     struct DeviceServiceRoutine* dsr = bk_findDsr(namebuf, 0);
     bk_strcat(namebuf, str2ram("."));
     if (bk_str_equals((char*) path, str2ram("TIPI.")) || bk_str_equals((char*) path, str2ram("."))) {
-      strcpy(namebuf, ".");
+      bk_strcpy(namebuf, ".");
     } else if (bk_str_startswith(path, str2ram("TIPI."))) {
-      strcpy(namebuf, path+5);
+      bk_strcpy(namebuf, path+5);
     } else {
-      strcpy(namebuf, path);
+      bk_strcpy(namebuf, path);
     }
   } else {
     if (!bk_str_startswith(path, str2ram("HTTP"))) {
       tputs_rom("error path must be a URL prefix\n");
       return;
     }
-    strcpy(namebuf, path);
+    bk_strcpy(namebuf, path);
   }
   writeConfigItem(keybuf, namebuf);
 }

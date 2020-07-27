@@ -75,7 +75,7 @@ char* preprocess(char* buf) {
       }
       char* val = vars_get(varname);
       if ((int) val != -1) {
-        strcpy(&procbuf[pi], val);
+        bk_strcpy(&procbuf[pi], val);
         i = ve - 1;
         pi += bk_strlen(val) - 1;
       } else {

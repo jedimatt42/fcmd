@@ -24,7 +24,7 @@ void handleRename() {
   unsigned int unit = bk_path2unitmask(currentPath);
 
   char path[256];
-  strcpy(path, currentPath);
+  bk_strcpy(path, currentPath);
   bk_strcat(path, filename);
 
   unsigned int stat = bk_existsDir(currentDsr, path);

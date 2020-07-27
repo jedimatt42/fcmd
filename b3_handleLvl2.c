@@ -25,7 +25,7 @@ void handleLvl2() {
       tputs_rom(" >");
       register unsigned int opname = 0;
       opname = link->name[1];
-      bk_tputs_ram(uint2hex(opname)+2);
+      bk_tputs_ram(bk_uint2hex(opname)+2);
     }
     link = link->next;
   }

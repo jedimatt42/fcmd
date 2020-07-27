@@ -29,13 +29,13 @@ void handleXb() {
 
     // MAP DSK1 to TIPI.FC
     char namebuf[14];
-    strcpy(namebuf, "PI");
+    bk_strcpy(namebuf, "PI");
 
     struct DeviceServiceRoutine *dsr = bk_findDsr(namebuf, 0);
 
     struct PAB pab;
 
-    strcpy(namebuf, "PI.CONFIG");
+    bk_strcpy(namebuf, "PI.CONFIG");
 
     int err = bk_dsr_open(dsr, &pab, namebuf, DSR_TYPE_APPEND | DSR_TYPE_VARIABLE, 0);
 
@@ -44,45 +44,45 @@ void handleXb() {
         return;
     } else {
         unsigned char mapstring[12];
-        strcpy(mapstring, "DSK1_DIR=FC");
+        bk_strcpy(mapstring, "DSK1_DIR=FC");
         bk_dsr_write(dsr, &pab, mapstring, 11);
     }
     bk_dsr_close(dsr, &pab);
 
     // Write an XB program to TIPI.FC.FC/XB that contains:
     //   RUN "path-to-program argument"
-    strcpy(namebuf, "TIPI");
+    bk_strcpy(namebuf, "TIPI");
     dsr = bk_findDsr(namebuf, 0);
     bk_initPab(&pab);
-    strcpy(namebuf, "TIPI.FC.FC/XB");
+    bk_strcpy(namebuf, "TIPI.FC.FC/XB");
     err = bk_dsr_open(dsr, &pab, namebuf, DSR_TYPE_OUTPUT | DSR_TYPE_VARIABLE, 80);
     if (err) {
         tputs_rom("failed to configure XB\n");
         return;
     } else {
         unsigned char line[81];
-        strcpy(line, "10 RUN \"");
+        bk_strcpy(line, "10 RUN \"");
         bk_strncpy(line+8, path, 72);
-        strcpy(line+8+bk_strlen(path), "\"");
+        bk_strcpy(line+8+bk_strlen(path), "\"");
         bk_dsr_write(dsr, &pab, line, bk_strlen(line));
     }
     bk_dsr_close(dsr, &pab);
 
     // Launch XB
-    strcpy(namebuf, "XBMOD");
+    bk_strcpy(namebuf, "XBMOD");
     char* xb_module = bk_vars_get(namebuf);
     if (-1 == (int)xb_module) {
-        strcpy(&fg99_msg, "TIXB_G");
+        bk_strcpy(&fg99_msg, "TIXB_G");
     } else {
-        strcpy(&fg99_msg, xb_module);
+        bk_strcpy(&fg99_msg, xb_module);
     }
     // 0x6372 - grom start address of standard TI XB version 110
-    strcpy(namebuf, "XBADDR");
+    bk_strcpy(namebuf, "XBADDR");
     char* xb_addr = bk_vars_get(namebuf);
     if (-1 == (int)xb_addr) {
         fg99_addr = (unsigned int)0x6372;
     } else {
-        fg99_addr = (unsigned int)atoi(xb_addr);
+        fg99_addr = (unsigned int)bk_atoi(xb_addr);
     }
 
     bk_setupScreen(0);

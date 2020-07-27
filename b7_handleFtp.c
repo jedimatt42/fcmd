@@ -117,12 +117,12 @@ void ftpOpen() {
     tputs("Error, no host provided.\n");
     return;
   }
-  strcpy(hostname, host); // store for pasv connections later.
+  bk_strcpy(hostname, host); // store for pasv connections later.
   char* port = bk_strtok(0, ' ');
   if (!port) {
     port = "21";
   } else {
-    int pint = atoi(port);
+    int pint = bk_atoi(port);
     if (!pint) {
       tputs("Error, bad port specified.\n");
       return;
@@ -202,7 +202,7 @@ void ftpDir() {
   unsigned int port = sendFtpPasv();
   // connect second socket to provided port number.
   for(volatile int delay=0; delay<7000; delay++) { /* a moment for server to listen */ }
-  int res = tcp_connect(1, hostname, uint2str(port));
+  int res = tcp_connect(1, hostname, bk_uint2str(port));
   if (res) {
     if (nlist) {
       sendFtpCommand("NLST", tok);
@@ -215,7 +215,7 @@ void ftpDir() {
   char* line;
   while(!code) {
     line = readline(0);
-    code = atoi(line);
+    code = bk_atoi(line);
   }
   tputs(line);
 }
@@ -251,7 +251,7 @@ void ftpGet() {
   sendFtpCommand("TYPE", "I");
   unsigned int port = sendFtpPasv();
   for(volatile int delay=0; delay<7000; delay++) { /* a moment for server to listen */ }
-  int res = tcp_connect(1, hostname, uint2str(port));
+  int res = tcp_connect(1, hostname, bk_uint2str(port));
   if (res) {
     int code = sendFtpCommand("RETR", tok);
 
@@ -301,7 +301,7 @@ void ftpGet() {
         return;
       }
       char fullfilename[256];
-      strcpy(fullfilename, currentPath);
+      bk_strcpy(fullfilename, currentPath);
       bk_strcat(fullfilename, tiname);
 
       struct PAB pab;
@@ -329,14 +329,14 @@ void ftpGet() {
   char* line;
   while(code != 226) {
     line = readline(0);
-    code = atoi(line);
+    code = bk_atoi(line);
   }
   tputs(line);
 }
 
 int sendFtpCommand(char* command, char* argstring) {
   char ftpcmd[80];
-  strcpy(ftpcmd, command);
+  bk_strcpy(ftpcmd, command);
   if (argstring != 0) {
     bk_strcat(ftpcmd, str2ram(" "));
     bk_strcat(ftpcmd, argstring);
@@ -359,7 +359,7 @@ unsigned int sendFtpPasv() {
   227 Entering Passive Mode (127,0,0,1,156,117).
   */
   char ftpcmd[8];
-  strcpy(ftpcmd, "PASV");
+  bk_strcpy(ftpcmd, "PASV");
   bk_strcat(ftpcmd, str2ram(EOL));
   int len = bk_strlen(ftpcmd);
   int res = tcp_send_chars(0, ftpcmd, len);
@@ -378,9 +378,9 @@ unsigned int sendFtpPasv() {
     tok = bk_strtok(0, ',');
   }
   tok = bk_strtok(0, ',');
-  unsigned int port = ((unsigned int)atoi(tok)) << 8;
+  unsigned int port = ((unsigned int)bk_atoi(tok)) << 8;
   tok = bk_strtok(0, ')');
-  port += (unsigned int)atoi(tok);
+  port += (unsigned int)bk_atoi(tok);
 
   return port;
 }
@@ -444,7 +444,7 @@ int getFtpCode() {
   char* line = readline(0);
   tputs(line);
   // get code from first response...
-  int code = atoi(line);
+  int code = bk_atoi(line);
   return code;
 }
 
@@ -470,7 +470,7 @@ int isTiFiles(struct TiFiles* tifiles) {
 void ftpLcd() {
   bk_handleCd();
   tputs("local dir: ");
-  tputs(uint2hex(currentDsr->crubase));
+  tputs(bk_uint2hex(currentDsr->crubase));
   bk_tputc('.');
   tputs(currentPath);
   bk_tputc('\n');

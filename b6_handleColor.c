@@ -11,7 +11,7 @@
 void handleColor() {
   char* fore = bk_strtok(0, ' ');
   char* back = bk_strtok(0, ' ');
-  int fc = atoi(fore);
+  int fc = bk_atoi(fore);
   int oldfc = foreground;
   if (fore && fc >= 0 && fc <= 15) {
     foreground = fc;
@@ -20,7 +20,7 @@ void handleColor() {
     return;
   }
   if (back) {
-    int bg = atoi(back);
+    int bg = bk_atoi(back);
     if (back && bg >= 0 && bg <= 15) {
       background = bg;
     } else {

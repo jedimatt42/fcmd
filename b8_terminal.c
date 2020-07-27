@@ -96,7 +96,7 @@ int getParamA(int def) {
   if (i == 0) {
     return def;
   }
-  return atoi(bytestr);
+  return bk_atoi(bytestr);
 }
 
 int getParamB(int def) {
@@ -109,7 +109,7 @@ int getParamB(int def) {
     return def;
   }
   unsigned char* paramb = bytestr + i + 1;
-  return atoi(paramb);
+  return bk_atoi(paramb);
 }
 
 void cursorUp(int lines) {
@@ -276,7 +276,7 @@ void doSGRCommand() {
   int i = 0;
   unsigned char* params = bytestr;
   while(i < bs_idx) {
-    int sgr = atoi(params + i);
+    int sgr = bk_atoi(params + i);
     switch(sgr) {
       case 0: // clear attrs
         isBold = 0;

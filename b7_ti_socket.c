@@ -18,11 +18,11 @@ unsigned int tcp_connect(unsigned int socketId, unsigned char* hostname, unsigne
   tcpbuf[1] = socketId;
   tcpbuf[2] = TI_SOCKET_OPEN;
   unsigned char* cursor = tcpbuf + 3;
-  strcpy(cursor, hostname);
+  bk_strcpy(cursor, hostname);
   cursor += bk_strlen(hostname);
   *cursor = ':';
   cursor++;
-  strcpy(cursor, port);
+  bk_strcpy(cursor, port);
   cursor += bk_strlen(port);
   int bufsize = cursor - tcpbuf;
 

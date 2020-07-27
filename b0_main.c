@@ -66,7 +66,7 @@ void main()
   scripton = 0;
 
   char autocmd[13];
-  strcpy(autocmd, currentPath);
+  bk_strcpy(autocmd, currentPath);
   bk_strcat(autocmd, str2ram("AUTOCMD"));
   struct DeviceServiceRoutine* autodsr = currentDsr;
   int ranauto = runScript(autodsr, autocmd);
@@ -83,7 +83,7 @@ void main()
     VDP_INT_POLL;
     bk_strset(commandbuf, 0, 255);
     bk_tputc('[');
-    bk_tputs_ram(uint2hex(currentDsr->crubase));
+    bk_tputs_ram(bk_uint2hex(currentDsr->crubase));
     bk_tputc('.');
     bk_tputs_ram(currentPath);
     tputs_rom("]\n$ ");

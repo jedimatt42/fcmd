@@ -30,21 +30,21 @@ static void vars_add(char* name, char* value) {
     tputs_rom("Error, no more room in variable dictionary\n");
     return;
   }
-  strcpy(var_map[vars_next].name, name);
-  strcpy(var_map[vars_next].value, value);
+  bk_strcpy(var_map[vars_next].name, name);
+  bk_strcpy(var_map[vars_next].value, value);
   vars_next++;
 }
 
 void vars_set(char* name, char* value) {
   if (bk_strlen(name) > MAX_VAR_NAME) {
     tputs_rom("Error, variable name too long, limit is ");
-    bk_tputs_ram(uint2str(MAX_VAR_NAME));
+    bk_tputs_ram(bk_uint2str(MAX_VAR_NAME));
     bk_tputc('\n');
     return;
   }
   if (bk_strlen(value) > MAX_VAR_VAL) {
     tputs_rom("Error, variable value too long, limit is ");
-    bk_tputs_ram(uint2str(MAX_VAR_VAL));
+    bk_tputs_ram(bk_uint2str(MAX_VAR_VAL));
     bk_tputc('\n');
     return;
   }
@@ -52,7 +52,7 @@ void vars_set(char* name, char* value) {
   if (i == -1) {
     vars_add(name, value);
   } else {
-    strcpy(var_map[i].value, value);
+    bk_strcpy(var_map[i].value, value);
   }
 }
 

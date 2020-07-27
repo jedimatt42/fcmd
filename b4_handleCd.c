@@ -28,6 +28,6 @@ void handleCd() {
   }
 
   currentDsr = dsr;
-  strcpy(currentPath, path);
+  bk_strcpy(currentPath, path);
 }
 

@@ -36,7 +36,7 @@ void getstr(int x, int y, char* var, int limit, int backspace) {
 
     switch(key) {
       case 3: // F1 - delete
-          strcpy(var+idx, var+idx+1);
+          bk_strcpy(var+idx, var+idx+1);
           gotoxy(x+idx,y);
           cputs(var+idx);
           cputc(' ');
@@ -66,7 +66,7 @@ void getstr(int x, int y, char* var, int limit, int backspace) {
           idx--;
           if (backspace) {
             cputc(' ');
-            strcpy(var+idx, var+idx+1);
+            bk_strcpy(var+idx, var+idx+1);
             gotoxy(x+idx,y);
             cputs(var+idx);
           }

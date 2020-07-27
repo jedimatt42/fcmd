@@ -33,7 +33,7 @@ void handleIf() {
   }
 
   if (bk_strlen(tok) < 30) {
-    strcpy(left, tok);
+    bk_strcpy(left, tok);
   } else {
     tputs_rom("Error, left of expression too long, must be less than 30\n");
     return;
@@ -56,7 +56,7 @@ void handleIf() {
   }
 
   if (bk_strlen(tok) < 30) {
-    strcpy(right, tok);
+    bk_strcpy(right, tok);
   } else {
     tputs_rom("Error, right of expression too long, must be less than 30\n");
     return;
@@ -73,7 +73,7 @@ void handleIf() {
     tputs_rom("Error, missing <command> in statement\n");
     return;
   }
-  strcpy(command, tok);
+  bk_strcpy(command, tok);
 
   if (getTruth(operator, left, right, negate)) {
     bk_handleCommand(command);

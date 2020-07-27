@@ -135,7 +135,7 @@ void onLongDirEntry(struct DirEntry* dirEntry) {
     cputpad(7, sizestr);
   }
 
-  bk_tputs_ram(uint2str(dirEntry->sectors));
+  bk_tputs_ram(bk_uint2str(dirEntry->sectors));
 
   bk_tputc('\n');
 }

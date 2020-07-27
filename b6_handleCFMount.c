@@ -36,7 +36,7 @@ static int getVolume(int drive, char* volumeName) {
     volumeName[0] = 0;
 
     unsigned char path[6]; // paranoid about the parse command.
-    strcpy(path, "DSKx");
+    bk_strcpy(path, "DSKx");
     path[3] = drive + '0';
     struct DeviceServiceRoutine *dsr = bk_findDsr(path, CFNANO_CRUBASE);
     bk_strcat(path, str2ram("."));
@@ -127,7 +127,7 @@ static void call_mount(int drive, int volume) {
     unsigned char command[30];
     int i = 0;
     command[i++] = 5;
-    strcpy(command+i, "MOUNT");
+    bk_strcpy(command+i, "MOUNT");
     i += 5;
     command[i++] = 0xB7;
     command[i++] = 0xC8;
@@ -135,9 +135,9 @@ static void call_mount(int drive, int volume) {
     command[i++] = '0' + drive;
     command[i++] = 0xB3;
     command[i++] = 0xC8;
-    char* vol = int2str(volume);
+    char* vol = bk_uint2str(volume);
     command[i++] = bk_strlen(vol);
-    strcpy(command+(i++), vol);
+    bk_strcpy(command+(i++), vol);
     vdpmemcpy(FBUF, command, 30);
 
     // call persistent mount routine
@@ -189,9 +189,9 @@ void handleCFMount() {
         peek = bk_strtokpeek(0, ' ');
         if (peek) {
             peek = bk_strtok(0, ' ');
-            begin = atoi(peek);
+            begin = bk_atoi(peek);
             peek = bk_strtok(0, ' ');
-            end = atoi(peek);
+            end = bk_atoi(peek);
             if (end < begin || begin == 0 || end == 0) {
                 tputs_rom("illegal range specified\n");
                 return;
@@ -202,13 +202,13 @@ void handleCFMount() {
         return;
     }
 
-    int drive = atoi(bk_strtok(0, ' '));
+    int drive = bk_atoi(bk_strtok(0, ' '));
     if (drive < 1 || drive > 3) {
         tputs_rom("drive number must be 1, 2 or 3\n");
         return;
     }
 
-    int volume = atoi(bk_strtok(0, ' '));
+    int volume = bk_atoi(bk_strtok(0, ' '));
     if (volume == 0) {
         tputs_rom("volume number must be > 0\n");
         return;

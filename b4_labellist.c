@@ -35,7 +35,7 @@ void labels_add(char* name, int gotoline) {
   int existing = labels_get(name);
   if (existing != -1) {
     tputs_rom("Error, label already defined at line: ");
-    bk_tputs_ram(uint2str(existing));
+    bk_tputs_ram(bk_uint2str(existing));
     bk_tputc('\n');
     return;
   }
@@ -44,7 +44,7 @@ void labels_add(char* name, int gotoline) {
     tputs_rom("Error, no more room in label dictionary\n");
     return;
   }
-  strcpy(labels[label_next].name, name);
+  bk_strcpy(labels[label_next].name, name);
   labels[label_next].lineno = gotoline;
   label_next++;
 }

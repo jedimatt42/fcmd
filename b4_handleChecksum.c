@@ -41,7 +41,7 @@ void handleChecksum() {
   unsigned int err = bk_lvl2_input(dsr->crubase, unit, filename, 0, addInfoPtr);
   if (err) {
     tputs_rom("error reading file: ");
-    bk_tputs_ram(uint2hex(err));
+    bk_tputs_ram(bk_uint2hex(err));
     bk_tputc('\n');
     return;
   }
@@ -62,7 +62,7 @@ void handleChecksum() {
     err = bk_lvl2_input(dsr->crubase, unit, filename, 1, addInfoPtr);
     if (err) {
       tputs_rom("error reading file: ");
-      bk_tputs_ram(uint2hex(err));
+      bk_tputs_ram(bk_uint2hex(err));
       bk_tputc('\n');
       return;
     }
@@ -84,7 +84,7 @@ void handleChecksum() {
   result <<= 8;
   result += sum1;
   tputs_rom("checksum: ");
-  bk_tputs_ram(uint2hex(result));
+  bk_tputs_ram(bk_uint2hex(result));
   bk_tputc('\n');
 }
 

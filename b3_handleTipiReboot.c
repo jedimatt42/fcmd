@@ -10,13 +10,13 @@
 
 void handleTipiReboot() {
     char namebuf[14];
-    strcpy(namebuf, "PI");
+    bk_strcpy(namebuf, "PI");
 
     struct DeviceServiceRoutine *dsr = bk_findDsr(namebuf, 0);
 
     struct PAB pab;
 
-    strcpy(namebuf, "PI.REBOOT");
+    bk_strcpy(namebuf, "PI.REBOOT");
 
     int err = bk_dsr_open(dsr, &pab, namebuf, DSR_TYPE_APPEND | DSR_TYPE_VARIABLE, 0);
 

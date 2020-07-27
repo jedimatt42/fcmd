@@ -142,7 +142,7 @@ void loadDriveDSRs() {
   }
 
   currentDsr = dsrList;
-  strcpy(currentPath, currentDsr->name);
+  bk_strcpy(currentPath, currentDsr->name);
   bk_strcat(currentPath, str2ram("."));
 }
 

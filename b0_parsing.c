@@ -118,7 +118,7 @@ void parsePathParam(struct DeviceServiceRoutine** dsr, char* buffer, int require
       *dsr = 0; // set dsr pointer to null to indicate missing required parameter.
       return;
     }
-    strcpy(buffer, currentPath); // if not required, use current path
+    bk_strcpy(buffer, currentPath); // if not required, use current path
     return;
   } else {
     char devicename[8];
@@ -136,7 +136,7 @@ void parsePathParam(struct DeviceServiceRoutine** dsr, char* buffer, int require
       *dsr = bk_findDsr(devicename, crubase);
       if (*dsr == 0) {
         // not a base device, so try subdir
-        strcpy(buffer, currentPath);
+        bk_strcpy(buffer, currentPath);
         bk_strcat(buffer, path);
         parsePath(buffer, devicename);
         *dsr = bk_findDsr(devicename, currentDsr->crubase);
@@ -150,10 +150,10 @@ void parsePathParam(struct DeviceServiceRoutine** dsr, char* buffer, int require
       if (crubase != 0) {
         path = bk_strtok(path, '.');
         path = bk_strtok(0, ' ');
-        strcpy(buffer, path);
+        bk_strcpy(buffer, path);
       } else {
         if (buffer[0] == 0) {
-          strcpy(buffer, path);
+          bk_strcpy(buffer, path);
         }
       }
     }
@@ -163,7 +163,7 @@ void parsePathParam(struct DeviceServiceRoutine** dsr, char* buffer, int require
     int len = bk_strlen(buffer);
     int dotidx = bk_lindexof(buffer, '.', len);
 
-    strcpy(filterglob, buffer+dotidx+1);
+    bk_strcpy(filterglob, buffer+dotidx+1);
     buffer[dotidx] = 0;
   }
 }
@@ -179,7 +179,7 @@ int globMatches(char* filename) {
   bk_strncpy(prefix, filterglob, prelen);
 
   char suffix[12];
-  strcpy(suffix, filterglob+prelen+1);
+  bk_strcpy(suffix, filterglob+prelen+1);
 
   return bk_str_startswith(filename, prefix) && bk_str_endswith(filename, suffix);
 }
