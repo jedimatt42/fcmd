@@ -51,16 +51,16 @@ extern void* trampoline();
 #define DECLARE_BANKED(realname, bank, return_type, banked_name, param_types, param_list) \
 __attribute__ ((gnu_inline, always_inline)) \
 static inline return_type banked_name param_types { \
-  static const int foo[]={(int)MYBANK, (int)realname, (int)bank}; \
-  tramp_data = (int*) foo; \
+  static const int td_##realname[]={(int)MYBANK, (int)realname, (int)bank}; \
+  tramp_data = (int*) td_##realname; \
   return (return_type) trampoline param_list; \
 }
 
 #define DECLARE_BANKED_VOID(realname, bank, banked_name, param_types, param_list) \
 __attribute__ ((gnu_inline, always_inline)) \
 static inline void banked_name param_types { \
-  static const int foo[]={(int)MYBANK, (int)realname, (int)bank}; \
-  tramp_data = (int*) foo; \
+  static const int td_##realname[]={(int)MYBANK, (int)realname, (int)bank}; \
+  tramp_data = (int*) td_##realname; \
   trampoline param_list; \
 }
 

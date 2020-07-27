@@ -79,7 +79,7 @@ inline int VDP_SCREEN_TEXT64(unsigned int r, unsigned int c)			{	return (((r)<<6
 // the blanking bit in VDP register 1. This value is reset on keypress in KSCAN.
 #define VDP_SCREEN_TIMEOUT		*((volatile unsigned int*)0x83d6)
 
-// These values are flags for the interrupt control 
+// These values are flags for the interrupt control
 	// disable all processing (screen timeout and user interrupt are still processed)
 	#define VDP_INT_CTRL_DISABLE_ALL		0x80
 	// disable sprite motion
@@ -137,7 +137,7 @@ inline int VDP_SCREEN_TEXT64(unsigned int r, unsigned int c)			{	return (((r)<<6
 #define VDP_MODE1_TEXT			0x10		// set text mode
 #define VDP_MODE1_MULTI			0x08		// set multicolor mode
 #define VDP_MODE1_SPRMODE16x16	0x02		// set 16x16 sprites
-#define VDP_MODE1_SPRMAG		0x01		// set magnified sprites (2x2 pixels) 
+#define VDP_MODE1_SPRMAG		0x01		// set magnified sprites (2x2 pixels)
 
 // sprite modes for the mode set functions
 #define VDP_SPR_8x8				0x00
@@ -183,7 +183,7 @@ int set_text_raw();
 // this version enables the screen and sets the KSCAN copy for you
 void set_text();
 
-// set_text80 - sets up 80 column text mode - 80x24. 
+// set_text80 - sets up 80 column text mode - 80x24.
 // Inputs: none
 // Return: returns a value to be written to VDP_REG_MODE1 (and VDP_REG1_KSCAN_MIRROR if you use kscan())
 // The screen is blanked until you do this write, to allow you time to set it up
@@ -246,7 +246,16 @@ void vdpmemset(int pAddr, int ch, int cnt);
 
 // vdpmemcpy - copies a block of data from CPU to VDP memory
 // Inputs: VDP address to write to, CPU address to copy from, number of bytes to copy
-void vdpmemcpy(int pAddr, const unsigned char *pSrc, int cnt);
+// void vdpmemcpy(int pAddr, const unsigned char *pSrc, int cnt);
+//   inlining this will be about the same expense as a bankswitch call.
+inline void vdpmemcpy(int pAddr, const unsigned char *pSrc, int cnt)
+{
+	VDP_SET_ADDRESS_WRITE(pAddr);
+	while (cnt--)
+	{
+		VDPWD = *(pSrc++);
+	}
+}
 
 // vdpmemread - copies a block of data from VDP to CPU memory
 // Inputs: VDP address to read from, CPU address to write to, number of bytes to copy
@@ -285,7 +294,7 @@ void vdpwaitvint();
 // Inputs: character to emit
 // Returns: character input
 // All characters are emitted except \r and \n which is handled for scrn_scroll and next line.
-// It works in both 32x24 and 40x24 modes. Tracking of the cursor is thus 
+// It works in both 32x24 and 40x24 modes. Tracking of the cursor is thus
 // automatic in this function, and it pulls in scrn_scroll.
 int putchar(int x);
 
@@ -293,7 +302,7 @@ int putchar(int x);
 // Inputs: NUL-terminated string to write
 // This function only emits printable ASCII characters (32-127). It works in both
 // 32x24 and 40x24 modes. It recognizes \r to go to the beginning of the line, and
-// \n to go to a new line and scroll the screen. Tracking of the cursor is thus 
+// \n to go to a new line and scroll the screen. Tracking of the cursor is thus
 // automatic in this function, and it pulls in scrn_scroll.
 void putstring(char *s);
 
@@ -362,7 +371,7 @@ void charset();
 // memory (208 bytes). Not compatible with the 99/4, if it matters.
 void charsetlc();
 
-// gplvdp - copy data from a GPL function to VDP memory. 
+// gplvdp - copy data from a GPL function to VDP memory.
 // Inputs: address of a GPL vector, VDP address to copy to, number of characters to copy
 // This is a very specialized function used by the charset() functions. It assumes a GPL 'B'
 // instruction at the vector, and that the first instruction thereafter is a 'DEST'. It uses
@@ -437,7 +446,7 @@ void bm_placetile(int c, int r, const unsigned char* pattern);
 // or use bm_setforeground and bm_setbackground
 extern unsigned char gBitmapColor;
 
-// address of bitmap mode font pattern table in cpu memory. 
+// address of bitmap mode font pattern table in cpu memory.
 // This can be intialized by calling bm_consolefont(), or
 // by setting it to your own characterset patterns spanning
 // characters ' ' to '~'

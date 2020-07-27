@@ -13,7 +13,7 @@ void handleWidth() {
   char* tok = bk_strtok(0, ' ');
   int width = bk_atoi(tok);
 
-  if (width == 80 && isF18A()) {
+  if (width == 80 && bk_isF18A()) {
     bk_setupScreen(80);
     return;
   }
