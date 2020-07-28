@@ -259,7 +259,15 @@ inline void vdpmemcpy(int pAddr, const unsigned char *pSrc, int cnt)
 
 // vdpmemread - copies a block of data from VDP to CPU memory
 // Inputs: VDP address to read from, CPU address to write to, number of bytes to copy
-void vdpmemread(int pAddr, unsigned char *pDest, int cnt);
+// void vdpmemread(int pAddr, unsigned char *pDest, int cnt);
+inline void vdpmemread(int pAddr, unsigned char *pDest, int cnt)
+{
+	VDP_SET_ADDRESS(pAddr);
+	while (cnt--)
+	{
+		*(pDest++) = VDPRD;
+	}
+}
 
 // vdpwriteinc - writes an incrementing sequence of values to VDP
 // Inputs: VDP address to start, first value to write, number of bytes to write
@@ -276,7 +284,13 @@ void vdpchar_default(int pAddr, int ch);
 // vdpreadchar - read a character from VDP memory
 // Inputs: VDP address to read
 // Outputs: byte
-unsigned char vdpreadchar(int pAddr);
+// unsigned char vdpreadchar(int pAddr);
+inline unsigned char vdpreadchar(int pAddr)
+{
+	VDP_SET_ADDRESS(pAddr);
+	__asm("NOP");
+	return VDPRD;
+}
 
 // vdpwritescreeninc - like vdpwriteinc, but writes to the screen image table
 // Inputs: offset from the screen image table to write, first value to write, number of bytes to write

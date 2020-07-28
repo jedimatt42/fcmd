@@ -17,14 +17,6 @@ void finish_load(int crubase, int VDPPAB, int lastcharaddr, int namelen);
 
 extern int* GOEA5;
 
-// Handle full of libti99 functions need to be replicated in ROM here
-inline static void ea5_vdpmemread(int pAddr, unsigned char *pDest, int cnt) {
-  VDP_SET_ADDRESS(pAddr);
-  while (cnt--) {
-    *(pDest++)=VDPRD;
-  }
-}
-
 inline static unsigned char ea5_vdpreadchar(int pAddr) {
   VDP_SET_ADDRESS(pAddr);
   __asm("NOP");
@@ -68,15 +60,15 @@ unsigned int dsr_ea5load(struct DeviceServiceRoutine* dsr, const char* fname) {
   FADDR = 0;
   FLAG = 0xFFFF;
   while(FLAG) {
-    ea5_vdpmemread(0x1380, (char*)0x8324, 2); // FLAG
-    ea5_vdpmemread(0x1382, (char*)0x8326, 2); // BSIZE
-    ea5_vdpmemread(0x1384, (char*)0x8328, 2); // ADDR
+    vdpmemread(0x1380, (char*)0x8324, 2); // FLAG
+    vdpmemread(0x1382, (char*)0x8326, 2); // BSIZE
+    vdpmemread(0x1384, (char*)0x8328, 2); // ADDR
     if (FADDR == 0) {
       FADDR = ADDR;
     }
     // after this point, expansion ram belongs to the target program
     // - The C stack cannot be used.
-    ea5_vdpmemread(0x1386, (char*) ADDR, BSIZE);
+    vdpmemread(0x1386, (char*) ADDR, BSIZE);
     if (FLAG == 0) {
       GPLWSR11 = FADDR;
       // We aren't comming back from this, so feel free to lie to gcc.
