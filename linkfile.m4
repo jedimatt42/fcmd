@@ -49,7 +49,7 @@ SECTIONS
     __BSS_END = .;
   } >lower_exp
 
-  __STACK_TOP = 0xFF00;
+  __STACK_TOP = 0x4000;
 
   __STATS_HEAD = SIZEOF(.text);
   BANKSUMMARIES(15,0)
