@@ -19,8 +19,6 @@
 #include "b8_getstr.h"
 #include "b8_setupScreen.h"
 
-char commandbuf[256];
-
 const char tipibeeps[] = {
   0x04, 0x9f, 0xbf, 0xdf, 0xff, 0x02,
   0x03, 0x80, 0x05, 0x94, 0x07,
@@ -80,6 +78,8 @@ void main()
   }
 
   while(1) {
+    char commandbuf[256];
+
     VDP_INT_POLL;
     bk_strset(commandbuf, 0, 255);
     bk_tputc('[');
@@ -110,6 +110,8 @@ int runScript(struct DeviceServiceRoutine* dsr, char* scriptName) {
     ran = 1;
     while(!ferr) {
       VDP_INT_POLL;
+      char commandbuf[256];
+
       bk_strset(commandbuf, 0, 255);
       ferr = bk_dsr_read(dsr, &pab, 0);
       char k = bk_kscan(5);

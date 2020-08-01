@@ -36,11 +36,6 @@ DECLARE_BANKED(bordercolor, BANK(8), unsigned int, bk_bordercolor, (unsigned int
 DECLARE_BANKED(cgetc, BANK(8), unsigned int, bk_cgetc, (), ())
 DECLARE_BANKED(kscan, BANK(8), unsigned int, bk_kscan, (unsigned int mode), (mode))
 
-#define tputs_rom(x)        \
-{                           \
-  unsigned char y[256];     \
-  bk_strncpy(y, x, 255);    \
-  bk_tputs_ram(y);          \
-}                           \
+#define tputs_rom(x) bk_tputs_ram(str2ram(x))
 
 #endif

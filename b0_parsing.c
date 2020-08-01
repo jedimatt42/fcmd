@@ -13,9 +13,9 @@
 #include "b4_preprocess.h"
 #include <string.h>
 
-#define MATCH(x,y) (!(bk_strcmpi(str2ram(x),y)))
+#define MATCH(x,y) (!(bk_strcmpi(x,y)))
 
-#define COMMAND(x, y) if (MATCH(tok, x)) y();
+#define COMMAND(x, y) if (MATCH(tok, str2ram(x))) y();
 
 static int isAssignment(char* str) {
   int i = 0;
