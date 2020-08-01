@@ -174,7 +174,7 @@ int globMatches(char* filename) {
     return 1;
   }
 
-  int prelen = indexof(filterglob, '*');
+  int prelen = bk_indexof(filterglob, '*');
   char prefix[12];
   bk_strncpy(prefix, filterglob, prelen);
 
