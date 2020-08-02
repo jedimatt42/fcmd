@@ -15,8 +15,6 @@ ALT_BANKED_VOID(mds_lvl3_dsrlnkraw, BANK(2), far_mds_lvl3_dsrlnkraw, (int crubas
 #define GPLWSR11  *((volatile unsigned int*)0x83F6)
 #define GPLWSR12	*((volatile unsigned int*)0x83F8)
 
-void finish_load(int crubase, int VDPPAB, int lastcharaddr, int namelen);
-
 extern int* GOEA5;
 
 inline static unsigned char ea5_vdpreadchar(int pAddr) {

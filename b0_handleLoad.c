@@ -15,15 +15,6 @@
 #include <vdp.h>
 #include <conio.h>
 
-static void st_vdpmemset(int pAddr, int ch, int cnt)
-{
-  VDP_SET_ADDRESS_WRITE(pAddr);
-  while (cnt--)
-  {
-    VDPWD = ch;
-  }
-}
-
 void handleLoad() {
   struct DeviceServiceRoutine* dsr = 0;
 
@@ -45,27 +36,6 @@ void handleLoad() {
   }
 
   bk_setupScreen(0);
-  // to override some VDP registers for EA5 compatibility
-  // VDP_SET_REGISTER(VDP_REG_MODE0, 0x00);
-  VDP_SET_REGISTER(VDP_REG_MODE1, 0xE0);
-  // VDP_SET_REGISTER(VDP_REG_SIT, 0x00);
-  // VDP_SET_REGISTER(VDP_REG_CT, 0x0E);
-  // VDP_SET_REGISTER(VDP_REG_PDT, 0x01);
-  // VDP_SET_REGISTER(VDP_REG_SAL, 0x06);
-  VDP_SET_REGISTER(VDP_REG_SDT, 0x00);
-  VDP_SET_REGISTER(VDP_REG_COL, 0xF3);
-
-  // erase first 4k of vdp
-  st_vdpmemset(0,0,4192);
-
-  // ea clears screen with 0x20 (space characters)
-  // clrscr(); // moved to inside setupScreen for convenience.
-  // load character set
-  // charset(); // moved to inside setupScreen
-  // TODO load ea copyright and cursor
-
-  // set colors
-  st_vdpmemset(0x0380, 0x13, 32);
 
   // TODO load ea-utils into >2000
 

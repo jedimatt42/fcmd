@@ -33,6 +33,22 @@ void setupScreen(int width) {
   lock_f18a();
   if (width == 0) {
     set_graphics(0);
+    // to override some VDP registers for EA5 compatibility
+    // VDP_SET_REGISTER(VDP_REG_MODE0, 0x00);
+    VDP_SET_REGISTER(VDP_REG_MODE1, 0xE0);
+    // VDP_SET_REGISTER(VDP_REG_SIT, 0x00);
+    // VDP_SET_REGISTER(VDP_REG_CT, 0x0E);
+    // VDP_SET_REGISTER(VDP_REG_PDT, 0x01);
+    // VDP_SET_REGISTER(VDP_REG_SAL, 0x06);
+    VDP_SET_REGISTER(VDP_REG_SDT, 0x00);
+    VDP_SET_REGISTER(VDP_REG_COL, 0xF3);
+
+    // erase first 4k of vdp
+    vdpmemset(0, 0, 4192);
+    // TODO load ea copyright and cursor
+
+    // set colors
+    vdpmemset(0x0380, 0x13, 32);
     clrscr();
     charset();
     return;
