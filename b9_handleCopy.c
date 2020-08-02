@@ -104,7 +104,8 @@ void onCopyDirEntry(struct DirEntry *dirEntry) {
   bk_tputs_ram(dstpath);
   bk_tputc('\n');
 
-  struct AddInfo* addInfoPtr = (struct AddInfo*) 0x8320;
+  // AddInfo must be in scratchpad
+  struct AddInfo *addInfoPtr = (struct AddInfo *)0x8320;
   addInfoPtr->first_sector = 0;
   addInfoPtr->eof_offset = 0;
   addInfoPtr->flags = 0;

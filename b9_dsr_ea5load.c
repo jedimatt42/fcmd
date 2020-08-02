@@ -28,6 +28,7 @@ inline static void ea5_vdpchar(int pAddr, int ch) {
   VDPWD=ch;
 }
 
+// This overlaps the temporary PAB
 #define FADDR (*(volatile int *)0x8320)
 #define FLAG (*(volatile int *)0x8324)
 #define BSIZE (*(volatile int *)0x8326)

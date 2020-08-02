@@ -263,6 +263,7 @@ void ftpGet() {
     struct TiFiles* tifiles = (struct TiFiles*) block;
 
     if (len == 128 && isTiFiles(tifiles)) {
+      // AddInfo must be in scratchpad
       struct AddInfo* addInfoPtr = (struct AddInfo*) 0x8320;
       tputs("found TIFILES header\n");
       memcpy(&(addInfoPtr->first_sector), &(tifiles->sectors), 8);
