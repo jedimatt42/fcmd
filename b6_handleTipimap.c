@@ -22,13 +22,13 @@ static void writeConfigItem(const char* key, const char* value);
 
 static void visitLines(line_cb onLine, char* filterArg1) {
   char namebuf[14];
-  bk_strcpy(namebuf, "PI");
+  bk_strcpy(namebuf, str2ram("PI"));
 
   struct DeviceServiceRoutine* dsr = bk_findDsr(namebuf, 0);
 
   struct PAB pab;
 
-  bk_strcpy(namebuf, "PI.CONFIG");
+  bk_strcpy(namebuf, str2ram("PI.CONFIG"));
 
   int err = bk_dsr_open(dsr, &pab, namebuf, DSR_TYPE_INPUT | DSR_TYPE_DISPLAY | DSR_TYPE_VARIABLE | DSR_TYPE_SEQUENTIAL, 0);
 
@@ -52,13 +52,13 @@ static void visitLines(line_cb onLine, char* filterArg1) {
 
 static void writeConfigItem(const char* key, const char* value) {
   char namebuf[14];
-  bk_strcpy(namebuf, "PI");
+  bk_strcpy(namebuf, str2ram("PI"));
 
   struct DeviceServiceRoutine* dsr = bk_findDsr(namebuf, 0);
 
   struct PAB pab;
 
-  bk_strcpy(namebuf, "PI.CONFIG");
+  bk_strcpy(namebuf, str2ram("PI.CONFIG"));
 
   int err = bk_dsr_open(dsr, &pab, namebuf, DSR_TYPE_APPEND | DSR_TYPE_VARIABLE, 0);
 
@@ -69,9 +69,9 @@ static void writeConfigItem(const char* key, const char* value) {
   bk_initPab(&pab);
 
   char linebuf[250];
-  bk_strcpy(linebuf, key);
+  bk_strcpy(linebuf, str2ram(key));
   bk_strcat(linebuf, str2ram("="));
-  bk_strcat(linebuf, (char*) value);
+  bk_strcat(linebuf, str2ram(value));
   err = bk_dsr_write(dsr, &pab, linebuf, bk_strlen(linebuf));
 
   bk_dsr_close(dsr, &pab);
@@ -146,7 +146,7 @@ static void clearDriveMapping(const char* drive) {
     keybuf[4] = 0;
   } else {
     bk_strcpy(keybuf, drive);
-    bk_strcpy(keybuf+4, "_DIR");
+    bk_strcpy(keybuf+4, str2ram("_DIR"));
   }
 
   char empty[1];
@@ -184,7 +184,7 @@ static int __attribute__((noinline)) validDrive(const unsigned char *keybuf, con
 {
   int l = bk_strlen(keybuf);
   int form = (l == 5 && keybuf[4] == '.') || (l == 4);
-  return bk_str_startswith(keybuf, prefix) &&
+  return bk_str_startswith(keybuf, str2ram(prefix)) &&
        keybuf[3] >= min &&
        keybuf[3] <= max &&
        form;
@@ -208,7 +208,7 @@ static void setDriveMapping(const char* drive, const char* path) {
 
   int diskmapping = 0;
   if (bk_str_startswith(keybuf, str2ram("DSK"))) {
-    bk_strcpy(keybuf+4, "_DIR");
+    bk_strcpy(keybuf+4, str2ram("_DIR"));
     diskmapping = 1;
   } else if (bk_str_startswith(keybuf, str2ram("URI"))) {
     keybuf[4] = 0;
@@ -217,7 +217,7 @@ static void setDriveMapping(const char* drive, const char* path) {
   char namebuf[256];
 
   if (diskmapping) {
-    bk_strcpy(namebuf, "TIPI");
+    bk_strcpy(namebuf, str2ram("TIPI"));
     struct DeviceServiceRoutine* dsr = bk_findDsr(namebuf, 0);
     bk_strcat(namebuf, str2ram("."));
     if (bk_str_equals((char*) path, str2ram("TIPI.")) || bk_str_equals((char*) path, str2ram("."))) {
