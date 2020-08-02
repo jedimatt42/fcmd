@@ -1,5 +1,5 @@
 define(BANKSECTION, .bank$1 { objects/b$1_*.o(.text) } )
-define(BANKSUMMARY, __STATS_BANK_$1 = 0x1F80 - SIZEOF(.bank$1); )
+define(BANKSUMMARY, __STATS_BANK_$1 = 0x1F6C - SIZEOF(.bank$1); )
 define(`BANKSECTIONS', `BANKSECTION($1) ifelse(eval($1 > $2), 1, `
     BANKSECTIONS(decr($1), $2)', `')')dnl
 define(`BANKSUMMARIES', `BANKSUMMARY($1) ifelse(eval($1 > $2), 1, `
@@ -8,8 +8,8 @@ define(`BANKSUMMARIES', `BANKSUMMARY($1) ifelse(eval($1 > $2), 1, `
 
 MEMORY
 {
-  cart_rom   (rx) : ORIGIN = 0x6000, LENGTH = 0x0080 /* 128 bytes up front of common code */
-  bank_rom   (rx) : ORIGIN = 0x6080, LENGTH = 0x1F80 /* 8k-header of bankable cartridge ROM */
+  cart_rom   (rx) : ORIGIN = 0x6000, LENGTH = 0x0094 /* 128 bytes up front of common code */
+  bank_rom   (rx) : ORIGIN = 0x6094, LENGTH = 0x1F6C /* 8k-header of bankable cartridge ROM */
   lower_exp  (wx) : ORIGIN = 0x2000, LENGTH = 0x2000 /* 8k        */
   upper_exp  (wx) : ORIGIN = 0xA000, LENGTH = 0x6000 /* 24k upper ram */
   scratchpad (wx) : ORIGIN = 0x8320, LENGTH = 0x00e0 /* 32b is for workspace */
@@ -24,6 +24,7 @@ SECTIONS
     objects/bankdata.o(.text)
     objects/ea5_reset.o(.text)
     objects/str_memcpy.o(.text)  /* gcc will implicity call this to initialize strings on stack */
+    objects/stacktramp.o(.text)
   } >cart_rom
 
   /* overlays */

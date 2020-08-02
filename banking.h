@@ -48,22 +48,51 @@ extern void* trampoline();
  * Trampoline code abuses R12, and R0
  */
 
-#define DECLARE_BANKED(realname, bank, return_type, banked_name, param_types, param_list) \
-__attribute__ ((gnu_inline, always_inline)) \
-static inline return_type banked_name param_types { \
-  static const int td_##realname[]={(int)MYBANK, (int)realname, (int)bank}; \
-  tramp_data = (int*) td_##realname; \
-  return (return_type) trampoline param_list; \
-}
+#define DECLARE_BANKED(realname, bank, return_type, banked_name, param_types, param_list)      \
+  __attribute__((gnu_inline, always_inline)) static inline return_type banked_name param_types \
+  {                                                                                            \
+    static const int td_##realname[] = {(int)MYBANK, (int)realname, (int)bank};                \
+    tramp_data = (int *)td_##realname;                                                         \
+    return (return_type)trampoline param_list;                                                 \
+  }
 
-#define DECLARE_BANKED_VOID(realname, bank, banked_name, param_types, param_list) \
-__attribute__ ((gnu_inline, always_inline)) \
-static inline void banked_name param_types { \
-  static const int td_##realname[]={(int)MYBANK, (int)realname, (int)bank}; \
-  tramp_data = (int*) td_##realname; \
-  trampoline param_list; \
-}
+#define DECLARE_BANKED_VOID(realname, bank, banked_name, param_types, param_list)       \
+  __attribute__((gnu_inline, always_inline)) static inline void banked_name param_types \
+  {                                                                                     \
+    static const int td_##realname[] = {(int)MYBANK, (int)realname, (int)bank};         \
+    tramp_data = (int *)td_##realname;                                                  \
+    trampoline param_list;                                                              \
+  }
 
+// An approach to bank switching that puts tramp data on the standard c stack
+extern void* stacktramp();
+
+#define ALT_BANKED(realname, bank, return_type, banked_name, param_types, param_list) \
+  static inline void banked_name param_types                                          \
+  {                \
+    asm("");                                                                      \
+    volatile int trampdata[3] = {(int)realname, (int)MYBANK, (int)bank};              \
+    return (return_type)stacktramp param_list;                                        \
+  }
+
+#define ALT_BANKED_VOID(realname, bank, banked_name, param_types, param_list) \
+  static inline void banked_name param_types                                  \
+  {                                                                           \
+    __asm__(                                                                  \
+        "ai r10,-6\n\t"                                                       \
+        "mov r10,r0\n\t"                                                      \
+        "li r12,%0\n\t"                                                       \
+        "mov r12,*r0+\n\t"                                                    \
+        "li r12,%1\n\t"                                                       \
+        "mov r12,*r0+\n\t"                                                    \
+        "li r12,%2\n\t"                                                       \
+        "mov r12,*r0+\n\t"                                                    \
+        :                                                                     \
+        : "i"(bank), "i"(MYBANK), "i"(realname)                               \
+        : "r0");                                                              \
+    stacktramp param_list;                                                    \
+    __asm__("ai r10,6");                                                      \
+  }
 
 #endif
 
