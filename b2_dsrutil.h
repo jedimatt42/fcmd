@@ -94,7 +94,6 @@ DECLARE_BANKED_VOID(disableROM, BANK(2), bk_disableROM, (int crubase), (crubase)
 DECLARE_BANKED(findDsr, BANK(2), struct DeviceServiceRoutine*, bk_findDsr, (char* devicename, int crubase), (devicename, crubase))
 DECLARE_BANKED(existsDir, BANK(2), unsigned int, bk_existsDir, (struct DeviceServiceRoutine* dsr, const char* pathname), (dsr, pathname))
 DECLARE_BANKED(existsFile, BANK(2), unsigned int, bk_existsFile, (struct DeviceServiceRoutine* dsr, const char* pathname), (dsr, pathname))
-DECLARE_BANKED(dsr_ea5load, BANK(2), unsigned int, bk_dsr_ea5load, (struct DeviceServiceRoutine* dsr, const char* fname), (dsr, fname))
 DECLARE_BANKED(dsr_delete, BANK(2), unsigned int, bk_dsr_delete, (struct DeviceServiceRoutine* dsr, struct PAB* pab), (dsr, pab))
 DECLARE_BANKED(dsr_open, BANK(2), unsigned int, bk_dsr_open, (struct DeviceServiceRoutine* dsr, struct PAB* pab, const char* fname, int flags, int reclen),(dsr, pab, fname, flags, reclen))
 DECLARE_BANKED(dsr_close, BANK(2), unsigned int, bk_dsr_close, (struct DeviceServiceRoutine* dsr, struct PAB* pab), (dsr, pab))
@@ -102,6 +101,6 @@ DECLARE_BANKED(dsr_read, BANK(2), unsigned int, bk_dsr_read, (struct DeviceServi
 DECLARE_BANKED(dsr_write, BANK(2), unsigned int, bk_dsr_write, (struct DeviceServiceRoutine* dsr, struct PAB* pab, unsigned char* record, int reclen), (dsr, pab, record, reclen))
 DECLARE_BANKED(dsr_reset, BANK(2), unsigned int, bk_dsr_reset, (struct DeviceServiceRoutine* dsr, struct PAB* pab, int record), (dsr, pab, record))
 DECLARE_BANKED(dsr_status, BANK(2), unsigned int, bk_dsr_status, (struct DeviceServiceRoutine* dsr, struct PAB* pab), (dsr, pab))
-
+DECLARE_BANKED(dsr_ea5load, BANK(9), unsigned int, bk_dsr_ea5load, (struct DeviceServiceRoutine * dsr, const char *fname), (dsr, fname))
 
 #endif

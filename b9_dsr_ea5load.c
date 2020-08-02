@@ -34,11 +34,12 @@ inline static void ea5_vdpchar(int pAddr, int ch) {
 #define ADDR (*(volatile int *)0x8328)
 
 unsigned int dsr_ea5load(struct DeviceServiceRoutine* dsr, const char* fname) {
+  // Move the C stack into scratchpad
   __asm__(
     "li r10,>83C0"
   );
   struct PAB* pab = (struct PAB*) 0x8320;
-  initPab(pab);
+  bk_initPab(pab);
   int namelen = bk_strlen(fname);
   pab->OpCode = DSR_LOAD;
   pab->pName = (char*)fname;
@@ -50,7 +51,7 @@ unsigned int dsr_ea5load(struct DeviceServiceRoutine* dsr, const char* fname) {
 
   vdpmemcpy(0, fname, pab->NameLength);
 
-  unsigned int err = mds_lvl3_dsrlnk(crubase, pab, VDPPAB);
+  unsigned int err = bk_mds_lvl3_dsrlnk(crubase, pab, VDPPAB);
   if (err) {
     reboot();
   }
@@ -67,8 +68,8 @@ unsigned int dsr_ea5load(struct DeviceServiceRoutine* dsr, const char* fname) {
       FADDR = ADDR;
     }
     // after this point, expansion ram belongs to the target program
-    // - The C stack cannot be used.
-    vdpmemread(0x1386, (char*) ADDR, BSIZE);
+    // TODO: eliminate bank stack.
+    vdpmemread(0x1386, (char*) ADDR, BSIZE); // copy image from vdp to target cpu ram
     if (FLAG == 0) {
       GPLWSR11 = FADDR;
       // We aren't comming back from this, so feel free to lie to gcc.
@@ -84,7 +85,7 @@ unsigned int dsr_ea5load(struct DeviceServiceRoutine* dsr, const char* fname) {
       ea5_vdpchar(namelen, next_char);
 
       // now we can call it
-      mds_lvl3_dsrlnkraw(crubase, VDPPAB);
+      bk_mds_lvl3_dsrlnkraw(crubase, VDPPAB);
 
       // if GPLWS(R12) is not crubase, then the dsr skipped the request
       if (!(GPLWSR12 == crubase && 0==GET_ERROR(ea5_vdpreadchar(VDPPAB+1)))) {
