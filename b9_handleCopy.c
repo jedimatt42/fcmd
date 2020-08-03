@@ -82,7 +82,7 @@ void handleCopy() {
     tputs_rom("error, no matching file found.\n");
   } else {
     tputs_rom("copied ");
-    bk_tputs_ram(int2str(copycount));
+    bk_tputs_ram(bk_uint2str(copycount));
     tputs_rom(" files.\n");
   }
 }

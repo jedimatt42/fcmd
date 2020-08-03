@@ -36,10 +36,14 @@ static int getVolume(int drive, char* volumeName) {
     volumeName[0] = 0;
 
     unsigned char path[6]; // paranoid about the parse command.
-    bk_strcpy(path, "DSKx");
+    path[0] = 'D';
+    path[1] = 'S';
+    path[2] = 'K';
     path[3] = drive + '0';
+    path[4] = 0;
     struct DeviceServiceRoutine *dsr = bk_findDsr(path, CFNANO_CRUBASE);
-    bk_strcat(path, str2ram("."));
+    path[4] = '.';
+    path[5] = 0;
 
     struct VolInfo volInfo;
     // basically just read the first record from the catalog.
@@ -83,7 +87,7 @@ static void listAllVolumes(int begin, int end) {
         tmp_mount(1, i);
 
         if (1 == getVolume(1, volumeName)) {
-            bk_tputs_ram(int2str(i));
+            bk_tputs_ram(bk_uint2str(i));
             tputs_rom(" : ");
             bk_tputs_ram(volumeName);
             bk_tputc('\n');
@@ -99,9 +103,9 @@ static void listCurrentVolumes() {
     vdpmemread(0x3FFA, (unsigned char*)mapping, 6);
     for (int i=0; i<3; i++) {
         tputs_rom("DSK");
-        bk_tputs_ram(int2str(i + 1));
+        bk_tputs_ram(bk_uint2str(i + 1));
         tputs_rom(". -> ");
-        bk_tputs_ram(int2str(mapping[i]));
+        bk_tputs_ram(bk_uint2str(mapping[i]));
         char volumeName[11];
         getVolume(i + 1, volumeName);
         tputs_rom(" : ");
@@ -121,13 +125,13 @@ static void call_mount(int drive, int volume) {
     // 0x8356 <- FBUF + 6
     PADDR = FBUF;
     PARAMS = FBUF+6;
-    bk_strncpy((char*)FACADDR, "MOUNT", 5);
+    bk_strncpy((char*)FACADDR, str2ram("MOUNT"), 5);
 
     // build FBUF up
     unsigned char command[30];
     int i = 0;
     command[i++] = 5;
-    bk_strcpy(command+i, "MOUNT");
+    bk_strcpy(command+i, str2ram("MOUNT"));
     i += 5;
     command[i++] = 0xB7;
     command[i++] = 0xC8;
@@ -141,8 +145,7 @@ static void call_mount(int drive, int volume) {
     vdpmemcpy(FBUF, command, 30);
 
     // call persistent mount routine
-    char subname[6] = "MOUNT";
-    bk_call_basic_sub(CFNANO_CRUBASE, subname);
+    bk_call_basic_sub(CFNANO_CRUBASE, str2ram("MOUNT"));
 }
 
 static void tmp_mount(int drive, int volume) {
@@ -164,7 +167,7 @@ void handleCFMount() {
     int persist = 0 == bk_strcmpi(str2ram("/p"), peek);
     if (persist || volumes)
     {
-        bk_strtok(0, ' '); // consume the optional /c
+        bk_strtok(0, ' '); // consume the optional /v or /p
     }
 
     // test for CF7/nanopeb

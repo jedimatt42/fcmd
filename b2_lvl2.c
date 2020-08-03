@@ -160,7 +160,7 @@ void call_basic_sub(int crubase, char *subroutine) {
     char ebuf[8];
     bk_strncpy(ebuf, entryname, elen);
 
-    if (0 == strcmp(ebuf, subroutine)) {
+    if (0 == bk_strcmp(ebuf, subroutine)) {
       addr = entry->routine;
       link = (unsigned int)entry;
       break;

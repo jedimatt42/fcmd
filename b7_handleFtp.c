@@ -256,7 +256,7 @@ void ftpGet() {
     int code = sendFtpCommand("RETR", tok);
 
     int len = readstream(1, 128);
-    tputs("read "); tputs(int2str(len)); tputs(" bytes of data\n");
+    tputs("read "); tputs(bk_uint2str(len)); tputs(" bytes of data\n");
 
     // should have sector loaded with first 128 bytes
     //   either a foreign file record D/F128, or a TIFILES header
@@ -317,7 +317,7 @@ void ftpGet() {
           return;
         }
         len = readstream(1, 128);
-        tputs("\rread "); tputs(int2str(len)); tputs(" bytes of data\n");
+        tputs("\rread "); tputs(bk_uint2str(len)); tputs(" bytes of data\n");
       }
       if (bk_dsr_close(currentDsr, &pab)) {
         tputs("Error, closing file\n");
