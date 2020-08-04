@@ -75,23 +75,17 @@ extern void* stacktramp();
     return (return_type)stacktramp param_list;                                        \
   }
 
-#define ALT_BANKED_VOID(realname, bank, banked_name, param_types, param_list) \
-  static inline void banked_name param_types                                  \
-  {                                                                           \
-    __asm__(                                                                  \
-        "ai r10,-6\n\t"                                                       \
-        "mov r10,r0\n\t"                                                      \
-        "li r12,%0\n\t"                                                       \
-        "mov r12,*r0+\n\t"                                                    \
-        "li r12,%1\n\t"                                                       \
-        "mov r12,*r0+\n\t"                                                    \
-        "li r12,%2\n\t"                                                       \
-        "mov r12,*r0+\n\t"                                                    \
-        :                                                                     \
-        : "i"(bank), "i"(MYBANK), "i"(realname)                               \
-        : "r0");                                                              \
-    stacktramp param_list;                                                    \
-    __asm__("ai r10,6");                                                      \
+#define ALT_BANKED_VOID(realname, bank, banked_name, param_types, param_list)   \
+  static inline void banked_name param_types                                    \
+  {                                                                             \
+    static const int ab_##realname[] = {(int)bank, (int)MYBANK, (int)realname}; \
+    __asm__(                                                                    \
+        "ai r10,-6\n\t"                                                         \
+        "mov %0,*r10\n\t"                                                       \
+        :                                                                       \
+        : "r"(ab_##realname));                                                  \
+    stacktramp param_list;                                                      \
+    __asm__("ai r10,6");                                                        \
   }
 
 #endif
