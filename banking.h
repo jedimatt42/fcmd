@@ -80,12 +80,10 @@ extern void* stacktramp();
   {                                                                             \
     static const int ab_##realname[] = {(int)bank, (int)MYBANK, (int)realname}; \
     __asm__(                                                                    \
-        "ai r10,-6\n\t"                                                         \
-        "mov %0,*r10\n\t"                                                       \
+        "mov %0,@>FFFE(r10)\n\t"                                                \
         :                                                                       \
         : "r"(ab_##realname));                                                  \
     stacktramp param_list;                                                      \
-    __asm__("ai r10,6");                                                        \
   }
 
 #endif
