@@ -3,9 +3,9 @@
 
 #include "banks.h"
 
-extern volatile int* tramp_data;
 
 extern void* trampoline();
+extern int trampdata;
 
 /* -- Thanks PeteE! - suggested alternative by PeteE
  * realname - the function you want to be able to call
@@ -48,42 +48,20 @@ extern void* trampoline();
  * Trampoline code abuses R12, and R0
  */
 
-#define DECLARE_BANKED(realname, bank, return_type, banked_name, param_types, param_list)      \
-  __attribute__((gnu_inline, always_inline)) static inline return_type banked_name param_types \
-  {                                                                                            \
-    static const int td_##realname[] = {(int)MYBANK, (int)realname, (int)bank};                \
-    tramp_data = (int *)td_##realname;                                                         \
-    return (return_type)trampoline param_list;                                                 \
-  }
-
-#define DECLARE_BANKED_VOID(realname, bank, banked_name, param_types, param_list)       \
-  __attribute__((gnu_inline, always_inline)) static inline void banked_name param_types \
-  {                                                                                     \
-    static const int td_##realname[] = {(int)MYBANK, (int)realname, (int)bank};         \
-    tramp_data = (int *)td_##realname;                                                  \
-    trampoline param_list;                                                              \
-  }
-
-// An approach to bank switching that puts tramp data on the standard c stack
-extern void* stacktramp();
-
-#define ALT_BANKED(realname, bank, return_type, banked_name, param_types, param_list) \
-  static inline void banked_name param_types                                          \
-  {                \
-    asm("");                                                                      \
-    volatile int trampdata[3] = {(int)realname, (int)MYBANK, (int)bank};              \
-    return (return_type)stacktramp param_list;                                        \
-  }
-
-#define ALT_BANKED_VOID(realname, bank, banked_name, param_types, param_list)   \
-  static inline void banked_name param_types                                    \
-  {                                                                             \
+#define DECLARE_BANKED(realname, bank, return_type, banked_name, param_types, param_list)  \
+  static inline return_type banked_name param_types                                        \
+  {                                                                                        \
     static const int ab_##realname[] = {(int)bank, (int)MYBANK, (int)realname}; \
-    __asm__(                                                                    \
-        "mov %0,@>FFFE(r10)\n\t"                                                \
-        :                                                                       \
-        : "r"(ab_##realname));                                                  \
-    stacktramp param_list;                                                      \
+    trampdata = (int)ab_##realname; \
+    return (return_type)trampoline param_list;                                             \
+  }
+
+#define DECLARE_BANKED_VOID(realname, bank, banked_name, param_types, param_list)          \
+  static inline void banked_name param_types                                               \
+  {                                                                                        \
+    static const int ab_##realname[] = {(int)bank, (int)MYBANK, (int)realname}; \
+    trampdata = (int)ab_##realname;                                                           \
+    trampoline param_list;                                                                 \
   }
 
 #endif

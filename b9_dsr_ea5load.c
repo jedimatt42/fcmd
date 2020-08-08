@@ -10,8 +10,6 @@
 #include <conio.h>
 #include <string.h>
 
-ALT_BANKED_VOID(mds_lvl3_dsrlnkraw, BANK(2), far_mds_lvl3_dsrlnkraw, (int crubase, unsigned int vdp), (crubase, vdp))
-
 #define GPLWSR11  *((volatile unsigned int*)0x83F6)
 #define GPLWSR12	*((volatile unsigned int*)0x83F8)
 
@@ -86,7 +84,7 @@ unsigned int dsr_ea5load(struct DeviceServiceRoutine* dsr, const char* fname) {
 
       // now we can call it
       // TODO: call this without relying on expansion ram
-      far_mds_lvl3_dsrlnkraw(crubase, VDPPAB);
+      bk_mds_lvl3_dsrlnkraw(crubase, VDPPAB);
 
       // if GPLWS(R12) is not crubase, then the dsr skipped the request
       if (!(GPLWSR12 == crubase && 0==GET_ERROR(ea5_vdpreadchar(VDPPAB+1)))) {

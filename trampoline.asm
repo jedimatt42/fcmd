@@ -1,57 +1,32 @@
-; Implementation of cartridge bankswitching trampoline.
-; paired with BANK_CALL macro in banking.h
+    DEF trampoline
+    REF trampdata
 
-	DEF trampoline
+; tramp data structure offsets
+TAR_BANK  EQU >0000
+RET_BANK  EQU >0002
+TAR_ADDR  EQU >0004
 
-; code to handle bouncing between banks.
-; 
-;   r11 - return address into caller function 
-; tramp_data will point to a block of 3 words (in ROM):
-;   [0] - return bank address
-;   [1] - address of function to call
-;   [2] - bank address for function to call
-;
-; current r11/return address and return bank need to be
-; saved to the bank_stack. 
+; stack data offsets
+DATA_ADDR EQU >0004
+RET_ADDR  EQU >0000
+
 trampoline:
-	; store return address onto bank_stack
-	mov @bank_return,r12		; get pointer to bank_stack
-	mov R11,*r12+			; store return address onto bank_stack
-					;   and move bank_stack pointer forward
-
-	; store the return bank onto stack
-	mov @tramp_data,r0		; get pointer to trampoline data for call
-	mov *r0+,*r12+			; store return bank onto bank_stack
-					;   and move both pointers forward
-
-	; set bank_return pointer to next slot in bank_stack
-	mov r12,@bank_return		; r12 currently points at next free slot
-	
-	; stash the target address
-	mov *r0+,r11			; get address of function, and move pointer
-					;   forward to target bank
-
-	; set destination bank
-	mov *r0,r12			; load target bank address
-	clr *r12			; switch to target bank
-
-	; call target address
-	bl *r11				; run the target function
-
-	; restore bank
-	mov @bank_return,r0		; get bank_stack pointer
-	dect r0				; rewind to calling bank
-	mov *r0,r11			; load return bank address
-	clr *r11			; switch to calling bank
-
-	; restore return address
-	dect r0				; rewind to caller return address
-	mov *r0,r11			; restore our return address
-
-	; make sure bank_return is adjusted back
-	mov r0,@bank_return		; free up this slot in bank_stack
-
-	; return to caller B *r11
-	RT
-	
+    ; when called, trampdata holds address of the tramp data
+    ; - target bank
+    ; - caller bank
+    ; - target function
+    ; caller cheats and didn't adjust stack
+    mov @trampdata,r12
+    ai  r10, -6                         ; consume stack space
+    mov r11, *r10                       ; stash caller return address
+    mov @RET_BANK(r12), @RET_BANK(r10)  ; stach caller bank
+    mov @TAR_ADDR(r12), r11             ; load target address
+    mov *r12, r12                       ; load target bank
+    clr *r12                            ; switch to target bank
+    bl  *r11                            ; call target
+    mov @RET_BANK(r10), r12             ; load the return bank
+    clr *r12                            ; switch back to source bank
+    mov @RET_ADDR(r10), r11             ; restore return address
+    ai  r10, 6                          ; restore stack location
+    b   *r11                            ; return to caller
 
