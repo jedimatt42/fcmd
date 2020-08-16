@@ -65,6 +65,9 @@ void handleXb() {
 
     // Launch XB
     char fg99_msg[20];
+    for (int i = 8; i < 20; i++) {
+        fg99_msg[i] = 0x00;
+    }
     fg99_msg[0] = 0x99;
     bk_strcpy(fg99_msg + 1, str2ram("OKFG99"));
     fg99_msg[7] = 0x99;
@@ -74,9 +77,6 @@ void handleXb() {
         bk_strcpy(fg99_msg+8, str2ram("TIXB_G"));
     } else {
         bk_strcpy(fg99_msg+8, xb_module);
-    }
-    for (int i = 16; i < 20; i++) {
-        fg99_msg[i] = 0x00;
     }
 
     // 0x6372 - grom start address of standard TI XB version 110

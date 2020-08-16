@@ -24,14 +24,14 @@ void handleFg99() {
   }
 
   char fg99_msg[20];
+  for (int i = 8; i < 20; i++) {
+    fg99_msg[i] = 0x00;
+  }
   fg99_msg[0] = 0x99;
   bk_strcpy(fg99_msg+1,str2ram("OKFG99"));
   fg99_msg[7] = 0x99;
 
   bk_strcpy(fg99_msg+8, cart);
-  for(int i = 16; i<20; i++) {
-    fg99_msg[i] = 0x00;
-  }
 
   bk_setupScreen(0);
   bk_fg99(fg99_msg, 0x0000);

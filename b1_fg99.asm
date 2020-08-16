@@ -1,5 +1,7 @@
        def fg99
 
+GPLWSR6       EQU    >83EC
+
 ; Entry point copied to RAM
 fgstart:
        li   r2, 20            ; sequence length: prefix (8) + sender (12)
@@ -31,7 +33,6 @@ fgl1   mov  *r0+, r1
 
        ; image has been loaded
 fgdone:
-       ; blwp @>0000  -- reset console
        lwpi >83E0
        mov  r6,r6             ; test for 0x0000
        jeq  fgrst
@@ -44,7 +45,8 @@ endfg:
 ; Entry point in ROM
 fg99:
        mov   r1, r0           ; take message address from gcc caller
-       mov   r2, r6           ; take grom launch address from gcc caller (0x0000 causes console reset)
+       mov   r2, @GPLWSR6     ; take grom launch address from gcc caller (0x0000 causes console reset)
+       mov   r2, @18(r1)      ; fill launch address into old structure ( voodoo )
 
 ; the next steps will take the ROM code out from under the CPU, so we need to copy it up to
 ; expansion RAM and continue from there. All the code below must be relocatable.
