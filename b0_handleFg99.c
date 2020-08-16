@@ -7,11 +7,8 @@
 #include <string.h>
 #include "b8_terminal.h"
 #include "b8_setupScreen.h"
+#include "b1_fg99.h"
 #include <system.h>
-
-extern void fg99();
-
-extern char fg99_msg;
 
 void handleFg99() {
   char* cart = bk_strtok(0, ' ');
@@ -26,8 +23,16 @@ void handleFg99() {
     return;
   }
 
-  bk_strcpy(&fg99_msg, cart);
+  char fg99_msg[20];
+  fg99_msg[0] = 0x99;
+  bk_strcpy(fg99_msg+1,str2ram("OKFG99"));
+  fg99_msg[7] = 0x99;
+
+  bk_strcpy(fg99_msg+8, cart);
+  for(int i = 16; i<20; i++) {
+    fg99_msg[i] = 0x00;
+  }
 
   bk_setupScreen(0);
-  fg99();
+  bk_fg99(fg99_msg, 0x0000);
 }
