@@ -15,14 +15,16 @@ int connected = 0;
 
 const char EOL[3] = {13, 10, 0};
 
-char hostname[30];
+static char* hostname;
 
-static char commandresponse[100];
+unsigned char* tcpbuf;
+
+static char* commandresponse;
 static int linebufload;
 static int tcpbufavail = 0;
 static int crlfstate;
 
-static unsigned char block[256];
+static unsigned char* block;
 static int blockload;
 static int tcpbufoffset;
 
@@ -63,6 +65,16 @@ void tputs(const char* str) {
 }
 
 void handleFtp() {
+  // allocate a common buffers on the stack
+  unsigned char stackbuf[256];
+  tcpbuf = stackbuf;
+  unsigned char fileblock[256];
+  block = fileblock;
+  unsigned char ftpresponse[100];
+  commandresponse = ftpresponse;
+  unsigned char host[30];
+  hostname = host;
+
   char commandbuf[120];
   while(1) {
     tputs("ftp> ");
@@ -391,7 +403,7 @@ char* readline(unsigned char socketId) {
   linebufload = 0;
   crlfstate = 0;
   while (tcpbufavail == 0) {
-    tcpbufavail = tcp_read_socket(socketId);
+    tcpbufavail = tcp_read_socket(socketId, tcpbuf, 256);
     int i = 0;
     while(tcpbufavail) {
       if (crlfstate == 0 && tcpbuf[i] == 13) {
@@ -418,7 +430,7 @@ int readstream(unsigned char socketId, int limit) {
 
   while(retries < 10 && blockload < limit) {
     while(retries < 10 && !tcpbufavail) {
-      tcpbufavail = tcp_read_socket(socketId);
+      tcpbufavail = tcp_read_socket(socketId, tcpbuf, 256);
       tcpbufoffset = 0;
       if (tcpbufavail) {
         retries = 0;
@@ -452,7 +464,7 @@ int getFtpCode() {
 void drainChannel(unsigned char socketId) {
   int retries = 0;
   while(retries < 10) {
-    int datalen = tcp_read_socket(socketId);
+    int datalen = tcp_read_socket(socketId, tcpbuf, 256);
     tcpbuf[datalen] = 0;
     tputs(tcpbuf);
     if (datalen) {

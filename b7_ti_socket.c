@@ -11,9 +11,9 @@
 #define TI_SOCKET_WRITE 0x03
 #define TI_SOCKET_READ 0x04
 
-unsigned char tcpbuf[256];
 
 unsigned int tcp_connect(unsigned int socketId, unsigned char* hostname, unsigned char* port) {
+  unsigned char tcpbuf[256];
   tcpbuf[0] = TI_SOCKET_REQUEST;
   tcpbuf[1] = socketId;
   tcpbuf[2] = TI_SOCKET_OPEN;
@@ -35,14 +35,14 @@ unsigned int tcp_connect(unsigned int socketId, unsigned char* hostname, unsigne
   return (unsigned int)tcpbuf[0];
 }
 
-// will send at most 253 byte character sequences (cause size of tcp buffer)
 int tcp_send_chars(unsigned int socketId, unsigned char* buf, int size) {
+  unsigned char tcpbuf[260];
   tcpbuf[0] = TI_SOCKET_REQUEST;
   tcpbuf[1] = socketId;
   tcpbuf[2] = TI_SOCKET_WRITE;
 
-  if (size > 253) {
-    size = 253;
+  if (size > 256) {
+    size = 256;
   }
   // append socket output to message
   for(int i=3; i<(3+size); i++) {
@@ -56,21 +56,22 @@ int tcp_send_chars(unsigned int socketId, unsigned char* buf, int size) {
   return tcpbuf[0];
 }
 
-int tcp_read_socket(unsigned int socketId) {
-  tcpbuf[0] = TI_SOCKET_REQUEST;
-  tcpbuf[1] = socketId;
-  tcpbuf[2] = TI_SOCKET_READ;
-  tcpbuf[3] = 1; // buffer size is 256 bytes - easier limit for file transfers.
-  tcpbuf[4] = 0;
+int tcp_read_socket(unsigned int socketId, unsigned char* buf, int bufsize) {
+  buf[0] = TI_SOCKET_REQUEST;
+  buf[1] = socketId;
+  buf[2] = TI_SOCKET_READ;
+  buf[3] = (unsigned char) bufsize >> 8;
+  buf[4] = (unsigned char) bufsize & 0xFF;
   tipi_on();
-  tipi_sendmsg(5, tcpbuf);
-  int bufsize = 0;
-  tipi_recvmsg(&bufsize, tcpbuf);
+  tipi_sendmsg(5, buf);
+  int recvsize = 0;
+  tipi_recvmsg(&recvsize, buf);
   tipi_off();
-  return bufsize;
+  return recvsize;
 }
 
 unsigned int tcp_close(unsigned int socketId) {
+  unsigned char tcpbuf[3];
   tcpbuf[0] = TI_SOCKET_REQUEST;
   tcpbuf[1] = socketId;
   tcpbuf[2] = TI_SOCKET_CLOSE;
