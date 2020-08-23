@@ -3,7 +3,7 @@
 
 #include "b2_dsrutil.h"
 
-#define APP_VER "0.N"
+#define APP_VER "1.0"
 
 void initGlobals();
 void main();
