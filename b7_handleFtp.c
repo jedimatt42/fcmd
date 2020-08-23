@@ -77,7 +77,7 @@ void handleFtp() {
 
   char commandbuf[120];
   while(1) {
-    tputs("ftp> ");
+    tputs_rom("ftp> ");
     bk_strset(commandbuf, 0, 120);
     bk_getstr(5, conio_y, commandbuf, displayWidth - 3, backspace);
     bk_tputc('\n');
@@ -91,22 +91,22 @@ void handleFtp() {
       }
       return;
     } else if (!bk_strcmpi(str2ram("help"), tok)) {
-      tputs("open <hostname> [port] - connect to an ftp server, defaults to port 21\n");
-      tputs("dir [/w] [pathname] - list directory\n");
-      tputs("  alias: ls\n");
-      tputs("pwd - show current server directory\n");
-      tputs("cd <pathname> - change server directory location\n");
-      tputs("get <filename> [tiname] - retrieve a file\n");
-      tputs("lcd <pathname> - change directory on local machine\n");
-      tputs("ldir [pathname] - list local machine directory\n");
-      tputs("bye - close connection\n");
-      tputs("  aliases: exit, quit\n");
+      tputs_rom("open <hostname> [port] - connect to an ftp server, defaults to port 21\n");
+      tputs_rom("dir [/w] [pathname] - list directory\n");
+      tputs_rom("  alias: ls\n");
+      tputs_rom("pwd - show current server directory\n");
+      tputs_rom("cd <pathname> - change server directory location\n");
+      tputs_rom("get <filename> [tiname] - retrieve a file\n");
+      tputs_rom("lcd <pathname> - change directory on local machine\n");
+      tputs_rom("ldir [pathname] - list local machine directory\n");
+      tputs_rom("bye - close connection\n");
+      tputs_rom("  aliases: exit, quit\n");
     } else if (connected) {
       if (!bk_strcmpi(str2ram("pwd"), tok)) {
         ftpPwd();
       } else if (!bk_strcmpi(str2ram("cd"), tok)) {
         ftpCd();
-      } else if (!bk_strcmpi(str2ram("dir"), tok) || !strcmpi("ls", tok)) {
+      } else if (!bk_strcmpi(str2ram("dir"), tok) || !bk_strcmpi(str2ram("ls"), tok)) {
         ftpDir();
       } else if (!bk_strcmpi(str2ram("get"), tok)) {
         ftpGet();
@@ -115,10 +115,10 @@ void handleFtp() {
       } else if (!bk_strcmpi(str2ram("ldir"), tok)) {
         bk_handleDir();
       } else {
-        tputs("Error, unknown command.\n");
+        tputs_rom("Error, unknown command.\n");
       }
     } else {
-      tputs("Error, not connected.\n");
+      tputs_rom("Error, not connected.\n");
     }
   }
 }
@@ -126,7 +126,7 @@ void handleFtp() {
 void ftpOpen() {
   char* host = bk_strtok(0, ' ');
   if (!host) {
-    tputs("Error, no host provided.\n");
+    tputs_rom("Error, no host provided.\n");
     return;
   }
   bk_strcpy(hostname, host); // store for pasv connections later.
@@ -134,30 +134,31 @@ void ftpOpen() {
   if (!port) {
     port = "21";
   } else {
-    int pint = bk_atoi(port);
+    int pint = bk_atoi(str2ram(port));
     if (!pint) {
-      tputs("Error, bad port specified.\n");
+      tputs_rom("Error, bad port specified.\n");
       return;
     }
   }
 
   int res = tcp_connect(0, host, port);
   if(!res) {
-    tputs("Error, connecting to host");
+    tputs_rom("Error, connecting to host\n");
     connected = 0;
     return;
   }
   connected = 1;
-  tputs("connected\n");
+  tputs_rom("connected\n");
 
   int code = getFtpCode();
+  bk_tputs_ram(bk_uint2str(code));
   drainChannel(0);
 
   while(code != 230) {
     while(code != 331) {
       char login[20];
       bk_strset(login, 0, 20);
-      tputs("login: ");
+      tputs_rom("login: ");
       bk_getstr(7, conio_y, login, 20, backspace);
       bk_tputc('\n');
       code = sendFtpCommand("USER", login);
@@ -166,7 +167,7 @@ void ftpOpen() {
     while(!(code == 230 || code == 530)) {
       char passwd[20];
       bk_strset(passwd, 0, 20);
-      tputs("password: ");
+      tputs_rom("password: ");
       int y = conio_y;
       bk_getstr(10, y, passwd, 20, backspace);
       int plen = bk_strlen(passwd);
@@ -235,7 +236,7 @@ void ftpDir() {
 void ftpGet() {
   char* tok = bk_strtok(0, ' ');
   if (!tok) {
-    tputs("Error, no file specified.\n");
+    tputs_rom("Error, no file specified.\n");
     return;
   }
   char safetiname[12];
@@ -254,9 +255,9 @@ void ftpGet() {
     safetiname[10] = 0;
     tiname = safetiname;
   }
-  tputs("tiname: ");
-  tputs(tiname);
-  tputs("\n");
+  tputs_rom("tiname: ");
+  bk_tputs_ram(tiname);
+  bk_tputc('\n');
 
   unsigned int unit = bk_path2unitmask(currentPath);
 
@@ -268,7 +269,9 @@ void ftpGet() {
     int code = sendFtpCommand("RETR", tok);
 
     int len = readstream(1, 128);
-    tputs("read "); tputs(bk_uint2str(len)); tputs(" bytes of data\n");
+    tputs_rom("read ");
+    bk_tputs_ram(bk_uint2str(len));
+    tputs_rom(" bytes of data\n");
 
     // should have sector loaded with first 128 bytes
     //   either a foreign file record D/F128, or a TIFILES header
@@ -277,15 +280,17 @@ void ftpGet() {
     if (len == 128 && isTiFiles(tifiles)) {
       // AddInfo must be in scratchpad
       struct AddInfo* addInfoPtr = (struct AddInfo*) 0x8320;
-      tputs("found TIFILES header\n");
+      tputs_rom("found TIFILES header\n");
       memcpy(&(addInfoPtr->first_sector), &(tifiles->sectors), 8);
 
-      tputs("setdir: "); tputs(currentPath); tputs("\n");
+      tputs_rom("setdir: ");
+      bk_tputs_ram(currentPath);
+      bk_tputc('\n');
       bk_lvl2_setdir(currentDsr->crubase, unit, currentPath);
 
       int ferr = bk_lvl2_output(currentDsr->crubase, unit, tiname, 0, addInfoPtr);
       if (ferr) {
-        tputs("Error, could not output file\n");
+        tputs_rom("Error, could not output file\n");
       } else {
         int totalsectors = tifiles->sectors;
         int secno = 0;
@@ -299,17 +304,17 @@ void ftpGet() {
           addInfoPtr->first_sector = secno++;
           ferr = bk_lvl2_output(currentDsr->crubase, unit, tiname, 1, addInfoPtr);
           if (ferr) {
-            tputs("Error, failed to write block\n");
+            tputs_rom("Error, failed to write block\n");
           } else {
-            tputs(".");
+            bk_tputc('.');
           }
         }
-        tputs("\n");
+        bk_tputc('\n');
       }
     } else {
-      tputs("foreign file, will use D/F 128");
+      tputs_rom("foreign file, will use D/F 128");
       if (len == 0) {
-        tputs("Error, no file data received\n");
+        tputs_rom("Error, no file data received\n");
         tcp_close(1);
         return;
       }
@@ -322,17 +327,19 @@ void ftpGet() {
       while (len > 0 && !ferr) {
         ferr = bk_dsr_write(currentDsr, &pab, block, 128);
         if (ferr) {
-          tputs("Error, writing file\n");
+          tputs_rom("Error, writing file\n");
           // should probably send an abort command.
           drainChannel(1);
           drainChannel(0);
           return;
         }
         len = readstream(1, 128);
-        tputs("\rread "); tputs(bk_uint2str(len)); tputs(" bytes of data\n");
+        tputs_rom("\rread ");
+        bk_tputs_ram(bk_uint2str(len));
+        tputs_rom(" bytes of data\n");
       }
       if (bk_dsr_close(currentDsr, &pab)) {
-        tputs("Error, closing file\n");
+        tputs_rom("Error, closing file\n");
         return;
       }
     }
@@ -349,16 +356,16 @@ void ftpGet() {
 
 int sendFtpCommand(char* command, char* argstring) {
   char ftpcmd[80];
-  bk_strcpy(ftpcmd, command);
+  bk_strcpy(ftpcmd, str2ram(command));
   if (argstring != 0) {
     bk_strcat(ftpcmd, str2ram(" "));
-    bk_strcat(ftpcmd, argstring);
+    bk_strcat(ftpcmd, str2ram(argstring));
   }
   bk_strcat(ftpcmd, str2ram(EOL));
   int len = bk_strlen(ftpcmd);
   int res = tcp_send_chars(0, ftpcmd, len);
   if (!res) {
-    tputs("Error, server disconnected\n");
+    tputs_rom("Error, server disconnected\n");
     return -1;
   }
 
@@ -372,17 +379,17 @@ unsigned int sendFtpPasv() {
   227 Entering Passive Mode (127,0,0,1,156,117).
   */
   char ftpcmd[8];
-  bk_strcpy(ftpcmd, "PASV");
+  bk_strcpy(ftpcmd, str2ram("PASV"));
   bk_strcat(ftpcmd, str2ram(EOL));
   int len = bk_strlen(ftpcmd);
   int res = tcp_send_chars(0, ftpcmd, len);
   if (!res) {
-    tputs("Error, server disconnected\n");
+    tputs_rom("Error, server disconnected\n");
     return -1;
   }
 
   char* line = readline(0);
-  tputs(line);
+  tputs_rom(line);
   if (!bk_str_startswith(line, str2ram("227"))) {
     return 0;
   }
@@ -455,7 +462,7 @@ int getFtpCode() {
   tcpbufavail = 0;
   // read until we get some response.
   char* line = readline(0);
-  tputs(line);
+  bk_tputs_ram(line);
   // get code from first response...
   int code = bk_atoi(line);
   return code;
@@ -466,7 +473,7 @@ void drainChannel(unsigned char socketId) {
   while(retries < 10) {
     int datalen = tcp_read_socket(socketId, tcpbuf, 256);
     tcpbuf[datalen] = 0;
-    tputs(tcpbuf);
+    bk_tputs_ram(tcpbuf);
     if (datalen) {
       retries = 0;
     } else {
@@ -482,9 +489,9 @@ int isTiFiles(struct TiFiles* tifiles) {
 
 void ftpLcd() {
   bk_handleCd();
-  tputs("local dir: ");
-  tputs(bk_uint2hex(currentDsr->crubase));
+  tputs_rom("local dir: ");
+  bk_tputs_ram(bk_uint2hex(currentDsr->crubase));
   bk_tputc('.');
-  tputs(currentPath);
+  bk_tputs_ram(currentPath);
   bk_tputc('\n');
 }
