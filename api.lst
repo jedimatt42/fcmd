@@ -1,5 +1,8 @@
-getstr
 tputc
+getstr
+
+map_page
+alloc_pages
 
 dsr_ea5load
 dsr_open
