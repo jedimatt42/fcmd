@@ -162,7 +162,7 @@ The indirection handle for the API will be placed in lower expansion memory at 0
 | API  | Name        | Parameters                                    | Return                                         |
 | ---- | ----------- | --------------------------------------------- | ---------------------------------------------- |
 | 0x01 | tputc       | R1 : character to write to terminal (in LSB)  | n/a                                            |
-| 0x02 | getstr      | R1 :                                          | R1 : return value of key pressed               |
+| 0x02 | getstr      | ???                                           | ???                                            |
 | 0x03 | map_page    | R1 : logical page number, R2 : target address | n/a                                            |
 | 0x04 | alloc_pages | R1 : number of pages                          | R1 : first logical page number, or -1 on error |
 
