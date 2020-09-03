@@ -1,10 +1,16 @@
 MEMORY
 {
+  header  (rx) : ORIGIN = 0xA000 - 8, LENGTH = 0x0008 /* binary header */
   upper_exp  (wx) : ORIGIN = 0xA000, LENGTH = 0x6000 /* 24k upper ram */
 }
 
 SECTIONS
 {
+  /* file header */
+  header : {
+    objects/_header.o(.text)
+  } >header
+  
   /* common */
   .text : {              /* all modules listed here will end up at front of each ROM bank */
   } >upper_exp

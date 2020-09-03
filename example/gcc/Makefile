@@ -13,13 +13,14 @@ LDFLAGS=\
 CFLAGS=\
   -std=gnu99 -O2 -Werror --save-temp -I.. 
 
-SRCS:=$(sort $(wildcard *.c) $(wildcard *.asm)) 
+C_SRCS:=$(wildcard *.c)
+ASM_SRCS:=$(wildcard *.asm) 
 
-OBJECT_LIST:=$(SRCS:.c=.o)
+OBJECT_LIST:=$(sort $(C_SRCS:.c=.o) $(ASM_SRCS:.asm=.o))
 
 LINK_OBJECTS:=$(addprefix objects/,$(OBJECT_LIST))
 
-all: $(FNAME).elf
+all: $(FNAME).bin
 
 # The size of the cart_rom segment in decimal
 # must agree with linkfile
@@ -27,13 +28,13 @@ COMMON_SIZE = 128
 
 $(FNAME).elf: $(LINK_OBJECTS)
 	$(LD) $(LINK_OBJECTS) $(LDFLAGS) -o $(FNAME).elf -Map=mapfile
-	if grep 0xfffff mapfile | grep -q __STATS_BANK; then echo "FAIL: Bank Overflow"; false; fi
+
+$(FNAME).bin: $(FNAME).elf
+	$(OBJCOPY) -O binary $< $@
 
 .phony clean:
 	rm -fr objects
-	rm -f *.elf
-	rm -f mapfile
-	rm -f *.RPK
+	rm -f *.elf *.bin mapfile
 
 objects/%.o: %.asm
 	mkdir -p objects; cd objects; $(GAS) ../$< -o $(notdir $@)
