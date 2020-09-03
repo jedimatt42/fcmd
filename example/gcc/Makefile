@@ -20,7 +20,7 @@ OBJECT_LIST:=$(sort $(C_SRCS:.c=.o) $(ASM_SRCS:.asm=.o))
 
 LINK_OBJECTS:=$(addprefix objects/,$(OBJECT_LIST))
 
-all: $(FNAME).bin
+all: $(FNAME)
 
 # The size of the cart_rom segment in decimal
 # must agree with linkfile
@@ -32,9 +32,13 @@ $(FNAME).elf: $(LINK_OBJECTS)
 $(FNAME).bin: $(FNAME).elf
 	$(OBJCOPY) -O binary $< $@
 
+$(FNAME): $(FNAME).bin
+	xdm99.py -T $< -t -f PROGRAM -n $(FNAME) -o $(FNAME)
+
 .phony clean:
 	rm -fr objects
 	rm -f *.elf *.bin mapfile
+	rm -f $(FNAME)
 
 objects/%.o: %.asm
 	mkdir -p objects; cd objects; $(GAS) ../$< -o $(notdir $@)
