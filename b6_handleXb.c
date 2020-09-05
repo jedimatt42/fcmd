@@ -16,7 +16,7 @@
 void handleXb() {
     struct DeviceServiceRoutine *xbdsr;
     char path[256];
-    bk_parsePathParam(&xbdsr, path, PR_REQUIRED);
+    bk_parsePathParam(0, &xbdsr, path, PR_REQUIRED);
     if (xbdsr == 0) {
         tputs_rom("no XB program specified\n");
         return;

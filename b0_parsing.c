@@ -11,6 +11,7 @@
 #include "b4_labellist.h"
 #include "b4_variables.h"
 #include "b4_preprocess.h"
+#include "b9_handleExtension.h"
 #include <string.h>
 
 #define MATCH(x,y) (!(bk_strcmpi(x,y)))
@@ -86,9 +87,7 @@ void handleCommand(char *buffer) {
     bk_vars_set(name, value);
   } else {
     if (tok) {
-      tputs_rom("unknown command: ");
-      bk_tputs_ram(tok);
-      bk_tputc('\n');
+      bk_handleExtension(tok);
     }
   }
 }
@@ -108,10 +107,10 @@ int parsePath(char* path, char* devicename) {
   return crubase;
 }
 
-void parsePathParam(struct DeviceServiceRoutine** dsr, char* buffer, int requirements) {
+void parsePathParam(char* str_in, struct DeviceServiceRoutine** dsr, char* buffer, int requirements) {
   filterglob[0] = 0;
   buffer[0] = 0; // null terminate so later we can tell if it is prepared or not.
-  char* path = bk_strtok(0, ' ');
+  char *path = bk_strtok(str_in, ' ');
   *dsr = currentDsr;
   if (path == 0) {
     if (requirements & PR_REQUIRED) {

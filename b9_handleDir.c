@@ -36,7 +36,7 @@ void handleDir() {
   }
 
   char path[256];
-  bk_parsePathParam(&dsr, path, PR_OPTIONAL | PR_WILDCARD);
+  bk_parsePathParam(0, &dsr, path, PR_OPTIONAL | PR_WILDCARD);
   if (dsr == 0) {
     tputs_rom("error, no device found.\n");
     return;

@@ -76,7 +76,7 @@ void check_exp_mem()
     // in case we have no expansion memory at all..
     volatile int *low_mem = (int *)0x2000;
     *low_mem = 0xFCFC;
-    if (*low_mem != 0xFCCF)
+    if (*low_mem != 0xFCFC)
     {
         vdpmemcpy(0x0166, "NO MEMORY EXPANSION", 19);
         while (1)

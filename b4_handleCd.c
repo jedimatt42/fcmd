@@ -11,7 +11,7 @@
 void handleCd() {
   struct DeviceServiceRoutine* dsr = 0;
   char path[256];
-  bk_parsePathParam(&dsr, path, PR_REQUIRED);
+  bk_parsePathParam(0, &dsr, path, PR_REQUIRED);
   if (dsr == 0) {
     tputs_rom("no path: drive or folder specified\n");
     return;

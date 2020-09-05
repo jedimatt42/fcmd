@@ -12,7 +12,7 @@
 void handleDelete() {
   struct DeviceServiceRoutine *dsr;
   char path[256];
-  bk_parsePathParam(&dsr, path, PR_REQUIRED);
+  bk_parsePathParam(0, &dsr, path, PR_REQUIRED);
   if (dsr == 0)
   {
     tputs_rom("no file path name specified\n");

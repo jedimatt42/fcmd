@@ -265,7 +265,7 @@ void handleTipimap() {
           if (bk_str_startswith(drive, str2ram("DSK"))) {
             struct DeviceServiceRoutine *dsr;
             char path[256];
-            bk_parsePathParam(&dsr, path, PR_OPTIONAL);
+            bk_parsePathParam(0, &dsr, path, PR_OPTIONAL);
             if (dsr == 0)
             {
               tputs_rom("bad path specified\n");

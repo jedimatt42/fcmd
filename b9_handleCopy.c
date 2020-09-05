@@ -45,7 +45,7 @@ void handleCopy() {
   bk_strcpy(tmpsrc, bk_strtok(0, ' '));
 
   // parse destination first, so glob pattern is preserved on source.
-  bk_parsePathParam(&dstdsr, dstpath, PR_REQUIRED);
+  bk_parsePathParam(0, &dstdsr, dstpath, PR_REQUIRED);
   if (dstdsr == 0)
   {
     tputs_rom("no path: drive or folder specified\n");
@@ -54,7 +54,7 @@ void handleCopy() {
 
   // parse source and set glob pattern
   setstrtok(tmpsrc);
-  bk_parsePathParam(&srcdsr, srcpath, PR_OPTIONAL | PR_WILDCARD);
+  bk_parsePathParam(0, &srcdsr, srcpath, PR_OPTIONAL | PR_WILDCARD);
   if (srcdsr == 0)
   {
     tputs_rom("error, no device found.\n");

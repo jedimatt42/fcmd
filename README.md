@@ -117,9 +117,10 @@ Force Command may itself use SAMS, so extensions must cooperate by allocating pa
 
 ## Simple Image Load Type
 
-The first word in the file should be 0x0000. 24K of the image, following the header, is loaded into 0xA000 - 0xFFFF. The image should be a single file.
-The second word is the return flag. If the value is 0xFCFC then Force Command will *not* reset the screen when the program returns.
-The third word is the start address. Force Command will branch and link `BL` to this address. Register usage will be as follows:
+The first word flags the file as a Force Command program. It must have the value: 0xFCFC
+The second word in the file should be 0x0000. Upto 24K of the image, following the header, is loaded into 0xA000 - 0xFFFF. The image should be a single file.
+The third word is the return flag. If the value is 0xFCFC then Force Command will *not* reset the screen when the program returns.
+The fourth word is the start address. Force Command will branch and link `BL` to this address. Register usage will be as follows:
 
 | register | purpose                                     |
 | -------- | ------------------------------------------- |
@@ -139,9 +140,10 @@ We provide a loader type that automatically handles loading programs greater tha
 
 The program will have a logical set of pages allocated to it when loaded. The Force Command API provides a paging abstraction to use, so that if Force Command consumes pages for other purposes, your program does not have to account for that. When your program is loaded, the first 6 logical pages will be mapped into the upper 24K expansion in sequence.
 
-The first word should be set to the number of sequential SAMS 4K pages to load.
-The second word is the return flag. If the value is 0xFCFC then Force Command will *not* reset the screen when the program returns.
-The third word is the start address. Force Command will branch and link `BL` to this address. Register usage is the same for Simple Image Load Type. This address must be within the first 6 SAMS pages, as mapped into the upper 24K, so between 0xA000 and 0xFFFF.
+The first word flags the file as a Force Command program. It must have the value: 0xFCFC
+The second word should be set to the number of sequential SAMS 4K pages to load.
+The third word is the return flag. If the value is 0xFCFC then Force Command will *not* reset the screen when the program returns.
+The fourth word is the start address. Force Command will branch and link `BL` to this address. Register usage is the same for Simple Image Load Type. This address must be within the first 6 SAMS pages, as mapped into the upper 24K, so between 0xA000 and 0xFFFF.
 
 ## PATH
 

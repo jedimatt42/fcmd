@@ -23,7 +23,7 @@ void handleType() {
 
   char namebuf[256];
   struct DeviceServiceRoutine* dsr;
-  bk_parsePathParam(&dsr, namebuf, PR_REQUIRED);
+  bk_parsePathParam(0, &dsr, namebuf, PR_REQUIRED);
   if (dsr == 0) {
     tputs_rom("error, no file specified\n");
     return;
