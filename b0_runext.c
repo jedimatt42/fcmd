@@ -13,7 +13,7 @@
 
 int runExtension(const char * ext) {
     int err = 0;
-    int *arg1 = (int *)ext + bk_strlen(ext) + 1;
+    int arg1 = (int)(ext + bk_strlen(ext) + 1);
     __asm__(
         "mov @>A006,r0\n\t"
         "mov %1,r1\n\t"
