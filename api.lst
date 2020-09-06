@@ -1,4 +1,5 @@
 tputc
+tputs_ram
 getstr
 
 map_page
