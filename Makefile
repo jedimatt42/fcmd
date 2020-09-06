@@ -16,7 +16,7 @@ LDFLAGS=\
 CFLAGS=\
   -std=gnu99 -O2 -Werror --save-temp -I.. -I../libti99 -DBANK_STACK_SIZE=15
 
-SRCS:=$(sort $(wildcard *.c) $(wildcard *.asm)) 
+SRCS:=$(sort $(wildcard *.c) $(wildcard *.asm))
 LIBTI99_SRCS=$(sort $(wildcard libti99/*.c))
 
 LIBTI99_OBJS:=$(notdir $(LIBTI99_SRCS:.c=.o))
@@ -83,8 +83,8 @@ objects/%.o: libti99/%.c
 
 api.asm: api.lst makeapi.py
 	rm -f api.asm
-	for f in `cat api.lst`; do grep $$f b*.h; done | grep BANK_ | cut -d'(' -f2 | cut -d',' -f1-2 >api.banks
-	python2 makeapi.py api.lst api.banks api.asm
+	grep DECLARE_BANKED *.h >api.banks
+	python ./makeapi.py api.lst api.asm api.banks
 
 b3_fcbanner.asm: fcbanner.ans ans2asm.py
 	python ./ans2asm.py

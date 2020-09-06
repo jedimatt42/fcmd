@@ -1,3 +1,6 @@
+#include "banks.h"
+#define MYBANK BANK(0)
+
 #include "b0_sams.h"
 #include <vdp.h>
 

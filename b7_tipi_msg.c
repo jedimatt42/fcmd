@@ -1,3 +1,6 @@
+#include "banks.h"
+#define MYBANK BANK(7)
+
 #include "b7_tipi_msg.h"
 
 

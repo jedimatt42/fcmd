@@ -19,7 +19,7 @@ trampoline:
     mov @trampdata,r12
     ai  r10, -6                         ; consume stack space
     mov r11, *r10                       ; stash caller return address
-    mov @RET_BANK(r12), @RET_BANK(r10)  ; stach caller bank
+    mov @RET_BANK(r12), @RET_BANK(r10)  ; stash caller bank
     mov @TAR_ADDR(r12), r11             ; load target address
     mov *r12, r12                       ; load target bank
     clr *r12                            ; switch to target bank

@@ -2,6 +2,9 @@
 *
 * This will set initial values for data memory and otherwise create
 * the conditions needed for the C environment */
+#include "banks.h"
+
+#define MYBANK BANK(0)
 
 #include "b0_sams.h"
 

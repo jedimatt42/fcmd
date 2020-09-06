@@ -3,6 +3,7 @@
 
 #include "b8_terminal.h"
 #include "commands.h"
+#include "b0_runext.h"
 #include "b0_parsing.h"
 #include "b1_strutil.h"
 #include "b2_dsrutil.h"
@@ -25,18 +26,11 @@ void handleExtension(const char* ext) {
         return;
     }
 
-    int* arg1 = (int*) ext + bk_strlen(ext) + 1;
-    __asm__(
-        "mov @>A006,r0\n\t"
-        "mov %1,r1\n\t"
-        "bl *r0\n\t"
-        "mov r1,%0\n\t"
-        : "=r" (err)   /* output list */
-        : "r" (arg1)   /* input list */
-        : "r0", "r1"   /* register clobber list */
-    );
+    // Go to bank 0 to actually launch so API tables are visible.
+    err = bk_runExtension(ext);
 
-    if (err) {
+    if (err)
+    {
         tputs_rom("error result: ");
         bk_tputs_ram(bk_uint2str(err));
         bk_tputc('\n');
