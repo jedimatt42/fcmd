@@ -76,7 +76,10 @@ int loadExtension(const char* ext) {
         return 1;
     }
 
-    // TODO : Check the type is PROGRAM
+    // Check the type is PROGRAM
+    if (addInfoPtr->flags & 0x80) {
+        return 1;
+    }
 
     unsigned char eof_offset = addInfoPtr->eof_offset;
 
@@ -104,11 +107,17 @@ int loadExtension(const char* ext) {
             return 1;
         }
 
-        // TODO: If first block, check that it meets header requirements
-
         vdpmemread(addInfoPtr->buffer, cpuAddr, 256);
-        cpuAddr += 256;
 
+        // If first block, check that it meets header requirements
+        // must start with 0xFCFC
+        if (blockId == 0) {
+            if (*(int *)cpuAddr != 0xFCFC) {
+                return 1;
+            }
+        }
+
+        cpuAddr += 256;
         blockId++;
     }
     return 0;
