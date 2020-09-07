@@ -9,13 +9,15 @@
 #include "b2_dsrutil.h"
 #include "b2_lvl2.h"
 #include "b8_terminal.h"
+#include "b4_variables.h"
+#include "b0_globals.h"
 #include <vdp.h>
 
 int loadExtension(const char* ext);
+int loadFromPath(const char* ext, const char* entry);
+
 
 void handleExtension(const char* ext) {
-    // TODO: search path for command
-    // for-now: just look in TIPI.FC.BIN
 
     int err = loadExtension(ext);
 
@@ -37,14 +39,57 @@ void handleExtension(const char* ext) {
     }
 }
 
+char* token_cursor(char* dst, char* str, int delim) {
+    // return the pointer to the character after the delim following token in original string:str
+    // copies token into dst.
+    // returns 0 if no following string
+    if (!str)
+    {
+        dst[0] = 0;
+        return 0;
+    }
+
+    int i = 0;
+    while (str[i] != 0 && str[i] != delim)
+    {
+        dst[i] = str[i];
+        i++;
+    }
+    dst[i] = 0;
+
+    char* next = &(str[i]);
+    if (*next == delim) {
+        return next + 1;
+    }
+    return 0;
+}
+
 int loadExtension(const char* ext) {
+    char* path = bk_vars_get(str2ram("PATH"));
+    if (path != (char*)-1) {
+        char entry[64];
+        char *cursor = token_cursor(entry, path, ';');
+
+        while(entry[0]) {
+            if (!loadFromPath(ext, entry)) {
+                return 0;
+            }
+            cursor = token_cursor(entry, cursor, ';');
+        }
+        return 1;
+    } else {
+        return loadFromPath(ext, currentPath);
+    }
+}
+
+int loadFromPath(const char* ext, const char* entry) {
     struct DeviceServiceRoutine *dsr = 0;
     char path[256];
-    char* cpuAddr = (char*) 0xA000;
+    char *cpuAddr = (char *)0xA000;
 
     {
         char fullname[256];
-        bk_strcpy(fullname, str2ram("DSK1."));
+        bk_strcpy(fullname, str2ram(entry));
         bk_strcat(fullname, ext);
         bk_parsePathParam(fullname, &dsr, path, PR_REQUIRED);
         if (!dsr) {
