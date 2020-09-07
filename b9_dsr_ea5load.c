@@ -83,7 +83,6 @@ unsigned int dsr_ea5load(struct DeviceServiceRoutine* dsr, const char* fname) {
       ea5_vdpchar(namelen, next_char);
 
       // now we can call it
-      // TODO: call this without relying on expansion ram
       bk_mds_lvl3_dsrlnkraw(crubase, VDPPAB);
 
       // if GPLWS(R12) is not crubase, then the dsr skipped the request

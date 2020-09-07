@@ -1,7 +1,5 @@
 #include "conio.h"
 
-// TODO: break up these functions into separate files, they are not interdependent
-
 // cache of screen color - foreground is only applicable to text mode
 unsigned int conio_scrnCol = (COLOR_WHITE<<4) | COLOR_DKBLUE;
 

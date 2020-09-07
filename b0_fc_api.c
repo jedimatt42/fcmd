@@ -13,9 +13,4 @@ void fc_api() {
         "mov @6(r10),r11\n\t"
         "ai r10,8\n\t"
     );
-
-    // int fc_tdata[3]; //  = {(int)bank, (int)0x6000, (int)realname};
-
-    //trampdata = (int)fc_tdata;
-    //trampoline();
 }

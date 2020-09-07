@@ -1,6 +1,5 @@
 #include "conio.h"
 
-// TODO: optimize through the header/client compile time.
 extern unsigned int conio_scrnCol; // conio_bgcolor.c
 
 void clrscr() {
