@@ -89,8 +89,8 @@ DECL_FC_API_CALL(FC_TPUTC, fc_tputc, void, (int c), (c))
 // function: void fc_tputs(const char* str)
 DECL_FC_API_CALL(FC_TPUTS, fc_tputs, void, (const char* str), (str))
 
-// function: void fc_getstr(int x, int y, char* var, int limit, int backspace)
-DECL_FC_API_CALL(FC_GETSTR, fc_getstr, void, (int x, int y, char* var, int limit, int backspace), (x, y, var, limit, backspace))
+// function: void fc_getstr(char* var, int limit, int backspace)
+DECL_FC_API_CALL(FC_GETSTR, fc_getstr, void, (char* var, int limit, int backspace), (var, limit, backspace))
 
 // function: void fc_sams_map_page(int page, int addr)
 DECL_FC_API_CALL(FC_SAMS_MAP_PAGE, fc_sams_map_page, void, (int page, int addr), (page, addr))

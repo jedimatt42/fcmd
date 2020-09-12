@@ -87,7 +87,7 @@ void main()
     bk_tputc('.');
     bk_tputs_ram(currentPath);
     tputs_rom("]\n$ ");
-    bk_getstr(2, conio_y, commandbuf, displayWidth - 3, backspace);
+    bk_getstr(commandbuf, displayWidth - 3, backspace);
     bk_tputc('\n');
     bk_enable_more();
     handleCommand(commandbuf);

@@ -21,11 +21,12 @@ static unsigned char mycgetc(unsigned char cursor);
 //  FCTN-D RIGHT - move forward, inserting spaces if necessary.
 //  FCTN-S LEFT  - if backspace is set, then delete a character to the left.
 //                 else, move cursor to the left.
-void getstr(int x, int y, char* var, int limit, int backspace) {
+void getstr(char* var, int limit, int backspace) {
   int insertMode = 0;
   unsigned char cursor = CUR_OVERWRITE;
 
-  gotoxy(x,y);
+  int x = conio_x;
+  int y = conio_y;
   cputs(var);
 
   unsigned char key = 0;

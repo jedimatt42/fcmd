@@ -79,7 +79,7 @@ void handleFtp() {
   while(1) {
     tputs_rom("ftp> ");
     bk_strset(commandbuf, 0, 120);
-    bk_getstr(5, conio_y, commandbuf, displayWidth - 3, backspace);
+    bk_getstr(commandbuf, displayWidth - 3, backspace);
     bk_tputc('\n');
     bk_enable_more();
     char* tok = bk_strtok(commandbuf, ' ');
@@ -159,7 +159,7 @@ void ftpOpen() {
       char login[20];
       bk_strset(login, 0, 20);
       tputs_rom("login: ");
-      bk_getstr(7, conio_y, login, 20, backspace);
+      bk_getstr(login, 20, backspace);
       bk_tputc('\n');
       code = sendFtpCommand("USER", login);
     }
@@ -168,8 +168,7 @@ void ftpOpen() {
       char passwd[20];
       bk_strset(passwd, 0, 20);
       tputs_rom("password: ");
-      int y = conio_y;
-      bk_getstr(10, y, passwd, 20, backspace);
+      bk_getstr(passwd, 20, backspace);
       int plen = bk_strlen(passwd);
 
       for(int i=0; i<plen; i++) {
