@@ -57,21 +57,22 @@ int samsPageCount()
     volatile int *lower_exp = (volatile int *)0x2000;
 
     // set initial state of all pages
-    for (int i = 0; i < 4096; i++)
+    for (int i = 0x20; i < 0x4000; i <<= 1)
     {
         map_page(i, 0x2000);
         *lower_exp = 0x1234;
     }
     // now mark pages and stop when they repeat
-    map_page(0, 0x2000);
-    int pages = 0;
-    while (pages < 4096 && *lower_exp != 0xFFFF)
+    int pages = 0x20;
+    map_page(pages, 0x2000);
+    while (pages < 0x4000 && *lower_exp != 0xFFFF)
     {
         *lower_exp = 0xFFFF;
-        map_page(++pages, 0x2000);
+        pages <<= 1;
+        map_page(pages, 0x2000);
     }
     samsMapOff();
-    return pages;
+    return pages >> 1;
 }
 
 void check_exp_mem()
