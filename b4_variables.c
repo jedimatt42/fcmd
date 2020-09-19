@@ -49,6 +49,7 @@ void vars_set(char* name, char* value) {
     return;
   }
   int i = vars_find(name);
+  // TODO : should remove var if value is empty, and compact map.
   if (i == -1) {
     vars_add(name, value);
   } else {
@@ -59,7 +60,11 @@ void vars_set(char* name, char* value) {
 char* vars_get(char* name) {
   int i = vars_find(name);
   if (i != -1) {
-    return var_map[i].value;
+    char* val = var_map[i].value;
+    // only return value if set, not empty
+    if (val[0] != 0) {
+      return val;
+    }
   }
   return (char*) -1;
 }
