@@ -1,6 +1,7 @@
 #include "banking.h"
 #define MYBANK BANK(9)
 
+#include "b0_main.h"
 #include "b8_terminal.h"
 #include "commands.h"
 #include "b0_runext.h"
@@ -13,13 +14,17 @@
 #include "b0_globals.h"
 #include <vdp.h>
 
-int loadExtension(const char* ext);
-int loadFromPath(const char* ext, const char* entry);
+int loadExtension(const char* ext, int* cmd_type);
+int loadFromPath(const char *ext, const char *entry, int* cmd_type);
+int binLoad(struct DeviceServiceRoutine *dsr, int unit, char *filename, struct AddInfo *addInfoPtr);
 
+#define BIN 0xFCFC
+#define SCRIPT 0x0000
 
-void handleExtension(const char* ext) {
-
-    int err = loadExtension(ext);
+void handleExtension(const char *ext)
+{
+    int cmd_type = 0;
+    int err = loadExtension(ext, &cmd_type);
 
     if (err) {
         tputs_rom("unknown command: ");
@@ -28,14 +33,16 @@ void handleExtension(const char* ext) {
         return;
     }
 
-    // Go to bank 0 to actually launch so API tables are visible.
-    err = bk_runExtension(ext);
+    if (cmd_type == BIN) {
+        // Go to bank 0 to actually launch so API tables are visible.
+        err = bk_runExtension(ext);
 
-    if (err)
-    {
-        tputs_rom("error result: ");
-        bk_tputs_ram(bk_uint2str(err));
-        bk_tputc('\n');
+        if (err)
+        {
+            tputs_rom("error result: ");
+            bk_tputs_ram(bk_uint2str(err));
+            bk_tputc('\n');
+        }
     }
 }
 
@@ -64,28 +71,33 @@ char* token_cursor(char* dst, char* str, int delim) {
     return 0;
 }
 
-int loadExtension(const char* ext) {
+int loadExtension(const char* ext, int* cmd_type) {
+    // TODO : allow ext to be fully qualified path to command
+
+    // look in current directory first, always... regardless of PATH
+    if (!loadFromPath(ext, currentPath, cmd_type)) {
+        return 0;
+    }
+
     char* path = bk_vars_get(str2ram("PATH"));
     if (path != (char*)-1) {
         char entry[64];
         char *cursor = token_cursor(entry, path, ';');
 
         while(entry[0]) {
-            if (!loadFromPath(ext, entry)) {
+            if (!loadFromPath(ext, entry, cmd_type)) {
                 return 0;
             }
             cursor = token_cursor(entry, cursor, ';');
         }
         return 1;
-    } else {
-        return loadFromPath(ext, currentPath);
     }
 }
 
-int loadFromPath(const char* ext, const char* entry) {
+int loadFromPath(const char *ext, const char *entry, int* cmd_type)
+{
     struct DeviceServiceRoutine *dsr = 0;
     char path[256];
-    char *cpuAddr = (char *)0xA000;
 
     {
         char fullname[256];
@@ -122,10 +134,21 @@ int loadFromPath(const char* ext, const char* entry) {
     }
 
     // Check the type is PROGRAM
-    if (addInfoPtr->flags & 0x80) {
-        return 1;
+    int type = (addInfoPtr->flags & 0x03);
+    if (type) {
+        *cmd_type = BIN;
+        return binLoad(dsr, unit, filename, addInfoPtr);
     }
+    // else it is DISPLAY type record file
+    // PATH has had the filename broken off, runScript needs it back on.
+    bk_strcpy(path + parent_idx + 1, filename);
+    *cmd_type = SCRIPT;
+    return !bk_runScript(dsr, path);
+}
 
+int binLoad(struct DeviceServiceRoutine *dsr, int unit, char *filename, struct AddInfo *addInfoPtr)
+{
+    char *cpuAddr = (char *)0xA000;
     unsigned char eof_offset = addInfoPtr->eof_offset;
 
     int totalBlocks = addInfoPtr->first_sector;
@@ -143,7 +166,7 @@ int loadFromPath(const char* ext, const char* entry) {
     while (blockId < totalBlocks)
     {
         addInfoPtr->first_sector = blockId;
-        err = bk_lvl2_input(dsr->crubase, unit, filename, 1, addInfoPtr);
+        int err = bk_lvl2_input(dsr->crubase, unit, filename, 1, addInfoPtr);
         if (err)
         {
             tputs_rom("error reading file: ");
