@@ -51,17 +51,15 @@ void handleHelp() {
     wraptext("==Help==\n\n"
     "help <command>\n\n"
     "Commands:\n\n"
-    "call cd cfmount checksum cls color copy delete drives echo env exit fg99 ftp goto help if "
+    "autocmd cd cfmount checksum cls color copy delete drives echo env exit fg99 ftp goto help if "
     "label load lvl2 mkdir protect readkey rename rmdir tipibeeps tipihalt tipimap "
     "tipireboot type unprotect ver width xb\n");
     return;
   }
 
-  if (matchcmd(tok,"call")) {
-    wraptext("==Run a script==\n\n"
-    "call <filepath>\n\n"
-    "File must be DISPLAY VARIABLE file.\n\n"
-    "Special file: AUTOCMD - First drive will be scanned for existance of AUTOCMD. If present it will run.\n\n"
+  if (matchcmd(tok,"autocmd")) {
+    wraptext("==AUTOCMD==\n\n"
+    "Special file: AUTOCMD - First drive will be scanned for existance of script AUTOCMD. If present it will run.\n\n"
     "Changes when AUTOCMD is found:\n"
     "- startup banner is suppressed.\n"
     "- initial tipibeeps sound is suppressed.\n");

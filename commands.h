@@ -7,7 +7,6 @@
   void handle##x();    \
   DECLARE_BANKED_VOID(handle##x, BANK(b), bk_handle##x, (), ())
 
-DEC_COMMAND(0, Call);
 DEC_COMMAND(0, Cls);
 DEC_COMMAND(0, Exit);
 DEC_COMMAND(0, Fg99);
