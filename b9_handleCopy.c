@@ -154,7 +154,7 @@ void onCopyDirEntry(struct DirEntry *dirEntry) {
       blk_cnt = 17;
     }
 
-    // read a block
+    // read a batch of blocks
     bk_lvl2_setdir(source_crubase, source_unit, srcpath);
     err = bk_lvl2_input(source_crubase, source_unit, dirEntry->name, blk_cnt, addInfoPtr);
     if (err) {
@@ -164,7 +164,7 @@ void onCopyDirEntry(struct DirEntry *dirEntry) {
       return;
     }
 
-    // write it back out
+    // write them back out
     bk_lvl2_setdir(dest_crubase, dest_unit, dstpath);
     err = bk_lvl2_output(dest_crubase, dest_unit, dirEntry->name, blk_cnt, addInfoPtr);
     if (err) {

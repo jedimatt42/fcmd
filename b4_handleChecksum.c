@@ -57,10 +57,17 @@ void handleChecksum() {
     tputs_rom("error, source file is empty.\n");
     return;
   }
+  // now read and process all the blocks
   int blockId = 0;
   while(blockId < totalBlocks) {
     addInfoPtr->first_sector = blockId;
-    err = bk_lvl2_input(dsr->crubase, unit, filename, 1, addInfoPtr);
+
+    int blk_cnt = totalBlocks - blockId;
+    if (blk_cnt > 17) {
+      blk_cnt = 17;
+    }
+
+    err = bk_lvl2_input(dsr->crubase, unit, filename, blk_cnt, addInfoPtr);
     if (err) {
       tputs_rom("error reading file: ");
       bk_tputs_ram(bk_uint2hex(err));
@@ -68,17 +75,20 @@ void handleChecksum() {
       return;
     }
 
-    unsigned char maxByte = 255;
-    if (blockId+1 == totalBlocks) {
-      maxByte = eof_offset == 0 ? 255 : eof_offset;
+    unsigned int maxByte = 0;
+    if (blockId+blk_cnt == totalBlocks) {
+      maxByte = eof_offset == 0 ? 256 : eof_offset;
+      maxByte += 256 * (blk_cnt - 1);
+    } else {
+      maxByte = blk_cnt * 256;
     }
 
-    for(int i=0; i<= maxByte; i++) {
+    for(int i=0; i < maxByte; i++) {
       sum1 = (sum1 + vdpreadchar(addInfoPtr->buffer + i)) & 0xFF;
       sum2 = (sum2 + sum1) & 0xFF;
     }
 
-    blockId++;
+    blockId += blk_cnt;
   }
 
   int result = sum2;
