@@ -12,7 +12,7 @@
 #define LVL2_OP_DELDIR 0x19
 #define LVL2_OP_RENDIR 0x1A
 
-#define VDPFBUF (FBUF + 0x100)
+#define VDPFBUF (FBUF + 0x0100)
 
 struct __attribute__((__packed__)) AddInfo {
   unsigned int buffer;

@@ -161,11 +161,50 @@ Programs are searched for left to right through the directories in the PATH.
 
 The indirection handle for the API will be placed in lower expansion memory at 0x2000. You can call Force Command API functions by placing the arguments sequentially in registers from R1 up to however many arguments are required. R10 should be set to a stack pointer that can be used by the functions. When called, an extension inherits a valid value for R10. Set R0 to the index of the API to call, and `BL @>2000`.
 
-| API  | Name        | Parameters                                    | Return                                         |
-| ---- | ----------- | --------------------------------------------- | ---------------------------------------------- |
-| 0x01 | tputc       | R1 : character to write to terminal (in LSB)  | n/a                                            |
-| 0x02 | getstr      | ???                                           | ???                                            |
-| 0x03 | map_page    | R1 : logical page number, R2 : target address | n/a                                            |
-| 0x04 | alloc_pages | R1 : number of pages                          | R1 : first logical page number, or -1 on error |
+See examples folder for API guidance by language.
+
+For GCC, there are inline function stubs that can be included and then called. For TMS9900 assembly, there is an equates file that can be included with COPY, and examples of how to make calls.
 
 ( Gotta start somewhere )
+
+# VDP Memory Map
+
+In 80 column mode, Force Command utilizes extended color attributes, and some fast scroll code for the F18A.
+
+| Address | Size in bytes | Description         |
+| ------- | ------------- | ------------------- |
+| 0x0000  | 0x0960        | Image table         |
+| 0x0960  | 0x00A0        | /free space-------/ |
+| 0x0A00  | 0x0100        | Sprite table        |
+| 0x0B00  | 0x0500        | /free space-------/ |
+| 0x1000  | 0x0800        | Pattern table       |
+| 0x1800  | 0x0960        | Color attributes    |
+| 0x2160  | varies        | /free stack ------/ |
+| 0x3FF8  | 0x0008        | Nanopeb stats       |
+| 0x4000  | 0x0034        | Fast scroll routine |
+
+Depending on your disk devices, there may be VDP stack allocations from 0x4000 downward.
+
+In 40 Column mode:
+
+| Address | Size in bytes | Description         |
+| ------- | ------------- | ------------------- |
+| 0x0000  | 0x03C0        | Image table         |
+| 0x03C0  | 0x0440        | /free space-------/ |
+| 0x0800  | 0x0800        | Pattern table       |
+| 0x1000  | varies        | /free stack ------/ |
+| 0x3FF8  | 0x0008        | Nanopeb stats       |
+| 0x4000  | 0x0034        | Fast scroll routine |
+
+IO Buffers
+
+* lvl2 IO buffer and IO buffer merge -> IO buffer
+* IO Buffer holds 17 sectors or 0x1100 bytes.
+* locations are common for 40 and 80 column modes.
+
+| Address | Size in bytes | Description         |
+| ------- | ------------- | ------------------- |
+| 0x2160  | 0x010A        | PAB                 |
+| 0x2300  | 0x0100        | IO name buffer      |
+| 0x2400  | 0x1100        | IO Buffer           |
+| 0x336A  | varies        | /free stack ------/ |

@@ -3,8 +3,8 @@
 
 #include <files.h>
 
-#define VPAB 0x3200
-#define FBUF 0x3000
+#define VPAB 0x2160
+#define FBUF 0x2300
 
 // Casting rom locations to the next 3 structs should ease
 // reasoning about any code accessing the rom header and
