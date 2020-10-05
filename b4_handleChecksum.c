@@ -53,10 +53,7 @@ void handleChecksum() {
   int sum2 = 0;
 
   int totalBlocks = addInfoPtr->first_sector;
-  if (totalBlocks == 0) {
-    tputs_rom("error, source file is empty.\n");
-    return;
-  }
+
   // now read and process all the blocks
   int blockId = 0;
   while(blockId < totalBlocks) {

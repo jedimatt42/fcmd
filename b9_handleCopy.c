@@ -129,10 +129,6 @@ void onCopyDirEntry(struct DirEntry *dirEntry) {
   }
 
   int totalBlocks = addInfoPtr->first_sector;
-  if (totalBlocks == 0) {
-    tputs_rom("error, source file is empty.\n");
-    return;
-  }
 
   // write file meta data
   bk_lvl2_setdir(dest_crubase, dest_unit, dstpath);
