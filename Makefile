@@ -84,8 +84,8 @@ objects/%.o: libti99/%.c
 api.asm: api.lst makeapi.py fc_api_template
 	rm -f api.asm
 	grep DECLARE_BANKED *.h >api.banks
-	python ./makeapi.py api.lst api.asm api.banks example/gcc/fc_api.h
+	python3 ./makeapi.py api.lst api.asm api.banks example/gcc/fc_api.h
 
 b3_fcbanner.asm: fcbanner.ans ans2asm.py
-	python ./ans2asm.py
+	python3 ./ans2asm.py
 
