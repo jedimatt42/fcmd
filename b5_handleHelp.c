@@ -52,7 +52,7 @@ void handleHelp() {
     "help <command>\n\n"
     "Commands:\n\n"
     "autocmd cd cfmount checksum cls color copy delete drives echo env exit fg99 ftp goto help if "
-    "label load lvl2 mkdir protect readkey rename rmdir tipibeeps tipihalt tipimap "
+    "label load lvl2 mkdir path protect readkey rename rmdir tipibeeps tipihalt tipimap "
     "tipireboot type unprotect ver width xb\n");
     return;
   }
@@ -189,6 +189,11 @@ void handleHelp() {
     wraptext("==Make Directory==\n\n"
     "mkdir <pathname>\n\n"
     "Create new directory with the given path name\n");
+  } else if (matchcmd(tok,"path")) {
+    wraptext("==PATH environment variable==\n\n"
+    "PATH variable\n\n"
+    "';' seperated list of device or directory names to search in for scripts and extension commands\n\n"
+    "PATH=TIPI.FC.;DSK5.\n");
   } else if (matchcmd(tok,"protect")) {
     wraptext("==Protect File==\n\n"
     "protect <filepath>\n\n"
