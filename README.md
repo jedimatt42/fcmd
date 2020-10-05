@@ -159,6 +159,8 @@ Programs are searched for left to right through the directories in the PATH.
 
 ## API
 
+SUPER BETA-PRE-RELEASE STATUS: Some of this works. It will not be a contract until version 2.0
+
 The indirection handle for the API will be placed in lower expansion memory at 0x2000. You can call Force Command API functions by placing the arguments sequentially in registers from R1 up to however many arguments are required. R10 should be set to a stack pointer that can be used by the functions. When called, an extension inherits a valid value for R10. Set R0 to the index of the API to call, and `BL @>2000`.
 
 See examples folder for API guidance by language.
