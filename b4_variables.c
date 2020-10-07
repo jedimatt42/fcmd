@@ -42,6 +42,12 @@ void vars_set(char* name, char* value) {
     bk_tputc('\n');
     return;
   }
+
+  char empty = 0;
+  if (value == 0) {
+    value = &empty;
+  }
+
   if (bk_strlen(value) > MAX_VAR_VAL) {
     tputs_rom("Error, variable value too long, limit is ");
     bk_tputs_ram(bk_uint2str(MAX_VAR_VAL));
@@ -71,10 +77,12 @@ char* vars_get(char* name) {
 
 void printVars() {
   for(int i=0; i<vars_next; i++) {
-    bk_tputs_ram(var_map[i].name);
-    bk_tputc('=');
-    bk_tputs_ram(var_map[i].value);
-    bk_tputc('\n');
+    if (var_map[i].value[0] != 0) {
+      bk_tputs_ram(var_map[i].name);
+      bk_tputc('=');
+      bk_tputs_ram(var_map[i].value);
+      bk_tputc('\n');
+    }
   }
   bk_tputc('\n');
 }
