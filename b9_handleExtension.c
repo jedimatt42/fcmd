@@ -72,9 +72,12 @@ char* token_cursor(char* dst, char* str, int delim) {
 }
 
 int loadExtension(const char* ext, int* cmd_type) {
-    // TODO : allow ext to be fully qualified path to command
+    // allow ext to be fully qualified path to command
+    if (!loadFromPath(ext, "", cmd_type)) {
+        return 0;
+    }
 
-    // look in current directory first, always... regardless of PATH
+    // look in current directory second, always... regardless of PATH
     if (!loadFromPath(ext, currentPath, cmd_type)) {
         return 0;
     }
