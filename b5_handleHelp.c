@@ -104,8 +104,11 @@ void handleHelp() {
     "path - destination device and directory\n");
   } else if (matchcmd(tok, "delete")) {
     wraptext("==Delete File==\n\n"
-    "delete <filepath>\n\n"
-    "Delete file at given path\n");
+    "delete [/y] <fileset>\n\n"
+    "Delete a file set\n\n"
+    "/y      - optional, do not prompt for each file.\n"
+    "fileset - path and file pattern for source files to copy. Wildcard * may be at beginning or end of name but not both\n"
+    "examples: DSK1.*BAS, DSK1.MUNCHM*, TELN*, *S\n");
   } else if (matchcmd(tok, "dir")) {
     wraptext("==List Directory==\n\n"
     "dir [/w] [path]\n\n"

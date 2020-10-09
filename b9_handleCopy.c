@@ -10,17 +10,17 @@
 #include "b8_terminal.h"
 #include <string.h>
 
-void onIgnoreVolInfo(struct VolInfo *volInfo);
-void onCopyDirEntry(struct DirEntry *dirEntry);
+static void onIgnoreVolInfo(struct VolInfo *volInfo);
+static void onCopyDirEntry(struct DirEntry *dirEntry);
 
-struct DeviceServiceRoutine *srcdsr;
-char* srcpath;
+static struct DeviceServiceRoutine *srcdsr;
+static char* srcpath;
 
-struct DeviceServiceRoutine *dstdsr;
-char* dstpath;
+static struct DeviceServiceRoutine *dstdsr;
+static char* dstpath;
 
-int copycount;
-int matched;
+static int copycount;
+static int matched;
 
 void handleCopy() {
   bk_disable_more();
@@ -87,11 +87,11 @@ void handleCopy() {
   }
 }
 
-void onIgnoreVolInfo(struct VolInfo *volInfo) {
+static void onIgnoreVolInfo(struct VolInfo *volInfo) {
   return;
 }
 
-void onCopyDirEntry(struct DirEntry *dirEntry) {
+static void onCopyDirEntry(struct DirEntry *dirEntry) {
   if (!bk_globMatches(dirEntry->name)) {
     return;
   }

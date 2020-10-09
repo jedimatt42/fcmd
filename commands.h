@@ -12,7 +12,6 @@ DEC_COMMAND(0, Exit);
 DEC_COMMAND(0, Fg99);
 DEC_COMMAND(0, Load);
 DEC_COMMAND(0, Width);
-DEC_COMMAND(3, Delete);
 DEC_COMMAND(3, Lvl2);
 DEC_COMMAND(3, Rename);
 DEC_COMMAND(3, Rmdir);
@@ -37,6 +36,7 @@ DEC_COMMAND(6, Tipimap);
 DEC_COMMAND(6, Xb);
 DEC_COMMAND(7, Ftp);
 DEC_COMMAND(9, Copy);
+DEC_COMMAND(9, Delete);
 DEC_COMMAND(9, Dir);
 
 #endif
