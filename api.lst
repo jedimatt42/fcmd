@@ -4,6 +4,7 @@ getstr
 
 map_page sams_map_page
 alloc_pages sams_alloc_pages
+free_pages sams_free_pages
 
 dsr_ea5load
 dsr_open

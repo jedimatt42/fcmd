@@ -120,3 +120,11 @@ int alloc_pages(int count) {
     }
     return -1;
 }
+
+void free_pages(int count) {
+    if (8 + count <= sams_next_page) {
+        sams_next_page -= count;
+    } else {
+        sams_next_page = 8;
+    }
+}
