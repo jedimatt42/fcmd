@@ -430,7 +430,21 @@ int doEscCommand(unsigned char c) {
       case 'Y': // vt52 goto
         esc_state = ESC_Y;
         break;
+      case '\b':
+      case '\f':
+      case '\n':
+      case '\r':
+      case '\t':
+      case '\v':
+        vdpchar(conio_getvram(), c);
+        ++conio_x;
+        if (conio_x > nTextEnd - nTextRow) {
+          conio_x = 0;
+          inc_row();
+        }
+        return 1;
       default:
+        charout(c);
         return 1; // done.
     }
   } else {
@@ -462,16 +476,14 @@ void charout(unsigned char ch) {
       }
       break;
     default: // it is important to handle control codes before choosing to wrap to next line.
-      if (ch >= ' ') {
-        if (conio_x > nTextEnd-nTextRow) {
-          conio_x=0;
-          inc_row();
-          if (more_on) {
-            optional_pause();
-          }
+      if (conio_x > nTextEnd-nTextRow) {
+        conio_x=0;
+        inc_row();
+        if (more_on) {
+          optional_pause();
         }
-        cputc(ch);
       }
+      cputc(ch);
     break;
   }
 }
