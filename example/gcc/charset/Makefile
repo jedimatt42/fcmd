@@ -4,14 +4,14 @@ CC=tms9900-gcc
 OBJCOPY=tms9900-objcopy
 OBJDUMP=tms9900-objdump
 
-FNAME=HELLO
+FNAME=CHARSET
 UCFNAME=$(shell echo -n $(FNAME) | tr 'a-z' 'A-Z')
 
 LDFLAGS=\
   --script=linkfile
 
 CFLAGS=\
-  -std=gnu99 -O2 -Werror --save-temp -I.. 
+  -std=gnu99 -O2 -Werror --save-temp -I../..
 
 C_SRCS:=$(wildcard *.c)
 ASM_SRCS:=$(wildcard *.asm) 
