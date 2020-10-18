@@ -3,8 +3,6 @@
 
 #include "vdp.h"
 
-void fast_scrn_scroll_default();
-
 // setting up standard screen modes - blanks the screen and returns the unblank command
 // interrupts are also disabled. Unblank will re-enable them, too, write it to VDP_REG_MODE1
 int set_graphics_raw(int sprite_mode) {
