@@ -11,7 +11,10 @@
             "compilerPath": "/home/matthew/dev/tms9900gcc/build/bin/tms9900-gcc",
             "cStandard": "c99",
             "cppStandard": "c++17",
-            "intelliSenseMode": "clang-x64"
+            "intelliSenseMode": "clang-x64",
+            "compilerArgs": [
+                "-DMYBANK=0"
+            ]
         }
     ],
     "version": 4
