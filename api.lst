@@ -7,6 +7,10 @@ alloc_pages sams_alloc_pages
 free_pages sams_free_pages
 
 sys_info
+vars_get
+vars_set
+
+handleCommand exec
 
 dsr_ea5load
 dsr_open
@@ -25,9 +29,6 @@ lvl2_setdir
 lvl2_mkdir
 lvl2_rmdir
 lvl2_rendir
-
-vars_get
-vars_set
 
 tcp_connect
 tcp_close
