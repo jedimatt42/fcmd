@@ -23,6 +23,18 @@ struct __attribute__((__packed__)) DeviceServiceRoutine {
     char unit;
 };
 
+
+/*
+  System information structure
+*/
+struct __attribute__((__packed__)) SystemInformation {
+  int isPal;
+  int displayWidth;
+  int displayHeight;
+  struct DeviceServiceRoutine* currentDsr;
+  const char* currentPath;
+};
+
 /*
   Peripheral Access Block
 */

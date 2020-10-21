@@ -12,5 +12,6 @@ int scripton = 0;
 int lineno = 0;
 struct DeviceServiceRoutine* scriptDsr = 0;
 struct PAB* scriptPab;
+int pal = 0;
 
 

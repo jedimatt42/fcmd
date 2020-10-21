@@ -23,6 +23,18 @@ struct __attribute__((__packed__)) DeviceServiceRoutine {
     char unit;
 };
 
+
+/*
+  System information structure
+*/
+struct __attribute__((__packed__)) SystemInformation {
+  int isPal;
+  int displayWidth;
+  int displayHeight;
+  struct DeviceServiceRoutine* currentDsr;
+  const char* currentPath;
+};
+
 /*
   Peripheral Access Block
 */
@@ -57,32 +69,33 @@ struct __attribute__((__packed__)) AddInfo {
 #define FC_SAMS_MAP_PAGE 0x608e
 #define FC_SAMS_ALLOC_PAGES 0x6092
 #define FC_SAMS_FREE_PAGES 0x6096
-#define FC_DSR_EA5LOAD 0x609a
-#define FC_DSR_OPEN 0x609e
-#define FC_DSR_CLOSE 0x60a2
-#define FC_DSR_READ 0x60a6
-#define FC_DSR_WRITE 0x60aa
-#define FC_DSR_STATUS 0x60ae
-#define FC_DSR_RESET 0x60b2
-#define FC_DSR_DELETE 0x60b6
-#define FC_LVL2_INPUT 0x60ba
-#define FC_LVL2_OUTPUT 0x60be
-#define FC_LVL2_PROTECT 0x60c2
-#define FC_LVL2_RENAME 0x60c6
-#define FC_LVL2_SETDIR 0x60ca
-#define FC_LVL2_MKDIR 0x60ce
-#define FC_LVL2_RMDIR 0x60d2
-#define FC_LVL2_RENDIR 0x60d6
-#define FC_VARS_GET 0x60da
-#define FC_VARS_SET 0x60de
-#define FC_TCP_CONNECT 0x60e2
-#define FC_TCP_CLOSE 0x60e6
-#define FC_TCP_READ_SOCKET 0x60ea
-#define FC_TCP_SEND_CHARS 0x60ee
-#define FC_TIPI_ON 0x60f2
-#define FC_TIPI_OFF 0x60f6
-#define FC_TIPI_SENDMSG 0x60fa
-#define FC_TIPI_RECVMSG 0x60fe
+#define FC_SYS_INFO 0x609a
+#define FC_DSR_EA5LOAD 0x609e
+#define FC_DSR_OPEN 0x60a2
+#define FC_DSR_CLOSE 0x60a6
+#define FC_DSR_READ 0x60aa
+#define FC_DSR_WRITE 0x60ae
+#define FC_DSR_STATUS 0x60b2
+#define FC_DSR_RESET 0x60b6
+#define FC_DSR_DELETE 0x60ba
+#define FC_LVL2_INPUT 0x60be
+#define FC_LVL2_OUTPUT 0x60c2
+#define FC_LVL2_PROTECT 0x60c6
+#define FC_LVL2_RENAME 0x60ca
+#define FC_LVL2_SETDIR 0x60ce
+#define FC_LVL2_MKDIR 0x60d2
+#define FC_LVL2_RMDIR 0x60d6
+#define FC_LVL2_RENDIR 0x60da
+#define FC_VARS_GET 0x60de
+#define FC_VARS_SET 0x60e2
+#define FC_TCP_CONNECT 0x60e6
+#define FC_TCP_CLOSE 0x60ea
+#define FC_TCP_READ_SOCKET 0x60ee
+#define FC_TCP_SEND_CHARS 0x60f2
+#define FC_TIPI_ON 0x60f6
+#define FC_TIPI_OFF 0x60fa
+#define FC_TIPI_SENDMSG 0x60fe
+#define FC_TIPI_RECVMSG 0x6102
 
 // function: void fc_tputc(int c)
 DECL_FC_API_CALL(FC_TPUTC, fc_tputc, void, (int c), (c))
@@ -101,6 +114,9 @@ DECL_FC_API_CALL(FC_SAMS_ALLOC_PAGES, fc_sams_alloc_pages, int, (int count), (co
 
 // function: void fc_sams_free_pages(int count)
 DECL_FC_API_CALL(FC_SAMS_FREE_PAGES, fc_sams_free_pages, void, (int count), (count))
+
+// function: void fc_sys_info(struct SystemInformation* info)
+DECL_FC_API_CALL(FC_SYS_INFO, fc_sys_info, void, (struct SystemInformation* info), (info))
 
 // function: unsigned int fc_dsr_ea5load(struct DeviceServiceRoutine * dsr, const char *fname)
 DECL_FC_API_CALL(FC_DSR_EA5LOAD, fc_dsr_ea5load, unsigned int, (struct DeviceServiceRoutine * dsr, const char *fname), (dsr, fname))

@@ -2,9 +2,9 @@
 #define MYBANK BANK(10)
 
 // I see 5450 for PAL, and 4541 for NTSC, split the difference
-#define PAL_THRESHOLD 5000
+#define PAL_THRESHOLD 0x0B00
 
-int isPal() {
+int /*__attribute__((optimize("-O0")))*/ isPal() {
   register int cycles = 0;
 
   // wait for VDP interrupt

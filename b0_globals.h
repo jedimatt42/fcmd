@@ -12,5 +12,6 @@ extern int backspace;
 extern unsigned int displayWidth;
 extern int scripton;
 extern int lineno;
+extern int pal;
 
 #endif

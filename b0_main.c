@@ -18,6 +18,7 @@
 #include "b8_terminal.h"
 #include "b8_getstr.h"
 #include "b8_setupScreen.h"
+#include "b10_isPal.h"
 
 const char tipibeeps[] = {
   0x04, 0x9f, 0xbf, 0xdf, 0xff, 0x02,
@@ -59,6 +60,7 @@ void main()
   foreground = 15;
   background = 4;
   bk_setupScreen(bk_isF18A() ? 80 : 40);
+  pal = bk_isPal();
 
   bk_loadDriveDSRs();
   scripton = 0;
