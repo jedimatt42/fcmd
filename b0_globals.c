@@ -13,5 +13,6 @@ int lineno = 0;
 struct DeviceServiceRoutine* scriptDsr = 0;
 struct PAB* scriptPab;
 int pal = 0;
+int vdp_type;
 
 

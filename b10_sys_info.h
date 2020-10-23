@@ -8,6 +8,7 @@
 */
 struct __attribute__((__packed__)) SystemInformation {
   int isPal;
+  int vdp_type;
   int displayWidth;
   int displayHeight;
   struct DeviceServiceRoutine* currentDsr;

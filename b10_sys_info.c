@@ -10,4 +10,5 @@ void sys_info(struct SystemInformation* info) {
     info->displayWidth = displayWidth;
     info->displayHeight = ( displayWidth == 80 ? 30 : 24 );
     info->isPal = pal;
+    info->vdp_type = vdp_type;
 }

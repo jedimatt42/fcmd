@@ -10,7 +10,7 @@ sys_info
 vars_get
 vars_set
 
-handleCommand exec
+exec
 
 dsr_ea5load
 dsr_open
