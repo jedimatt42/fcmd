@@ -99,6 +99,10 @@ int loadExtension(const char* ext, int* cmd_type) {
 
 int loadFromPath(const char *ext, const char *entry, int* cmd_type)
 {
+    if (api_exec) {
+        return 1; // don't allow nested execution until we implement memory paging
+    }
+
     struct DeviceServiceRoutine *dsr = 0;
     char path[256];
 
