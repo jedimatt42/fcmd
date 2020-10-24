@@ -14,7 +14,6 @@ extern unsigned int displayHeight;
 extern int scripton;
 extern int lineno;
 extern int pal;
-extern int vdp_type;
 extern int api_exec;
 
 #endif

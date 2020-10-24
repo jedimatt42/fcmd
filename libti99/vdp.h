@@ -491,6 +491,7 @@ extern int nTextPos,nTextFlags;
 #define TEXT_WIDTH_80            0x0100
 #define TEXT_HEIGHT_24           0x0080
 #define TEXT_HEIGHT_30           0x0040
+#define TEXT_HEIGHT_26           0x0020
 
 extern unsigned char gSaveIntCnt;	// console interrupt count byte
 

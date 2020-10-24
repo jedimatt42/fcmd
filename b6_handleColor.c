@@ -5,6 +5,7 @@
 #include "b0_globals.h"
 #include "b1_strutil.h"
 #include "b8_terminal.h"
+#include "b10_detect_vdp.h"
 #include <conio.h>
 #include <string.h>
 
@@ -30,7 +31,7 @@ void handleColor() {
     }
   }
 
-  if (termWidth == 80) {
+  if (displayWidth == 80 && vdp_type == VDP_F18A) {
     bk_bgcolor(background);
     bk_textcolor(foreground);
     VDP_SET_REGISTER(VDP_REG_COL, background & 0x0f);

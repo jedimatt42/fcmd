@@ -18,7 +18,6 @@ void tputs_ram(const char* str);
 void enable_more();
 void disable_more();
 
-extern int termWidth;
 extern unsigned char foreground;
 extern unsigned char background;
 

@@ -1,10 +1,11 @@
+#include <banks.h>
+#define MYBANK BANK(8)
+
 #include "conio.h"
+#include <b0_globals.h>
 
 void inc_row() {
-  int y = 23;
-  if (nTextFlags & TEXT_HEIGHT_30) {
-    y = 29;
-  }
+  int y = displayHeight - 1;
 
   if (conio_y >= y) {
     scrn_scroll();

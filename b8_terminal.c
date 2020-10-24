@@ -2,6 +2,8 @@
 #define MYBANK BANK(8)
 
 #include "b8_terminal.h"
+#include "b0_globals.h"
+#include "b10_detect_vdp.h"
 #include <conio.h>
 #include <string.h>
 
@@ -36,7 +38,6 @@ int stage;
 unsigned char bytestr[128];
 int bs_idx;
 
-int termWidth;
 int more_on;
 int more_count;
 
@@ -75,14 +76,14 @@ static void optional_pause() {
   // disable more_on to avoid infinate recursion
   more_on = 0;
   more_count++;
-  int limit = termWidth == 40 ? 22 : 28;
+  int limit = displayHeight - 2;
 
   if (more_count >= limit) {
     tputs_rom("\n-- press any key for more --");
     cgetc();
     more_count = 0;
-    cclearxy(0,limit,termWidth);
-    cclearxy(0,limit+1,termWidth);
+    cclearxy(0, limit, displayWidth);
+    cclearxy(0, limit + 1, displayWidth);
     gotoxy(0,limit);
   }
   more_on = 1;
@@ -256,7 +257,7 @@ void setColors() {
 
 void doSGRCommand() {
   // only support color in 80 column mode.
-  if (termWidth != 80) {
+  if (displayWidth != 80 || vdp_type != VDP_F18A) {
     return;
   }
 

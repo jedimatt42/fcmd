@@ -1,21 +1,21 @@
+#include <banks.h>
+
+#define MYBANK BANK(0)
+
 #include "conio.h"
+#include <b0_globals.h>
 
 extern unsigned int conio_scrnCol; // conio_bgcolor.c
 
 void clrscr() {
-    // special handling for the bitmap modes
-    if (nTextFlags&TEXT_FLAG_IS_BITMAPPED) {
-        // right now we assume no masking
-	    vdpmemset(gPattern, 0, 32*24*8);
-        if (nTextFlags&TEXT_FLAG_HAS_ATTRIBUTES) {
-	        vdpmemset(gColor, conio_scrnCol, 32*24*8);
-        }
-    } else {
-        // use the conio functions for text modes
-        gotoxy(0,0);
-        vdpmemset(conio_getvram(), ' ', nTextEnd+1);
-        if (nTextFlags&TEXT_FLAG_HAS_ATTRIBUTES) {
-    	    vdpmemset(gColor, conio_scrnCol, nTextEnd+1);
-        }
-    }
+  // use the conio functions for text modes
+  gotoxy(0, 0);
+  int limit = nTextEnd + 1;
+  if (displayHeight == 26) {
+    limit += displayWidth;
+  }
+  vdpmemset(conio_getvram(), ' ', limit);
+  if (nTextFlags & TEXT_FLAG_HAS_ATTRIBUTES) {
+    vdpmemset(gColor, conio_scrnCol, limit);
+  }
 }

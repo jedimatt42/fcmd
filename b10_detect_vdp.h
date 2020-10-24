@@ -3,6 +3,8 @@
 
 #include "banking.h"
 
+extern int vdp_type;
+
 #define VDP_F18A 0xF18A
 #define VDP_9938 0x9938
 #define VDP_9958 0x9958

@@ -6,6 +6,8 @@
 #include "b8_setupScreen.h"
 #include <vdp.h>
 
+int vdp_type;
+
 int detect_vdp() {
   if (bk_isF18A()) {
       return VDP_F18A;

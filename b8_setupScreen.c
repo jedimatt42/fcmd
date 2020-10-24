@@ -65,11 +65,11 @@ void setupScreen(int width) {
   } else { // 40 is the only other allowed value.
     displayWidth = 40;
     set_text();
+    displayHeight = 24;
   }
   bk_initTerminal();
-  termWidth = displayWidth;
 
-  if (termWidth == 80) {
+  if (displayWidth == 80 && vdp_type == VDP_F18A) {
     bgcolor(background);
     textcolor(foreground);
     VDP_SET_REGISTER(VDP_REG_COL, background & 0x0f);
