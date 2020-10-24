@@ -10,6 +10,7 @@ extern char currentPath[256];
 extern char filterglob[12];
 extern int backspace;
 extern unsigned int displayWidth;
+extern unsigned int displayHeight;
 extern int scripton;
 extern int lineno;
 extern int pal;

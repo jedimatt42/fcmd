@@ -8,6 +8,7 @@ char currentPath[256];
 char filterglob[12];
 int backspace;
 unsigned int displayWidth = 40;
+unsigned int displayHeight = 24;
 int scripton = 0;
 int lineno = 0;
 struct DeviceServiceRoutine* scriptDsr = 0;

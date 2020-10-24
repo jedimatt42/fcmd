@@ -5,6 +5,7 @@
 #include "b3_oem.h"
 #include "b8_terminal.h"
 #include "b0_globals.h"
+#include "b10_detect_vdp.h"
 #include <vdp.h>
 #include <conio.h>
 
@@ -54,7 +55,13 @@ void setupScreen(int width) {
     return;
   } else if (width == 80) {
     displayWidth = 80;
-    set_text80x30_color();
+    if (vdp_type == VDP_F18A) {
+      set_text80x30_color();
+      displayHeight = 30;
+    } else {
+      set_text80();
+      displayHeight = 26;
+    }
   } else { // 40 is the only other allowed value.
     displayWidth = 40;
     set_text();
