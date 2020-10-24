@@ -12,25 +12,25 @@ int detect_vdp() {
   }
 
   unsigned char reg4 = 0;
-  VDPWA = (unsigned char)4;
-  VDPWA = (unsigned char) 0x80 | 15;
+  VDPWA = 4;
+  VDPWA = 0x80 | 15;
 
   reg4 = VDPST;
 
-  VDPWA = (unsigned char)0;
-  VDPWA = (unsigned char) 0x80 | 15;
+  VDPWA = 0;
+  VDPWA = 0x80 | 15;
 
   if (reg4 != 0xFE) {
     return VDP_9918;
   } else {
     unsigned char reg1 = 0;
-    VDPWA = (unsigned char)1;
-    VDPWA = (unsigned char) 0x80 | 15;
+    VDPWA = 1;
+    VDPWA = 0x80 | 15;
 
     reg1 = VDPST;
 
-    VDPWA = (unsigned char)0;
-    VDPWA = (unsigned char) 0x80 | 15;
+    VDPWA = 0;
+    VDPWA = 0x80 | 15;
 
     if (reg1 & 0x04) {
         return VDP_9958;
