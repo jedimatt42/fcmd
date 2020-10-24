@@ -5,10 +5,14 @@
 #include "b0_globals.h"
 
 void sys_info(struct SystemInformation* info) {
-    info->currentDsr = currentDsr;
-    info->currentPath = currentPath;
-    info->displayWidth = displayWidth;
-    info->displayHeight = ( displayWidth == 80 ? 30 : 24 );
-    info->isPal = pal;
-    info->vdp_type = vdp_type;
+  info->dsrList = dsrList;
+  info->currentDsr = currentDsr;
+  info->currentPath = currentPath;
+}
+
+void display_info(struct DisplayInformation* info) {
+  info->displayWidth = displayWidth;
+  info->displayHeight = (displayWidth == 80 ? 30 : 24);
+  info->isPal = pal;
+  info->vdp_type = vdp_type;
 }

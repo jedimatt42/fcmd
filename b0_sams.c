@@ -37,6 +37,11 @@ void __attribute__((noinline)) map_page(int page, int location)
         : "r12");
 }
 
+void sams_info(struct SamsInformation* info) {
+    info->next_page = sams_next_page;
+    info->total_pages = sams_total_pages;
+}
+
 int hasSams()
 {
     volatile int *lower_exp = (volatile int *)0x2000;

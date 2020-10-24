@@ -23,16 +23,34 @@ struct __attribute__((__packed__)) DeviceServiceRoutine {
     char unit;
 };
 
-
 /*
   System information structure
 */
 struct __attribute__((__packed__)) SystemInformation {
-  int isPal;
-  int displayWidth;
-  int displayHeight;
+  struct DeviceServiceRoutine* dsrList; // points to array of 20 dsrs
   struct DeviceServiceRoutine* currentDsr;
   const char* currentPath;
+};
+
+// Values for vdp_type in DisplayInformation
+#define VDP_F18A 0xF18A
+#define VDP_9938 0x9938
+#define VDP_9958 0x9958
+#define VDP_9918 0x9918
+
+/*
+  Display parameter structure
+*/
+struct __attribute__((__packed__)) DisplayInformation {
+  int isPal;
+  int vdp_type;
+  int displayWidth;
+  int displayHeight;
+};
+
+struct __attribute__((__packed__)) SamsInformation {
+  int next_page;
+  int total_pages;
 };
 
 /*

@@ -49,6 +49,68 @@ int hexdigit(int v) {
    }
 }
 
+char *uint2str(unsigned int x) {
+  static char strbuf[8];
+
+  // we just populate and return strbuf
+  int unzero = 0;
+  char *out = strbuf;
+  int div = 10000;
+  int tmp;
+
+  while (div > 0) {
+    tmp = x / div;
+    x = x % div;
+    if ((tmp > 0) || (unzero)) {
+      unzero = 1;
+      *(out++) = tmp + '0';
+    }
+    div /= 10;
+  }
+  if (!unzero) *(out++) = '0';
+  *out = '\0';
+  return strbuf;
+}
+
+void info() {
+  struct DisplayInformation dInfo;
+  struct SamsInformation sInfo;
+
+  fc_sams_info(&sInfo);
+  fc_display_info(&dInfo);
+
+  fc_tputs("VDP: ");
+  switch(dInfo.vdp_type) {
+    case VDP_9918:
+      fc_tputs("TMS 9918\n");
+      break;
+    case VDP_9938:
+      fc_tputs("Yamaha 9938\n");
+      break;
+    case VDP_9958:
+      fc_tputs("Yamaha 9958\n");
+      break;
+    case VDP_F18A:
+      fc_tputs("F18A\n");
+      break;
+  }
+
+  fc_tputs("Display: ");
+  if (dInfo.isPal) {
+    fc_tputs("PAL\n");
+  } else {
+    fc_tputs("NTSC\n");
+  }
+
+  fc_tputs("Memory: ");
+  if (sInfo.total_pages == 0) {
+    fc_tputs("32k\n");
+  } else {
+    fc_tputs(uint2str(4*sInfo.total_pages));
+    fc_tputs("K\n");
+  }
+}
+
 int main(char* args) {
   cmdline_args(args);
   //sams_example();
@@ -56,6 +118,8 @@ int main(char* args) {
 
   fc_exec("echo hello world");
   fc_exec("HELLO");
+
+  info();
 
   return 0;
 }

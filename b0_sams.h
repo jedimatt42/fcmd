@@ -19,8 +19,17 @@ int alloc_pages(int count);
 // return highest pages back to system. If you allocated 3, and free 2, you still have your first page.
 void free_pages(int count);
 
+struct __attribute__((__packed__)) SamsInformation {
+  int next_page;
+  int total_pages;
+};
+
+// memory info
+void sams_info(struct SamsInformation* info);
+
 DECLARE_BANKED_VOID(map_page, BANK(0), bk_map_page, (int page, int addr), (page, addr))
 DECLARE_BANKED(alloc_pages, BANK(0), int, bk_alloc_pages, (int count), (count))
 DECLARE_BANKED_VOID(free_pages, BANK(0), bk_free_pages, (int count), (count))
+DECLARE_BANKED_VOID(sams_info, BANK(0), bk_sams_info, (struct SamsInformation* info), (info))
 
 #endif

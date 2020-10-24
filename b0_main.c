@@ -52,7 +52,6 @@ void titleScreen() {
   bk_tputc(' ');
   tputs_rom(__DATE__);
   tputs_rom("\nwww.jedimatt42.com\n\n");
-  bk_tputs_ram(bk_uint2hex(vdp_type));
 }
 
 void main()
