@@ -7,6 +7,7 @@ define(`BANKSUMMARIES', `BANKSUMMARY($1) ifelse(eval($1 > $2), 1, `
 define(BANKROMSIZE, __STATS_BANK_$1 )
 define(`TOTALROMSPACE', `BANKROMSIZE($1) + ifelse(eval($1 > $2), 1, `TOTALROMSPACE(decr($1), $2)', `')')dnl
 
+define(TOP_BANK, 15)
 
 MEMORY
 {
@@ -36,7 +37,7 @@ SECTIONS
       objects/b0_*.o(.text)
       __LOAD_DATA = .;   /* .data segment is copied here so initial values can be loaded in RAM */
     }
-    BANKSECTIONS(15,1)
+    BANKSECTIONS(TOP_BANK,1)
   } >bank_rom
 
   .data : {
@@ -56,7 +57,7 @@ SECTIONS
   __STATS_STACK = __STACK_TOP - __BSS_END;
 
   __STATS_HEAD = SIZEOF(.text);
-  BANKSUMMARIES(15,0)
-  __TOTAL_ROM_USED = TOTALROMSPACE(15,0) 0;
+  BANKSUMMARIES(TOP_BANK,0)
+  __TOTAL_ROM_USED = TOTALROMSPACE(TOP_BANK,0) 0;
   __STATS_DATA_BSS = SIZEOF(.data) + SIZEOF(.bss);
 }
