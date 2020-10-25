@@ -107,19 +107,24 @@ void info() {
     fc_tputs("32k\n");
   } else {
     fc_tputs(uint2str(4*sInfo.total_pages));
-    fc_tputs("K\n");
+    fc_tputs("K\n pages used: ");
+    fc_tputs(uint2str(sInfo.next_page));
+    fc_tputc('\n');
   }
 }
 
 int main(char* args) {
-  cmdline_args(args);
-  //sams_example();
-  //input_output();
-
-  fc_exec("echo hello world");
-  fc_exec("HELLO");
-
   info();
+
+  char buf[2];
+  buf[0] = 0;
+  fc_getstr(buf, 1, 0);
+
+  if (args && args[0]) {
+    return 0;
+  }
+
+  fc_exec("HELLO stop");
 
   return 0;
 }

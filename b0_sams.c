@@ -119,17 +119,11 @@ int init_sams() {
 
 int alloc_pages(int count) {
     int start = sams_next_page;
-    if ((count + sams_next_page) < sams_total_pages) {
-        sams_next_page += count;
-        return start;
-    }
-    return -1;
+    sams_next_page += count;
+    return start;
 }
 
-void free_pages(int count) {
-    if (8 + count <= sams_next_page) {
-        sams_next_page -= count;
-    } else {
-        sams_next_page = 8;
-    }
+int free_pages(int count) {
+    sams_next_page -= count;
+    return sams_next_page;
 }

@@ -4,6 +4,8 @@ define(`BANKSECTIONS', `BANKSECTION($1) ifelse(eval($1 > $2), 1, `
     BANKSECTIONS(decr($1), $2)', `')')dnl
 define(`BANKSUMMARIES', `BANKSUMMARY($1) ifelse(eval($1 > $2), 1, `
   BANKSUMMARIES(decr($1), $2)', `')')dnl
+define(BANKROMSIZE, __STATS_BANK_$1 )
+define(`TOTALROMSPACE', `BANKROMSIZE($1) + ifelse(eval($1 > $2), 1, `TOTALROMSPACE(decr($1), $2)', `')')dnl
 
 
 MEMORY
@@ -55,5 +57,6 @@ SECTIONS
 
   __STATS_HEAD = SIZEOF(.text);
   BANKSUMMARIES(15,0)
+  __TOTAL_ROM_USED = TOTALROMSPACE(15,0) 0;
   __STATS_DATA_BSS = SIZEOF(.data) + SIZEOF(.bss);
 }

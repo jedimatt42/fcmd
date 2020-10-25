@@ -5,7 +5,7 @@
 
 void handleExtension(char* ext);
 
-DECLARE_BANKED_VOID(handleExtension, BANK(9), bk_handleExtension, (char *ext), (ext))
+DECLARE_BANKED_VOID(handleExtension, BANK(11), bk_handleExtension, (char *ext), (ext))
 
 
 #endif

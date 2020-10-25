@@ -198,6 +198,17 @@ In 40 Column mode:
 | 0x3FF8  | 0x0008        | Nanopeb stats       |
 | 0x4000  | 0x0034        | Fast scroll routine |
 
+9938/58 80x26.5 mode:
+
+| Address | Size in bytes | Description         |
+| ------- | ------------- | ------------------- |
+| 0x0000  | 0x0870        | Image table         |
+| 0x0870  | 0x0790        | /free space-------/ |
+| 0x1000  | 0x0800        | Pattern table       |
+| 0x1800  | varies        | /free stack ------/ |
+| 0x3FF8  | 0x0008        | Nanopeb stats       |
+| 0x4000  | 0x0034        | Fast scroll routine |
+
 IO Buffers
 
 * lvl2 IO buffer and IO buffer merge -> IO buffer
@@ -209,4 +220,4 @@ IO Buffers
 | 0x2160  | 0x010A        | PAB                 |
 | 0x2300  | 0x0100        | IO name buffer      |
 | 0x2400  | 0x1100        | IO Buffer           |
-| 0x336A  | varies        | /free stack ------/ |
+| 0x3500  | varies        | /free stack ------/ |

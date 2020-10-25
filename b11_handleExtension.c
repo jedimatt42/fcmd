@@ -1,5 +1,5 @@
 #include "banking.h"
-#define MYBANK BANK(9)
+#define MYBANK BANK(11)
 
 #include "b0_main.h"
 #include "b8_terminal.h"
@@ -12,10 +12,12 @@
 #include "b8_terminal.h"
 #include "b4_variables.h"
 #include "b0_globals.h"
+#include "b0_sams.h"
 #include <vdp.h>
 
 int loadExtension(const char* ext, int* cmd_type);
 int loadFromPath(const char *ext, const char *entry, int* cmd_type);
+int allocAndLoad(struct DeviceServiceRoutine* dsr, int unit, char* filename, struct AddInfo* addInfoPtr);
 int binLoad(struct DeviceServiceRoutine *dsr, int unit, char *filename, struct AddInfo *addInfoPtr);
 
 #define BIN 0xFCFC
@@ -42,6 +44,14 @@ void handleExtension(const char *ext)
             tputs_rom("error result: ");
             bk_tputs_ram(bk_uint2str(err));
             bk_tputc('\n');
+        }
+
+        if (api_exec) {
+            // if we didn't have sams, we wouldn't be able to get here with api_exec true.
+            int newbase = bk_free_pages(6) - 6;
+            for (int i = 0; i < 6; i++) {
+                bk_map_page(newbase + i, 0xA000 + (i * 0x1000));
+            }
         }
     }
 }
@@ -97,12 +107,24 @@ int loadExtension(const char* ext, int* cmd_type) {
     }
 }
 
+/* return true if there is a problem preparing memory */
+int prepareMemory() {
+    if (sams_next_page + 6 > sams_total_pages) {
+        return 1;  // don't allow nested execution if we don't have space
+    }
+    int pageStart = bk_alloc_pages(6);
+    if (pageStart == -1) {
+        return 1; // no more pages, fail the same way
+    }
+    // should be good to map upper memory expansion to the new pages.
+    for (int i = 0; i < 6; i++) {
+        bk_map_page(pageStart + i, 0xA000 + (i * 0x1000));
+    }
+    return 0;
+}
+
 int loadFromPath(const char *ext, const char *entry, int* cmd_type)
 {
-    if (api_exec) {
-        return 1; // don't allow nested execution until we implement memory paging
-    }
-
     struct DeviceServiceRoutine *dsr = 0;
     char path[256];
 
@@ -144,13 +166,22 @@ int loadFromPath(const char *ext, const char *entry, int* cmd_type)
     int type = (addInfoPtr->flags & 0x03);
     if (type) {
         *cmd_type = BIN;
-        return binLoad(dsr, unit, filename, addInfoPtr);
+        return allocAndLoad(dsr, unit, filename, addInfoPtr);
     }
     // else it is DISPLAY type record file
     // PATH has had the filename broken off, runScript needs it back on.
     bk_strcpy(path + parent_idx + 1, filename);
     *cmd_type = SCRIPT;
     return !bk_runScript(dsr, path);
+}
+
+int allocAndLoad(struct DeviceServiceRoutine* dsr, int unit, char* filename, struct AddInfo* addInfoPtr) {
+    if (api_exec) {
+        if (prepareMemory()) {
+            return 1;
+        }
+    }
+    return binLoad(dsr, unit, filename, addInfoPtr);
 }
 
 int binLoad(struct DeviceServiceRoutine *dsr, int unit, char *filename, struct AddInfo *addInfoPtr)

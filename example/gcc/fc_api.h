@@ -133,8 +133,8 @@ DECL_FC_API_CALL(FC_SAMS_MAP_PAGE, fc_sams_map_page, void, (int page, int addr),
 // function: int fc_sams_alloc_pages(int count)
 DECL_FC_API_CALL(FC_SAMS_ALLOC_PAGES, fc_sams_alloc_pages, int, (int count), (count))
 
-// function: void fc_sams_free_pages(int count)
-DECL_FC_API_CALL(FC_SAMS_FREE_PAGES, fc_sams_free_pages, void, (int count), (count))
+// function: int fc_sams_free_pages(int count)
+DECL_FC_API_CALL(FC_SAMS_FREE_PAGES, fc_sams_free_pages, int, (int count), (count))
 
 // function: void fc_sys_info(struct SystemInformation* info)
 DECL_FC_API_CALL(FC_SYS_INFO, fc_sys_info, void, (struct SystemInformation* info), (info))
