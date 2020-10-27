@@ -29,7 +29,6 @@ DEC_COMMAND(4, Protect);
 DEC_COMMAND(4, Readkey);
 DEC_COMMAND(4, Type);
 DEC_COMMAND(4, Unprotect);
-DEC_COMMAND(5, Help);
 DEC_COMMAND(6, CFMount);
 DEC_COMMAND(6, Color);
 DEC_COMMAND(6, Tipimap);
@@ -38,5 +37,6 @@ DEC_COMMAND(7, Ftp);
 DEC_COMMAND(9, Copy);
 DEC_COMMAND(9, Delete);
 DEC_COMMAND(9, Dir);
+DEC_COMMAND(15, Help);
 
 #endif

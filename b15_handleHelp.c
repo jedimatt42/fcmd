@@ -1,15 +1,16 @@
 #include "banks.h"
-#define MYBANK BANK(5)
+#define MYBANK BANK(15)
 
 #include "commands.h"
 #include "b0_main.h"
 #include "b0_globals.h"
 #include "b1_strutil.h"
 #include "b8_terminal.h"
+#include "b14_moreHelp.h"
 #include <string.h>
 #include <conio.h>
 
-int matchcmd(char* input, char* exp) {
+static int matchcmd(char* input, char* exp) {
   char stackstr[80];
   int len = 0;
   while(exp[len] != 0) {
@@ -20,7 +21,7 @@ int matchcmd(char* input, char* exp) {
   return 0 == bk_strcmpi(input, stackstr);
 }
 
-int wordlen(char* str) {
+static int wordlen(char* str) {
   int r=0;
   while(!(str[r] == 0 || str[r] == ' ')) {
     r++;
@@ -28,7 +29,7 @@ int wordlen(char* str) {
   return r;
 }
 
-void wraptext(char* str) {
+static void wraptext(char* str) {
   int i=0;
   while(str[i] != 0) {
     if (str[i] == ' ') {
@@ -250,17 +251,12 @@ void handleHelp() {
   } else if (matchcmd(tok,"width")) {
     wraptext("==Set Screen Width==\n\n"
     "width <40|80>\n\n"
-    "Change display to 40x24 or 80x30 mode. 80 column mode requires F18A video enhancement\n");
-  } else if (matchcmd(tok,"xb")) {
-    wraptext("==Run XB program==\n\n"
-    "xb <program-path>\n\n"
-    "Switch a FinalGROM99 to an Extended BASIC cartridge, configured to RUN the specified program.\n"
-    "Default cartridge name is TIXB_G with start address 25474.\n"
-    "Use variable XBMOD to override cartridge name, and XBADDR to override start address.\n");
+    "Change display to 40x24, 80x26 or 80x30 mode.\n"
+    "F18A VDP will provide 80x30 with colors per character.\n"
+    "9938/9958 VDPs will provide 80x26 with single foreground/background colors.\n"
+    "Other VDPs will fall back on 40x24 with single foreground/background colors.\n");
   } else {
-    wraptext("no help for command: ");
-    bk_tputs_ram(tok);
-    bk_tputc('\n');
+    bk_b14Help(tok);
   }
   bk_tputc('\n');
 }
