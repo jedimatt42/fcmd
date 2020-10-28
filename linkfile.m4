@@ -4,7 +4,7 @@ define(`BANKSECTIONS', `BANKSECTION($1) ifelse(eval($1 > $2), 1, `
     BANKSECTIONS(decr($1), $2)', `')')dnl
 define(`BANKSUMMARIES', `BANKSUMMARY($1) ifelse(eval($1 > $2), 1, `
   BANKSUMMARIES(decr($1), $2)', `')')dnl
-define(BANKROMSIZE, __STATS_BANK_$1 )
+define(BANKROMSIZE, SIZEOF(.bank$1) )
 define(`TOTALROMSPACE', `BANKROMSIZE($1) + ifelse(eval($1 > $2), 1, `TOTALROMSPACE(decr($1), $2)', `')')dnl
 
 define(TOP_BANK, 15)

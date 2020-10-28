@@ -37,6 +37,7 @@ DEC_COMMAND(7, Ftp);
 DEC_COMMAND(9, Copy);
 DEC_COMMAND(9, Delete);
 DEC_COMMAND(9, Dir);
+DEC_COMMAND(12, Debug);
 DEC_COMMAND(15, Help);
 
 #endif

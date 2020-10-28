@@ -220,8 +220,8 @@ char* strncpy(char* dest, char* src, int limit) {
 }
 
 int htoi(char* s) {
-  int old;
-  int out = 0;
+  unsigned int old;
+  unsigned int out = 0;
   int neg = 0;
 
   // skip whitespace
