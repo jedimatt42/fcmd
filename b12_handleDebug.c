@@ -8,23 +8,38 @@
 #include "b1_strutil.h"
 #include "b2_dsrutil.h"
 #include "b8_terminal.h"
+#include "b8_getstr.h"
 #include <string.h>
 
 void dumpMem(unsigned int addr, int len);
 
+void cmdM(char* tok) {
+    int limit = bk_atoi(bk_strtok(0, ' '));
+    dumpMem(bk_htoi(tok + 1), limit == 0 ? 8 : limit);
+}
+
 
 void handleDebug() {
-    char* tok = bk_strtok(0, ' ');
-    int toklen = bk_strlen(tok);
-    if (toklen == 5) {
-        char cmd = tok[0];
-        switch(cmd) {
-            case 'C':
-            case 'c':
-                dumpMem(bk_htoi(tok+1), 16);
-                break;
-            default:
-                tputs_rom("unkown command\n");
+    char cmdline[40];
+    while (1) {
+        for(int i=0; i<40; i++) {cmdline[i] = 0;}
+        tputs_rom("\n] ");
+        bk_getstr(cmdline, 40, 1);
+        bk_tputc('\n');
+
+        char* tok = bk_strtok(cmdline, ' ');
+        int toklen = bk_strlen(tok);
+        if (toklen > 0) {
+            char cmd = tok[0];
+            switch(cmd) {
+                case 'M':
+                    cmdM(tok);
+                    break;
+                case 'Q':
+                    return;
+                default:
+                    tputs_rom("unkown command\n");
+            }
         }
     }
 }
