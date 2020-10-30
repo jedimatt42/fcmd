@@ -43,6 +43,6 @@ $(FNAME): $(FNAME).bin
 objects/%.o: %.asm
 	mkdir -p objects; cd objects; $(GAS) ../$< -o $(notdir $@)
 
-objects/%.o: %.c
+objects/%.o: %.c ../fc_api.h
 	mkdir -p objects; cd objects; $(CC) -c ../$< $(CFLAGS) -o $(notdir $@)
 

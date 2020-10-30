@@ -1,9 +1,9 @@
 #include <fc_api.h>
 
 int main(char* args) {
-  struct SystemInformation info;
+  struct DisplayInformation info;
 
-  fc_sys_info(&info);
+  fc_display_info(&info);
 
   fc_tputs("Display: ");
   if (info.displayWidth == 40) {

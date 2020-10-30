@@ -25,7 +25,7 @@ OBJECT_LIST:=$(filter-out api.o b3_fcbanner.o,$(OBJECT_LIST:.asm=.o)) api.o b3_f
 
 LINK_OBJECTS:=$(addprefix objects/,$(OBJECT_LIST))
 
-all: $(FNAME)C.bin $(FNAME)G.bin
+all: $(FNAME)G.bin $(FNAME)C.bin subdirs
 
 # The size of the cart_rom segment in decimal
 # must agree with linkfile
@@ -61,7 +61,7 @@ $(FNAME).elf: $(LINK_OBJECTS) linkfile
 linkfile: linkfile.m4
 	m4 $< > $@
 
-.phony clean:
+clean:
 	rm -fr objects
 	rm -f *.elf
 	rm -f *.bin
@@ -71,6 +71,7 @@ linkfile: linkfile.m4
 	rm -f *.RPK
 	rm -f api.asm
 	rm -f api.banks
+	for d in $(SUBDIRS); do $(MAKE) -C example/gcc/$$d clean; done
 
 objects/%.o: %.asm
 	mkdir -p objects; cd objects; $(GAS) ../$< -o $(notdir $@)
@@ -88,4 +89,11 @@ api.asm: api.lst makeapi.py fc_api_template
 
 b3_fcbanner.asm: fcbanner.ans ans2asm.py
 	python3 ./ans2asm.py
+
+SUBDIRS=hello ntscpal charset
+
+subdirs: api.asm
+	for d in $(SUBDIRS); do $(MAKE) -C example/gcc/$$d; done
+
+.PHONY: clean subdirs
 
