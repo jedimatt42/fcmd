@@ -24,6 +24,7 @@ dsr_status
 dsr_reset
 dsr_delete
 
+path2iocode
 lvl2_input
 lvl2_output
 lvl2_protect

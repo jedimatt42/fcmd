@@ -90,7 +90,7 @@ api.asm: api.lst makeapi.py fc_api_template
 b3_fcbanner.asm: fcbanner.ans ans2asm.py
 	python3 ./ans2asm.py
 
-SUBDIRS=hello ntscpal charset
+SUBDIRS=hello ntscpal charset ftp
 
 subdirs: api.asm
 	for d in $(SUBDIRS); do $(MAKE) -C example/gcc/$$d; done

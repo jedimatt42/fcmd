@@ -52,7 +52,7 @@ void handleHelp() {
     wraptext("==Help==\n\n"
     "help <command>\n\n"
     "Commands:\n\n"
-    "autocmd cd cfmount checksum cls color copy delete drives echo env exit fg99 ftp goto help if "
+    "autocmd cd cfmount checksum cls color copy delete drives echo env exit fg99 goto help if "
     "label load lvl2 mkdir path protect readkey rename rmdir tipibeeps tipihalt tipimap "
     "tipireboot type unprotect ver width xb\n");
     return;
@@ -151,11 +151,6 @@ void handleHelp() {
     "Load cartridge from FinalGROM99 sd card\n\n"
     "cart - maximum 8 character name without the '.bin'\n\n"
     "Cart must be in the same directory on the sd card as Force Command\n");
-  } else if (matchcmd(tok, "ftp")) {
-    wraptext("==FTP Client==\n\n"
-    "ftp\n\n"
-    "Open an ftp prompt. Data connection will be in passive mode only.\n\n"
-    "Requires TIPI\n");
   } else if (matchcmd(tok, "goto")) {
     wraptext("==Goto==\n\n"
     "goto <label>\n\n"

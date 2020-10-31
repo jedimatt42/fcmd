@@ -17,8 +17,8 @@
 
 int loadExtension(const char* ext, int* cmd_type);
 int loadFromPath(const char *ext, const char *entry, int* cmd_type);
-int allocAndLoad(struct DeviceServiceRoutine* dsr, int unit, char* filename, struct AddInfo* addInfoPtr);
-int binLoad(struct DeviceServiceRoutine *dsr, int unit, char *filename, struct AddInfo *addInfoPtr);
+int allocAndLoad(struct DeviceServiceRoutine* dsr, int iocode, char* filename, struct AddInfo* addInfoPtr);
+int binLoad(struct DeviceServiceRoutine *dsr, int iocode, char *filename, struct AddInfo *addInfoPtr);
 
 #define BIN 0xFCFC
 #define SCRIPT 0x0000
@@ -138,14 +138,14 @@ int loadFromPath(const char *ext, const char *entry, int* cmd_type)
         }
     }
 
-    unsigned int unit = bk_path2unitmask(path);
+    unsigned int iocode = bk_path2iocode(path);
 
     int parent_idx = bk_lindexof(path, '.', bk_strlen(path) - 1);
     char filename[11];
     bk_strncpy(filename, path + parent_idx + 1, 10);
     path[parent_idx + 1] = 0x00;
 
-    bk_lvl2_setdir(dsr->crubase, unit, path);
+    bk_lvl2_setdir(dsr->crubase, iocode, path);
 
     // AddInfo must be in scratchpad
     struct AddInfo *addInfoPtr = (struct AddInfo *)0x8320;
@@ -156,7 +156,7 @@ int loadFromPath(const char *ext, const char *entry, int* cmd_type)
     addInfoPtr->records = 0;
     addInfoPtr->recs_per_sec = 0;
 
-    unsigned int err = bk_lvl2_input(dsr->crubase, unit, filename, 0, addInfoPtr);
+    unsigned int err = bk_lvl2_input(dsr->crubase, iocode, filename, 0, addInfoPtr);
     if (err)
     {
         return 1;
@@ -166,7 +166,7 @@ int loadFromPath(const char *ext, const char *entry, int* cmd_type)
     int type = (addInfoPtr->flags & 0x03);
     if (type) {
         *cmd_type = BIN;
-        return allocAndLoad(dsr, unit, filename, addInfoPtr);
+        return allocAndLoad(dsr, iocode, filename, addInfoPtr);
     }
     // else it is DISPLAY type record file
     // PATH has had the filename broken off, runScript needs it back on.
@@ -175,16 +175,16 @@ int loadFromPath(const char *ext, const char *entry, int* cmd_type)
     return !bk_runScript(dsr, path);
 }
 
-int allocAndLoad(struct DeviceServiceRoutine* dsr, int unit, char* filename, struct AddInfo* addInfoPtr) {
+int allocAndLoad(struct DeviceServiceRoutine* dsr, int iocode, char* filename, struct AddInfo* addInfoPtr) {
     if (api_exec) {
         if (prepareMemory()) {
             return 1;
         }
     }
-    return binLoad(dsr, unit, filename, addInfoPtr);
+    return binLoad(dsr, iocode, filename, addInfoPtr);
 }
 
-int binLoad(struct DeviceServiceRoutine *dsr, int unit, char *filename, struct AddInfo *addInfoPtr)
+int binLoad(struct DeviceServiceRoutine *dsr, int iocode, char *filename, struct AddInfo *addInfoPtr)
 {
     char *cpuAddr = (char *)0xA000;
     unsigned char eof_offset = addInfoPtr->eof_offset;
@@ -204,7 +204,7 @@ int binLoad(struct DeviceServiceRoutine *dsr, int unit, char *filename, struct A
     while (blockId < totalBlocks)
     {
         addInfoPtr->first_sector = blockId;
-        int err = bk_lvl2_input(dsr->crubase, unit, filename, 1, addInfoPtr);
+        int err = bk_lvl2_input(dsr->crubase, iocode, filename, 1, addInfoPtr);
         if (err)
         {
             tputs_rom("error reading file: ");

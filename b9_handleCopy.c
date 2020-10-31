@@ -114,13 +114,13 @@ static void onCopyDirEntry(struct DirEntry *dirEntry) {
   addInfoPtr->recs_per_sec = 0;
 
   unsigned int source_crubase = srcdsr->crubase;
-  unsigned int source_unit = bk_path2unitmask(srcpath);
+  unsigned int source_iocode = bk_path2iocode(srcpath);
   unsigned int dest_crubase = dstdsr->crubase;
-  unsigned int dest_unit = bk_path2unitmask(dstpath);
+  unsigned int dest_iocode = bk_path2iocode(dstpath);
 
   // get file meta data
-  bk_lvl2_setdir(source_crubase, source_unit, srcpath);
-  unsigned int err = bk_lvl2_input(source_crubase, source_unit, dirEntry->name, 0, addInfoPtr);
+  bk_lvl2_setdir(source_crubase, source_iocode, srcpath);
+  unsigned int err = bk_lvl2_input(source_crubase, source_iocode, dirEntry->name, 0, addInfoPtr);
   if (err) {
     tputs_rom("error reading file: ");
     bk_tputs_ram(bk_uint2hex(err));
@@ -131,8 +131,8 @@ static void onCopyDirEntry(struct DirEntry *dirEntry) {
   int totalBlocks = addInfoPtr->first_sector;
 
   // write file meta data
-  bk_lvl2_setdir(dest_crubase, dest_unit, dstpath);
-  err = bk_lvl2_output(dest_crubase, dest_unit, dirEntry->name, 0, addInfoPtr);
+  bk_lvl2_setdir(dest_crubase, dest_iocode, dstpath);
+  err = bk_lvl2_output(dest_crubase, dest_iocode, dirEntry->name, 0, addInfoPtr);
   if (err) {
     tputs_rom("error writing file: ");
     bk_tputs_ram(bk_uint2hex(err));
@@ -151,8 +151,8 @@ static void onCopyDirEntry(struct DirEntry *dirEntry) {
     }
 
     // read a batch of blocks
-    bk_lvl2_setdir(source_crubase, source_unit, srcpath);
-    err = bk_lvl2_input(source_crubase, source_unit, dirEntry->name, blk_cnt, addInfoPtr);
+    bk_lvl2_setdir(source_crubase, source_iocode, srcpath);
+    err = bk_lvl2_input(source_crubase, source_iocode, dirEntry->name, blk_cnt, addInfoPtr);
     if (err) {
       tputs_rom("\nerror reading file: ");
       bk_tputs_ram(bk_uint2hex(err));
@@ -161,8 +161,8 @@ static void onCopyDirEntry(struct DirEntry *dirEntry) {
     }
 
     // write them back out
-    bk_lvl2_setdir(dest_crubase, dest_unit, dstpath);
-    err = bk_lvl2_output(dest_crubase, dest_unit, dirEntry->name, blk_cnt, addInfoPtr);
+    bk_lvl2_setdir(dest_crubase, dest_iocode, dstpath);
+    err = bk_lvl2_output(dest_crubase, dest_iocode, dirEntry->name, blk_cnt, addInfoPtr);
     if (err) {
       tputs_rom("\nerror writing file: ");
       bk_tputs_ram(bk_uint2hex(err));

@@ -29,16 +29,16 @@ static void doProtect(char mode) {
     return;
   }
 
-  unsigned int unit = bk_path2unitmask(path);
+  unsigned int iocode = bk_path2iocode(path);
 
   int parent_idx = bk_lindexof(path, '.', bk_strlen(path) - 1);
   char filename[11];
   bk_strncpy(filename, path + parent_idx + 1, 10);
   path[parent_idx + 1] = 0x00;
 
-  bk_lvl2_setdir(dsr->crubase, unit, path);
+  bk_lvl2_setdir(dsr->crubase, iocode, path);
 
-  unsigned int err = bk_lvl2_protect(dsr->crubase, unit, filename, mode);
+  unsigned int err = bk_lvl2_protect(dsr->crubase, iocode, filename, mode);
   if (err) {
     tputs_rom("failed to modify file ");
     bk_tputs_ram(path);

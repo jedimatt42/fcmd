@@ -21,14 +21,14 @@ void handleChecksum() {
     return;
   }
 
-  unsigned int unit = bk_path2unitmask(path);
+  unsigned int iocode = bk_path2iocode(path);
 
   int parent_idx = bk_lindexof(path, '.', bk_strlen(path) - 1);
   char filename[11];
   bk_strncpy(filename, path + parent_idx + 1, 10);
   path[parent_idx + 1] = 0x00;
 
-  bk_lvl2_setdir(dsr->crubase, unit, path);
+  bk_lvl2_setdir(dsr->crubase, iocode, path);
 
   // AddInfo must be in scratchpad
   struct AddInfo* addInfoPtr = (struct AddInfo*) 0x8320;
@@ -39,7 +39,7 @@ void handleChecksum() {
   addInfoPtr->records = 0;
   addInfoPtr->recs_per_sec = 0;
 
-  unsigned int err = bk_lvl2_input(dsr->crubase, unit, filename, 0, addInfoPtr);
+  unsigned int err = bk_lvl2_input(dsr->crubase, iocode, filename, 0, addInfoPtr);
   if (err) {
     tputs_rom("error reading file: ");
     bk_tputs_ram(bk_uint2hex(err));
@@ -64,7 +64,7 @@ void handleChecksum() {
       blk_cnt = 17;
     }
 
-    err = bk_lvl2_input(dsr->crubase, unit, filename, blk_cnt, addInfoPtr);
+    err = bk_lvl2_input(dsr->crubase, iocode, filename, blk_cnt, addInfoPtr);
     if (err) {
       tputs_rom("error reading file: ");
       bk_tputs_ram(bk_uint2hex(err));

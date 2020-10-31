@@ -20,16 +20,16 @@ void handleMkdir() {
     return;
   }
 
-  unsigned int unit = bk_path2unitmask(path);
+  unsigned int iocode = bk_path2iocode(path);
 
   int parent_idx = bk_lindexof(path, '.', bk_strlen(path)-1);
   char dirname[11];
   bk_strncpy(dirname, path+parent_idx + 1, 10);
   path[parent_idx+1] = 0x00;
 
-  bk_lvl2_setdir(dsr->crubase, unit, path);
+  bk_lvl2_setdir(dsr->crubase, iocode, path);
 
-  unsigned int err = bk_lvl2_mkdir(dsr->crubase, unit, dirname);
+  unsigned int err = bk_lvl2_mkdir(dsr->crubase, iocode, dirname);
   if (err) {
     tputs_rom("failed to create directory ");
     bk_tputs_ram(path);

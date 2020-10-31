@@ -81,6 +81,19 @@ struct __attribute__((__packed__)) AddInfo {
   unsigned int records; // swizzled
 };
 
+/*
+  File open mode types, default DISPLAY, FIXED, UPDATE, SEQUENTIAL
+*/
+#define DSR_TYPE_VARIABLE	0x10
+#define DSR_TYPE_INTERNAL	0x08
+#define DSR_TYPE_OUTPUT		0x02
+#define DSR_TYPE_INPUT		0x04
+#define DSR_TYPE_APPEND		0x06
+#define DSR_TYPE_RELATIVE	0x01
+
+/*
+  Rom address tables
+*/
 #define FC_TPUTC 0x6082
 #define FC_TPUTS 0x6086
 #define FC_GETSTR 0x608a
@@ -101,22 +114,23 @@ struct __attribute__((__packed__)) AddInfo {
 #define FC_DSR_STATUS 0x60c6
 #define FC_DSR_RESET 0x60ca
 #define FC_DSR_DELETE 0x60ce
-#define FC_LVL2_INPUT 0x60d2
-#define FC_LVL2_OUTPUT 0x60d6
-#define FC_LVL2_PROTECT 0x60da
-#define FC_LVL2_RENAME 0x60de
-#define FC_LVL2_SETDIR 0x60e2
-#define FC_LVL2_MKDIR 0x60e6
-#define FC_LVL2_RMDIR 0x60ea
-#define FC_LVL2_RENDIR 0x60ee
-#define FC_TCP_CONNECT 0x60f2
-#define FC_TCP_CLOSE 0x60f6
-#define FC_TCP_READ_SOCKET 0x60fa
-#define FC_TCP_SEND_CHARS 0x60fe
-#define FC_TIPI_ON 0x6102
-#define FC_TIPI_OFF 0x6106
-#define FC_TIPI_SENDMSG 0x610a
-#define FC_TIPI_RECVMSG 0x610e
+#define FC_PATH2IOCODE 0x60d2
+#define FC_LVL2_INPUT 0x60d6
+#define FC_LVL2_OUTPUT 0x60da
+#define FC_LVL2_PROTECT 0x60de
+#define FC_LVL2_RENAME 0x60e2
+#define FC_LVL2_SETDIR 0x60e6
+#define FC_LVL2_MKDIR 0x60ea
+#define FC_LVL2_RMDIR 0x60ee
+#define FC_LVL2_RENDIR 0x60f2
+#define FC_TCP_CONNECT 0x60f6
+#define FC_TCP_CLOSE 0x60fa
+#define FC_TCP_READ_SOCKET 0x60fe
+#define FC_TCP_SEND_CHARS 0x6102
+#define FC_TIPI_ON 0x6106
+#define FC_TIPI_OFF 0x610a
+#define FC_TIPI_SENDMSG 0x610e
+#define FC_TIPI_RECVMSG 0x6112
 
 // function: void fc_tputc(int c)
 DECL_FC_API_CALL(FC_TPUTC, fc_tputc, void, (int c), (c))
@@ -178,29 +192,32 @@ DECL_FC_API_CALL(FC_DSR_RESET, fc_dsr_reset, unsigned int, (struct DeviceService
 // function: unsigned int fc_dsr_delete(struct DeviceServiceRoutine* dsr, struct PAB* pab)
 DECL_FC_API_CALL(FC_DSR_DELETE, fc_dsr_delete, unsigned int, (struct DeviceServiceRoutine* dsr, struct PAB* pab), (dsr, pab))
 
-// function: unsigned int fc_lvl2_input(int crubase, unsigned int unit, char *filename, unsigned int blockcount, struct AddInfo *addInfoPtr)
-DECL_FC_API_CALL(FC_LVL2_INPUT, fc_lvl2_input, unsigned int, (int crubase, unsigned int unit, char *filename, unsigned int blockcount, struct AddInfo *addInfoPtr), (crubase, unit, filename, blockcount, addInfoPtr))
+// function: unsigned int fc_path2iocode(const char* currentPath)
+DECL_FC_API_CALL(FC_PATH2IOCODE, fc_path2iocode, unsigned int, (const char* currentPath), (currentPath))
 
-// function: unsigned int fc_lvl2_output(int crubase, unsigned int unit, char *filename, unsigned int blockcount, struct AddInfo *addInfoPtr)
-DECL_FC_API_CALL(FC_LVL2_OUTPUT, fc_lvl2_output, unsigned int, (int crubase, unsigned int unit, char *filename, unsigned int blockcount, struct AddInfo *addInfoPtr), (crubase, unit, filename, blockcount, addInfoPtr))
+// function: unsigned int fc_lvl2_input(int crubase, unsigned int iocode, char *filename, unsigned int blockcount, struct AddInfo *addInfoPtr)
+DECL_FC_API_CALL(FC_LVL2_INPUT, fc_lvl2_input, unsigned int, (int crubase, unsigned int iocode, char *filename, unsigned int blockcount, struct AddInfo *addInfoPtr), (crubase, iocode, filename, blockcount, addInfoPtr))
 
-// function: unsigned int fc_lvl2_protect(int crubase, unsigned int unit, char *filename, int protect)
-DECL_FC_API_CALL(FC_LVL2_PROTECT, fc_lvl2_protect, unsigned int, (int crubase, unsigned int unit, char *filename, int protect), (crubase, unit, filename, protect))
+// function: unsigned int fc_lvl2_output(int crubase, unsigned int iocode, char *filename, unsigned int blockcount, struct AddInfo *addInfoPtr)
+DECL_FC_API_CALL(FC_LVL2_OUTPUT, fc_lvl2_output, unsigned int, (int crubase, unsigned int iocode, char *filename, unsigned int blockcount, struct AddInfo *addInfoPtr), (crubase, iocode, filename, blockcount, addInfoPtr))
 
-// function: unsigned int fc_lvl2_rename(int crubase, unsigned int unit, char *oldname, char *newname)
-DECL_FC_API_CALL(FC_LVL2_RENAME, fc_lvl2_rename, unsigned int, (int crubase, unsigned int unit, char *oldname, char *newname), (crubase, unit, oldname, newname))
+// function: unsigned int fc_lvl2_protect(int crubase, unsigned int iocode, char *filename, int protect)
+DECL_FC_API_CALL(FC_LVL2_PROTECT, fc_lvl2_protect, unsigned int, (int crubase, unsigned int iocode, char *filename, int protect), (crubase, iocode, filename, protect))
 
-// function: unsigned int fc_lvl2_setdir(int crubase, unsigned int unit, char* path)
-DECL_FC_API_CALL(FC_LVL2_SETDIR, fc_lvl2_setdir, unsigned int, (int crubase, unsigned int unit, char* path), (crubase, unit, path))
+// function: unsigned int fc_lvl2_rename(int crubase, unsigned int iocode, char *oldname, char *newname)
+DECL_FC_API_CALL(FC_LVL2_RENAME, fc_lvl2_rename, unsigned int, (int crubase, unsigned int iocode, char *oldname, char *newname), (crubase, iocode, oldname, newname))
 
-// function: unsigned int fc_lvl2_mkdir(int crubase, unsigned int unit, char *dirname)
-DECL_FC_API_CALL(FC_LVL2_MKDIR, fc_lvl2_mkdir, unsigned int, (int crubase, unsigned int unit, char *dirname), (crubase, unit, dirname))
+// function: unsigned int fc_lvl2_setdir(int crubase, unsigned int iocode, char* path)
+DECL_FC_API_CALL(FC_LVL2_SETDIR, fc_lvl2_setdir, unsigned int, (int crubase, unsigned int iocode, char* path), (crubase, iocode, path))
 
-// function: unsigned int fc_lvl2_rmdir(int crubase, unsigned int unit, char *dirname)
-DECL_FC_API_CALL(FC_LVL2_RMDIR, fc_lvl2_rmdir, unsigned int, (int crubase, unsigned int unit, char *dirname), (crubase, unit, dirname))
+// function: unsigned int fc_lvl2_mkdir(int crubase, unsigned int iocode, char *dirname)
+DECL_FC_API_CALL(FC_LVL2_MKDIR, fc_lvl2_mkdir, unsigned int, (int crubase, unsigned int iocode, char *dirname), (crubase, iocode, dirname))
 
-// function: unsigned int fc_lvl2_rendir(int crubase, unsigned int unit, char *oldname, char *newname)
-DECL_FC_API_CALL(FC_LVL2_RENDIR, fc_lvl2_rendir, unsigned int, (int crubase, unsigned int unit, char *oldname, char *newname), (crubase, unit, oldname, newname))
+// function: unsigned int fc_lvl2_rmdir(int crubase, unsigned int iocode, char *dirname)
+DECL_FC_API_CALL(FC_LVL2_RMDIR, fc_lvl2_rmdir, unsigned int, (int crubase, unsigned int iocode, char *dirname), (crubase, iocode, dirname))
+
+// function: unsigned int fc_lvl2_rendir(int crubase, unsigned int iocode, char *oldname, char *newname)
+DECL_FC_API_CALL(FC_LVL2_RENDIR, fc_lvl2_rendir, unsigned int, (int crubase, unsigned int iocode, char *oldname, char *newname), (crubase, iocode, oldname, newname))
 
 // function: unsigned int fc_tcp_connect(unsigned int socketId, unsigned char* hostname, unsigned char* port)
 DECL_FC_API_CALL(FC_TCP_CONNECT, fc_tcp_connect, unsigned int, (unsigned int socketId, unsigned char* hostname, unsigned char* port), (socketId, hostname, port))

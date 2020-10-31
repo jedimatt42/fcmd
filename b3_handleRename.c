@@ -21,7 +21,7 @@ void handleRename() {
     return;
   }
 
-  unsigned int unit = bk_path2unitmask(currentPath);
+  unsigned int iocode = bk_path2iocode(currentPath);
 
   char path[256];
   bk_strcpy(path, currentPath);
@@ -30,12 +30,12 @@ void handleRename() {
   unsigned int stat = bk_existsDir(currentDsr, path);
   unsigned int ferr = 0x00FF;
 
-  bk_lvl2_setdir(currentDsr->crubase, unit, currentPath);
+  bk_lvl2_setdir(currentDsr->crubase, iocode, currentPath);
 
   if (stat == 0) {
-    ferr = bk_lvl2_rendir(currentDsr->crubase, unit, filename, newname);
+    ferr = bk_lvl2_rendir(currentDsr->crubase, iocode, filename, newname);
   } else {
-    ferr = bk_lvl2_rename(currentDsr->crubase, unit, filename, newname);
+    ferr = bk_lvl2_rename(currentDsr->crubase, iocode, filename, newname);
   }
 
   if (ferr) {

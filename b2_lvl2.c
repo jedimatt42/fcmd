@@ -26,17 +26,17 @@
 
 static void call_addr(int crubase, int addr, int link);
 
-// Returns lvl2 base code in LSB, and unit number in MSB
+// Returns lvl2 device management base code in LSB, and unit number in MSB
 // 	Floppy disk controllers:	DSK	>1x
 //	Myarc harddisk controller:	WDS	>2x
 //	Scuzzy controller		SCS	>2x
 //	IDE controller:			IDE	>8x
 //	Ti to PC serial connection:	HDX	>9x
-unsigned int path2unitmask(char *dirpath)
+unsigned int path2iocode(const char *dirpath)
 {
   unsigned int operationSet = 0x0010;
   char drive[9];
-  bk_strncpy(drive, dirpath, 8);
+  bk_strncpy(drive, (char*)dirpath, 8);
   int l = bk_indexof(drive, '.');
   drive[l] = 0;
   if (bk_str_equals(str2ram("TIPI"), drive)) {
@@ -62,11 +62,11 @@ unsigned int path2unitmask(char *dirpath)
   return operationSet | (unit << 8);
 }
 
-unsigned int lvl2_protect(int crubase, unsigned int unit, char* filename, int protect) {
-  return base_lvl2(crubase, unit, LVL2_OP_PROTECT, filename, 0, protect ? 0xff : 0x00);
+unsigned int lvl2_protect(int crubase, unsigned int iocode, char* filename, int protect) {
+  return base_lvl2(crubase, iocode, LVL2_OP_PROTECT, filename, 0, protect ? 0xff : 0x00);
 }
 
-unsigned int lvl2_setdir(int crubase, unsigned int unit, char* path) {
+unsigned int lvl2_setdir(int crubase, unsigned int iocode, char* path) {
   int len = bk_strlen(path);
   if (len > 39) {
     return 0xFE;
@@ -76,57 +76,57 @@ unsigned int lvl2_setdir(int crubase, unsigned int unit, char* path) {
   VDPWD = len;
   vdpmemcpy(FBUF+1, path, len);
 
-  LVL2_UNIT = UNITNO(unit);
+  LVL2_UNIT = UNITNO(iocode);
   LVL2_STATUS = 0;
 
-  call_lvl2(crubase, OPNAME(unit, LVL2_OP_SETDIR));
+  call_lvl2(crubase, OPNAME(iocode, LVL2_OP_SETDIR));
 
   return LVL2_STATUS;
 }
 
-unsigned int lvl2_mkdir(int crubase, unsigned int unit, char* dirname) {
-  return base_lvl2(crubase, unit, LVL2_OP_MKDIR, dirname, 0, 0);
+unsigned int lvl2_mkdir(int crubase, unsigned int iocode, char* dirname) {
+  return base_lvl2(crubase, iocode, LVL2_OP_MKDIR, dirname, 0, 0);
 }
 
-unsigned int lvl2_rmdir(int crubase, unsigned int unit, char* dirname) {
-  return base_lvl2(crubase, unit, LVL2_OP_DELDIR, dirname, 0, 0);
+unsigned int lvl2_rmdir(int crubase, unsigned int iocode, char* dirname) {
+  return base_lvl2(crubase, iocode, LVL2_OP_DELDIR, dirname, 0, 0);
 }
 
-unsigned int lvl2_rename(int crubase, unsigned int unit, char* oldname, char* newname) {
-  return base_lvl2(crubase, unit, LVL2_OP_RENAME, newname, oldname, 0);
+unsigned int lvl2_rename(int crubase, unsigned int iocode, char* oldname, char* newname) {
+  return base_lvl2(crubase, iocode, LVL2_OP_RENAME, newname, oldname, 0);
 }
 
-unsigned int lvl2_rendir(int crubase, unsigned int unit, char* oldname, char* newname) {
-  return base_lvl2(crubase, unit, LVL2_OP_RENDIR, newname, oldname, 0);
+unsigned int lvl2_rendir(int crubase, unsigned int iocode, char* oldname, char* newname) {
+  return base_lvl2(crubase, iocode, LVL2_OP_RENDIR, newname, oldname, 0);
 }
 
-unsigned int lvl2_input(int crubase, unsigned int unit, char* filename, unsigned int blockcount, struct AddInfo* addInfoPtr) {
-  return direct_io(crubase, unit, LVL2_OP_INPUT, filename, blockcount, addInfoPtr);
+unsigned int lvl2_input(int crubase, unsigned int iocode, char* filename, unsigned int blockcount, struct AddInfo* addInfoPtr) {
+  return direct_io(crubase, iocode, LVL2_OP_INPUT, filename, blockcount, addInfoPtr);
 }
 
-unsigned int lvl2_output(int crubase, unsigned int unit, char* filename, unsigned int blockcount, struct AddInfo* addInfoPtr) {
-  return direct_io(crubase, unit, LVL2_OP_OUTPUT, filename, blockcount, addInfoPtr);
+unsigned int lvl2_output(int crubase, unsigned int iocode, char* filename, unsigned int blockcount, struct AddInfo* addInfoPtr) {
+  return direct_io(crubase, iocode, LVL2_OP_OUTPUT, filename, blockcount, addInfoPtr);
 }
 
-unsigned char direct_io(int crubase, unsigned int unit, char operation, char* filename, unsigned char blockcount, struct AddInfo* addInfoPtr) {
+unsigned char direct_io(int crubase, unsigned int iocode, char operation, char* filename, unsigned char blockcount, struct AddInfo* addInfoPtr) {
   LVL2_PARAMADDR1 = FBUF;
   bk_strpad(filename, 10, ' ');
   vdpmemcpy(FBUF, filename, 10);
 
-  LVL2_UNIT = UNITNO(unit);
+  LVL2_UNIT = UNITNO(iocode);
   LVL2_PROTECT = blockcount;
   LVL2_STATUS = ((unsigned int) addInfoPtr) - 0x8300;
 
   addInfoPtr->buffer = VDPFBUF; // safe from file and path name overwrites.
-  unsigned char opname = OPNAME(unit, operation);
+  unsigned char opname = OPNAME(iocode, operation);
   call_lvl2(crubase, opname);
 
   return LVL2_STATUS;
 }
 
 // Setup parameters suitably for most lvl2 calls.
-unsigned char __attribute__((noinline)) base_lvl2(int crubase, unsigned int unit, char operation, char* name1, char* name2, char param0) {
-  LVL2_UNIT = UNITNO(unit);
+unsigned char __attribute__((noinline)) base_lvl2(int crubase, unsigned int iocode, char operation, char* name1, char* name2, char param0) {
+  LVL2_UNIT = UNITNO(iocode);
   LVL2_PROTECT = param0;
   LVL2_PARAMADDR1 = FBUF;
 
@@ -141,8 +141,8 @@ unsigned char __attribute__((noinline)) base_lvl2(int crubase, unsigned int unit
     vdpmemcpy(LVL2_PARAMADDR2, name2, 10);
   }
 
-  unsigned char opname = OPNAME(unit, operation);
-  call_lvl2(crubase, OPNAME(unit, opname));
+  unsigned char opname = OPNAME(iocode, operation);
+  call_lvl2(crubase, OPNAME(iocode, opname));
 
   return LVL2_STATUS;
 }

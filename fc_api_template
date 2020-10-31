@@ -81,3 +81,16 @@ struct __attribute__((__packed__)) AddInfo {
   unsigned int records; // swizzled
 };
 
+/*
+  File open mode types, default DISPLAY, FIXED, UPDATE, SEQUENTIAL
+*/
+#define DSR_TYPE_VARIABLE	0x10
+#define DSR_TYPE_INTERNAL	0x08
+#define DSR_TYPE_OUTPUT		0x02
+#define DSR_TYPE_INPUT		0x04
+#define DSR_TYPE_APPEND		0x06
+#define DSR_TYPE_RELATIVE	0x01
+
+/*
+  Rom address tables
+*/
