@@ -25,7 +25,7 @@ OBJECT_LIST:=$(filter-out api.o b3_fcbanner.o,$(OBJECT_LIST:.asm=.o)) api.o b3_f
 
 LINK_OBJECTS:=$(addprefix objects/,$(OBJECT_LIST))
 
-all: $(FNAME)G.bin $(FNAME)C.bin subdirs
+all: $(FNAME)G.bin $(FNAME)8.bin subdirs
 
 # The size of the cart_rom segment in decimal
 # must agree with linkfile
@@ -48,7 +48,7 @@ bank0.page: $(FNAME).elf $(HEADBIN)
 	cat $(HEADBIN) objects/$@_tmp >$@
 	@dd if=/dev/null of=$@ bs=8192 seek=1
 
-$(FNAME)C.bin: $(BANKBINS)
+$(FNAME)8.bin: $(BANKBINS)
 	cat $^ >$@
 
 $(FNAME)G.bin: gpl-boot.g99 $(FNAME).elf

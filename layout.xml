@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <romset version="1.0">
    <resources>
-      <rom id="romimage" file="FCMD2MEG.bin"/>
+      <rom id="romimage" file="FCMD8.bin"/>
+      <rom id="gromimage" file="FCMDG.bin"/>
    </resources>
    <configuration>
-      <pcb type="paged377">
+      <pcb type="gromemu">
+         <socket id="grom_socket" uses="gromimage"/>
          <socket id="rom_socket" uses="romimage"/>
       </pcb>
    </configuration>
