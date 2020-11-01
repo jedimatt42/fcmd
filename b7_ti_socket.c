@@ -58,13 +58,14 @@ int tcp_send_chars(unsigned int socketId, unsigned char* buf, int size) {
 }
 
 int tcp_read_socket(unsigned int socketId, unsigned char* buf, int bufsize) {
-  buf[0] = TI_SOCKET_REQUEST;
-  buf[1] = socketId;
-  buf[2] = TI_SOCKET_READ;
-  buf[3] = bufsize >> 8;
-  buf[4] = bufsize & 0xff;
+  unsigned char request[5];
+  request[0] = TI_SOCKET_REQUEST;
+  request[1] = socketId;
+  request[2] = TI_SOCKET_READ;
+  request[3] = bufsize >> 8;
+  request[4] = bufsize & 0xff;
   tipi_on();
-  tipi_sendmsg(5, buf);
+  tipi_sendmsg(5, request);
   int recvsize = 0;
   tipi_recvmsg(&recvsize, buf);
   tipi_off();

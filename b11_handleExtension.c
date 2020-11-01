@@ -203,8 +203,14 @@ int binLoad(struct DeviceServiceRoutine *dsr, int iocode, char *filename, struct
     int blockId = 0;
     while (blockId < totalBlocks)
     {
+        int blk_cnt = totalBlocks - blockId;
+        if (blk_cnt > 17) {
+            blk_cnt = 17;
+        }
+        int load_size = blk_cnt << 8;
+
         addInfoPtr->first_sector = blockId;
-        int err = bk_lvl2_input(dsr->crubase, iocode, filename, 1, addInfoPtr);
+        int err = bk_lvl2_input(dsr->crubase, iocode, filename, blk_cnt, addInfoPtr);
         if (err)
         {
             tputs_rom("error reading file: ");
@@ -213,7 +219,7 @@ int binLoad(struct DeviceServiceRoutine *dsr, int iocode, char *filename, struct
             return 1;
         }
 
-        vdpmemread(addInfoPtr->buffer, cpuAddr, 256);
+        vdpmemread(addInfoPtr->buffer, cpuAddr, load_size);
 
         // If first block, check that it meets header requirements
         // must start with 0xFCFC
@@ -223,8 +229,8 @@ int binLoad(struct DeviceServiceRoutine *dsr, int iocode, char *filename, struct
             }
         }
 
-        cpuAddr += 256;
-        blockId++;
+        cpuAddr += load_size;
+        blockId += blk_cnt;
     }
     return 0;
 }
