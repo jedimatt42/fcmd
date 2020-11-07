@@ -30,6 +30,7 @@ struct __attribute__((__packed__)) SystemInformation {
   struct DeviceServiceRoutine* dsrList; // points to array of 20 dsrs
   struct DeviceServiceRoutine* currentDsr;
   const char* currentPath;
+  unsigned int vdp_io_buf;
 };
 
 // Values for vdp_type in DisplayInformation

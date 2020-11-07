@@ -12,6 +12,7 @@ struct __attribute__((__packed__)) SystemInformation {
   struct DeviceServiceRoutine* dsrList;
   struct DeviceServiceRoutine* currentDsr;
   const char* currentPath;
+  unsigned int vdp_io_buf;
 };
 
 struct __attribute__((__packed__)) DisplayInformation {
