@@ -1,29 +1,16 @@
 #include <fc_api.h>
 
 #include "string.h"
-
-#define VDPBUF 0x3000
+#include "bufferedio.h"
 
 int connected = 0;
 
-unsigned int CONTROL=0;
-unsigned int DATA=1;
+struct SocketBuffer control;
+struct SocketBuffer data;
 
 const char EOL[3] = {13, 10, 0};
 
 static char* hostname;
-
-unsigned char ctrlbuf[256];
-unsigned char tcpbuf[256];
-
-static char commandresponse[100];
-static int linebufload;
-static int tcpbufavail = 0;
-static int crlfstate;
-
-static unsigned char block[256];
-static int blockload;
-static int tcpbufoffset;
 
 void ftpOpen();
 void ftpQuit();
@@ -33,12 +20,10 @@ void ftpDir();
 void ftpGet();
 void ftpLcd();
 
-int getFtpCode(unsigned int socketId);
+int getFtpCode(struct SocketBuffer* socket_buf);
 int sendFtpCommand(char* command, char* argstring);
 unsigned int sendFtpPasv();
-void drainChannel(unsigned int socketId);
-char* readline(unsigned int socketId);
-int readstream(unsigned int socketId, int limit);
+void drainChannel(struct SocketBuffer* socket_buf);
 
 struct __attribute__((__packed__)) TiFiles {
   unsigned char seven;
@@ -54,6 +39,7 @@ struct __attribute__((__packed__)) TiFiles {
 int displayWidth;
 struct DeviceServiceRoutine* currentDsr;
 const char* currentPath;
+unsigned int vdp_io_buf;
 
 int isTiFiles(struct TiFiles* buffer);
 
@@ -100,10 +86,14 @@ void fetchInfo() {
   fc_sys_info(&sys_info);
   currentDsr = sys_info.currentDsr;
   currentPath = sys_info.currentPath;
+  vdp_io_buf = sys_info.vdp_io_buf;
 }
 
 int main(char* args) {
   fetchInfo();
+
+  init_socket_buffer(&control, 0);
+  init_socket_buffer(&data, 1);
 
   // allocate a common buffers on the stack
   unsigned char host[30];
@@ -178,7 +168,7 @@ void ftpOpen() {
     }
   }
 
-  int res = fc_tcp_connect(CONTROL, host, port);
+  int res = fc_tcp_connect(control.socket_id, host, port);
   if(!res) {
     fc_tputs("Error, connecting to host\n");
     connected = 0;
@@ -187,9 +177,9 @@ void ftpOpen() {
   connected = 1;
   fc_tputs("connected\n");
 
-  int code = getFtpCode(CONTROL);
+  int code = getFtpCode(&control);
   fc_tputs(uint2str(code));
-  drainChannel(CONTROL);
+  drainChannel(&control);
 
   while(code != 230) {
     while(code != 331) {
@@ -218,14 +208,14 @@ void ftpOpen() {
       code = sendFtpCommand("PASS", passwd);
     }
   }
-  drainChannel(CONTROL);
+  drainChannel(&control);
 }
 
 void ftpQuit() {
   int code = 0;
   sendFtpCommand("QUIT", 0);
   for(volatile int i = 0; i<7000; i++) { /* spin */ }
-  fc_tcp_close(CONTROL);
+  fc_tcp_close(control.socket_id);
 }
 
 void ftpPwd() {
@@ -239,19 +229,19 @@ void ftpCd() {
   sendFtpCommand("CWD", tok);
 }
 
-typedef void (*data_handler_func)(char* params);
+typedef void (*data_handler_func)(char* params[0]);
 
-void onDir(char* params) {
-  sendFtpCommand("LIST", params);
-  drainChannel(DATA);
+void onDir(char* params[]) {
+  sendFtpCommand("LIST", params[0]);
+  drainChannel(&data);
 }
 
-void onDirW(char* params) {
-  sendFtpCommand("NLST", params);
-  drainChannel(DATA);
+void onDirW(char* params[]) {
+  sendFtpCommand("NLST", params[0]);
+  drainChannel(&data);
 }
 
-void handleTransfer(char* type, data_handler_func dataHandler, char* params) {
+void handleTransfer(char* type, data_handler_func dataHandler, char* params[]) {
   int expect_200 = sendFtpCommand("TYPE", type);
   if (expect_200 != 200) {
     return;
@@ -259,12 +249,12 @@ void handleTransfer(char* type, data_handler_func dataHandler, char* params) {
   unsigned int port = sendFtpPasv();
   // connect second socket to provided port number.
   for (volatile int delay = 0; delay < 7000; delay++) { /* a moment for server to listen */ }
-  int res = fc_tcp_connect(DATA, hostname, uint2str(port));
+  int res = fc_tcp_connect(data.socket_id, hostname, uint2str(port));
   if (res) {
     dataHandler(params);
   }
-  fc_tcp_close(DATA);
-  drainChannel(CONTROL);
+  fc_tcp_close(data.socket_id);
+  drainChannel(&control);
 }
 
 void ftpDir() {
@@ -276,7 +266,67 @@ void ftpDir() {
     tok = strtokpeek(0, 0);
   }
 
-  handleTransfer("A", nlist ? onDirW : onDir, tok);
+  char* params[1];
+  params[0] = tok;
+
+  handleTransfer("A", nlist ? onDirW : onDir, params);
+}
+
+void onReceiveFile(char* params[]) {
+  int code = sendFtpCommand("RETR", params[0]);
+  if (code != 150) {
+    fc_tcp_close(data.socket_id);
+    return;
+  }
+
+  unsigned int iocode = fc_path2iocode(currentPath);
+  char block[256];
+
+  int len = readstream(&data, block, 128);
+  fc_tputs("read ");
+  fc_tputs(uint2str(len));
+  fc_tputs(" bytes of data\n");
+
+  // should have sector loaded with first 128 bytes
+  //   either a foreign file record D/F128, or a TIFILES header
+  struct TiFiles* tifiles = (struct TiFiles*)block;
+
+  if (len == 128 && isTiFiles(tifiles)) {
+    fc_tputs("found TIFILES header\n");
+
+    // AddInfo must be in scratchpad
+    struct AddInfo* addInfoPtr = (struct AddInfo*)0x8320;
+    memcpy(&(addInfoPtr->first_sector), &(tifiles->sectors), 8);
+
+    fc_tputs("setdir: ");
+    fc_tputs(currentPath);
+    fc_tputc('\n');
+    fc_lvl2_setdir(currentDsr->crubase, iocode, (char*)currentPath);
+
+    int ferr = fc_lvl2_output(currentDsr->crubase, iocode, params[1], 0, addInfoPtr);
+    if (ferr) {
+      fc_tputs("Error, could not output file\n");
+    }
+    else {
+      int totalsectors = tifiles->sectors;
+      int secno = 0;
+      while (secno < totalsectors) {
+        len = readstream(&data, block, 256); // now work in single block chunks.
+        vdpmemcpy(vdp_io_buf, block, 256);
+        addInfoPtr->first_sector = secno++;
+        ferr = fc_lvl2_output(currentDsr->crubase, iocode, params[1], 1, addInfoPtr);
+        if (ferr) {
+          fc_tputs("Error, failed to write block\n");
+        }
+        else {
+          fc_tputc('.');
+        }
+      }
+      fc_tputc('\n');
+    }
+  } else {
+    fc_tputs("foreign file\n");
+  }
 }
 
 void ftpGet() {
@@ -285,6 +335,43 @@ void ftpGet() {
     fc_tputs("Error, no file specified.\n");
     return;
   }
+  char block[256];
+  char safetiname[12];
+  strset(safetiname, 0, 12);
+  char* tiname = strtok(0, ' ');
+  if (!tiname) {
+    for (int i = 0; i < 10;i++) {
+      if (tok[i] == '.') {
+        safetiname[i] = '/';
+      }
+      else if (tok[i] == ' ') {
+        safetiname[i] = '_';
+      }
+      else {
+        safetiname[i] = tok[i];
+      }
+    }
+    safetiname[10] = 0;
+    tiname = safetiname;
+  }
+  char* params[2];
+  params[0] = tok;
+  params[1] = tiname;
+
+  fc_tputs("tiname: ");
+  fc_tputs(tiname);
+  fc_tputc('\n');
+
+  handleTransfer("I", onReceiveFile, params);
+}
+
+void ftpGetOld() {
+  char* tok = strtok(0, ' ');
+  if (!tok) {
+    fc_tputs("Error, no file specified.\n");
+    return;
+  }
+  char block[256];
   char safetiname[12];
   strset(safetiname, 0, 12);
   char* tiname = strtok(0, ' ');
@@ -315,15 +402,15 @@ void ftpGet() {
 
   unsigned int port = sendFtpPasv();
   for(volatile int delay=0; delay<7000; delay++) { /* a moment for server to listen */ }
-  int res = fc_tcp_connect(DATA, hostname, uint2str(port));
+  int res = fc_tcp_connect(data.socket_id, hostname, uint2str(port));
   if (res) {
     int code = sendFtpCommand("RETR", tok);
     if (code != 150) {
-      fc_tcp_close(DATA);
+      fc_tcp_close(data.socket_id);
       return;
     }
 
-    int len = readstream(DATA, 128);
+    int len = readstream(&data, block, 128);
     fc_tputs("read ");
     fc_tputs(uint2str(len));
     fc_tputs(" bytes of data\n");
@@ -351,12 +438,12 @@ void ftpGet() {
         int totalsectors = tifiles->sectors;
         int secno = 0;
         while(secno < totalsectors) {
-          len = readstream(DATA, 256); // now work in single block chunks.
+          len = readstream(&data, block, 256); // now work in single block chunks.
           // if (len != 256) {
           //   tputs("Error, receiving full block\n");
           //   break;
           // }
-          vdpmemcpy(VDPBUF, block, 256);
+          vdpmemcpy(vdp_io_buf, block, 256);
           addInfoPtr->first_sector = secno++;
           ferr = fc_lvl2_output(currentDsr->crubase, iocode, tiname, 1, addInfoPtr);
           if (ferr) {
@@ -371,7 +458,7 @@ void ftpGet() {
       fc_tputs("foreign file, will use D/F 128\n");
       if (len == 0) {
         fc_tputs("Error, no file data received\n");
-        fc_tcp_close(DATA);
+        fc_tcp_close(data.socket_id);
         return;
       }
       char fullfilename[256];
@@ -385,11 +472,11 @@ void ftpGet() {
         if (ferr) {
           fc_tputs("Error, writing file\n");
           // should probably send an abort command.
-          drainChannel(DATA);
-          drainChannel(CONTROL);
+          //drainChannel(&data);
+          drainChannel(&control);
           return;
         }
-        len = readstream(DATA, 128);
+        len = readstream(&data, block, 128);
         fc_tputs("\rread ");
         fc_tputs(uint2str(len));
         fc_tputs(" bytes of data\n");
@@ -399,12 +486,12 @@ void ftpGet() {
         return;
       }
     }
-    fc_tcp_close(DATA);
+    fc_tcp_close(data.socket_id);
   }
   int code = 0;
   char* line;
   while(code != 226) {
-    line = readline(CONTROL);
+    line = readline(&control);
     code = atoi(line);
   }
   fc_tputs(line);
@@ -419,13 +506,13 @@ int sendFtpCommand(char* command, char* argstring) {
   }
   strcat(ftpcmd, EOL);
   int len = strlen(ftpcmd);
-  int res = fc_tcp_send_chars(CONTROL, ftpcmd, len);
+  int res = fc_tcp_send_chars(control.socket_id, ftpcmd, len);
   if (!res) {
     fc_tputs("Error, server disconnected\n");
     return -1;
   }
 
-  return getFtpCode(CONTROL);
+  return getFtpCode(&control);
 }
 
 unsigned int sendFtpPasv() {
@@ -438,13 +525,13 @@ unsigned int sendFtpPasv() {
   strcpy(ftpcmd, "PASV");
   strcat(ftpcmd, EOL);
   int len = strlen(ftpcmd);
-  int res = fc_tcp_send_chars(CONTROL, ftpcmd, len);
+  int res = fc_tcp_send_chars(control.socket_id, ftpcmd, len);
   if (!res) {
     fc_tputs("Error, server disconnected\n");
     return -1;
   }
 
-  char* line = readline(CONTROL);
+  char* line = readline(&control);
   fc_tputs(line);
   if (!str_startswith(line, "227")) {
     return 0;
@@ -461,86 +548,29 @@ unsigned int sendFtpPasv() {
   return port;
 }
 
-char* readline(unsigned int socketId) {
-  strset(commandresponse, 0, 100);
-  linebufload = 0;
-  crlfstate = 0;
-  while (tcpbufavail == 0) {
-    tcpbufavail = fc_tcp_read_socket(socketId, tcpbuf, 256);
-    int i = 0;
-    while(tcpbufavail) {
-      if (crlfstate == 0 && tcpbuf[i] == 13) {
-        commandresponse[linebufload++] = tcpbuf[i++];
-        tcpbufavail--;
-        crlfstate = 1;
-      } else if (crlfstate == 1 && tcpbuf[i] == 10) {
-        commandresponse[linebufload++] = tcpbuf[i++];
-        tcpbufavail--;
-        crlfstate = 0;
-        return commandresponse;
-      } else {
-        commandresponse[linebufload++] = tcpbuf[i++];
-        tcpbufavail--;
-      }
-    }
-  }
-}
-
-int readstream(unsigned int socketId, int limit) {
-  strset(block, 0, 256);
-  blockload = 0;
-  int retries = 0;
-
-  while(retries < 10 && blockload < limit) {
-    while(retries < 10 && !tcpbufavail) {
-      tcpbufavail = fc_tcp_read_socket(socketId, tcpbuf, 256);
-      tcpbufoffset = 0;
-      if (tcpbufavail) {
-        retries = 0;
-      } else {
-        for(volatile int d=0; d<7000; d++) { /* delay */ }
-        retries++;
-      }
-    }
-    while (blockload < limit && tcpbufavail > 0) {
-      block[blockload++] = tcpbuf[tcpbufoffset++];
-      tcpbufavail--;
-      if (blockload == limit) {
-        break;
-      }
-    }
-  }
-
-  return blockload;
-}
-
-int getFtpCode(unsigned int socketId) {
-  tcpbufavail = 0;
+int getFtpCode(struct SocketBuffer* socket_buf) {
   // read until we get some response.
-  char* line = readline(socketId);
+  char* line = readline(socket_buf);
   fc_tputs(line);
   // get code from first response...
   int code = atoi(line);
   return code;
 }
 
-void drainChannel(unsigned int socketId) {
-  fc_tputs("draining channel[");
-  fc_tputs(uint2str(socketId));
-  fc_tputs("]...\n");
+void drainChannel(struct SocketBuffer* socket_buf) {
+  char buf[256];
+  strset(buf, 0, 256);
   int retries = 0;
-  while(retries < 10) {
-    int datalen = fc_tcp_read_socket(socketId, tcpbuf, 256);
-    tcpbuf[datalen] = 0;
-    fc_tputs(tcpbuf);
+  while(retries < 2) {
+    int datalen = readstream(socket_buf, buf, 255); // stop short to ensure last character remains nul
+    buf[datalen] = 0;
+    fc_tputs(buf);
     if (datalen) {
       retries = 0;
     } else {
-      for (volatile int i=0;i<3000;i++) {/*delay*/}
       retries++;
     }
   }
-  fc_tputs("channel empty.\n");
 }
 
 int isTiFiles(struct TiFiles* tifiles) {
