@@ -100,6 +100,15 @@ int main(char* args) {
   hostname = host;
 
   char commandbuf[120];
+
+  if (args && args[0]) {
+    strcpy(commandbuf, "open ");
+    strcat(commandbuf, args);
+    strtok(commandbuf, ' ');
+    // now parsing is caught up to where open expects it.
+    ftpOpen();
+  }
+
   while(1) {
     fc_tputs("ftp> ");
     strset(commandbuf, 0, 120);
