@@ -325,7 +325,31 @@ void onReceiveFile(char* params[]) {
       fc_tputc('\n');
     }
   } else {
-    fc_tputs("foreign file\n");
+    fc_tputs("foreign file, will use D/F 128\n");
+    if (len == 0) {
+      fc_tputs("Error, no file data received\n");
+      fc_tcp_close(data.socket_id);
+      return;
+    }
+    char fullfilename[256];
+    strcpy(fullfilename, currentPath);
+    strcat(fullfilename, params[1]);
+
+    struct PAB pab;
+    int ferr = fc_dsr_open(currentDsr, &pab, fullfilename, DSR_TYPE_OUTPUT, 128);
+    while (len > 0 && !ferr) {
+      ferr = fc_dsr_write(currentDsr, &pab, block, 128);
+      if (ferr) {
+        fc_tputs("Error, writing file\n");
+        return;
+      }
+      len = readstream(&data, block, 128);
+      fc_tputc('.');
+    }
+    if (fc_dsr_close(currentDsr, &pab)) {
+      fc_tputs("Error, closing file\n");
+      return;
+    }
   }
 }
 
@@ -363,138 +387,6 @@ void ftpGet() {
   fc_tputc('\n');
 
   handleTransfer("I", onReceiveFile, params);
-}
-
-void ftpGetOld() {
-  char* tok = strtok(0, ' ');
-  if (!tok) {
-    fc_tputs("Error, no file specified.\n");
-    return;
-  }
-  char block[256];
-  char safetiname[12];
-  strset(safetiname, 0, 12);
-  char* tiname = strtok(0, ' ');
-  if (!tiname) {
-    for(int i=0; i<10;i++) {
-      if (tok[i] == '.') {
-        safetiname[i] = '/';
-      } else if (tok[i] == ' ') {
-        safetiname[i] = '_';
-      } else {
-        safetiname[i] = tok[i];
-      }
-    }
-    safetiname[10] = 0;
-    tiname = safetiname;
-  }
-  fc_tputs("tiname: ");
-  fc_tputs(tiname);
-  fc_tputc('\n');
-
-  unsigned int iocode = fc_path2iocode(currentPath);
-
-  int expect_200 = sendFtpCommand("TYPE", "I");
-  if (expect_200 != 200) {
-    fc_tputs("error entering image mode\n");
-    return;
-  }
-
-  unsigned int port = sendFtpPasv();
-  for(volatile int delay=0; delay<7000; delay++) { /* a moment for server to listen */ }
-  int res = fc_tcp_connect(data.socket_id, hostname, uint2str(port));
-  if (res) {
-    int code = sendFtpCommand("RETR", tok);
-    if (code != 150) {
-      fc_tcp_close(data.socket_id);
-      return;
-    }
-
-    int len = readstream(&data, block, 128);
-    fc_tputs("read ");
-    fc_tputs(uint2str(len));
-    fc_tputs(" bytes of data\n");
-
-    // should have sector loaded with first 128 bytes
-    //   either a foreign file record D/F128, or a TIFILES header
-    struct TiFiles* tifiles = (struct TiFiles*) block;
-
-    if (len == 128 && isTiFiles(tifiles)) {
-      fc_tputs("found TIFILES header\n");
-
-      // AddInfo must be in scratchpad
-      struct AddInfo* addInfoPtr = (struct AddInfo*) 0x8320;
-      memcpy(&(addInfoPtr->first_sector), &(tifiles->sectors), 8);
-
-      fc_tputs("setdir: ");
-      fc_tputs(currentPath);
-      fc_tputc('\n');
-      fc_lvl2_setdir(currentDsr->crubase, iocode, (char*)currentPath);
-
-      int ferr = fc_lvl2_output(currentDsr->crubase, iocode, tiname, 0, addInfoPtr);
-      if (ferr) {
-        fc_tputs("Error, could not output file\n");
-      } else {
-        int totalsectors = tifiles->sectors;
-        int secno = 0;
-        while(secno < totalsectors) {
-          len = readstream(&data, block, 256); // now work in single block chunks.
-          // if (len != 256) {
-          //   tputs("Error, receiving full block\n");
-          //   break;
-          // }
-          vdpmemcpy(vdp_io_buf, block, 256);
-          addInfoPtr->first_sector = secno++;
-          ferr = fc_lvl2_output(currentDsr->crubase, iocode, tiname, 1, addInfoPtr);
-          if (ferr) {
-            fc_tputs("Error, failed to write block\n");
-          } else {
-            fc_tputc('.');
-          }
-        }
-        fc_tputc('\n');
-      }
-    } else {
-      fc_tputs("foreign file, will use D/F 128\n");
-      if (len == 0) {
-        fc_tputs("Error, no file data received\n");
-        fc_tcp_close(data.socket_id);
-        return;
-      }
-      char fullfilename[256];
-      strcpy(fullfilename, currentPath);
-      strcat(fullfilename, tiname);
-
-      struct PAB pab;
-      int ferr = fc_dsr_open(currentDsr, &pab, fullfilename, DSR_TYPE_OUTPUT, 128);
-      while (len > 0 && !ferr) {
-        ferr = fc_dsr_write(currentDsr, &pab, block, 128);
-        if (ferr) {
-          fc_tputs("Error, writing file\n");
-          // should probably send an abort command.
-          //drainChannel(&data);
-          drainChannel(&control);
-          return;
-        }
-        len = readstream(&data, block, 128);
-        fc_tputs("\rread ");
-        fc_tputs(uint2str(len));
-        fc_tputs(" bytes of data\n");
-      }
-      if (fc_dsr_close(currentDsr, &pab)) {
-        fc_tputs("Error, closing file\n");
-        return;
-      }
-    }
-    fc_tcp_close(data.socket_id);
-  }
-  int code = 0;
-  char* line;
-  while(code != 226) {
-    line = readline(&control);
-    code = atoi(line);
-  }
-  fc_tputs(line);
 }
 
 int sendFtpCommand(char* command, char* argstring) {
