@@ -18,7 +18,6 @@ void ftpPwd();
 void ftpCd();
 void ftpDir();
 void ftpGet();
-void ftpLcd();
 
 int getFtpCode(struct SocketBuffer* socket_buf);
 int sendFtpCommand(char* command, char* argstring);
@@ -42,6 +41,7 @@ const char* currentPath;
 unsigned int vdp_io_buf;
 
 int isTiFiles(struct TiFiles* buffer);
+void localCmd(char* cmd);
 
 //*********************
 // VDP access ports
@@ -109,6 +109,7 @@ int main(char* args) {
     char* tok = strtok(commandbuf, ' ');
     if (!strcmpi("open", tok)) {
       ftpOpen();
+      continue;
     } else if (!strcmpi("bye", tok) || !strcmpi("quit", tok) || !strcmpi("exit", tok)) {
       if (connected) {
         ftpQuit();
@@ -125,26 +126,29 @@ int main(char* args) {
       fc_tputs("ldir [pathname] - list local machine directory\n");
       fc_tputs("bye - close connection\n");
       fc_tputs("  aliases: exit, quit\n");
-    } else if (connected) {
+      continue;
+    } else if (!strcmpi("lcd", tok)) {
+      localCmd("CD");
+      continue;
+    } else if (!strcmpi("ldir", tok)) {
+      localCmd("DIR");
+      continue;
+   } else if (connected) {
       if (!strcmpi("pwd", tok)) {
         ftpPwd();
+        continue;
       } else if (!strcmpi("cd", tok)) {
         ftpCd();
+        continue;
       } else if (!strcmpi("dir", tok) || !strcmpi("ls", tok)) {
         ftpDir();
-      } else if (!strcmpi("get", tok)) {
+        continue;
+     } else if (!strcmpi("get", tok)) {
         ftpGet();
-      } else if (!strcmpi("lcd", tok)) {
-        ftpLcd();
-      } else if (!strcmpi("ldir", tok)) {
-        // Todo: build the command from the arguments
-        fc_exec("DIR");
-      } else {
-        fc_tputs("Error, unknown command.\n");
+        continue;
       }
-    } else {
-      fc_tputs("Error, not connected.\n");
     }
+    fc_tputs("try 'help' to see list of commands\n");
   }
 
   return 0;
@@ -469,7 +473,13 @@ int isTiFiles(struct TiFiles* tifiles) {
   return !basic_strcmp((char*) tifiles, "TIFILES");
 }
 
-void ftpLcd() {
-  // Todo: build the command from the arguments
-  fc_exec("CD");
+void localCmd(char* cmd) {
+  char buf[100];
+  strcpy(buf, cmd);
+  char* tok = strtok(0, '\n');
+  if (tok) {
+    strcat(buf, " ");
+    strcat(buf, tok);
+  }
+  fc_exec(buf);
 }
