@@ -64,6 +64,9 @@ void main()
   pal = bk_isPal();
 
   bk_loadDriveDSRs();
+
+  bk_strset(redo_buffer, 0, 256);
+
   scripton = 0;
 
   char autocmd[13];
@@ -93,7 +96,9 @@ void main()
     bk_getstr(commandbuf, displayWidth - 3, backspace);
     bk_tputc('\n');
     bk_enable_more();
+    history_on = 0;
     handleCommand(commandbuf);
+    history_on = 1;
   }
 }
 

@@ -11,6 +11,9 @@ static unsigned char mycgetc(unsigned char cursor);
 #define CUR_OVERWRITE 219
 #define CUR_INSERT '_'
 
+char redo_buffer[256];
+int history_on = 0;
+
 // Requirements:
 //  Act like TI BASIC keyboard input as much as logical
 //
@@ -18,6 +21,7 @@ static unsigned char mycgetc(unsigned char cursor);
 //  FCTN-2 INS - Characters are inserted until next FCTN key
 //  FCTN-3 ERASE - Erases the entire line
 //  FCTN-4 CLEAR - return empty string.
+//  FCTN-4 REDO  - restore redo_buffer. (up arrow also)
 //  FCTN-D RIGHT - move forward, inserting spaces if necessary.
 //  FCTN-S LEFT  - if backspace is set, then delete a character to the left.
 //                 else, move cursor to the left.
@@ -62,6 +66,17 @@ void getstr(char* var, int limit, int backspace) {
         var[0] = 0;
         key = 13; // get out.
         break;
+      case 6: // F8 - redo
+      case 11: // Up Arrow
+        if (history_on) {
+          bk_strset(var, 0, limit);
+          bk_strncpy(var, redo_buffer, limit);
+          gotoxy(x, y);
+          cputs(var);
+          gotoxy(x, y);
+          idx = 0;
+        }
+        break;
       case 8: // left arrow
         if (idx != 0) {
           idx--;
@@ -83,6 +98,9 @@ void getstr(char* var, int limit, int backspace) {
         }
         break;
       case 13: // return
+        if (bk_strlen(var) > 0 && history_on) {
+          bk_strncpy(redo_buffer, var, 256);
+        }
         break;
       default: // alpha numeric
         if (key >= 32 && key <= 122) {
