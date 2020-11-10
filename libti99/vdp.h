@@ -242,7 +242,12 @@ void writestring(int row, int col, char *pStr);
 
 // vdpmemset - sets a count of VDP memory bytes to a value
 // Inputs: VDP address to start, the byte to set, and number of repeats
-void vdpmemset(int pAddr, int ch, int cnt);
+inline void vdpmemset(int pAddr, int ch, int cnt) {
+	VDP_SET_ADDRESS_WRITE(pAddr);
+	while (cnt--) {
+		VDPWD = ch;
+	}
+}
 
 // vdpmemcpy - copies a block of data from CPU to VDP memory
 // Inputs: VDP address to write to, CPU address to copy from, number of bytes to copy

@@ -220,4 +220,5 @@ IO Buffers
 | 0x2160  | 0x010A        | PAB                 |
 | 0x2300  | 0x0100        | IO name buffer      |
 | 0x2400  | 0x1100        | IO Buffer           |
-| 0x3500  | varies        | /free stack ------/ |
+| 0x3500  | 0x0100        | redo buffer         |
+| 0x3600  | varies        | /free stack ------/ |

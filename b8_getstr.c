@@ -11,7 +11,6 @@ static unsigned char mycgetc(unsigned char cursor);
 #define CUR_OVERWRITE 219
 #define CUR_INSERT '_'
 
-char redo_buffer[256];
 int history_on = 0;
 
 // Requirements:
@@ -70,7 +69,7 @@ void getstr(char* var, int limit, int backspace) {
       case 11: // Up Arrow
         if (history_on) {
           bk_strset(var, 0, limit);
-          bk_strncpy(var, redo_buffer, limit);
+          vdpmemread(VDP_REDO_BUFFER, var, limit);
           gotoxy(x, y);
           cputs(var);
           gotoxy(x, y);
@@ -99,7 +98,7 @@ void getstr(char* var, int limit, int backspace) {
         break;
       case 13: // return
         if (bk_strlen(var) > 0 && history_on) {
-          bk_strncpy(redo_buffer, var, 256);
+          vdpmemcpy(VDP_REDO_BUFFER, var, 256);
         }
         break;
       default: // alpha numeric
