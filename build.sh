@@ -9,7 +9,7 @@ function build_all() {
   ( cd FC; ./build.sh )
   VER=$(grep "#define APP_VER" b0_main.h | cut -d'"' -f2)
   rm -f forcecmd*.zip
-  zip forcecmd_${VER}.zip FCMDG.bin FCMDC.bin README.md FC/LOAD FC/FCMD FC/FCMDXB
+  zip forcecmd_${VER}.zip FCMDG.bin FCMDC.bin README.md FC/LOAD FC/FCMD FC/FCMDXB FC/BIN/*
 }
 
 time build_all

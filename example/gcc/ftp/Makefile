@@ -34,6 +34,7 @@ $(FNAME).bin: $(FNAME).elf
 
 $(FNAME): $(FNAME).bin
 	xdm99.py -T $< -t -f PROGRAM -n $(FNAME) -o $(FNAME)
+	mkdir -p ../../../FC/BIN && cp $(FNAME) ../../../FC/BIN/
 
 .phony clean:
 	rm -fr objects
