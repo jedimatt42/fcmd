@@ -10,6 +10,8 @@ int set_graphics_raw(int sprite_mode) {
     scrn_scroll = scrn_scroll_default;
 
 	int unblank = VDP_MODE1_16K | VDP_MODE1_UNBLANK | VDP_MODE1_INT | sprite_mode;
+	VDP_SET_REGISTER(0x09, 0x00); // disable 26.5 row text mode - may wrap to other registers so set first
+
 	VDP_SET_REGISTER(VDP_REG_MODE0, 0);
 	VDP_SET_REGISTER(VDP_REG_MODE1, VDP_MODE1_16K);		// no need to OR in the sprite mode for now
 	VDP_SET_REGISTER(VDP_REG_SIT, 0x00);	gImage = 0x000;
