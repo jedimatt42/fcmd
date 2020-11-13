@@ -34,6 +34,24 @@ LOAD - shim for the XB command, requires FinalGROM99 and TIPI
 FCMD - EA5 utility for FinalGROM99 to reload FCMDG.bin
 FCMDXB - XB INT/VAR 254 program for FinalGROM99 to reload FCMDG.bin
 
+### Emulators
+
+- Classic99 ini entries:
+
+```
+name=Force Command
+rom0=8|00000|20000|../FCMDC.bin
+rom1=G|6000|2000|../FCMDG.bin
+```
+
+- MAME
+
+The file MAME-FCMD.RPK contains the ROM only portion of Force Command
+
+- Js99er.net
+
+The file JS99ER-FCMD.RPK contains both the ROM and auto start GROM of Force Command
+
 ## Help
 
 There is a help command, it will list the commands/topics, then `help <topic>` for further help.
