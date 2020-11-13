@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>	<?xml version="1.0" encoding="utf-8"?>
-<romset version="1.0">	<romset version="1.0">
+<?xml version="1.0" encoding="utf-8"?>
+<romset version="1.0">
    <resources>
-     <rom id="romimage" file="FCMD8.bin"/>
+     <rom id="romimage" file="FCMD512.bin"/>
    </resources>
    <configuration>
-      <pcb type="paged377">
+      <pcb type="paged378">
          <socket id="rom_socket" uses="romimage"/>
       </pcb>
    </configuration>

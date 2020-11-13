@@ -15,3 +15,5 @@ api.banks
 *.DSK
 b3_fcbanner.asm
 /linkfile
+layout.xml
+FC/BIN

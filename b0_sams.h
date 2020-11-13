@@ -9,6 +9,22 @@ extern int sams_total_pages;
 // determine how many SAMS pages are available, or 0 if no SAMS detected.
 int init_sams();
 
+// set default mappings back
+inline void inl_map_page(int page, int location) {
+  __asm__(
+    "LI r12, >1E00\n\t"
+    "SRL %0, 12\n\t"
+    "SLA %0, 1\n\t"
+    "SWPB %1\n\t"
+    "SBO 0\n\t"
+    "MOV %1, @>4000(%0)\n\t"
+    "SBZ 0\n\t"
+    "SWPB %1\n\t"
+    :
+  : "r"(location), "r"(page)
+    : "r12");
+}
+
 // map a logical page number into the target address
 void map_page(int page, int addr);
 
