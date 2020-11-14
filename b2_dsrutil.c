@@ -162,7 +162,8 @@ int isDrive(char* basicstr) {
              matchesPrefix(basicstr, "IDE") ||
              matchesPrefix(basicstr, "SCS") ||
              matchesPrefix(basicstr, "WDS") ||
-             matchesPrefix(basicstr, "HDX");
+             matchesPrefix(basicstr, "HDX") ||
+             matchesPrefix(basicstr, "URI");
     } else if (basicstr[4] >= 'A' && basicstr[4] <= 'Z') {
       return matchesPrefix(basicstr, "DSK");
     }
