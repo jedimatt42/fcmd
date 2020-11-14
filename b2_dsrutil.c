@@ -146,15 +146,25 @@ void loadDriveDSRs() {
   bk_strcat(currentPath, str2ram("."));
 }
 
+int matchesPrefix(char* basicstr, char* device_prefix) {
+  return basicstr[1] == device_prefix[0] &&
+    basicstr[2] == device_prefix[1] &&
+    basicstr[3] == device_prefix[2];
+}
+
 int isDrive(char* basicstr) {
   if (basicstr[0] == 4) {
     char tipi[] = "TIPI";
     if (0 == bk_basic_strcmp(basicstr, tipi)) {
       return 1;
-    } else if (basicstr[1] >= 'A' && basicstr[1] <= 'Z' && basicstr[4] >= '0' && basicstr[4] <= '9') {
-      return 1;
-    } else if (basicstr[1] == 'D' && basicstr[4] >= 'A' && basicstr[4] <= 'Z') {
-      return 1;
+    } else if (basicstr[4] >= '0' && basicstr[4] <= '9') {
+      return matchesPrefix(basicstr, "DSK") ||
+             matchesPrefix(basicstr, "IDE") ||
+             matchesPrefix(basicstr, "SCS") ||
+             matchesPrefix(basicstr, "WDS") ||
+             matchesPrefix(basicstr, "HDX");
+    } else if (basicstr[4] >= 'A' && basicstr[4] <= 'Z') {
+      return matchesPrefix(basicstr, "DSK");
     }
   } else if (basicstr[0] == 2) {
     char pi[] = "PI";
