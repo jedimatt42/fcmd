@@ -63,9 +63,11 @@ void _start(void)
     /* Init .bss section to all zeros-0x0000 */
     {
       extern int __BSS_START;
-      extern int __BSS_END;
+      // extern int __BSS_END;
+      extern int __STACK_TOP; // assuming stack is in contiquous memory with BSS
       char *dst = (char*)&__BSS_START;
-      while(dst < (char*)&__BSS_END)
+      // while(dst < (char*)&__BSS_END)
+      while(dst < (char*)&__STACK_TOP)
       {
         *dst++ = 0;
       }

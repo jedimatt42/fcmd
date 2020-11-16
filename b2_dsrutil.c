@@ -8,10 +8,11 @@
 #include "b2_tifloat.h"
 #include "b1_strutil.h"
 #include "b8_terminal.h"
+#include "b0_heap.h"
 #include <vdp.h>
 #include <string.h>
 
-struct DeviceServiceRoutine dsrList[20];
+struct DeviceServiceRoutine* dsrList;
 
 unsigned int existsDir(struct DeviceServiceRoutine* dsr, const char* pathname) {
   struct PAB pab;
@@ -114,6 +115,7 @@ unsigned int dsr_delete(struct DeviceServiceRoutine* dsr, struct PAB* pab) {
 }
 
 void loadDriveDSRs() {
+  dsrList = (struct DeviceServiceRoutine*) bk_alloc(sizeof(struct DeviceServiceRoutine));
   struct DeviceServiceRoutine* listHead = dsrList;
 
   int cruscan = 0x1000;
@@ -130,7 +132,7 @@ void loadDriveDSRs() {
           bk_basicToCstr(dsrlinks->name, listHead->name);
           listHead->crubase = cruscan;
           listHead->addr = dsrlinks->routine;
-          listHead += 1;
+          listHead = (struct DeviceServiceRoutine*) bk_alloc(sizeof(struct DeviceServiceRoutine));
         }
 
         dsrlinks = dsrlinks->next;
