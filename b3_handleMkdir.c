@@ -1,5 +1,5 @@
 #include "banks.h"
-#define MYBANK BANK(4)
+#define MYBANK BANK(3)
 
 #include "commands.h"
 #include "b8_terminal.h"

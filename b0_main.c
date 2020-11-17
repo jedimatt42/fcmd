@@ -15,6 +15,8 @@
 #include "b3_oem.h"
 #include "b3_banner.h"
 #include "b4_labellist.h"
+#include "b4_dictionary.h"
+#include "b0_heap.h"
 #include "b8_terminal.h"
 #include "b8_getstr.h"
 #include "b8_setupScreen.h"
@@ -64,6 +66,7 @@ void main()
   pal = bk_isPal();
 
   bk_loadDriveDSRs();
+  bk_dict_init(&system_dict, heap_end);
 
   vdpmemset(VDP_REDO_BUFFER, 0, 256);
 

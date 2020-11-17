@@ -1,6 +1,6 @@
 #include "banks.h"
 
-#define MYBANK BANK(4)
+#define MYBANK BANK(8)
 
 #include <conio.h>
 #include "commands.h"
