@@ -8,6 +8,9 @@
 #define HIST_INIT 2
 #define HIST_GET_DEC 3
 
+#define HISTORY ((struct List*) 0xA002)
+#define HIST_IDX *((volatile int*) 0xA000)
+
 void history_init();
 void history_redo(char* buffer, int limit, int op);
 

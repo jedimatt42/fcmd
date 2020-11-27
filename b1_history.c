@@ -14,9 +14,6 @@ void vdp_hist_handler(char* buffer, int limit, int op);
 
 static void (*hist_handler)(char* buffer, int limit, int op);
 
-#define HISTORY ((struct List*) 0xA002)
-#define HIST_IDX *((volatile int*) 0xA000)
-
 void history_init() {
   if (sams_total_pages) {
     bk_map_page(1, 0xA000);
@@ -30,6 +27,12 @@ void history_init() {
 }
 
 void history_redo(char* buffer, int limit, int op) {
+  if (op == HIST_STORE) {
+    // never store the history command itself.
+    if (!bk_strcmpi(str2ram("history"), buffer)) {
+      return;
+    }
+  }
   hist_handler(buffer, limit, op);
 }
 
