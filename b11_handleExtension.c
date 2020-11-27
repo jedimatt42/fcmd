@@ -46,7 +46,7 @@ void handleExtension(const char *ext)
             bk_tputc('\n');
         }
 
-        if (api_exec) {
+        if (sams_total_pages) {
             // if we didn't have sams, we wouldn't be able to get here with api_exec true.
             int newbase = bk_free_pages(6) - 6;
             for (int i = 0; i < 6; i++) {
@@ -176,7 +176,7 @@ int loadFromPath(const char *ext, const char *entry, int* cmd_type)
 }
 
 int allocAndLoad(struct DeviceServiceRoutine* dsr, int iocode, char* filename, struct AddInfo* addInfoPtr) {
-    if (api_exec) {
+    if (sams_total_pages) { // if sams exists
         if (prepareMemory()) {
             return 1;
         }

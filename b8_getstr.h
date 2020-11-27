@@ -3,8 +3,6 @@
 
 #include "banking.h"
 
-#define VDP_REDO_BUFFER 0x3500
-
 extern int history_on;
 
 // work with the conio library for complex keyboard input.

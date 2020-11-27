@@ -6,6 +6,7 @@
 #include <string.h>
 #include <kscan.h>
 #include "b1_strutil.h"
+#include "b1_history.h"
 
 static unsigned char mycgetc(unsigned char cursor);
 #define CUR_OVERWRITE 219
@@ -68,8 +69,18 @@ void getstr(char* var, int limit, int backspace) {
       case 6: // F8 - redo
       case 11: // Up Arrow
         if (history_on) {
-          bk_strset(var, 0, limit);
-          vdpmemread(VDP_REDO_BUFFER, var, limit);
+          cclearxy(x, y, bk_strlen(var));
+          bk_history_redo(var, limit, HIST_GET);
+          gotoxy(x, y);
+          cputs(var);
+          gotoxy(x, y);
+          idx = 0;
+        }
+        break;
+      case 10: // Down Arrow
+        if (history_on) {
+          cclearxy(x, y, bk_strlen(var));
+          bk_history_redo(var, limit, HIST_GET_DEC);
           gotoxy(x, y);
           cputs(var);
           gotoxy(x, y);
@@ -97,8 +108,8 @@ void getstr(char* var, int limit, int backspace) {
         }
         break;
       case 13: // return
-        if (bk_strlen(var) > 0 && history_on) {
-          vdpmemcpy(VDP_REDO_BUFFER, var, 256);
+        if (history_on) {
+          bk_history_redo(var, 256, HIST_STORE);
         }
         break;
       default: // alpha numeric

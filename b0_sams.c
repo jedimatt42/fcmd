@@ -104,12 +104,7 @@ int init_sams() {
         map_page(0, 0x2000);
         map_page(1, 0x3000);
         map_page(2, 0xA000);
-        map_page(3, 0xB000);
-        map_page(4, 0xC000);
-        map_page(5, 0xD000);
-        map_page(6, 0xE000);
-        map_page(7, 0xF000);
-        sams_next_page = 8;
+        sams_next_page = 3;
         sams_total_pages = total_pages;
         return sams_total_pages;
     } else {
