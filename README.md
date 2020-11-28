@@ -149,8 +149,7 @@ The fourth word is the start address. Force Command will branch and link `BL` to
 
 Extensions may use any of workspace 0x8300. Disk IO routines internal for ForceCommand will also use scratchpad >8320 - >832F for additional info pointer in Level 2 IO routines. 0x83A0 to 0x83AA are also used by DSR calls. GPLWS 0x83E0 - 0x83FF may also be used by some Force Command routines.
 
-Upon return to Force Command, the workspace contents will be restored. An extension should only have to work about returning to R11. R10 will be set to
-0xFFFC before entry.
+Upon return to Force Command, an extension must return to the address in R11 when the command was entered. R10, the stack pointer, must be equal to the same value on entry as well.
 
 ## SAMS Image Load Type
 
@@ -240,3 +239,5 @@ IO Buffers
 | 0x2400  | 0x1100        | IO Buffer           |
 | 0x3500  | 0x0100        | redo buffer         |
 | 0x3600  | varies        | /free stack ------/ |
+
+Note: VDP RAM redo buffer is only used if no SAMS is present

@@ -111,6 +111,7 @@ void getstr(char* var, int limit, int backspace) {
         if (var[0] == '!') {
           int hist_ref = bk_atoi(var + 1);
           if (hist_ref) {
+            cclearxy(x, y, bk_strlen(var));
             bk_history_indexed(var, 256, hist_ref);
             key = 0;
             gotoxy(x, y);
