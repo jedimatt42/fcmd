@@ -108,7 +108,17 @@ void getstr(char* var, int limit, int backspace) {
         }
         break;
       case 13: // return
-        if (history_on) {
+        if (var[0] == '!') {
+          int hist_ref = bk_atoi(var + 1);
+          if (hist_ref) {
+            bk_history_indexed(var, 256, hist_ref);
+            key = 0;
+            gotoxy(x, y);
+            cputs(var);
+            gotoxy(x, y);
+            idx = 0;
+          }
+        } else if (history_on) {
           bk_history_redo(var, 256, HIST_STORE);
         }
         break;

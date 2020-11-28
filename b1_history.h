@@ -13,8 +13,10 @@
 
 void history_init();
 void history_redo(char* buffer, int limit, int op);
+void history_indexed(char* buffer, int limit, int idx);
 
 DECLARE_BANKED_VOID(history_init, BANK(1), bk_history_init, (), ())
 DECLARE_BANKED_VOID(history_redo, BANK(1), bk_history_redo, (char* buffer, int limit, int op), (buffer, limit, op))
+DECLARE_BANKED_VOID(history_indexed, BANK(1), bk_history_indexed, (char* buffer, int limit, int idx), (buffer, limit, idx))
 
 #endif

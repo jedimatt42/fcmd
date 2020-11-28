@@ -10,7 +10,9 @@
 #define VDP_REDO_BUFFER 0x3500
 
 void sams_hist_handler(char* buffer, int limit, int op);
+void sams_hist_indexed(char* buffer, int limit, int idx);
 void vdp_hist_handler(char* buffer, int limit, int op);
+void vdp_hist_indexed(char* buffer, int limit, int idx);
 
 static void (*hist_handler)(char* buffer, int limit, int op);
 
@@ -32,8 +34,32 @@ void history_redo(char* buffer, int limit, int op) {
     if (!bk_strcmpi(str2ram("history"), buffer)) {
       return;
     }
+    // never store history references
+    if (buffer[0] == '!') {
+      return;
+    }
   }
   hist_handler(buffer, limit, op);
+}
+
+void vdp_hist_indexed(char* buffer, int limit, int idx) {
+  vdp_hist_handler(buffer, limit, HIST_GET);
+}
+
+void sams_hist_indexed(char* buffer, int limit, int idx) {
+  HIST_IDX = 0;
+  while(idx > 0) {
+    sams_hist_handler(buffer, limit, HIST_GET);
+    idx--;
+  }
+}
+
+void history_indexed(char* buffer, int limit, int idx) {
+  if (sams_total_pages) {
+    sams_hist_indexed(buffer, limit, idx);
+  } else {
+    vdp_hist_indexed(buffer, limit, idx);
+  }
 }
 
 void vdp_hist_handler(char* buffer, int limit, int op) {
