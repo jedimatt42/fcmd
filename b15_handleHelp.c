@@ -192,7 +192,7 @@ void handleHelp() {
   } else if (matchcmd(tok,"path")) {
     wraptext("==PATH environment variable==\n\n"
     "PATH variable\n\n"
-    "';' seperated list of device or directory names to search in for scripts and extension commands\n\n"
+    "';' seperated list of device or directory names to search in for scripts and executable commands\n\n"
     "PATH=TIPI.FC.;DSK5.\n");
   } else if (matchcmd(tok,"protect")) {
     wraptext("==Protect File==\n\n"

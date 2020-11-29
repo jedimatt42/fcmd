@@ -7,11 +7,11 @@
 
 /*
   Using code in bank 0, ensures that the API table in bank 0 is available
-  to the extension program as it executes and that we return from the
+  to the executable program as it executes and that we return from the
   program in the same bank.
 */
 
-int runExtension(const char * ext) {
+int runExecutable(const char * ext) {
     int err = 0;
     int arg1 = (int)(ext + bk_strlen(ext) + 1);
     __asm__(

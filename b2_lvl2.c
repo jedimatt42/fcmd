@@ -203,7 +203,7 @@ static void call_addr(int crubase, int addr, int link) {
   // Setup scratchpad ram to look like traditional DSRLNK had occured
   // - console ROM dsrlnk leaves crubase at this address, too many people know about it.
   LVL2_CRULST = crubase;
-  // - HRD ROS expects this to find ros extension to the subroutine name list.
+  // - HRD ROS expects this to find ros executable to the subroutine name list.
   if (link != 0) {
     LVL2_SADDR = link;
   }

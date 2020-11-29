@@ -3,8 +3,8 @@
 
 #include "banking.h"
 
-int runExtension(const char* ext);
+int runExecutable(const char* ext);
 
-DECLARE_BANKED(runExtension, BANK(0), int, bk_runExtension, (const char* ext), (ext))
+DECLARE_BANKED(runExecutable, BANK(0), int, bk_runExecutable, (const char* ext), (ext))
 
 #endif

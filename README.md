@@ -36,19 +36,19 @@ FCMDXB - XB INT/VAR 254 program for FinalGROM99 to reload FCMDG.bin
 
 ### Emulators
 
-- Classic99 ini entries:
+* Classic99 ini entries:
 
-```
+```ini
 name=Force Command
 rom0=8|00000|20000|../FCMDC.bin
 rom1=G|6000|2000|../FCMDG.bin
 ```
 
-- MAME
+* MAME
 
 The file MAME-FCMD.RPK contains the ROM only portion of Force Command
 
-- Js99er.net
+* Js99er.net
 
 The file JS99ER-FCMD.RPK contains both the ROM and auto start GROM of Force Command
 
@@ -56,7 +56,7 @@ The file JS99ER-FCMD.RPK contains both the ROM and auto start GROM of Force Comm
 
 There is a help command, it will list the commands/topics, then `help <topic>` for further help.
 
-## Example
+## Script Example
 
 This example of a MENU script can be saved to a D/V80 file and run in Force Command.
 It shows a number of things:
@@ -72,7 +72,7 @@ It shows a number of things:
 1. setting DSK1 mapping on TIPI
 1. looping
 
-```
+```bash
 color 1 7
 cls
 CLA=2
@@ -123,22 +123,24 @@ ver
 
 ```
 
-# Command extensions
+## Command executables
 
-Command extensions are program images designed to co-operate with the environment setup by Force Command. Force Command API will be available to these extensions so they can use the same terminal input/output and leverage the disk io and other features built into Force Command.
+Command executables are program images designed to co-operate with the environment setup by Force Command. Force Command API will be available to these executables so they can use the same terminal input/output and leverage the disk io and other features built into Force Command.
 
 They should be AORG 0xA000 binaries, and can use the upper 24K memory expansion fully.
 
 The 6 byte program header is different:
 
-Force Command may itself use SAMS, so extensions must cooperate by allocating pages through the API. Both load types, `Simple Image` and `SAMS Image` will allocate loaded pages into SAMS. If SAMS is not present, or not enough pages remain, then `SAMS Image` programs will fail to load.
+Force Command may itself use SAMS, so executables must cooperate by allocating pages through the API. Both load types, `Simple Image` and `SAMS Image` will allocate loaded pages into SAMS. If SAMS is not present, or not enough pages remain, then `SAMS Image` programs will fail to load.
 
-## Simple Image Load Type
+### Executable Image Loading
 
 The first word flags the file as a Force Command program. It must have the value: 0xFCFC
-The second word in the file should be 0x0000. Upto 24K of the image, following the header, is loaded into 0xA000 - 0xFFFF. The image should be a single file.
+The second word (not implemented yet) should be set to the number of sequential SAMS 4K pages to load. If this is 0x0000, then 6 pages are allocated and filled into the upper memory expansion. If no SAMS is present, then those 6 pages are already there by virtue of the stock 32k expansion.
 The third word is the return flag. If the value is 0xFCFC then Force Command will *not* reset the screen when the program returns.
-The fourth word is the start address. Force Command will branch and link `BL` to this address. Register usage will be as follows:
+The fourth word is the start address. Force Command will branch and link `BL` to this address. Register usage is the same for Simple Image Load Type. This address must be within the first 6 SAMS pages, as mapped into the upper 24K, so between 0xA000 and 0xFFFF.
+
+Note: the header is loaded into 0xA000 along with the rest of the executable binary.
 
 | register | purpose                                     |
 | -------- | ------------------------------------------- |
@@ -147,20 +149,16 @@ The fourth word is the start address. Force Command will branch and link `BL` to
 | R11      | return address to Force Command             |
 | WP       | 0x8300                                      |
 
-Extensions may use any of workspace 0x8300. Disk IO routines internal for ForceCommand will also use scratchpad >8320 - >832F for additional info pointer in Level 2 IO routines. 0x83A0 to 0x83AA are also used by DSR calls. GPLWS 0x83E0 - 0x83FF may also be used by some Force Command routines.
+Executables may use any of workspace 0x8300. Disk IO routines internal for ForceCommand will also use scratchpad >8320 - >832F for additional info pointer in Level 2 IO routines. 0x83A0 to 0x83AA are also used by DSR calls. GPLWS 0x83E0 - 0x83FF may also be used by some Force Command routines.
 
-Upon return to Force Command, an extension must return to the address in R11 when the command was entered. R10, the stack pointer, must be equal to the same value on entry as well.
+Upon return to Force Command, an executable must return to the address in R11 when the command was entered. R10, the stack pointer, must be equal to the same value on entry as well.
 
-## SAMS Image Load Type
+### Executable Memory usage
 
-We provide a loader type that automatically handles loading programs greater than 24K into additional SAMS pages.
+If only 32K expansion memory is available, then only one executable program may be loaded, meaning the API `fc_exec` may not be used to run other executables.
+Only executables with a SAMS page count of 0 will be executed.
 
-The program will have a logical set of pages allocated to it when loaded. The Force Command API provides a paging abstraction to use, so that if Force Command consumes pages for other purposes, your program does not have to account for that. When your program is loaded, the first 6 logical pages will be mapped into the upper 24K expansion in sequence.
-
-The first word flags the file as a Force Command program. It must have the value: 0xFCFC
-The second word should be set to the number of sequential SAMS 4K pages to load.
-The third word is the return flag. If the value is 0xFCFC then Force Command will *not* reset the screen when the program returns.
-The fourth word is the start address. Force Command will branch and link `BL` to this address. Register usage is the same for Simple Image Load Type. This address must be within the first 6 SAMS pages, as mapped into the upper 24K, so between 0xA000 and 0xFFFF.
+If SAMS is present, then executables may load other executables with the `fc_exec` command. When this happens, new pages are allocated, and mapped in. When the executable returns to Force Command or a prior executable the pages are freed, and the previous set of pages are mapped back in.
 
 ## PATH
 
@@ -178,7 +176,7 @@ Programs are searched for left to right through the directories in the PATH.
 
 SUPER BETA-PRE-RELEASE STATUS: Some of this works. It will not be a contract until version 2.0
 
-The indirection handle for the API will be placed in lower expansion memory at 0x2000. You can call Force Command API functions by placing the arguments sequentially in registers from R1 up to however many arguments are required. R10 should be set to a stack pointer that can be used by the functions. When called, an extension inherits a valid value for R10. Set R0 to the index of the API to call, and `BL @>2000`.
+The indirection handle for the API will be placed in lower expansion memory at 0x2000. You can call Force Command API functions by placing the arguments sequentially in registers from R1 up to however many arguments are required. R10 should be set to a stack pointer that can be used by the functions. When called, an executable inherits a valid value for R10. Set R0 to the index of the API to call, and `BL @>2000`.
 
 See examples folder for API guidance by language.
 
@@ -186,7 +184,7 @@ For GCC, there are inline function stubs that can be included and then called. F
 
 ( Gotta start somewhere )
 
-# VDP Memory Map
+## VDP Memory Map
 
 In 80 column mode, Force Command utilizes extended color attributes, and some fast scroll code for the F18A.
 
@@ -241,3 +239,41 @@ IO Buffers
 | 0x3600  | varies        | /free stack ------/ |
 
 Note: VDP RAM redo buffer is only used if no SAMS is present
+
+## CPU RAM Memory Map
+
+Force Command resides in Cartridge ROM space and the RAM usage varies if SAMS is present.
+
+32K Systems:
+
+| Address | Size in bytes | Description             |
+| ------- | ------------- | ----------------------- |
+| 0x2000  | 0x0400        | System global variables |
+| 0x2400+ | varies        | Environment Variables   |
+| -0x3FFF | varies        | System stack            |
+| 0xA000  | varies        | executable space        |
+
+If SAMS is available, then a 4K page is used at 0xA000 for command history. This is paged out when executables are loaded.
+Also when SAMS is available, executables are loaded into SAMS pages sequentially. Additional SAMS pages may be allocated by the executable.
+
+SAMS page map:
+
+| Page | Address | Purpose                    |
+| 0    | 0x2000  | Force Command runtime data |
+| 1    | 0x3000  | Force Command stack        |
+| 2    | 0xA000  | command history            |
+| 3+   | 0xA000  | executable space           |
+
+Note, when the LOAD command is used to run a legacy EA5 program, the standard SAMS mapping is set.
+
+EA5 SAMS map:
+
+| Page | Address |
+| 2    | 0x2000  |
+| 3    | 0x3000  |
+| 10   | 0xA000  |
+| 11   | 0xB000  |
+| 12   | 0xC000  |
+| 13   | 0xD000  |
+| 14   | 0xE000  |
+| 15   | 0xF000  |

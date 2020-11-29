@@ -13,9 +13,10 @@
 #include "b4_variables.h"
 #include "b0_globals.h"
 #include "b0_sams.h"
+#include "b8_setupScreen.h"
 #include <vdp.h>
 
-int loadExtension(const char* ext, int* cmd_type);
+int loadExecutable(const char* ext, int* cmd_type);
 int loadFromPath(const char *ext, const char *entry, int* cmd_type);
 int allocAndLoad(struct DeviceServiceRoutine* dsr, int iocode, char* filename, struct AddInfo* addInfoPtr);
 int binLoad(struct DeviceServiceRoutine *dsr, int iocode, char *filename, struct AddInfo *addInfoPtr);
@@ -23,10 +24,10 @@ int binLoad(struct DeviceServiceRoutine *dsr, int iocode, char *filename, struct
 #define BIN 0xFCFC
 #define SCRIPT 0x0000
 
-void handleExtension(const char *ext)
+void handleExecutable(const char *ext)
 {
     int cmd_type = 0;
-    int err = loadExtension(ext, &cmd_type);
+    int err = loadExecutable(ext, &cmd_type);
 
     if (err) {
         tputs_rom("unknown command: ");
@@ -36,8 +37,13 @@ void handleExtension(const char *ext)
     }
 
     if (cmd_type == BIN) {
+        int restoreDisplay = *(volatile int*)0xA004;
         // Go to bank 0 to actually launch so API tables are visible.
-        err = bk_runExtension(ext);
+        err = bk_runExecutable(ext);
+
+        if (restoreDisplay != 0xFCFC) {
+            bk_setupScreen(displayWidth);
+        }
 
         if (err)
         {
@@ -81,7 +87,7 @@ char* token_cursor(char* dst, char* str, int delim) {
     return 0;
 }
 
-int loadExtension(const char* ext, int* cmd_type) {
+int loadExecutable(const char* ext, int* cmd_type) {
     // allow ext to be fully qualified path to command
     if (!loadFromPath(ext, "", cmd_type)) {
         return 0;

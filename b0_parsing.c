@@ -11,7 +11,7 @@
 #include "b4_labellist.h"
 #include "b4_variables.h"
 #include "b4_preprocess.h"
-#include "b11_handleExtension.h"
+#include "b11_handleExecutable.h"
 #include <string.h>
 
 #define MATCH(x,y) (!(bk_strcmpi(x,y)))
@@ -88,7 +88,7 @@ void handleCommand(char *buffer) {
     bk_vars_set(name, value);
   } else {
     if (tok) {
-      bk_handleExtension(tok);
+      bk_handleExecutable(tok);
     }
   }
 }
