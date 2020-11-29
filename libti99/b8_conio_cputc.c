@@ -3,9 +3,16 @@
 
 #include "conio.h"
 #include <b0_globals.h>
+#include <kscan.h>
 
 void inc_row() {
   int y = displayHeight - 1;
+
+  // scan for a break key ctrl-c/Fctn-4
+  unsigned int k = kscan(5);
+  if (k == 2 || k == 131) {
+    request_break = 1;
+  }
 
   if (conio_y >= y) {
     scrn_scroll();

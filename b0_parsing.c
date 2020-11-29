@@ -35,6 +35,7 @@ void handleCommand(char *buffer) {
   if (buffer[0] == 0) {
     return;
   }
+  request_break = 0;
 
   // perform any escaping, variable substitutions, etc...
   char* procbuf = bk_preprocess(buffer);

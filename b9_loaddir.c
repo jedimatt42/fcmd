@@ -26,7 +26,7 @@ unsigned char loadDir(struct DeviceServiceRoutine* dsr, const char* pathname, vo
 
   int recNo = 0;
   ferr = DSR_ERR_NONE;
-  while(ferr == DSR_ERR_NONE) {
+  while(ferr == DSR_ERR_NONE && request_break == 0) {
     unsigned char cbuf[150];
     ferr = bk_dsr_read(dsr, &pab, recNo);
     if (ferr == DSR_ERR_NONE) {

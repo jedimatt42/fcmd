@@ -15,5 +15,6 @@ extern int scripton;
 extern int lineno;
 extern int pal;
 extern int api_exec;
+extern int request_break;
 
 #endif

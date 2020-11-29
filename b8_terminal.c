@@ -80,7 +80,10 @@ static void optional_pause() {
 
   if (more_count >= limit) {
     tputs_rom("\n-- press any key for more --");
-    cgetc();
+    unsigned int k = cgetc();
+    if (k == 131 || k == 2) {
+      request_break = 1;
+    }
     more_count = 0;
     cclearxy(0, limit, displayWidth);
     cclearxy(0, limit + 1, displayWidth);

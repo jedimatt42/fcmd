@@ -15,5 +15,6 @@ struct DeviceServiceRoutine* scriptDsr = 0;
 struct PAB* scriptPab;
 int pal = 0;
 int api_exec = 0;
+int request_break;
 
 
