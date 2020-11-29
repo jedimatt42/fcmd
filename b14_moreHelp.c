@@ -46,12 +46,20 @@ static void wraptext(char* str) {
 
 /* ##########|----.----1----.----2----.----3----.----4|######## */
 void b14Help(char* tok) {
-if (matchcmd(tok, "xb")) {
-  wraptext("==Run XB program==\n\n"
-    "xb <program-path>\n\n"
-    "Switch a FinalGROM99 to an Extended BASIC cartridge, configured to RUN the specified program.\n"
-    "Default cartridge name is TIXB_G with start address 25474.\n"
-    "Use variable XBMOD to override cartridge name, and XBADDR to override start address.\n");
+  if (matchcmd(tok, "xb")) {
+    wraptext("==Run XB program==\n\n"
+      "xb <program-path>\n\n"
+      "Switch a FinalGROM99 to an Extended BASIC cartridge, configured to RUN the specified program.\n"
+      "Default cartridge name is TIXB_G with start address 25474.\n"
+      "Use variable XBMOD to override cartridge name, and XBADDR to override start address.\n");
+  } else if (matchcmd(tok, "history")) {
+    wraptext("==History==\n\n"
+      "history\n\n"
+      "List command history. You may then recall an item by number with !n, such as !7 to copy the 7th "
+      "previous command into the current command line.\n"
+      "Also, Fctn-8(redo) and Fctn-E(up arrow) moves up through history. Fctn-X(down arrow) moves back down.\n"
+      "32K systems only have 1 history entry. SAMS systems have 4K of history.\n"
+    );
   } else {
     wraptext("no help for command: ");
     bk_tputs_ram(tok);
