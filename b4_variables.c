@@ -1,6 +1,7 @@
 #include "banks.h"
 #define MYBANK BANK(4)
 
+#include "b0_globals.h"
 #include "b4_variables.h"
 #include "b4_dictionary.h"
 #include "b8_terminal.h"
@@ -39,7 +40,7 @@ char* vars_get(char* name) {
 }
 
 int onVarEntry(struct DictEntry* entry) {
-  if (entry->type == DE_TYPE_VAR) {
+  if (entry->type == DE_TYPE_VAR && request_break == 0) {
     bk_tputs_ram(entry->data);
     bk_tputc('=');
     bk_tputs_ram(entry->data + entry->keylen + 1);

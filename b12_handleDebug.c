@@ -47,7 +47,7 @@ void handleDebug() {
 void dumpMem(unsigned int addr, int len) {
     unsigned int* memory = (unsigned int*)addr;
     unsigned int* limit = (int*)addr + len;
-    while(memory < limit) {
+    while(memory < limit && request_break == 0) {
         bk_tputs_ram(bk_uint2hex((unsigned int)memory));
         bk_tputc(':');
         for(int i=0; i<4; i++) {

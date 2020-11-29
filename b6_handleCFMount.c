@@ -2,6 +2,7 @@
 #define MYBANK BANK(6)
 
 #include "commands.h"
+#include "b0_globals.h"
 #include "b0_parsing.h"
 #include "b1_strutil.h"
 #include "b2_dsrutil.h"
@@ -92,6 +93,9 @@ static void listAllVolumes(int begin, int end) {
             bk_tputs_ram(volumeName);
             bk_tputc('\n');
         }
+        if (request_break) {
+            break;
+        }
     }
 
     // restore original mappings...
@@ -111,6 +115,9 @@ static void listCurrentVolumes() {
         tputs_rom(" : ");
         bk_tputs_ram(volumeName);
         bk_tputc('\n');
+        if (request_break) {
+            break;
+        }
     }
 }
 

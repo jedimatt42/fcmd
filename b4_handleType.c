@@ -3,6 +3,7 @@
 
 #include <string.h>
 #include "commands.h"
+#include "b0_globals.h"
 #include "b1_strutil.h"
 #include "b8_terminal.h"
 #include "b2_dsrutil.h"
@@ -48,12 +49,7 @@ void handleType() {
     return;
   }
   int rec = 0;
-  while(!err) {
-    char k = bk_kscan(5);
-    if (k == 131 || k == 2) { // control-c or alt-4
-      break;
-    }
-
+  while(!err && request_break == 0) {
     char linebuf[256];
 
     err = bk_dsr_read(dsr, &pab, rec++);
