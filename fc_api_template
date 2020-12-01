@@ -93,5 +93,25 @@ struct __attribute__((__packed__)) AddInfo {
 #define DSR_TYPE_RELATIVE	0x01
 
 /*
+  catalog call back functions
+*/
+struct __attribute__((__packed__)) DirEntry {
+  char name[11];
+  int type;
+  int sectors;
+  int reclen;
+};
+
+struct __attribute__((__packed__)) VolInfo {
+  char volname[11];
+  int total;
+  int available;
+  struct DeviceServiceRoutine* dsr;
+};
+
+typedef void (*vol_entry_cb)(struct VolInfo*);
+typedef void (*dir_entry_cb)(struct DirEntry*);
+
+/*
   Rom address tables
 */

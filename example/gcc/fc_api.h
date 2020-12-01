@@ -93,45 +93,67 @@ struct __attribute__((__packed__)) AddInfo {
 #define DSR_TYPE_RELATIVE	0x01
 
 /*
+  catalog call back functions
+*/
+struct __attribute__((__packed__)) DirEntry {
+  char name[11];
+  int type;
+  int sectors;
+  int reclen;
+};
+
+struct __attribute__((__packed__)) VolInfo {
+  char volname[11];
+  int total;
+  int available;
+  struct DeviceServiceRoutine* dsr;
+};
+
+typedef void (*vol_entry_cb)(struct VolInfo*);
+typedef void (*dir_entry_cb)(struct DirEntry*);
+
+/*
   Rom address tables
 */
 #define FC_TPUTC 0x6082
 #define FC_TPUTS 0x6086
 #define FC_GETSTR 0x608a
-#define FC_SAMS_MAP_PAGE 0x608e
-#define FC_SAMS_ALLOC_PAGES 0x6092
-#define FC_SAMS_FREE_PAGES 0x6096
-#define FC_SYS_INFO 0x609a
-#define FC_DISPLAY_INFO 0x609e
-#define FC_SAMS_INFO 0x60a2
-#define FC_VARS_GET 0x60a6
-#define FC_VARS_SET 0x60aa
-#define FC_EXEC 0x60ae
-#define FC_DSR_EA5LOAD 0x60b2
-#define FC_DSR_OPEN 0x60b6
-#define FC_DSR_CLOSE 0x60ba
-#define FC_DSR_READ 0x60be
-#define FC_DSR_WRITE 0x60c2
-#define FC_DSR_STATUS 0x60c6
-#define FC_DSR_RESET 0x60ca
-#define FC_DSR_DELETE 0x60ce
-#define FC_PATH2IOCODE 0x60d2
-#define FC_LVL2_INPUT 0x60d6
-#define FC_LVL2_OUTPUT 0x60da
-#define FC_LVL2_PROTECT 0x60de
-#define FC_LVL2_RENAME 0x60e2
-#define FC_LVL2_SETDIR 0x60e6
-#define FC_LVL2_MKDIR 0x60ea
-#define FC_LVL2_RMDIR 0x60ee
-#define FC_LVL2_RENDIR 0x60f2
-#define FC_TCP_CONNECT 0x60f6
-#define FC_TCP_CLOSE 0x60fa
-#define FC_TCP_READ_SOCKET 0x60fe
-#define FC_TCP_SEND_CHARS 0x6102
-#define FC_TIPI_ON 0x6106
-#define FC_TIPI_OFF 0x610a
-#define FC_TIPI_SENDMSG 0x610e
-#define FC_TIPI_RECVMSG 0x6112
+#define FC_KSCAN 0x608e
+#define FC_SAMS_MAP_PAGE 0x6092
+#define FC_SAMS_ALLOC_PAGES 0x6096
+#define FC_SAMS_FREE_PAGES 0x609a
+#define FC_SYS_INFO 0x609e
+#define FC_DISPLAY_INFO 0x60a2
+#define FC_SAMS_INFO 0x60a6
+#define FC_VARS_GET 0x60aa
+#define FC_VARS_SET 0x60ae
+#define FC_EXEC 0x60b2
+#define FC_DSR_EA5LOAD 0x60b6
+#define FC_DSR_OPEN 0x60ba
+#define FC_DSR_CLOSE 0x60be
+#define FC_DSR_READ 0x60c2
+#define FC_DSR_WRITE 0x60c6
+#define FC_DSR_STATUS 0x60ca
+#define FC_DSR_RESET 0x60ce
+#define FC_DSR_DELETE 0x60d2
+#define FC_DSR_CATALOG 0x60d6
+#define FC_PATH2IOCODE 0x60da
+#define FC_LVL2_INPUT 0x60de
+#define FC_LVL2_OUTPUT 0x60e2
+#define FC_LVL2_PROTECT 0x60e6
+#define FC_LVL2_RENAME 0x60ea
+#define FC_LVL2_SETDIR 0x60ee
+#define FC_LVL2_MKDIR 0x60f2
+#define FC_LVL2_RMDIR 0x60f6
+#define FC_LVL2_RENDIR 0x60fa
+#define FC_TCP_CONNECT 0x60fe
+#define FC_TCP_CLOSE 0x6102
+#define FC_TCP_READ_SOCKET 0x6106
+#define FC_TCP_SEND_CHARS 0x610a
+#define FC_TIPI_ON 0x610e
+#define FC_TIPI_OFF 0x6112
+#define FC_TIPI_SENDMSG 0x6116
+#define FC_TIPI_RECVMSG 0x611a
 
 // function: void fc_tputc(int c)
 DECL_FC_API_CALL(FC_TPUTC, fc_tputc, void, (int c), (c))
@@ -141,6 +163,9 @@ DECL_FC_API_CALL(FC_TPUTS, fc_tputs, void, (const char* str), (str))
 
 // function: void fc_getstr(char* var, int limit, int backspace)
 DECL_FC_API_CALL(FC_GETSTR, fc_getstr, void, (char* var, int limit, int backspace), (var, limit, backspace))
+
+// function: unsigned int fc_kscan(unsigned int mode)
+DECL_FC_API_CALL(FC_KSCAN, fc_kscan, unsigned int, (unsigned int mode), (mode))
 
 // function: void fc_sams_map_page(int page, int addr)
 DECL_FC_API_CALL(FC_SAMS_MAP_PAGE, fc_sams_map_page, void, (int page, int addr), (page, addr))
@@ -192,6 +217,9 @@ DECL_FC_API_CALL(FC_DSR_RESET, fc_dsr_reset, unsigned int, (struct DeviceService
 
 // function: unsigned int fc_dsr_delete(struct DeviceServiceRoutine* dsr, struct PAB* pab)
 DECL_FC_API_CALL(FC_DSR_DELETE, fc_dsr_delete, unsigned int, (struct DeviceServiceRoutine* dsr, struct PAB* pab), (dsr, pab))
+
+// function: unsigned int fc_dsr_catalog(struct DeviceServiceRoutine* dsr, const char* pathname, vol_entry_cb vol_cb, dir_entry_cb dir_cb)
+DECL_FC_API_CALL(FC_DSR_CATALOG, fc_dsr_catalog, unsigned int, (struct DeviceServiceRoutine* dsr, const char* pathname, vol_entry_cb vol_cb, dir_entry_cb dir_cb), (dsr, pathname, vol_cb, dir_cb))
 
 // function: unsigned int fc_path2iocode(const char* currentPath)
 DECL_FC_API_CALL(FC_PATH2IOCODE, fc_path2iocode, unsigned int, (const char* currentPath), (currentPath))

@@ -1,6 +1,7 @@
 tputc
 tputs_ram tputs
 getstr
+kscan
 
 map_page sams_map_page
 alloc_pages sams_alloc_pages
@@ -23,6 +24,7 @@ dsr_write
 dsr_status
 dsr_reset
 dsr_delete
+loadDir dsr_catalog
 
 path2iocode
 lvl2_input

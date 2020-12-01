@@ -11,7 +11,7 @@
 #include <vdp.h>
 #include <string.h>
 
-unsigned char loadDir(struct DeviceServiceRoutine* dsr, const char* pathname, vol_entry_cb vol_cb, dir_entry_cb dir_cb) {
+unsigned int loadDir(struct DeviceServiceRoutine* dsr, const char* pathname, vol_entry_cb vol_cb, dir_entry_cb dir_cb) {
   struct PAB pab;
 
   struct VolInfo volInfo;

@@ -70,7 +70,7 @@ unsigned int dsr_reset(struct DeviceServiceRoutine* dsr, struct PAB* pab, int re
 typedef void (*vol_entry_cb)(struct VolInfo*);
 typedef void (*dir_entry_cb)(struct DirEntry*);
 
-unsigned char loadDir(struct DeviceServiceRoutine* dsr, const char* pathname, vol_entry_cb vol_cb, dir_entry_cb dir_cb);
+unsigned int loadDir(struct DeviceServiceRoutine* dsr, const char* pathname, vol_entry_cb vol_cb, dir_entry_cb dir_cb);
 unsigned int existsDir(struct DeviceServiceRoutine* dsr, const char* pathname);
 unsigned int existsFile(struct DeviceServiceRoutine* dsr, const char* pathname);
 
@@ -102,5 +102,6 @@ DECLARE_BANKED(dsr_write, BANK(2), unsigned int, bk_dsr_write, (struct DeviceSer
 DECLARE_BANKED(dsr_reset, BANK(2), unsigned int, bk_dsr_reset, (struct DeviceServiceRoutine* dsr, struct PAB* pab, int record), (dsr, pab, record))
 DECLARE_BANKED(dsr_status, BANK(2), unsigned int, bk_dsr_status, (struct DeviceServiceRoutine* dsr, struct PAB* pab), (dsr, pab))
 DECLARE_BANKED(dsr_ea5load, BANK(9), unsigned int, bk_dsr_ea5load, (struct DeviceServiceRoutine * dsr, const char *fname), (dsr, fname))
+DECLARE_BANKED(loadDir, BANK(9), unsigned int, bk_loadDir, (struct DeviceServiceRoutine* dsr, const char* pathname, vol_entry_cb vol_cb, dir_entry_cb dir_cb), (dsr, pathname, vol_cb, dir_cb))
 
 #endif
