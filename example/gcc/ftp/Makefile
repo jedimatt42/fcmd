@@ -3,6 +3,7 @@ LD=tms9900-ld
 CC=tms9900-gcc
 OBJCOPY=tms9900-objcopy
 OBJDUMP=tms9900-objdump
+XDM99?=$(shell which xdm99.py)
 
 FNAME=FTP
 UCFNAME=$(shell echo -n $(FNAME) | tr 'a-z' 'A-Z')
@@ -33,7 +34,7 @@ $(FNAME).bin: $(FNAME).elf
 	$(OBJCOPY) -O binary $< $@
 
 $(FNAME): $(FNAME).bin
-	python3 xdm99.py -T $< -t -f PROGRAM -n $(FNAME) -o $(FNAME)
+	python3 $(XDM99) -T $< -t -f PROGRAM -n $(FNAME) -o $(FNAME)
 	mkdir -p ../../../FC/BIN && cp $(FNAME) ../../../FC/BIN/
 
 .phony clean:
