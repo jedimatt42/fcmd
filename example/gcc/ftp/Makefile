@@ -33,7 +33,7 @@ $(FNAME).bin: $(FNAME).elf
 	$(OBJCOPY) -O binary $< $@
 
 $(FNAME): $(FNAME).bin
-	xdm99.py -T $< -t -f PROGRAM -n $(FNAME) -o $(FNAME)
+	python3 xdm99.py -T $< -t -f PROGRAM -n $(FNAME) -o $(FNAME)
 	mkdir -p ../../../FC/BIN && cp $(FNAME) ../../../FC/BIN/
 
 .phony clean:

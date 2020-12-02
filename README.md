@@ -25,6 +25,23 @@ Supports:
 * ANSI display
 * TIPIMAP to control DSKx, URIx, and AUTO mapping
 
+## Building
+
+Prerequisites: 
+
+* xdt99 suite
+* python3.8+
+* tms9900-gcc
+
+```
+make clean
+make
+```
+
+This will compile all the binaries. 
+
+There is a build.sh script that also bundles things for release, and copies things to my classic99 system for testing.
+
 ## Installation
 
 The FCMDG.bin and FCMDC.bin go on a FinalGROM99 - or if you know what you are doing, an UberGROM
