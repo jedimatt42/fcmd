@@ -14,6 +14,7 @@ DEC_COMMAND(0, Load);
 DEC_COMMAND(0, Width);
 DEC_COMMAND(1, History);
 DEC_COMMAND(1, Readkey);
+DEC_COMMAND(3, Bar);
 DEC_COMMAND(3, Lvl2);
 DEC_COMMAND(3, Mkdir);
 DEC_COMMAND(3, Rename);

@@ -41,7 +41,8 @@ void handleCommand(char *buffer) {
   char* procbuf = bk_preprocess(buffer);
 
   char* tok = bk_strtok(procbuf, ' ');
-  COMMAND("cls", handleCls)
+  COMMAND("bar", bk_handleBar)
+  else COMMAND("cls", handleCls)
   else COMMAND("cd", bk_handleCd)
   else COMMAND("cfmount", bk_handleCFMount)
   else COMMAND("checksum", bk_handleChecksum)

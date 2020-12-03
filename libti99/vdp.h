@@ -483,6 +483,7 @@ extern unsigned int gSpritePat;			// SDT, Register 6 * 0x800
 // text position information used by putstring and scrn_scroll
 extern int nTextRow,nTextEnd;
 extern int nTextPos,nTextFlags;
+extern int nTitleLine;
 
 // bitflags for nTextFlags - no guessing! ;)
 // used for things that the generic code makes decisions on
