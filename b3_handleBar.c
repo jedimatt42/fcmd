@@ -9,7 +9,22 @@
 #include "b8_setupScreen.h"
 #include "b0_globals.h"
 
+void drawBar() {
+  gotoxy(0,0);
+  bk_tputc(0xDB);
+  bk_tputc(0xDD);
+  tputs_rom("1.6");
+  bk_tputc(0xDE);
+  for(int i = 0; i < displayWidth - 6; i++) {
+    bk_tputc(0xDB);
+  }
+}
+
 void handleBar() {
   nTitleLine = nTitleLine ? 0 : 1;
   bk_setupScreen(displayWidth);
+  if (nTitleLine) {
+    drawBar();
+    gotoxy(0, 1);
+  }
 }
