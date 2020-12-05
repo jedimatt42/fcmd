@@ -113,6 +113,20 @@ typedef void (*vol_entry_cb)(struct VolInfo*);
 typedef void (*dir_entry_cb)(struct DirEntry*);
 
 /*
+  clock DateTime structure
+*/
+struct __attribute__((__packed__)) DateTime {
+  unsigned char dayOfWeek;
+  unsigned int year;
+  unsigned char month;
+  unsigned char day;
+  unsigned char hours;
+  unsigned char minutes;
+  unsigned char seconds;
+  unsigned char pm;
+};
+
+/*
   Rom address tables
 */
 #define FC_TPUTC 0x6082
@@ -154,6 +168,7 @@ typedef void (*dir_entry_cb)(struct DirEntry*);
 #define FC_TIPI_OFF 0x6112
 #define FC_TIPI_SENDMSG 0x6116
 #define FC_TIPI_RECVMSG 0x611a
+#define FC_DATETIME 0x611e
 
 // function: void fc_tputc(int c)
 DECL_FC_API_CALL(FC_TPUTC, fc_tputc, void, (int c), (c))
@@ -271,5 +286,8 @@ DECL_FC_API_CALL(FC_TIPI_SENDMSG, fc_tipi_sendmsg, void, (unsigned int len, cons
 
 // function: void fc_tipi_recvmsg(unsigned int *len, unsigned char *buf)
 DECL_FC_API_CALL(FC_TIPI_RECVMSG, fc_tipi_recvmsg, void, (unsigned int *len, unsigned char *buf), (len, buf))
+
+// function: void fc_datetime(struct DateTime* dt)
+DECL_FC_API_CALL(FC_DATETIME, fc_datetime, void, (struct DateTime* dt), (dt))
 
 #endif

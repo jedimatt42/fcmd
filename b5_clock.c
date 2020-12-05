@@ -77,18 +77,14 @@ void corcomp_clock(struct DateTime* dt, char* clock) {
   dt->dayOfWeek = bk_atoi(dow);
   dt->month = bk_atoi(bk_strtok(date, '/'));
   dt->day = bk_atoi(bk_strtok(0, '/'));
-  dt->year = bk_atoi(bk_strtok(0, '/'));
+  dt->year = bk_atoi(bk_strtok(0, '/')) + 2000;
   dt->hours = bk_atoi(bk_strtok(time, ':'));
   dt->minutes = bk_atoi(bk_strtok(0, ':'));
   dt->seconds = bk_atoi(bk_strtok(0, ':'));
 
-  bk_dsr_close(dsr, &pab);
-}
-
-void pretty_time(struct DateTime* dt) {
-  int pm = 0;
+  dt->pm = 0;
   if (dt->hours > 11) {
-    pm = 1;
+    dt->pm = 1;
     if (dt->hours > 12) {
       dt->hours -= 12;
     }
@@ -96,16 +92,18 @@ void pretty_time(struct DateTime* dt) {
   if (dt->hours == 0) {
     dt->hours = 12;
   }
-  if (dt->hours < 10) {
-    bk_tputc(' ');
-  }
+
+  bk_dsr_close(dsr, &pab);
+}
+
+void pretty_time(struct DateTime* dt) {
   bk_tputs_ram(bk_uint2str(dt->hours));
   bk_tputc(':');
   if (dt->minutes < 10) {
     bk_tputc('0');
   }
   bk_tputs_ram(bk_uint2str(dt->minutes));
-  if (pm) {
+  if (dt->pm) {
     bk_tputc('p');
   } else {
     bk_tputc('a');

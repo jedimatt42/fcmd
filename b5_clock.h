@@ -11,6 +11,7 @@ struct __attribute__((__packed__)) DateTime {
   unsigned char hours;
   unsigned char minutes;
   unsigned char seconds;
+  unsigned char pm;
 };
 
 void datetime(struct DateTime* dt);
