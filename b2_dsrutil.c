@@ -175,6 +175,9 @@ int isDrive(char* basicstr) {
   } else if (basicstr[0] == 5) {
     char clock[] = "CLOCK";
     return 0 == bk_basic_strcmp(basicstr, clock);
+  } else if (basicstr[0] == 3) {
+    char ide[] = "IDE";
+    return 0 == bk_basic_strcmp(basicstr, ide);
   }
   return 0;
 }

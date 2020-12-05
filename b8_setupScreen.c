@@ -78,7 +78,7 @@ void setupScreen(int width) {
   }
 
   clrscr();
-  gotoxy(0,0);
+  gotoxy(0,nTitleLine);
   bk_defineChars();
 }
 

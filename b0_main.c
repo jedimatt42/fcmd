@@ -23,6 +23,7 @@
 #include "b10_isPal.h"
 #include "b10_detect_vdp.h"
 #include "b1_history.h"
+#include "b5_clock.h"
 
 const char tipibeeps[] = {
   0x04, 0x9f, 0xbf, 0xdf, 0xff, 0x02,
@@ -103,6 +104,9 @@ void main()
     bk_enable_more();
     history_on = 0;
     handleCommand(commandbuf);
+    if (nTitleLine) {
+      bk_drawBar();
+    }
   }
 }
 
