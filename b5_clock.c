@@ -84,3 +84,31 @@ void corcomp_clock(struct DateTime* dt, char* clock) {
 
   bk_dsr_close(dsr, &pab);
 }
+
+void pretty_time(struct DateTime* dt) {
+  int pm = 0;
+  if (dt->hours > 11) {
+    pm = 1;
+    if (dt->hours > 12) {
+      dt->hours -= 12;
+    }
+  }
+  if (dt->hours == 0) {
+    dt->hours = 12;
+  }
+  if (dt->hours < 10) {
+    bk_tputc(' ');
+  }
+  bk_tputs_ram(bk_uint2str(dt->hours));
+  bk_tputc(':');
+  if (dt->minutes < 10) {
+    bk_tputc('0');
+  }
+  bk_tputs_ram(bk_uint2str(dt->minutes));
+  if (pm) {
+    bk_tputc('p');
+  } else {
+    bk_tputc('a');
+  }
+  bk_tputc('m');
+}

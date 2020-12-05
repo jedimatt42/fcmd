@@ -14,16 +14,14 @@ void drawBar() {
     bk_tputc(0xDD);
     tputs_rom("1.6");
     bk_tputc(0xDE);
-    for (int i = 0; i < displayWidth - 10; i++) {
+    for (int i = conio_x; i < displayWidth - 9; i++) {
         bk_tputc(0xDB);
     }
     struct DateTime dt;
     datetime(&dt);
     if (dt.year != dt.month) {
         gotoxy(displayWidth - 10, 0);
-        bk_tputs_ram(bk_uint2str(dt.hours));
-        bk_tputc(':');
-        bk_tputs_ram(bk_uint2str(dt.minutes));
+        pretty_time(&dt);
     }
     gotoxy(ox, oy);
 }

@@ -9,7 +9,6 @@
 void handleDate() {
     struct DateTime dt;
     bk_datetime(&dt);
-    int pm = 0;
 
     bk_tputs_ram(bk_uint2str(dt.month));
     bk_tputc('-');
@@ -17,17 +16,8 @@ void handleDate() {
     bk_tputc('-');
     bk_tputs_ram(bk_uint2str(dt.year));
     bk_tputc(' ');
-    if (dt.hours > 12) {
-        pm = 1;
-        dt.hours -= 12;
-    }
-    bk_tputs_ram(bk_uint2str(dt.hours));
-    bk_tputc(':');
-    bk_tputs_ram(bk_uint2str(dt.minutes));
-    if (pm) {
-        tputs_rom("pm");
-    } else {
-        tputs_rom("am");
-    }
+
+    pretty_time(&dt);
+
     bk_tputc('\n');
 }
