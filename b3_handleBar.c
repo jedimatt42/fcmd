@@ -10,8 +10,26 @@
 #include "b0_globals.h"
 #include "b5_clock.h"
 
+static void error() {
+  tputs_rom("error, on or off argument missing.\n");
+}
+
 void handleBar() {
-  nTitleLine = nTitleLine ? 0 : 1;
+  char* tok = bk_strtok(0, ' ');
+  if (!tok) {
+    error();
+    return;
+  }
+
+  if (0 == bk_strcmpi(tok, str2ram("on"))) {
+    nTitleLine = 1;
+  } else if (0 == bk_strcmpi(tok, str2ram("off"))) {
+    nTitleLine = 0;
+  } else {
+    error();
+    return;
+  }
+
   bk_setupScreen(displayWidth);
   if (nTitleLine) {
     bk_drawBar();

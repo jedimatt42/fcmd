@@ -33,16 +33,13 @@ void drawBar() {
     for (int i = conio_x; i < displayWidth - 11; i++) {
         bk_tputc(HZ);
     }
-    bk_tputc(LB);
     struct DateTime dt;
     datetime(&dt);
     if (dt.hours < 10) {
         bk_tputc(HZ);
     }
-    if (dt.year != dt.month) {
-        gotoxy(displayWidth - 10, 0);
-        pretty_time(&dt);
-    }
+    bk_tputc(LB);
+    pretty_time(&dt);
     bk_tputc(RB);
     bk_tputc(RE);
     if (displayWidth == 80 && vdp_type == VDP_F18A) {

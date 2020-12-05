@@ -60,6 +60,20 @@ void b14Help(char* tok) {
       "Also, Fctn-8(redo) and Fctn-E(up arrow) moves up through history. Fctn-X(down arrow) moves back down.\n"
       "32K systems only have 1 history entry. SAMS systems have 4K of history.\n"
     );
+  } else if (matchcmd(tok, "bar")) {
+    wraptext("==Display Bar==\n\n"
+      "bar <on|off>\n\n"
+      "Turn display bar on or off. Bar contains title and clock on top line of screen.\n"
+    );
+  } else if (matchcmd(tok, "date")) {
+    wraptext("==Date==\n\n"
+      "date\n\n"
+      "Print the date and time.\n"
+      "Clock source is based on value of 'CLOCK' environment variable. Supported values are:\n"
+      "- PI.CLOCK (default)\n"
+      "- CLOCK\n"
+      "- IDE.TIME\n"
+    );
   } else {
     wraptext("no help for command: ");
     bk_tputs_ram(tok);
