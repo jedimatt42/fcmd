@@ -7,6 +7,7 @@
 #include <kscan.h>
 #include "b1_strutil.h"
 #include "b1_history.h"
+#include "b5_clock.h"
 
 static unsigned char mycgetc(unsigned char cursor);
 #define CUR_OVERWRITE 219
@@ -173,6 +174,7 @@ static unsigned char mycgetc(unsigned char cursor) {
             vdpchar(vdpaddr, cursor);
           }
         }
+        bk_clock_hook();
     } while ((k == 255) || ((KSCAN_STATUS&KSCAN_MASK) == 0));
     // restore display incase we put a cursor on it.
     vdpchar(vdpaddr, screenChar);

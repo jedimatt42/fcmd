@@ -1,3 +1,6 @@
+#include "banks.h"
+#define MYBANK BANK(8)
+
 #include "conio.h"
 #include "kscan.h"
 

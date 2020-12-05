@@ -14,7 +14,11 @@ struct __attribute__((__packed__)) DateTime {
 };
 
 void datetime(struct DateTime* dt);
+void clock_hook();
+void drawBar();
 
 DECLARE_BANKED_VOID(datetime, BANK(5), bk_datetime, (struct DateTime* dt), (dt))
+DECLARE_BANKED_VOID(clock_hook, BANK(5), bk_clock_hook, (), ())
+DECLARE_BANKED_VOID(drawBar, BANK(5), bk_drawBar, (), ())
 
 #endif
