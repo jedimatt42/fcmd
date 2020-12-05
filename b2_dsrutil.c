@@ -171,9 +171,10 @@ int isDrive(char* basicstr) {
     }
   } else if (basicstr[0] == 2) {
     char pi[] = "PI";
-    if (0 == bk_basic_strcmp(basicstr, pi)) {
-      return 1;
-    }
+    return 0 == bk_basic_strcmp(basicstr, pi);
+  } else if (basicstr[0] == 5) {
+    char clock[] = "CLOCK";
+    return 0 == bk_basic_strcmp(basicstr, clock);
   }
   return 0;
 }

@@ -48,6 +48,7 @@ void handleCommand(char *buffer) {
   else COMMAND("checksum", bk_handleChecksum)
   else COMMAND("color", bk_handleColor)
   else COMMAND("copy", bk_handleCopy)
+  else COMMAND("date", bk_handleDate)
   else COMMAND("debug", bk_handleDebug)
   else COMMAND("delete", bk_handleDelete)
   else COMMAND("dir", bk_handleDir)
