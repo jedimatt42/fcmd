@@ -19,5 +19,5 @@ void handleReadkey() {
   char value[2];
   value[1] = 0;
   value[0] = bk_cgetc();
-  vars_set(name, value);
+  bk_vars_set(name, value);
 }
