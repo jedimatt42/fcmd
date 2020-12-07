@@ -32,11 +32,6 @@ void cclear(unsigned int length);
 // cclearxy - write spaces at a location
 void cclearxy(int col, int row, int v);
 
-// read a character from the keyboard
-extern int conio_cursorFlag;
-extern int conio_cursorChar;
-unsigned int cgetc();
-
 // output a horizonal line
 void chline(int v);
 

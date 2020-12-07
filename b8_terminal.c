@@ -2,6 +2,7 @@
 #define MYBANK BANK(8)
 
 #include "b8_terminal.h"
+#include "b8_getstr.h"
 #include "b0_globals.h"
 #include "b10_detect_vdp.h"
 #include <conio.h>
@@ -80,7 +81,7 @@ static void optional_pause() {
 
   if (more_count >= limit) {
     tputs_rom("\n-- press any key for more --");
-    unsigned int k = cgetc();
+    unsigned int k = cgetc(CUR_OVERWRITE);
     if (k == 131 || k == 2) {
       request_break = 1;
     }

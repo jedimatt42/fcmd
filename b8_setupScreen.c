@@ -43,11 +43,9 @@ void setupScreen(int width) {
     // VDP_SET_REGISTER(VDP_REG_SAL, 0x06);
     VDP_SET_REGISTER(VDP_REG_SDT, 0x00);
     VDP_SET_REGISTER(VDP_REG_COL, 0xF3);
-
     // erase first 4k of vdp
     vdpmemset(0, 0, 4192);
     // TODO load ea copyright and cursor
-
     // set colors
     vdpmemset(0x0380, 0x13, 32);
     clrscr();

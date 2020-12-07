@@ -11,7 +11,7 @@ int set_text80_raw() {
 	VDP_SET_REGISTER(VDP_REG_MODE1, VDP_MODE1_TEXT);
 	VDP_SET_REGISTER(0x08, 0x08); // set 64k memory VRAM type
 	VDP_SET_REGISTER(0x09, 0x80); // non-interlace, etc. 26.5 row
-	VDP_SET_REGISTER(VDP_REG_SIT, 0x03 | 0x00);	gImage = 0x0000;
+	VDP_SET_REGISTER(VDP_REG_SIT, 0x00);	gImage = 0x0000;
 	VDP_SET_REGISTER(VDP_REG_PDT, 0x02);	gPattern = 0x1000;
 	// no sprites and no color in text mode anyway
 	nTextRow = 80 * 25;

@@ -6,6 +6,7 @@
 #include "commands.h"
 #include "b1_strutil.h"
 #include "b8_terminal.h"
+#include "b8_getstr.h"
 #include "b4_variables.h"
 #include <string.h>
 
@@ -18,6 +19,6 @@ void handleReadkey() {
 
   char value[2];
   value[1] = 0;
-  value[0] = bk_cgetc();
+  value[0] = bk_cgetc(CUR_OVERWRITE);
   bk_vars_set(name, value);
 }

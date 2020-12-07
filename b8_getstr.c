@@ -9,10 +9,6 @@
 #include "b1_history.h"
 #include "b5_clock.h"
 
-static unsigned char mycgetc(unsigned char cursor);
-#define CUR_OVERWRITE 219
-#define CUR_INSERT '_'
-
 int history_on = 0;
 
 // Requirements:
@@ -28,7 +24,7 @@ int history_on = 0;
 //                 else, move cursor to the left.
 void getstr(char* var, int limit, int backspace) {
   int insertMode = 0;
-  unsigned char cursor = CUR_OVERWRITE;
+  unsigned int cursor = CUR_OVERWRITE;
 
   int x = conio_x;
   int y = conio_y;
@@ -38,7 +34,7 @@ void getstr(char* var, int limit, int backspace) {
   int idx = bk_strlen(var);
   while(key != 13) {
     gotoxy(x+idx,y);
-    key = mycgetc(cursor);
+    key = cgetc(cursor);
 
     switch(key) {
       case 3: // F1 - delete
@@ -150,7 +146,7 @@ void getstr(char* var, int limit, int backspace) {
 extern unsigned char last_conio_key;
 #define BLINK_DELAY 230
 
-static unsigned char mycgetc(unsigned char cursor) {
+unsigned int cgetc(unsigned int cursor) {
     unsigned char k = -1;
 
     unsigned int blinkCounter = BLINK_DELAY;

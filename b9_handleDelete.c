@@ -8,6 +8,7 @@
 #include "b2_dsrutil.h"
 #include "b2_lvl2.h"
 #include "b8_terminal.h"
+#include "b8_getstr.h"
 #include <string.h>
 
 static void onIgnoreVolInfo(struct VolInfo *volInfo);
@@ -67,7 +68,7 @@ void handleDelete() {
 int keyYesNo() {
   int k = 0;
   while(k != 'y' && k != 'Y' && k != 'N' && k != 'n') {
-    k = bk_cgetc();
+    k = bk_cgetc(CUR_OVERWRITE);
   }
   tputs_rom("\n");
   return k == 'y' || k == 'Y';
