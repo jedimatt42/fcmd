@@ -12,6 +12,7 @@
 
 void ide_clock(struct DateTime* dt);
 void corcomp_clock(struct DateTime* dt, char* clock);
+void mbp_clock(struct DateTime* dt);
 
 void datetime(struct DateTime* dt) {
   dt->day = 0;
@@ -32,6 +33,8 @@ void datetime(struct DateTime* dt) {
     corcomp_clock(dt, clock);
   } else if (0 == bk_strcmp(clock_type, str2ram("IDE.TIME"))) {
     ide_clock(dt);
+  } else if (0 == bk_strcmp(clock_type, str2ram("MBP"))) {
+    mbp_clock(dt);
   }
 }
 
@@ -163,4 +166,40 @@ void pretty_time(struct DateTime* dt) {
     bk_tputc('a');
   }
   bk_tputc('m');
+}
+
+/* MBP & MBP II clock (no year) */
+
+struct __attribute__((__packed__)) MBP_Time {
+  unsigned char subsec_1_1000;
+  unsigned char na1;
+  unsigned char subsec_1_100;
+  unsigned char na2;
+  unsigned char seconds;
+  unsigned char na3;
+  unsigned char minutes;
+  unsigned char na4;
+  unsigned char hours;
+  unsigned char na5;
+  unsigned char day_of_week;
+  unsigned char na6;
+  unsigned char day;
+  unsigned char na7;
+  unsigned char month;
+  unsigned char na8;
+};
+
+#define MBP_BCD ((volatile struct MBP_Time*)0x8640)
+
+unsigned int bcd2dec(unsigned int bcd) {
+  return bcd - (6 * (bcd / 16));
+}
+
+void mbp_clock(struct DateTime* dt) {
+  dt->year = 0;
+  dt->month = bcd2dec(MBP_BCD->month);
+  dt->day = bcd2dec(MBP_BCD->day);
+  dt->hours = bcd2dec(MBP_BCD->hours);
+  dt->minutes = bcd2dec(MBP_BCD->minutes);
+  dt->seconds = bcd2dec(MBP_BCD->seconds);
 }
