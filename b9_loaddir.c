@@ -44,18 +44,43 @@ unsigned int loadDir(struct DeviceServiceRoutine* dsr, const char* pathname, vol
         int k = bk_ti_floatToInt(cbuf+19+namlen);
         volInfo.total = j;
         volInfo.available = k;
+        volInfo.timestamps = (pab.CharCount > 38);
         vol_cb(&volInfo);
       } else {
         int namlen = bk_basicToCstr(cbuf, dirEntry.name);
         if (namlen == 0) {
           break;
         }
-        int a = bk_ti_floatToInt(cbuf+1+namlen);
-        int j = bk_ti_floatToInt(cbuf+10+namlen);
-        int k = bk_ti_floatToInt(cbuf+19+namlen);
-        dirEntry.type = a;
-        dirEntry.sectors = j;
-        dirEntry.reclen = k;
+        char* cursor = cbuf+1+namlen;
+        dirEntry.type = bk_ti_floatToInt(cursor);
+        cursor += 9;
+        dirEntry.sectors = bk_ti_floatToInt(cursor);
+        cursor += 9;
+        dirEntry.reclen = bk_ti_floatToInt(cursor);
+
+        if (pab.CharCount > 38) {
+          cursor += 9 /* point to 'creation time' */ +
+            (6 * 9) /* and then to modified time */;
+          dirEntry.ts_second = bk_ti_floatToInt(cursor);
+          cursor += 9;
+          dirEntry.ts_min = bk_ti_floatToInt(cursor);
+          cursor += 9;
+          dirEntry.ts_hour = bk_ti_floatToInt(cursor);
+          cursor += 9;
+          dirEntry.ts_day = bk_ti_floatToInt(cursor);
+          cursor += 9;
+          dirEntry.ts_month = bk_ti_floatToInt(cursor);
+          cursor += 9;
+          dirEntry.ts_year = bk_ti_floatToInt(cursor);
+        } else {
+          dirEntry.ts_year = 0;
+          dirEntry.ts_month = 0;
+          dirEntry.ts_day = 0;
+          dirEntry.ts_hour = 0;
+          dirEntry.ts_min = 0;
+          dirEntry.ts_second = 0;
+        }
+
         if (dirEntry.name[0] != 0) {
           dir_cb(&dirEntry);
         }

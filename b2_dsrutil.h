@@ -49,12 +49,19 @@ struct __attribute__((__packed__)) DirEntry {
   int type;
   int sectors;
   int reclen;
+  char ts_hour;
+  char ts_min;
+  char ts_second;
+  int ts_year;
+  char ts_month;
+  char ts_day;
 };
 
 struct __attribute__((__packed__)) VolInfo {
   char volname[11];
   int total;
   int available;
+  char timestamps;
   struct DeviceServiceRoutine* dsr;
 };
 

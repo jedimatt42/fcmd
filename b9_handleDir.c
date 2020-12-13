@@ -63,7 +63,10 @@ void handleDir() {
   bk_tputc('\n');
 }
 
+static int timestamps;
+
 void onLongVolInfo(struct VolInfo* volInfo) {
+  timestamps = volInfo->timestamps;
   tputs_rom("Diskname: ");
   bk_tputs_ram(volInfo->volname);
   if (displayWidth == 40) {
@@ -76,8 +79,16 @@ void onLongVolInfo(struct VolInfo* volInfo) {
   tputs_rom(" Available: ");
   bk_tputs_ram(bk_uint2str(volInfo->available));
   tputs_rom("\n\n");
-  tputs_rom("Name       Type    P Reclen Sectors\n");
-  tputs_rom("-----------------------------------\n");
+  tputs_rom("Name       Type    P Reclen Sectors");
+  if (displayWidth == 80 && timestamps) {
+    tputs_rom(" Modified");
+  }
+  bk_tputc('\n');
+  tputs_rom("-----------------------------------");
+  if (displayWidth == 80 && timestamps) {
+    tputs_rom("--------------------");
+  }
+  bk_tputc('\n');
 }
 
 const char* file_types[] = {
@@ -103,6 +114,26 @@ void cputpad(int padding, char *str)
       bk_tputc(' ');
     }
   }
+}
+
+static char* zeropad(int padding, int value) {
+  static char buf[7]; // for my purposes, padding can be 4 max
+  char* cursor = buf;
+  int padidx = 0;
+  if (padding > 3 && value < 1000) {
+    buf[padidx++] = '0';
+    cursor++;
+  }
+  if (padding > 2 && value < 100) {
+    buf[padidx++] = '0';
+    cursor++;
+  }
+  if (padding > 1 && value < 10) {
+    buf[padidx++] = '0';
+    cursor++;
+  }
+  bk_strcpy(cursor, bk_uint2str(value));
+  return buf;
 }
 
 void onLongDirEntry(struct DirEntry* dirEntry) {
@@ -135,7 +166,24 @@ void onLongDirEntry(struct DirEntry* dirEntry) {
     cputpad(7, sizestr);
   }
 
-  bk_tputs_ram(bk_uint2str(dirEntry->sectors));
+  char* reclenstr = bk_uint2str(dirEntry->sectors);
+  bk_tputs_ram(reclenstr);
+  cputpad(7, reclenstr);
+
+  if (displayWidth == 80 && timestamps && de_type != 5) {
+    bk_tputc(' ');
+    bk_tputs_ram(zeropad(2, dirEntry->ts_month));
+    bk_tputc('/');
+    bk_tputs_ram(zeropad(2, dirEntry->ts_day));
+    bk_tputc('/');
+    bk_tputs_ram(zeropad(4, dirEntry->ts_year));
+    bk_tputc(' ');
+    bk_tputs_ram(zeropad(2, dirEntry->ts_hour));
+    bk_tputc(':');
+    bk_tputs_ram(zeropad(2, dirEntry->ts_min));
+    bk_tputc(':');
+    bk_tputs_ram(zeropad(2, dirEntry->ts_second));
+  }
 
   bk_tputc('\n');
 }
