@@ -128,7 +128,7 @@ inline int VDP_SCREEN_TEXT64(unsigned int r, unsigned int c)			{	return (((r)<<6
 // settings for mode register 0
 #define VDP_MODE0_BITMAP		0x02		// set bitmap mode
 #define VDP_MODE0_EXTVID		0x01		// enable external video (not connected on TI-99/4A)
-#define VDP_MODE0_80COL                 0x04            // enable 9938/F18A 80 column
+#define VDP_MODE0_80COL         0x04        // enable 9938/F18A 80 column
 
 // settings for mode register 1
 #define VDP_MODE1_16K			0x80		// set 16k mode (4k mode if cleared)
