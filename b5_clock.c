@@ -13,6 +13,7 @@
 void ide_clock(struct DateTime* dt);
 void corcomp_clock(struct DateTime* dt, char* clock);
 void mbp_clock(struct DateTime* dt);
+void update_ampm(struct DateTime* dt);
 
 void datetime(struct DateTime* dt) {
   dt->day = 0;
@@ -35,6 +36,20 @@ void datetime(struct DateTime* dt) {
     ide_clock(dt);
   } else if (0 == bk_strcmp(clock_type, str2ram("MBP"))) {
     mbp_clock(dt);
+  }
+  update_ampm(dt);
+}
+
+void update_ampm(struct DateTime* dt) {
+  dt->pm = 0;
+  if (dt->hours > 11) {
+    dt->pm = 1;
+    if (dt->hours > 12) {
+      dt->hours -= 12;
+    }
+  }
+  if (dt->hours == 0) {
+    dt->hours = 12;
   }
 }
 
@@ -86,17 +101,6 @@ void ide_clock(struct DateTime* dt) {
   bk_basicToCstr(cursor, numbuf);
   dt->dayOfWeek = bk_atoi(numbuf) - 1;
 
-  dt->pm = 0;
-  if (dt->hours > 11) {
-    dt->pm = 1;
-    if (dt->hours > 12) {
-      dt->hours -= 12;
-    }
-  }
-  if (dt->hours == 0) {
-    dt->hours = 12;
-  }
-
   bk_dsr_close(dsr, &pab);
 }
 
@@ -138,17 +142,6 @@ void corcomp_clock(struct DateTime* dt, char* clock) {
   dt->hours = bk_atoi(bk_strtok(time, ':'));
   dt->minutes = bk_atoi(bk_strtok(0, ':'));
   dt->seconds = bk_atoi(bk_strtok(0, ':'));
-
-  dt->pm = 0;
-  if (dt->hours > 11) {
-    dt->pm = 1;
-    if (dt->hours > 12) {
-      dt->hours -= 12;
-    }
-  }
-  if (dt->hours == 0) {
-    dt->hours = 12;
-  }
 
   bk_dsr_close(dsr, &pab);
 }
