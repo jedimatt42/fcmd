@@ -29,6 +29,13 @@ static int isAssignment(char* str) {
   return 0;
 }
 
+int must_close_command(char* buffer) {
+  char* tok = bk_strtokpeek(buffer, ' ');
+  if (MATCH(tok, str2ram("fg99"))) return 1;
+  if (MATCH(tok, str2ram("LOAD"))) return 1;
+  return 0;
+}
+
 // NOTE command handle functions in bank 0 do not need bk_ banking stub
 
 void handleCommand(char *buffer) {

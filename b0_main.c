@@ -146,7 +146,22 @@ int runScript(struct DeviceServiceRoutine* dsr, char* scriptName) {
         if (commandbuf[l-1] == 13) {
           commandbuf[l-1] = 0;
         }
+        // This is a bit brutish, but keeps from having to pass state around
+        // close the script before invoking a command
+        int must_close = must_close_command(commandbuf);
+        if (must_close) {
+          bk_dsr_close(dsr, &pab);
+        }
         handleCommand(commandbuf);
+        if (must_close) {
+          // now re-open and seek in the script to the next line.
+          ferr = bk_dsr_open(dsr, &pab, scriptName, DSR_TYPE_INPUT | DSR_TYPE_DISPLAY | DSR_TYPE_VARIABLE | DSR_TYPE_SEQUENTIAL, 0);
+          // advance to next line
+          int newline = 0;
+          while (!ferr && newline < lineno) {
+            ferr = bk_dsr_read(dsr, &pab, 0);
+          }
+        }
       }
     }
     bk_dsr_close(dsr, &pab);

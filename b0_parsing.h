@@ -8,6 +8,7 @@
 #define PR_WILDCARD 0x0002
 
 void handleCommand(char * buffer);
+int must_close_command(char* buffer);
 
 void parsePathParam(char* str_in, struct DeviceServiceRoutine** dsr, char* buffer, int requirements);
 int globMatches(char* filename);
