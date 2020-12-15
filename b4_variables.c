@@ -8,6 +8,17 @@
 #include "b1_strutil.h"
 #include "string.h"
 
+void to_upper(char* name) {
+  // changes to upper case in place
+  int limit = bk_strlen(name);
+  for (int i=0; i<limit; i++) {
+    char c = name[i];
+    if (c >= 'a' && c <= 'z') {
+      name[i] = c - ('a' - 'A');
+    }
+  }
+}
+
 void vars_set(char* name, char* value) {
   if (bk_strlen(name) > MAX_VAR_NAME) {
     tputs_rom("Error, variable name too long, limit is ");
@@ -15,6 +26,8 @@ void vars_set(char* name, char* value) {
     bk_tputc('\n');
     return;
   }
+
+  to_upper(name);
 
   if (value == 0 || value[0] == 0) {
     dict_remove(&system_dict, DE_TYPE_VAR, name);
@@ -32,6 +45,8 @@ void vars_set(char* name, char* value) {
 }
 
 char* vars_get(char* name) {
+  to_upper(name);
+
   char* val = (char*) dict_get(&system_dict, DE_TYPE_VAR, name) ;
   if (val) {
     return val;
