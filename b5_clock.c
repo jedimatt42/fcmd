@@ -26,15 +26,15 @@ void datetime(struct DateTime* dt) {
   dt->pm = 0;
 
   char* clock_type = bk_vars_get(str2ram("CLOCK"));
-  if (clock_type == (char*) -1 || 0 == bk_strcmp(clock_type, str2ram("PI.CLOCK"))) {
+  if (clock_type == (char*) -1 || 0 == bk_strcmpi(clock_type, str2ram("PI.CLOCK"))) {
     char clock[] = "PI.CLOCK";
     corcomp_clock(dt, clock);
-  } else if (0 == bk_strcmp(clock_type, str2ram("CLOCK"))) {
+  } else if (0 == bk_strcmpi(clock_type, str2ram("CLOCK"))) {
     char clock[] = "CLOCK.";
     corcomp_clock(dt, clock);
-  } else if (0 == bk_strcmp(clock_type, str2ram("IDE.TIME"))) {
+  } else if (0 == bk_strcmpi(clock_type, str2ram("IDE.TIME"))) {
     ide_clock(dt);
-  } else if (0 == bk_strcmp(clock_type, str2ram("MBP"))) {
+  } else if (0 == bk_strcmpi(clock_type, str2ram("MBP"))) {
     mbp_clock(dt);
   }
   update_ampm(dt);
