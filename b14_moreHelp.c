@@ -74,6 +74,11 @@ void b14Help(char* tok) {
       "- CLOCK\n"
       "- IDE.TIME\n"
     );
+  } else if (matchcmd(tok, "sysinfo")) {
+    wraptext("==SysInfo==\n\n"
+      "sysinfo\n\n"
+      "Print details about the current system hardware configuration.\n"
+    );
   } else {
     wraptext("no help for command: ");
     bk_tputs_ram(tok);

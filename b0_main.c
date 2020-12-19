@@ -65,11 +65,7 @@ void main()
   foreground = 15;
   background = 4;
   bk_setupScreen(vdp_type == VDP_9918 ? 40 : 80);
-  if (vdp_type == VDP_F18A || vdp_type == VDP_9918) {
-    // If 9938 cards don't have VDP INT hooked up right
-    // then this will hang, just assume NTSC for now
-    pal = bk_isPal();
-  }
+  pal = bk_isPal();
 
   bk_loadDriveDSRs();
   bk_dict_init(&system_dict, heap_end);

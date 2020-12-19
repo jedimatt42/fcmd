@@ -75,6 +75,7 @@ void handleCommand(char *buffer) {
   else COMMAND("readkey", bk_handleReadkey)
   else COMMAND("rename", bk_handleRename)
   else COMMAND("rmdir", bk_handleRmdir)
+  else COMMAND("sysinfo", bk_handleSysInfo)
   else COMMAND("tipibeeps", playtipi)
   else COMMAND("tipihalt", bk_handleTipiHalt)
   else COMMAND("tipimap", bk_handleTipimap)
