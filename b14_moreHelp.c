@@ -79,6 +79,11 @@ void b14Help(char* tok) {
       "sysinfo\n\n"
       "Print details about the current system hardware configuration.\n"
     );
+  } else if (matchcmd(tok, "pwd")) {
+    wraptext("==PWD==\n\n"
+      "pwd\n\n"
+      "Print current working directory.\n"
+    );
   } else {
     wraptext("no help for command: ");
     bk_tputs_ram(tok);

@@ -53,6 +53,7 @@ int must_close_command(char* buffer) {
   if (MATCH(tok, str2ram("lvl2"))) return 0;
   if (MATCH(tok, str2ram("mkdir"))) return 0;
   if (MATCH(tok, str2ram("protect"))) return 0;
+  if (MATCH(tok, str2ram("pwd"))) return 0;
   if (MATCH(tok, str2ram("readkey"))) return 0;
   if (MATCH(tok, str2ram("rename"))) return 0;
   if (MATCH(tok, str2ram("rmdir"))) return 0;
@@ -101,6 +102,7 @@ void handleCommand(char *buffer) {
   else COMMAND("lvl2", bk_handleLvl2)
   else COMMAND("mkdir", bk_handleMkdir)
   else COMMAND("protect", bk_handleProtect)
+  else COMMAND("pwd", bk_handlePwd)
   else COMMAND("readkey", bk_handleReadkey)
   else COMMAND("rename", bk_handleRename)
   else COMMAND("rmdir", bk_handleRmdir)

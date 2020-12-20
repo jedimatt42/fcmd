@@ -55,7 +55,8 @@ void handleHelp() {
     "autocmd bar cd cfmount checksum cls color copy date "
     "delete drives echo env exit fg99 goto help "
     "history if "
-    "label load lvl2 mkdir path protect readkey rename rmdir sysinfo tipibeeps tipihalt tipimap "
+    "label load lvl2 mkdir path protect pwd readkey rename "
+    "rmdir sysinfo tipibeeps tipihalt tipimap "
     "tipireboot type unprotect ver width xb\n");
     return;
   }

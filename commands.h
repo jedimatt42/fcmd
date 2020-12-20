@@ -32,6 +32,7 @@ DEC_COMMAND(4, Protect);
 DEC_COMMAND(4, Type);
 DEC_COMMAND(4, Unprotect);
 DEC_COMMAND(5, Date);
+DEC_COMMAND(5, Pwd);
 DEC_COMMAND(5, SysInfo);
 DEC_COMMAND(6, CFMount);
 DEC_COMMAND(6, Color);
