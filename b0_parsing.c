@@ -92,8 +92,8 @@ void handleCommand(char *buffer) {
     } else {
       tputs_rom("error, label only supported in script\n");
     }
-  } else if (isAssignment(tok)) {
-    char* name = bk_strtok(procbuf, '=');
+  } else if (isAssignment(buffer)) {
+    char* name = bk_strtok(buffer, '=');
     char* value = bk_strtokpeek(0, 0); // to end of line
     bk_vars_set(name, value);
   } else {

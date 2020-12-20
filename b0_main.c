@@ -24,6 +24,8 @@
 #include "b10_detect_vdp.h"
 #include "b1_history.h"
 #include "b5_clock.h"
+#include "b4_variables.h"
+#include "b5_prompt.h"
 
 const char tipibeeps[] = {
   0x04, 0x9f, 0xbf, 0xdf, 0xff, 0x02,
@@ -56,6 +58,15 @@ void titleScreen() {
   bk_tputc(' ');
   tputs_rom(__DATE__);
   tputs_rom("\nwww.jedimatt42.com\n\n");
+}
+
+void prompt() {
+  char* prompt_pattern = bk_vars_get(str2ram("PROMPT"));
+  if (prompt_pattern != (char*) -1) {
+    bk_print_prompt(prompt_pattern);
+  } else {
+    bk_print_prompt(str2ram("[\\c\\p]\\n$\\s"));
+  }
 }
 
 void main()
@@ -93,11 +104,7 @@ void main()
 
     VDP_INT_POLL;
     bk_strset(commandbuf, 0, 255);
-    bk_tputc('[');
-    bk_tputs_ram(bk_uint2hex(currentDsr->crubase));
-    bk_tputc('.');
-    bk_tputs_ram(currentPath);
-    tputs_rom("]\n$ ");
+    prompt();
     history_on = 1;
     bk_getstr(commandbuf, displayWidth - 3, backspace);
     bk_tputc('\n');

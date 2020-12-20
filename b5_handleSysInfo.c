@@ -8,12 +8,8 @@
 #include "b10_detect_vdp.h"
 #include "b0_globals.h"
 #include "b0_sams.h"
-#include "b10_isPal.h"
-
 
 void handleSysInfo() {
-  bk_isPal();
-
   struct DisplayInformation di;
   bk_display_info(&di);
 
