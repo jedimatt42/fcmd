@@ -8,6 +8,7 @@
 #include "b8_terminal.h"
 #include "b8_getstr.h"
 #include "b4_variables.h"
+#include "b0_globals.h"
 #include <string.h>
 
 void handleReadkey() {
@@ -20,5 +21,7 @@ void handleReadkey() {
   char value[2];
   value[1] = 0;
   value[0] = bk_cgetc(CUR_OVERWRITE);
-  bk_vars_set(name, value);
+  if (!request_break) {
+    bk_vars_set(name, value);
+  }
 }

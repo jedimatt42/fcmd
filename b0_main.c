@@ -151,7 +151,7 @@ int runScript(struct DeviceServiceRoutine* dsr, char* scriptName) {
         }
         // This is a bit brutish, but keeps from having to pass state around
         // close the script before invoking a command
-        int must_close = must_close_command(commandbuf);
+        volatile int must_close = must_close_command(commandbuf);
         if (must_close) {
           bk_dsr_close(dsr, &pab);
         }
@@ -163,6 +163,7 @@ int runScript(struct DeviceServiceRoutine* dsr, char* scriptName) {
           int newline = 0;
           while (!ferr && newline < lineno) {
             ferr = bk_dsr_read(dsr, &pab, 0);
+            newline++;
           }
         }
       }

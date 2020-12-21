@@ -8,6 +8,7 @@
 #include "b1_strutil.h"
 #include "b1_history.h"
 #include "b5_clock.h"
+#include "b0_globals.h"
 
 int history_on = 0;
 
@@ -171,7 +172,10 @@ unsigned int cgetc(unsigned int cursor) {
           }
         }
         bk_clock_hook();
-    } while ((k == 255) || ((KSCAN_STATUS&KSCAN_MASK) == 0));
+        if (k == 2 || k == 131) {
+          request_break = 1;
+        }
+    } while (!request_break && ((k == 255) || ((KSCAN_STATUS&KSCAN_MASK) == 0)));
     // restore display incase we put a cursor on it.
     vdpchar(vdpaddr, screenChar);
 
