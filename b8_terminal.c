@@ -49,6 +49,14 @@ unsigned char cursor_store_y;
 #define STAGE_ESC 1
 #define STAGE_CSI 2
 
+inline void tgotoxy(int x, int y) {
+  gotoxy(x, y+nTitleLine);
+}
+
+inline int twherey() {
+  return wherey() - nTitleLine;
+}
+
 void resetState() {
   stage = STAGE_OPEN;
   bs_idx = 0;
@@ -88,7 +96,7 @@ static void optional_pause() {
     more_count = 0;
     cclearxy(0, limit, displayWidth);
     cclearxy(0, limit + 1, displayWidth);
-    gotoxy(0,limit);
+    tgotoxy(0,limit);
   }
   more_on = 1;
 }
@@ -118,7 +126,7 @@ int getParamB(int def) {
 }
 
 void cursorUp(int lines) {
-  int y = wherey() - lines;
+  int y = twherey() - lines;
   if (y < 0) {
     y = 0;
   }
@@ -126,7 +134,7 @@ void cursorUp(int lines) {
 }
 
 void cursorDown(int lines) {
-  int y = wherey() + lines;
+  int y = twherey() + lines;
   unsigned char scx;
   unsigned char scy;
   screensize(&scx, &scy);
@@ -181,13 +189,13 @@ void eraseDisplay(int opt) {
   unsigned char scy;
   screensize(&scx, &scy);
   int oldx = wherex();
-  int oldy = wherey();
+  int oldy = twherey();
   int cursorAddr = gImage + (oldx + (oldy + scy));
 
   switch (opt) {
     case 0: // clear from cursor to end of screen, remain at location
       cclear(scx - oldx + scx*(scy - oldy - 1) - 1); // clear except last character - avoid scrolling
-      gotoxy(oldx, oldy);
+      tgotoxy(oldx, oldy);
       break;
     case 1: // clear from cursor to beginning of screen, remain at location
       cclearxy(0,0, scx*oldy + oldx); // should end up at oldx,oldy
@@ -195,7 +203,7 @@ void eraseDisplay(int opt) {
     case 3: // TODO: if we add scroll back buffer, 3 should clear that too.
     case 2: // clear full screen, return to top
       clrscr();
-      gotoxy(0,0);
+      tgotoxy(0,0);
       break;
   }
 }
@@ -205,7 +213,7 @@ void eraseLine(int opt) {
   unsigned char scy;
   screensize(&scx, &scy);
   int oldx = wherex();
-  int oldy = wherey();
+  int oldy = twherey();
   switch (opt) {
     case 0: // to end of line
       cclear(scx - oldx);
@@ -219,11 +227,11 @@ void eraseLine(int opt) {
       cclear(scx);
       break;
   }
-  gotoxy(oldx, oldy);
+  tgotoxy(oldx, oldy);
 }
 
 void scrollUp(int lc) {
-  gotoxy(0,23);
+  tgotoxy(0,23);
   for (int i = 0; i < lc; i++) {
     inc_row();
   }
@@ -368,7 +376,7 @@ void doCsiCommand(unsigned char c) {
       gotox(0);
       break;
     case 'G': // set cursor column, 1 param, default 1
-      cursorGoto(getParamA(1),wherey() + 1);
+      cursorGoto(getParamA(1),twherey() + 1);
       break;
     case 'H': // set position, 2 param, defaults 1, 1
       cursorGoto(getParamB(1), getParamA(1));
@@ -395,10 +403,10 @@ void doCsiCommand(unsigned char c) {
       break;
     case 's': // store cursor, no params
       cursor_store_x = wherex();
-      cursor_store_y = wherey();
+      cursor_store_y = twherey();
       break;
     case 'u': // restore cursor, no params.
-      gotoxy(cursor_store_x, cursor_store_y);
+      tgotoxy(cursor_store_x, cursor_store_y);
       break;
     case 'c': // identify term type.
       break;
@@ -419,10 +427,10 @@ int doEscCommand(unsigned char c) {
     switch (c) {
       case '7': // save cursor
         cursor_store_x = wherex();
-        cursor_store_y = wherey();
+        cursor_store_y = twherey();
         break;
       case '8': // restore cursor
-        gotoxy(cursor_store_x, cursor_store_y);
+        tgotoxy(cursor_store_x, cursor_store_y);
         break;
       case '5': // possible status
         esc_state = ESC_FIVE;
