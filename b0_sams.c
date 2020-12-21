@@ -4,6 +4,8 @@
 #include "b0_sams.h"
 #include <vdp.h>
 
+// These are used before the memory initialization phase in crt0...
+// so... watch out!
 int sams_next_page;
 int sams_total_pages;
 
@@ -96,6 +98,8 @@ void check_exp_mem()
 }
 
 int init_sams() {
+    sams_next_page = 0;
+    sams_total_pages = 0;
     check_exp_mem();
 
     if (hasSams()) {
