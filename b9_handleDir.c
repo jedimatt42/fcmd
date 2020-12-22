@@ -46,7 +46,7 @@ void handleDir() {
   }
 
   unsigned int stat = bk_existsDir(dsr, path);
-  if (stat != 0) {
+  if (stat) {
     tputs_rom("error, device/folder not found: ");
     bk_tputs_ram(path);
     bk_tputc('\n');
