@@ -15,7 +15,11 @@ void handleSysInfo() {
 
   tputs_rom("Display: ");
   if (di.vdp_type == VDP_9918) {
-    tputs_rom("TMS9918 ");
+    if (di.isPal) {
+      tputs_rom("TMS9929A ");
+    } else {
+      tputs_rom("TMS9918A ");
+    }
   } else if (di.vdp_type == VDP_9938) {
     tputs_rom("V9938 ");
   } else if (di.vdp_type == VDP_9958) {
@@ -32,7 +36,7 @@ void handleSysInfo() {
     tputs_rom("NTSC\n");
   }
 
-  tputs_rom("Memory: ");
+  tputs_rom("Memory:  ");
   if (sams_total_pages) {
     unsigned int ram = sams_total_pages * 4;
     bk_tputs_ram(bk_uint2str(ram));
@@ -40,4 +44,7 @@ void handleSysInfo() {
     tputs_rom("32");
   }
   tputs_rom("K\n");
+
+  // todo: add a few other options
+  // add command line options, default to all, that control what line items to include
 }
