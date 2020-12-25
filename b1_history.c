@@ -86,7 +86,7 @@ void sams_hist_handler(char* buffer, int limit, int op) {
   if (op == HIST_STORE) {
     int len = bk_strlen(buffer);
     if (len > 0) {
-      list_push(HISTORY, buffer, len);
+      list_push(HISTORY, buffer, len + 1 /* include the trailing null */);
     }
     HIST_IDX = 0;
   } else if (op == HIST_GET) {

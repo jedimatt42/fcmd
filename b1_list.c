@@ -33,9 +33,12 @@ char* list_find_last(struct List* list) {
 
 struct ListEntry* list_get(struct List* list, int index) {
   char* cursor = list->addr;
-  while(index && cursor < list->end) {
+  while(index && (cursor < list->end)) {
     cursor += ((struct ListEntry*) cursor)->length + 2;
     index--;
+  }
+  if (cursor == list->end) {
+    return 0;
   }
   if (!index) {
     return (struct ListEntry*)cursor;
