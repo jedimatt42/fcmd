@@ -172,10 +172,7 @@ unsigned int cgetc(unsigned int cursor) {
           }
         }
         bk_clock_hook();
-        if (k == 2 || k == 131) {
-          request_break = 1;
-        }
-    } while (!request_break && ((k == 255) || ((KSCAN_STATUS&KSCAN_MASK) == 0)));
+    } while ((k == 255) || ((KSCAN_STATUS&KSCAN_MASK) == 0));
     // restore display incase we put a cursor on it.
     vdpchar(vdpaddr, screenChar);
 

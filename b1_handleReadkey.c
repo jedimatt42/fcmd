@@ -20,7 +20,7 @@ void handleReadkey() {
 
   char value[2];
   value[1] = 0;
-  value[0] = bk_cgetc(CUR_OVERWRITE);
+  value[0] = bk_cgetc(0);
   if (!request_break) {
     bk_vars_set(name, value);
   }
