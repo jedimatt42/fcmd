@@ -8,6 +8,7 @@
 #include "b2_tifloat.h"
 #include "b1_strutil.h"
 #include "b0_sams.h"
+#include "b9_resetSams.h"
 #include <conio.h>
 #include <string.h>
 
@@ -33,6 +34,7 @@ inline static void ea5_vdpchar(int pAddr, int ch) {
 #define BSIZE (*(volatile int *)0x8326)
 #define ADDR (*(volatile int *)0x8328)
 
+
 unsigned int dsr_ea5load(struct DeviceServiceRoutine* dsr, const char* fname) {
   // Move the C stack into scratchpad
   __asm__(
@@ -51,29 +53,7 @@ unsigned int dsr_ea5load(struct DeviceServiceRoutine* dsr, const char* fname) {
 
   vdpmemcpy(0, fname, pab->NameLength);
 
-  // Reset SAMS if it is in use - no expansion ram can be in use by FC at this point.
-  if (sams_total_pages) {
-    // preserve lower expansion state so my bank switching cartridge works
-    inl_map_page(2, 0xA000);
-    inl_map_page(3, 0xB000);
-    int* s = (int*) 0x2000;
-    int* d = (int*) 0xA000;
-    while (s < (int*)0x4000) {
-      *(d++) = *(s++);
-    }
-    // now swap the copy in and setup 'default' sams page layout
-    inl_map_page(2, 0x2000);
-    inl_map_page(3, 0x3000);
-    inl_map_page(0xA, 0xA000);
-    inl_map_page(0xB, 0xB000);
-    inl_map_page(0xC, 0xC000);
-    inl_map_page(0xD, 0xD000);
-    inl_map_page(0xE, 0xE000);
-    inl_map_page(0xF, 0xF000);
-    __asm__(
-      "LI r12, >1E00\n\t"
-      "SBZ 1\n\t");
-  }
+  bk_resetSams();
 
   unsigned int err = bk_mds_lvl3_dsrlnk(crubase, pab, VDPPAB);
   if (err) {

@@ -32,7 +32,34 @@ void handleXb() {
 
     bk_strcpy(namebuf, str2ram("PI.CONFIG"));
 
-    int err = bk_dsr_open(dsr, &pab, namebuf, DSR_TYPE_APPEND | DSR_TYPE_VARIABLE, 0);
+    // Capture DSK1_DIR in case it is already mapped
+    char dsk1_dir[80];
+    bk_strset(dsk1_dir, 0, 80);
+    int err = bk_dsr_open(dsr, &pab, namebuf, DSR_TYPE_INPUT | DSR_TYPE_VARIABLE, 0);
+    if (err) {
+        tputs_rom("TIPI required\n");
+        return;
+    } else {
+        int done = 0;
+        while(!done) {
+            err = bk_dsr_read(dsr, &pab, 0);
+            if (!err) {
+                char tmp[80];
+                bk_strset(tmp, 0, 80);
+                vdpmemread(pab.VDPBuffer, tmp, pab.CharCount);
+                int eqsign = bk_indexof(tmp, '=');
+                tmp[eqsign] = 0;
+                if (!bk_strcmp(str2ram("DSK1_DIR"), tmp)) {
+                    done = 1;
+                    bk_strncpy(dsk1_dir, tmp + 9, 71);
+                }
+            } else {
+                done = 1;
+            }
+        }
+    }
+
+    err = bk_dsr_open(dsr, &pab, namebuf, DSR_TYPE_APPEND | DSR_TYPE_VARIABLE, 0);
 
     if (err) {
         tputs_rom("could no open PI.CONFIG\n");
@@ -56,7 +83,18 @@ void handleXb() {
         return;
     } else {
         unsigned char line[81];
-        bk_strcpy(line, str2ram("10 RUN \""));
+        bk_strcpy(line, str2ram("10 OPEN #1:\"PI.CONFIG\""));
+        bk_dsr_write(dsr, &pab, line, bk_strlen(line));
+
+        bk_strcpy(line, str2ram("20 PRINT #1:\"DSK1_DIR="));
+        bk_strcat(line, dsk1_dir);
+        bk_strcat(line, str2ram("\""));
+        bk_dsr_write(dsr, &pab, line, bk_strlen(line));
+
+        bk_strcpy(line, str2ram("30 CLOSE #1"));
+        bk_dsr_write(dsr, &pab, line, bk_strlen(line));
+
+        bk_strcpy(line, str2ram("40 RUN \""));
         bk_strncpy(line+8, path, 72);
         bk_strcpy(line+8+bk_strlen(path), str2ram("\""));
         bk_dsr_write(dsr, &pab, line, bk_strlen(line));
