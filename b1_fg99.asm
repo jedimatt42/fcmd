@@ -26,12 +26,22 @@ fgwait:
        li   r0, >6000         ; check >6000->6200
        li   r2, >100
 fgl1   mov  *r0+, r1
-       jne  fgdone
+       jne  fgdelay
        dec  r2
        jne  fgl1
        jmp  fgwait
 
-       ; image has been loaded
+       ; ROM image has been loaded
+       li   r2, >1000
+fgdelay:
+       ; wait for GROM to have a chance to be loaded
+       src  r0, 8             ; burn at least 21 cycles
+       src  r0, 8             ; burn at least 21 cycles
+       src  r0, 8             ; burn at least 21 cycles
+       src  r0, 8             ; burn at least 21 cycles
+       dec  r2
+       jne  fgdelay
+
 fgdone:
        lwpi >83E0
        mov  r6,r6             ; test for 0x0000
@@ -44,6 +54,35 @@ endfg:
 
 ; Entry point in ROM
 fg99:
+; Move passed in message data to scratchpad
+       li    r3, >8320        ; set destination
+       ; r1 is already source
+       li    r4, 10
+fgcp:
+       mov   *r1+,*r3+        ; copy word
+       dec   r4
+       jne   fgcp
+       li    r1, >8320        ; set new address of message
+
+; In case of SAMS, re-align page mapping
+       li    r12, >1e00       ; set SAMS crubase
+       sbo   0                ; make mapping registers accessible
+       li    r4, 0            ; page 0
+       li    r6, >0000        ; -> address >0000
+       li    r5, 16
+fgmp:
+       mov   r6, r3
+       srl   r3, 12
+       sla   r3, 1
+       mov   r4, @>4000(r3)   ; map page
+       ai    r4, >0100        ; next page
+       ai    r6, >1000        ; next address
+       dec   r5               ; count pages
+       jne   fgmp
+
+       sbz   0                ; hide registers
+       sbz   1                ; turn mapper off
+; proceed to bound cartridge
        mov   r1, r0           ; take message address from gcc caller
        mov   r2, @GPLWSR6     ; take grom launch address from gcc caller (0x0000 causes console reset)
        mov   r2, @18(r1)      ; fill launch address into old structure ( voodoo )
