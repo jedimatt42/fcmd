@@ -91,6 +91,7 @@ void handleCommand(char *buffer) {
   else COMMAND("dir", bk_handleDir)
   else COMMAND("drives", bk_handleDrives)
   else COMMAND("echo", bk_handleEcho)
+  else COMMAND("ed", bk_handleEd)
   else COMMAND("env", bk_handleEnv)
   else COMMAND("exit", handleExit)
   else COMMAND("fg99", handleFg99)
