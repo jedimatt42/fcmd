@@ -18,6 +18,7 @@ struct __attribute__((__packed__)) Line {
 
 struct __attribute__((__packed__)) EditBuffer {
   int top_line;
+  int left_column;
   int lineCount;
   struct Line lines[];
 };
@@ -92,7 +93,7 @@ static void renderLines() {
   int displayAddr = gImage;
   for(int l=EDIT_BUFFER->top_line; l < EDIT_BUFFER->top_line + displayHeight; l++) {
     if (l<EDIT_BUFFER->lineCount) {
-      vdpmemcpy(displayAddr, EDIT_BUFFER->lines[l].data, displayWidth);
+      vdpmemcpy(displayAddr, EDIT_BUFFER->lines[l].data + EDIT_BUFFER->left_column, displayWidth);
     } else {
       vdpmemset(displayAddr, 0, displayWidth);
     }
@@ -101,7 +102,31 @@ static void renderLines() {
 }
 
 static void movex(int x) {
-  //conio_x += x;
+  int requiresRender = 0;
+  conio_x += x;
+  if (conio_x == -1) {
+    EDIT_BUFFER->left_column -= 1;
+    conio_x = 0;
+    requiresRender = 1;
+    if (EDIT_BUFFER->left_column == -1) {
+      EDIT_BUFFER->left_column = 0;
+      requiresRender = 0;
+    }
+  }
+
+  if (conio_x == displayWidth) {
+    EDIT_BUFFER->left_column += 1;
+    conio_x = displayWidth - 1;
+    requiresRender = 1;
+    if (EDIT_BUFFER->left_column + displayWidth > EDIT_BUFFER->lines[conio_y+EDIT_BUFFER->top_line].length) {
+      EDIT_BUFFER->left_column -= 1;
+      requiresRender = 0;
+    }
+  }
+
+  if (requiresRender) {
+    renderLines();
+  }
 }
 
 static void movey(int y) {
