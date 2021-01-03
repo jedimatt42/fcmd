@@ -27,7 +27,7 @@ struct __attribute__((__packed__)) EditBuffer {
 
 #define EDIT_BUFFER ((struct EditBuffer*)0xA000)
 
-static void loadFile(struct DeviceServiceRoutine* dsr, char* path);
+static int loadFile(struct DeviceServiceRoutine* dsr, char* path);
 static void renderLines();
 static void edit_loop();
 
@@ -49,22 +49,32 @@ void handleEd() {
       bk_map_page(i, 0xA000 + ((i-pagebase) * 0x1000));
     }
   }
+  int err = 0;
 
-  loadFile(dsr, path);
+  int existing = bk_existsFile(dsr, path);
 
-  renderLines();
+  if (existing) {
+    err = loadFile(dsr, path);
+  }
 
-  conio_x = 0;
-  conio_y = 0;
+  if (!err) {
+    int backup_nTitleline = nTitleLine;
+    nTitleLine = 0;
+    renderLines();
 
-  edit_loop();
+    conio_x = 0;
+    conio_y = 0;
+
+    edit_loop();
+    nTitleLine = backup_nTitleline;
+  }
 
   if (sams_total_pages) {
     bk_free_pages(6);
   }
 }
 
-static void loadFile(struct DeviceServiceRoutine* dsr, char* path) {
+static int loadFile(struct DeviceServiceRoutine* dsr, char* path) {
   // zero out the allocated memory buffer space (all of upper memory expansion)
   bk_strset((char*)0xA000, 0, 24 * 1024);
 
@@ -72,7 +82,7 @@ static void loadFile(struct DeviceServiceRoutine* dsr, char* path) {
   int err = bk_dsr_open(dsr, &pab, path, DSR_TYPE_DISPLAY | DSR_TYPE_VARIABLE | DSR_TYPE_SEQUENTIAL | DSR_TYPE_INPUT, 80);
   if (err) {
     EDIT_BUFFER->lineCount = 0;
-    return;
+    return 1;
   }
 
   while(!err) {
@@ -82,9 +92,14 @@ static void loadFile(struct DeviceServiceRoutine* dsr, char* path) {
       line->length = pab.CharCount;
       vdpmemread(pab.VDPBuffer, line->data, line->length);
       EDIT_BUFFER->lineCount++;
+      if (EDIT_BUFFER->lineCount > 250) {
+        tputs_rom("Error, file exceeds 250 lines\n");
+        err = -2;
+      }
     }
   }
   bk_dsr_close(dsr, &pab);
+  return err == -2;
 }
 
 static void renderLines() {
@@ -124,6 +139,13 @@ static void right() {
   }
 }
 
+static void jumpEOLonYchange() {
+  int lineLimit = EDIT_BUFFER->lines[conio_y + EDIT_BUFFER->offset_y].length;
+  while(EDIT_BUFFER->offset_x + conio_x > lineLimit) {
+    left();
+  }
+}
+
 static void down() {
   if (conio_y < (displayHeight-1) && conio_y < EDIT_BUFFER->lineCount) {
     conio_y++;
@@ -133,6 +155,7 @@ static void down() {
       renderLines();
     }
   }
+  jumpEOLonYchange();
 }
 
 static void up() {
@@ -144,6 +167,7 @@ static void up() {
       renderLines();
     }
   }
+  jumpEOLonYchange();
 }
 
 // quit: CTRL-Q
