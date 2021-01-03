@@ -12,6 +12,12 @@
 #include <string.h>
 
 void handleReadkey() {
+  char* peek = bk_strtokpeek(0, ' ');
+  int cursor = bk_strcmpi(str2ram("/n"), peek) == 0 ? 0 : CUR_OVERWRITE;
+  if (!cursor) {
+    bk_strtok(0, ' '); // consume the option token.
+  }
+
   char* name = bk_strtok(0, ' ');
   if (!name) {
     tputs_rom("Error, variable name must be given\n");
@@ -20,7 +26,7 @@ void handleReadkey() {
 
   char value[2];
   value[1] = 0;
-  value[0] = bk_cgetc(0);
+  value[0] = bk_cgetc(cursor);
   if (!request_break) {
     bk_vars_set(name, value);
   }
