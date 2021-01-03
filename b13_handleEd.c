@@ -17,8 +17,8 @@ struct __attribute__((__packed__)) Line {
 };
 
 struct __attribute__((__packed__)) EditBuffer {
-  int top_line;
-  int left_column;
+  int offset_x;
+  int offset_y;
   int lineCount;
   struct Line lines[];
 };
@@ -88,73 +88,61 @@ static void loadFile(struct DeviceServiceRoutine* dsr, char* path) {
 }
 
 static void renderLines() {
-  // NO ansi, so bypass cputc.
-
-  int displayAddr = gImage;
-  for(int l=EDIT_BUFFER->top_line; l < EDIT_BUFFER->top_line + displayHeight; l++) {
-    if (l<EDIT_BUFFER->lineCount) {
-      vdpmemcpy(displayAddr, EDIT_BUFFER->lines[l].data + EDIT_BUFFER->left_column, displayWidth);
+  int y = EDIT_BUFFER->offset_y;
+  for (int i = 0; i < displayHeight; i++) {
+    // show all the lines available.
+    if (y < EDIT_BUFFER->lineCount) {
+      vdpmemcpy(gImage + (displayWidth * i), EDIT_BUFFER->lines[y].data + EDIT_BUFFER->offset_x, displayWidth);
     } else {
-      vdpmemset(displayAddr, 0, displayWidth);
+      vdpmemset(gImage + (displayWidth * i), 0, displayWidth);
     }
-    displayAddr += displayWidth;
+    y++;
   }
 }
 
-static void movex(int x) {
-  int requiresRender = 0;
-  conio_x += x;
-  if (conio_x == -1) {
-    EDIT_BUFFER->left_column -= 1;
-    conio_x = 0;
-    requiresRender = 1;
-    if (EDIT_BUFFER->left_column == -1) {
-      EDIT_BUFFER->left_column = 0;
-      requiresRender = 0;
+static void left() {
+  if (conio_x) {
+    conio_x--;
+  } else {
+    if (EDIT_BUFFER->offset_x) {
+      EDIT_BUFFER->offset_x--;
+      renderLines();
     }
-  }
-
-  if (conio_x == displayWidth) {
-    EDIT_BUFFER->left_column += 1;
-    conio_x = displayWidth - 1;
-    requiresRender = 1;
-    if (EDIT_BUFFER->left_column + displayWidth > EDIT_BUFFER->lines[conio_y+EDIT_BUFFER->top_line].length) {
-      EDIT_BUFFER->left_column -= 1;
-      requiresRender = 0;
-    }
-  }
-
-  if (requiresRender) {
-    renderLines();
   }
 }
 
-static void movey(int y) {
-  int requiresRender = 0;
-  conio_y += y;
-  if (conio_y == -1) {
-    // adjust current file line
-    EDIT_BUFFER->top_line -= 1;
-    conio_y = 0;
-    requiresRender = 1;
-    if (EDIT_BUFFER->top_line == -1) {
-      EDIT_BUFFER->top_line = 0;
-      requiresRender = 0;
+static void right() {
+  int lineLimit = EDIT_BUFFER->lines[conio_y + EDIT_BUFFER->offset_y].length;
+  if (conio_x < (displayWidth-1) && conio_x < lineLimit) {
+    conio_x++;
+  } else {
+    int line_x = EDIT_BUFFER->offset_x + conio_x;
+    if (line_x < 79 && line_x < lineLimit) {
+      EDIT_BUFFER->offset_x++;
+      renderLines();
     }
   }
+}
 
-  if (conio_y == displayHeight) {
-    EDIT_BUFFER->top_line += 1;
-    conio_y = displayHeight - 1;
-    requiresRender = 1;
-    if (EDIT_BUFFER->top_line + displayHeight > EDIT_BUFFER->lineCount) {
-      EDIT_BUFFER->top_line -= 1;
-      requiresRender = 0;
+static void down() {
+  if (conio_y < (displayHeight-1) && conio_y < EDIT_BUFFER->lineCount) {
+    conio_y++;
+  } else {
+    if (conio_y + EDIT_BUFFER->offset_y < EDIT_BUFFER->lineCount) {
+      EDIT_BUFFER->offset_y++;
+      renderLines();
     }
   }
+}
 
-  if (requiresRender) {
-    renderLines();
+static void up() {
+  if (conio_y) {
+    conio_y--;
+  } else {
+    if (EDIT_BUFFER->offset_y) {
+      EDIT_BUFFER->offset_y--;
+      renderLines();
+    }
   }
 }
 
@@ -175,16 +163,16 @@ static void edit_loop() {
         quit = 1;
         break;
       case KEY_LEFT:
-        movex(-1);
+        left();
         break;
       case KEY_RIGHT:
-        movex(1);
+        right();
         break;
       case KEY_DOWN:
-        movey(1);
+        down();
         break;
       case KEY_UP:
-        movey(-1);
+        up();
         break;
       default:
         // handle actual typing...
