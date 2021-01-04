@@ -55,6 +55,8 @@ void handleEd() {
 
   if (existing) {
     err = loadFile(dsr, path);
+  } else {
+    EDIT_BUFFER->lineCount = 1;
   }
 
   if (!err) {
@@ -187,6 +189,13 @@ static void up() {
   jumpEOLonYchange();
 }
 
+static void enter() {
+  if (conio_y + EDIT_BUFFER->offset_y == EDIT_BUFFER->lineCount - 1) {
+    EDIT_BUFFER->lineCount++;
+  }
+  down();
+}
+
 // quit: CTRL-Q
 #define KEY_QUIT 145
 #define KEY_SAVE 147
@@ -201,6 +210,7 @@ static void up() {
 #define KEY_BACK 15
 #define KEY_SPACE 0x20
 #define KEY_TILDE 0x7E
+#define KEY_ENTER 13
 
 static void edit_loop() {
   int quit = 0;
@@ -226,6 +236,9 @@ static void edit_loop() {
         break;
       case KEY_UP:
         up();
+        break;
+      case KEY_ENTER:
+        enter();
         break;
       default:
         // ignore
