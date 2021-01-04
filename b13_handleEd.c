@@ -139,6 +139,23 @@ static void right() {
   }
 }
 
+static void rightGrow(int k) {
+  // place the character on screen
+  int o_x = conio_x;
+  int o_y = conio_y;
+  bk_tputc(k);
+  conio_x = o_x;
+  conio_y = o_y;
+  // store in the record
+  int line_idx = conio_x + EDIT_BUFFER->offset_x;
+  struct Line* line = &(EDIT_BUFFER->lines[EDIT_BUFFER->offset_y + conio_y]);
+  line->data[line_idx] = k;
+  if (line_idx == line->length && line->length < 80) {
+    line->length++;
+  }
+  right();
+}
+
 static void jumpEOLonYchange() {
   int lineLimit = EDIT_BUFFER->lines[conio_y + EDIT_BUFFER->offset_y].length;
   while(EDIT_BUFFER->offset_x + conio_x > lineLimit) {
@@ -147,10 +164,10 @@ static void jumpEOLonYchange() {
 }
 
 static void down() {
-  if (conio_y < (displayHeight-1) && conio_y < EDIT_BUFFER->lineCount) {
+  if (conio_y < (displayHeight-1) && conio_y < (EDIT_BUFFER->lineCount-1)) {
     conio_y++;
   } else {
-    if (conio_y + EDIT_BUFFER->offset_y < EDIT_BUFFER->lineCount) {
+    if (conio_y + EDIT_BUFFER->offset_y < (EDIT_BUFFER->lineCount-1)) {
       EDIT_BUFFER->offset_y++;
       renderLines();
     }
@@ -172,17 +189,29 @@ static void up() {
 
 // quit: CTRL-Q
 #define KEY_QUIT 145
+#define KEY_SAVE 147
 #define KEY_LEFT 8
 #define KEY_RIGHT 9
 #define KEY_DOWN 10
 #define KEY_UP 11
+#define KEY_AID 1
+#define KEY_DELETE 3
+#define KEY_INSERT 4
+#define KEY_ERASE 7
+#define KEY_BACK 15
+#define KEY_SPACE 0x20
+#define KEY_TILDE 0x7E
 
 static void edit_loop() {
   int quit = 0;
 
   while(!quit) {
     unsigned int k = bk_cgetc(CUR_OVERWRITE);
-    switch(k) {
+
+    if (k >= KEY_SPACE && k <= KEY_TILDE) {
+      rightGrow(k);
+    } else {
+      switch (k) {
       case KEY_QUIT:
         quit = 1;
         break;
@@ -199,8 +228,9 @@ static void edit_loop() {
         up();
         break;
       default:
-        // handle actual typing...
+        // ignore
         break;
+      }
     }
   }
 }
