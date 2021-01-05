@@ -11,6 +11,23 @@
 #include "vdp.h"
 #include "conio.h"
 
+
+#define KEY_QUIT 145
+#define KEY_SAVE 147
+#define KEY_CTRL_R 146
+#define KEY_LEFT 8
+#define KEY_RIGHT 9
+#define KEY_DOWN 10
+#define KEY_UP 11
+#define KEY_AID 1
+#define KEY_DELETE 3
+#define KEY_INSERT 4
+#define KEY_ERASE 7
+#define KEY_BACK 15
+#define KEY_SPACE 0x20
+#define KEY_TILDE 0x7E
+#define KEY_ENTER 13
+
 struct __attribute__((__packed__)) Line {
   int length;
   unsigned char data[80];
@@ -287,22 +304,33 @@ static void save(char* devpath) {
   renderLines();
 }
 
-// quit: CTRL-Q
-#define KEY_QUIT 145
-#define KEY_SAVE 147
-#define KEY_CTRL_R 146
-#define KEY_LEFT 8
-#define KEY_RIGHT 9
-#define KEY_DOWN 10
-#define KEY_UP 11
-#define KEY_AID 1
-#define KEY_DELETE 3
-#define KEY_INSERT 4
-#define KEY_ERASE 7
-#define KEY_BACK 15
-#define KEY_SPACE 0x20
-#define KEY_TILDE 0x7E
-#define KEY_ENTER 13
+static void showHelp() {
+  int o_x = conio_x;
+  int o_y = conio_y;
+
+  dropDown(6);
+
+  conio_x = 2;
+  conio_y = 1;
+  tputs_rom("CTRL-S : Save");
+  conio_x = 2;
+  conio_y = 2;
+  tputs_rom("CTRL-Q : Quit");
+  conio_x = 2;
+  conio_y = 3;
+  tputs_rom("FCTN-7 : Show Help");
+  conio_x = 2;
+  conio_y = 4;
+  tputs_rom("FCTN-9 : Exit Help");
+  int k = 0;
+  while(k != KEY_BACK) {
+    k = bk_cgetc(0);
+  }
+
+  conio_x = o_x;
+  conio_y = o_y;
+  renderLines();
+}
 
 static void edit_loop(char* devpath) {
   int quit = 0;
@@ -337,6 +365,9 @@ static void edit_loop(char* devpath) {
         break;
       case KEY_CTRL_R:
         removeTrailingSpaces();
+        break;
+      case KEY_AID:
+        showHelp();
         break;
       default:
         // ignore
