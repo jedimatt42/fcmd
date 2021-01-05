@@ -29,19 +29,24 @@ struct __attribute__((__packed__)) EditBuffer {
 
 static int loadFile(struct DeviceServiceRoutine* dsr, char* path);
 static void renderLines();
-static void edit_loop();
+static void edit_loop(char* devpath);
 
 void handleEd() {
   // A tiny DV80 editor
 
   struct DeviceServiceRoutine* dsr = 0;
 
-  char path[256];
+  char devpath[80];
+  char* path = devpath + 5;
   bk_parsePathParam(0, &dsr, path, PR_REQUIRED);
   if (dsr == 0) {
     tputs_rom("no file specified\n");
     return;
   }
+
+  char* dsr_cruhex = bk_uint2hex(dsr->crubase);
+  bk_strncpy(devpath, dsr_cruhex, 4);
+  devpath[4] = '.';
 
   if (sams_total_pages) {
     int pagebase = bk_alloc_pages(6);
@@ -67,7 +72,7 @@ void handleEd() {
     conio_x = 0;
     conio_y = 0;
 
-    edit_loop();
+    edit_loop(devpath);
     nTitleLine = backup_nTitleline;
   }
 
@@ -196,9 +201,96 @@ static void enter() {
   down();
 }
 
+#define BAD_VDPCHAR(x) vdpmemset(gImage + (displayWidth*conio_y) + conio_x++, x, 1)
+
+static void dropDownBar(int y) {
+  conio_x = 0;
+  conio_y = y;
+  BAD_VDPCHAR(0xd4);
+  for (int x = 1; x < displayWidth - 1; x++) {
+    BAD_VDPCHAR(0xcd);
+  }
+  BAD_VDPCHAR(0xbe);
+}
+
+static void dropDownSpace(int y) {
+  conio_x = 0;
+  conio_y = y;
+  BAD_VDPCHAR(0xb3);
+  for (int x = 1; x < displayWidth - 1; x++) {
+    BAD_VDPCHAR(' ');
+  }
+  BAD_VDPCHAR(0xb3);
+}
+
+static void dropDown(int linecount) {
+  for(int j=0; j < linecount + 1; j++) {
+    conio_x = 0;
+    conio_y = j;
+    dropDownBar(j);
+    if (j>0) {
+      dropDownSpace(j-1);
+    }
+  }
+}
+
+static void removeTrailingSpaces() {
+  for(int i=0; i<EDIT_BUFFER->lineCount; i++) {
+    // all records can be upto 80 characters... they are padded with zeros to the right.
+    struct Line* line = &(EDIT_BUFFER->lines[i]);
+    int c = 79;
+    while((line->data[c] == ' ' || line->data[c] == 0) && c >= 0) {
+      line->data[c] = 0;
+      c--;
+    }
+    line->length = c + 1;
+  }
+}
+
+static void save(char* devpath) {
+  int o_x = conio_x;
+  int o_y = conio_y;
+
+  dropDown(4);
+  conio_x = 2;
+  conio_y = 1;
+  tputs_rom("Save File: ");
+  conio_x = 2;
+  conio_y = 2;
+  char filename[80];
+  bk_strncpy(filename, devpath, displayWidth-4);
+  bk_getstr(filename, displayWidth-4, 0);
+
+  if (filename[0]) {
+    struct DeviceServiceRoutine* dsr;
+    char path[80];
+    bk_parsePathParam(filename, &dsr, path, PR_REQUIRED);
+    if (dsr) {
+      struct PAB pab;
+      int err = bk_dsr_open(dsr, &pab, path, DSR_TYPE_OUTPUT | DSR_TYPE_VARIABLE | DSR_TYPE_DISPLAY | DSR_TYPE_SEQUENTIAL, 80);
+
+      // save will remove trailing spaces.
+      removeTrailingSpaces();
+
+      int lno = 0;
+      while (!err && lno < EDIT_BUFFER->lineCount) {
+        struct Line* line = &(EDIT_BUFFER->lines[lno]);
+        err = bk_dsr_write(dsr, &pab, line->data, line->length);
+        lno++;
+      }
+      bk_dsr_close(dsr, &pab);
+    }
+  }
+
+  conio_x = o_x;
+  conio_y = o_y;
+  renderLines();
+}
+
 // quit: CTRL-Q
 #define KEY_QUIT 145
 #define KEY_SAVE 147
+#define KEY_CTRL_R 146
 #define KEY_LEFT 8
 #define KEY_RIGHT 9
 #define KEY_DOWN 10
@@ -212,7 +304,7 @@ static void enter() {
 #define KEY_TILDE 0x7E
 #define KEY_ENTER 13
 
-static void edit_loop() {
+static void edit_loop(char* devpath) {
   int quit = 0;
 
   while(!quit) {
@@ -239,6 +331,12 @@ static void edit_loop() {
         break;
       case KEY_ENTER:
         enter();
+        break;
+      case KEY_SAVE:
+        save(devpath);
+        break;
+      case KEY_CTRL_R:
+        removeTrailingSpaces();
         break;
       default:
         // ignore
