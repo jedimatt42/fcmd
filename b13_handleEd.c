@@ -8,9 +8,9 @@
 #include "b1_strutil.h"
 #include "b8_terminal.h"
 #include "b8_getstr.h"
+#include "b13_honk.h"
 #include "vdp.h"
 #include "conio.h"
-
 
 #define KEY_QUIT 145
 #define KEY_SAVE 147
@@ -47,6 +47,7 @@ struct __attribute__((__packed__)) EditBuffer {
 static int loadFile(struct DeviceServiceRoutine* dsr, char* path);
 static void renderLines();
 static void edit_loop(char* devpath);
+static void clearBuffer();
 
 void handleEd() {
   // A tiny DV80 editor
@@ -78,6 +79,7 @@ void handleEd() {
   if (existing) {
     err = loadFile(dsr, path);
   } else {
+    clearBuffer();
     EDIT_BUFFER->lineCount = 1;
   }
 
@@ -98,9 +100,13 @@ void handleEd() {
   }
 }
 
-static int loadFile(struct DeviceServiceRoutine* dsr, char* path) {
+static void clearBuffer() {
   // zero out the allocated memory buffer space (all of upper memory expansion)
   bk_strset((char*)0xA000, 0, 24 * 1024);
+}
+
+static int loadFile(struct DeviceServiceRoutine* dsr, char* path) {
+  clearBuffer();
 
   struct PAB pab;
   int err = bk_dsr_open(dsr, &pab, path, DSR_TYPE_DISPLAY | DSR_TYPE_VARIABLE | DSR_TYPE_SEQUENTIAL | DSR_TYPE_INPUT, 80);
@@ -163,7 +169,7 @@ static void right() {
   }
 }
 
-static void rightGrow(int k) {
+static void rightGrowOverwrite(int k) {
   // place the character on screen
   int o_x = conio_x;
   int o_y = conio_y;
@@ -174,10 +180,40 @@ static void rightGrow(int k) {
   int line_idx = conio_x + EDIT_BUFFER->offset_x;
   struct Line* line = &(EDIT_BUFFER->lines[EDIT_BUFFER->offset_y + conio_y]);
   line->data[line_idx] = k;
-  if (line_idx == line->length && line->length < 80) {
-    line->length++;
+  if (conio_x + EDIT_BUFFER->offset_x == 79) {
+    honk();
+  } else {
+    if (line->length < 80) {
+      if (line_idx == line->length) {
+        line->length++;
+      }
+    }
   }
   right();
+}
+
+static void rightGrowInsert(int k) {
+  // insert into current line
+  struct Line* line = &(EDIT_BUFFER->lines[EDIT_BUFFER->offset_y + conio_y]);
+  if (line->length < 80) {
+    // place the character on screen
+    int o_x = conio_x;
+    int o_y = conio_y;
+    bk_tputc(k);
+    conio_x = o_x;
+    conio_y = o_y;
+
+    int imin = conio_x + EDIT_BUFFER->offset_x;
+    for(int i = line->length-1; i >= imin; i--) {
+      line->data[i+1] = line->data[i];
+    }
+    line->length++;
+    line->data[imin] = k;
+    right();
+    renderLines();
+  } else {
+    honk();
+  }
 }
 
 static void jumpEOLonYchange() {
@@ -334,12 +370,18 @@ static void showHelp() {
 
 static void edit_loop(char* devpath) {
   int quit = 0;
+  int insert_mode = 1;
+  int cursor = CUR_INSERT;
 
   while(!quit) {
-    unsigned int k = bk_cgetc(CUR_OVERWRITE);
+    unsigned int k = bk_cgetc(cursor);
 
     if (k >= KEY_SPACE && k <= KEY_TILDE) {
-      rightGrow(k);
+      if (insert_mode) {
+        rightGrowInsert(k);
+      } else {
+        rightGrowOverwrite(k);
+      }
     } else {
       switch (k) {
       case KEY_QUIT:
@@ -368,6 +410,10 @@ static void edit_loop(char* devpath) {
         break;
       case KEY_AID:
         showHelp();
+        break;
+      case KEY_INSERT:
+        insert_mode = !insert_mode;
+        cursor = insert_mode ? CUR_INSERT : CUR_OVERWRITE;
         break;
       default:
         // ignore

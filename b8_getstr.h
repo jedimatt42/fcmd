@@ -9,8 +9,8 @@ extern int history_on;
 void getstr(char* var, int limit, int backspace);
 
 unsigned int cgetc(unsigned int cursor);
-#define CUR_OVERWRITE 219
-#define CUR_INSERT '_'
+#define CUR_OVERWRITE 0x5F
+#define CUR_INSERT 0xDB
 
 void history_mode(int enable);
 
