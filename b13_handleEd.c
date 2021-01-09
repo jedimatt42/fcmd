@@ -169,7 +169,7 @@ static void right() {
   }
 }
 
-static void rightGrowOverwrite(int k) {
+static void overwrite(int k) {
   // place the character on screen
   int o_x = conio_x;
   int o_y = conio_y;
@@ -192,7 +192,7 @@ static void rightGrowOverwrite(int k) {
   right();
 }
 
-static void rightGrowInsert(int k) {
+static void insert(int k) {
   // insert into current line
   struct Line* line = &(EDIT_BUFFER->lines[EDIT_BUFFER->offset_y + conio_y]);
   if (line->length < 80) {
@@ -210,6 +210,29 @@ static void rightGrowInsert(int k) {
     line->length++;
     line->data[imin] = k;
     right();
+    renderLines();
+  } else {
+    honk();
+  }
+}
+
+static void erase() {
+  struct Line* line = &(EDIT_BUFFER->lines[EDIT_BUFFER->offset_y + conio_y]);
+  // shift all the characters in the line one left
+  int x = conio_x + EDIT_BUFFER->offset_x;
+  if (x > 0) {
+    x--;
+    while (x < line->length) {
+      line->data[x] = line->data[x + 1];
+      x++;
+    }
+    line->length = x - 1;
+    while (x < 80) {
+      line->data[x++] = 0;
+    }
+    // move current location one left
+    left();
+    // force screen update
     renderLines();
   } else {
     honk();
@@ -344,20 +367,29 @@ static void showHelp() {
   int o_x = conio_x;
   int o_y = conio_y;
 
-  dropDown(6);
+  dropDown(9);
 
   conio_x = 2;
   conio_y = 1;
-  tputs_rom("CTRL-S : Save");
+  tputs_rom("^-S : Save");
   conio_x = 2;
-  conio_y = 2;
-  tputs_rom("CTRL-Q : Quit");
+  conio_y++;
+  tputs_rom("^-Q : Quit");
   conio_x = 2;
-  conio_y = 3;
-  tputs_rom("FCTN-7 : Show Help");
+  conio_y++;
+  tputs_rom("F-1 : Delete Char");
   conio_x = 2;
-  conio_y = 4;
-  tputs_rom("FCTN-9 : Exit Help");
+  conio_y++;
+  tputs_rom("F-2 : Toggle Insert");
+  conio_x = 2;
+  conio_y++;
+  tputs_rom("F-3 : Delete Line");
+  conio_x = 2;
+  conio_y++;
+  tputs_rom("F-7 : Show Help");
+  conio_x = 2;
+  conio_y++;
+  tputs_rom("F-9 : Exit Help");
   int k = 0;
   while(k != KEY_BACK) {
     k = bk_cgetc(0);
@@ -378,9 +410,9 @@ static void edit_loop(char* devpath) {
 
     if (k >= KEY_SPACE && k <= KEY_TILDE) {
       if (insert_mode) {
-        rightGrowInsert(k);
+        insert(k);
       } else {
-        rightGrowOverwrite(k);
+        overwrite(k);
       }
     } else {
       switch (k) {
@@ -388,7 +420,11 @@ static void edit_loop(char* devpath) {
         quit = 1;
         break;
       case KEY_LEFT:
-        left();
+        if (insert_mode) {
+          erase();
+        } else {
+          left();
+        }
         break;
       case KEY_RIGHT:
         right();
