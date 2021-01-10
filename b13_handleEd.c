@@ -34,6 +34,7 @@ struct __attribute__((__packed__)) Line {
 };
 
 struct __attribute__((__packed__)) EditBuffer {
+  int justRendered;
   int offset_x;
   int offset_y;
   int lineCount;
@@ -133,15 +134,18 @@ static int loadFile(struct DeviceServiceRoutine* dsr, char* path) {
 }
 
 static void renderLines() {
-  int y = EDIT_BUFFER->offset_y;
-  for (int i = 0; i < displayHeight; i++) {
-    // show all the lines available.
-    if (y < EDIT_BUFFER->lineCount) {
-      vdpmemcpy(gImage + (displayWidth * i), EDIT_BUFFER->lines[y].data + EDIT_BUFFER->offset_x, displayWidth);
-    } else {
-      vdpmemset(gImage + (displayWidth * i), 0, displayWidth);
+  if (!EDIT_BUFFER->justRendered) {
+    EDIT_BUFFER->justRendered = 1;
+    int y = EDIT_BUFFER->offset_y;
+    for (int i = 0; i < displayHeight; i++) {
+      // show all the lines available.
+      if (y < EDIT_BUFFER->lineCount) {
+        vdpmemcpy(gImage + (displayWidth * i), EDIT_BUFFER->lines[y].data + EDIT_BUFFER->offset_x, displayWidth);
+      } else {
+        vdpmemset(gImage + (displayWidth * i), 0, displayWidth);
+      }
+      y++;
     }
-    y++;
   }
 }
 
@@ -242,8 +246,11 @@ static void erase() {
 static void jumpEOLonYchange() {
   int lineLimit = EDIT_BUFFER->lines[conio_y + EDIT_BUFFER->offset_y].length;
   while(EDIT_BUFFER->offset_x + conio_x > lineLimit) {
+    EDIT_BUFFER->justRendered = 1;
     left();
   }
+  EDIT_BUFFER->justRendered = 0;
+  renderLines();
 }
 
 static void down() {
@@ -270,11 +277,47 @@ static void up() {
   jumpEOLonYchange();
 }
 
+static void clearLine(struct Line* line) {
+  line->length = 0;
+  for(int i=0; i<80; i++) {
+    line->data[i] = 0;
+  }
+}
+
 static void enter() {
   if (conio_y + EDIT_BUFFER->offset_y == EDIT_BUFFER->lineCount - 1) {
     EDIT_BUFFER->lineCount++;
+    clearLine(&(EDIT_BUFFER->lines[EDIT_BUFFER->lineCount-1]));
   }
   down();
+}
+
+static void eraseLine() {
+  // remove current line. - requires compacting buffer
+  // if no more lines, erase to end of line. keep 1 empty line.
+  // else if last line in buffer, move up.
+
+  if (EDIT_BUFFER->lineCount == 1) {
+    // delete contents of line, but leave single line.
+    struct Line* line = &(EDIT_BUFFER->lines[0]);
+    clearLine(line);
+  } else {
+    // this gets messy if later we have live buffer in pages
+    int szline = sizeof(struct Line);
+    int startLine = conio_y + EDIT_BUFFER->offset_y;
+    char* dst = (char*) &(EDIT_BUFFER->lines[startLine]);
+    char* src = dst + szline;
+    char* end = (char*) &(EDIT_BUFFER->lines[EDIT_BUFFER->lineCount]);
+    while(src < end) {
+      *dst++ = *src++;
+    }
+    EDIT_BUFFER->lineCount--;
+    if (conio_y + EDIT_BUFFER->offset_y == EDIT_BUFFER->lineCount) {
+      up();
+    }
+  }
+  jumpEOLonYchange();
+  renderLines();
 }
 
 #define BAD_VDPCHAR(x) vdpmemset(gImage + (displayWidth*conio_y) + conio_x++, x, 1)
@@ -406,6 +449,7 @@ static void edit_loop(char* devpath) {
   int cursor = CUR_INSERT;
 
   while(!quit) {
+    EDIT_BUFFER->justRendered = 0;
     unsigned int k = bk_cgetc(cursor);
 
     if (k >= KEY_SPACE && k <= KEY_TILDE) {
@@ -438,11 +482,12 @@ static void edit_loop(char* devpath) {
       case KEY_ENTER:
         enter();
         break;
+      case KEY_ERASE:
+        // erase line
+        eraseLine();
+        break;
       case KEY_SAVE:
         save(devpath);
-        break;
-      case KEY_CTRL_R:
-        removeTrailingSpaces();
         break;
       case KEY_AID:
         showHelp();
