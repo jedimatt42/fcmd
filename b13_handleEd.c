@@ -243,6 +243,10 @@ static void erase() {
   }
 }
 
+static void deleteChar() {
+
+}
+
 static void jumpEOLonYchange() {
   int lineLimit = EDIT_BUFFER->lines[conio_y + EDIT_BUFFER->offset_y].length;
   while(EDIT_BUFFER->offset_x + conio_x > lineLimit) {
@@ -382,14 +386,10 @@ static void dropDownSpace(int y) {
 }
 
 static void dropDown(int linecount) {
-  for(int j=0; j < linecount + 1; j++) {
-    conio_x = 0;
-    conio_y = j;
-    dropDownBar(j);
-    if (j>0) {
-      dropDownSpace(j-1);
-    }
+  for(int i=0; i<linecount; i++) {
+    dropDownSpace(i);
   }
+  dropDownBar(linecount);
 }
 
 static void removeTrailingSpaces() {
@@ -471,11 +471,8 @@ static void showHelp() {
   tputs_rom("F-7 : Show Help");
   conio_x = 2;
   conio_y++;
-  tputs_rom("F-9 : Exit Help");
-  int k = 0;
-  while(k != KEY_BACK) {
-    k = bk_cgetc(0);
-  }
+  tputs_rom("Any Key : Exit Help");
+  bk_cgetc(0);
 
   conio_x = o_x;
   conio_y = o_y;
@@ -527,6 +524,9 @@ static void edit_loop(char* devpath) {
         break;
       case KEY_ERASE:
         eraseLine();
+        break;
+      case KEY_DELETE:
+        deleteChar();
         break;
       case KEY_SAVE:
         save(devpath);
