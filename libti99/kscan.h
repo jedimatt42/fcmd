@@ -21,6 +21,7 @@
 
 // Address to check the status byte. KSCAN_MASK is set if a key was pressed
 #define KSCAN_STATUS *((volatile unsigned char*)0x837c)
+// STATUS mask for new key press (vs held key)
 #define KSCAN_MASK	0x20
 
 //*********************

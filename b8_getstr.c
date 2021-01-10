@@ -147,6 +147,8 @@ void getstr(char* var, int limit, int backspace) {
 extern unsigned char last_conio_key;
 #define BLINK_DELAY 230
 
+static int delayMode = 0;
+
 unsigned int cgetc(unsigned int cursor) {
     unsigned char k = -1;
 
@@ -160,8 +162,11 @@ unsigned int cgetc(unsigned int cursor) {
         return k;
     }
 
+    int repeating = 1;
+    int repeatDelay = delayMode ? 40 : 500;
     do {
         k = kscan(5);
+
         blinkCounter--;
         if (blinkCounter == 0) {
           blinkCounter = BLINK_DELAY;
@@ -171,8 +176,26 @@ unsigned int cgetc(unsigned int cursor) {
             vdpchar(vdpaddr, cursor);
           }
         }
+
+        repeating = (KSCAN_STATUS & KSCAN_MASK) == 0;
+        if (k != 255 && repeating) {
+          repeatDelay--;
+          if (repeatDelay == 0) {
+            // we are now in quick repeat mode
+            repeating = 0;
+            delayMode = 1;
+          }
+        } else {
+          delayMode = 0;
+        }
+        // force a cursor visible while in quick repeat mode
+        if (repeating && delayMode) {
+          vdpchar(vdpaddr, cursor);
+        }
+
         bk_clock_hook();
-    } while ((k == 255) || ((KSCAN_STATUS&KSCAN_MASK) == 0));
+    } while ((k == 255) || repeating);
+
     // restore display incase we put a cursor on it.
     vdpchar(vdpaddr, screenChar);
 
