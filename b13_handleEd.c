@@ -244,7 +244,18 @@ static void erase() {
 }
 
 static void deleteChar() {
+  struct Line* line = &(EDIT_BUFFER->lines[EDIT_BUFFER->offset_y + conio_y]);
+  int x = conio_x + EDIT_BUFFER->offset_x;
+  if (x == line->length) {
+    honk();
+    return;
+  }
 
+  for(int i=x; i<line->length; i++) {
+    line->data[i] = line->data[i+1];
+  }
+  line->length--;
+  renderLines();
 }
 
 static void jumpEOLonYchange() {
