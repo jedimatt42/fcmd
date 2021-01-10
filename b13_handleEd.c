@@ -320,6 +320,45 @@ static void eraseLine() {
   renderLines();
 }
 
+static void breakLine() {
+  // text to the right of the cursor is moved to a new line inserted after the current line.
+
+  // if there is no more room, honk...
+  if (EDIT_BUFFER->lineCount == MAX_LINE) {
+    honk();
+    return;
+  }
+  // start by inserting a line...
+  int szline = sizeof(struct Line);
+  struct Line* line = &(EDIT_BUFFER->lines[conio_y + EDIT_BUFFER->offset_y]);
+  char* dst = (char*) &(EDIT_BUFFER->lines[EDIT_BUFFER->lineCount]);
+  char* src = dst - szline;
+  char* end = ((char*) line) + szline;
+  while(src > end) {
+    *--dst = *--src;
+  }
+  EDIT_BUFFER->lineCount++;
+  struct Line* newline = line + 1;
+  clearLine(newline);
+
+  // now copy from cursor to end of current line to beginning of new line.
+  for(int x = conio_x + EDIT_BUFFER->offset_x; x < line->length; x++) {
+    newline->data[newline->length++] = line->data[x];
+  }
+
+  // then truncate the old line.
+  for(int x = conio_x + EDIT_BUFFER->offset_x; x < line->length; x++) {
+    line->data[x] = 0;
+  }
+  line->length = conio_x + EDIT_BUFFER->offset_x;
+
+  // move down and to the left most column.
+  conio_x = 0;
+  EDIT_BUFFER->offset_x = 0;
+  down();
+  renderLines();
+}
+
 #define BAD_VDPCHAR(x) vdpmemset(gImage + (displayWidth*conio_y) + conio_x++, x, 1)
 
 static void dropDownBar(int y) {
@@ -480,10 +519,13 @@ static void edit_loop(char* devpath) {
         up();
         break;
       case KEY_ENTER:
-        enter();
+        if (insert_mode) {
+          breakLine();
+        } else {
+          enter();
+        }
         break;
       case KEY_ERASE:
-        // erase line
         eraseLine();
         break;
       case KEY_SAVE:
