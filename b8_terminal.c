@@ -89,7 +89,7 @@ static void optional_pause() {
 
   if (more_count >= limit) {
     tputs_rom("\n-- press any key for more --");
-    unsigned int k = cgetc(CUR_OVERWRITE);
+    unsigned int k = cgetc(CUR_INSERT);
     if (k == 131 || k == 2) {
       request_break = 1;
     }

@@ -24,8 +24,8 @@ int history_on = 0;
 //  FCTN-S LEFT  - if backspace is set, then delete a character to the left.
 //                 else, move cursor to the left.
 void getstr(char* var, int limit, int backspace) {
-  int insertMode = 0;
-  unsigned int cursor = CUR_OVERWRITE;
+  int insertMode = 1;
+  unsigned int cursor = CUR_INSERT;
 
   int x = conio_x;
   int y = conio_y;

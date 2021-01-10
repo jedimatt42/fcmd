@@ -87,6 +87,8 @@ void handleEd() {
   if (!err) {
     int backup_nTitleline = nTitleLine;
     nTitleLine = 0;
+    char cls[] = { 27, '[', '2', 'J', 0 };
+    tputs_rom(cls);
     renderLines();
 
     conio_x = 0;
@@ -94,6 +96,9 @@ void handleEd() {
 
     edit_loop(devpath);
     nTitleLine = backup_nTitleline;
+
+    conio_x = 0;
+    conio_y = displayHeight - 1;
   }
 
   if (sams_total_pages) {
@@ -473,7 +478,7 @@ static void showHelp() {
   tputs_rom("F-1 : Delete Char");
   conio_x = 2;
   conio_y++;
-  tputs_rom("F-2 : Toggle Insert");
+  tputs_rom("F-2 : Toggle Insert w/Backspace");
   conio_x = 2;
   conio_y++;
   tputs_rom("F-3 : Delete Line");

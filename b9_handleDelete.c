@@ -68,7 +68,7 @@ void handleDelete() {
 int keyYesNo() {
   int k = 0;
   while(k != 'y' && k != 'Y' && k != 'N' && k != 'n') {
-    k = bk_cgetc(CUR_OVERWRITE);
+    k = bk_cgetc(CUR_INSERT);
   }
   tputs_rom("\n");
   return k == 'y' || k == 'Y';

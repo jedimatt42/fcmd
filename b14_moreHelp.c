@@ -84,6 +84,11 @@ void b14Help(char* tok) {
       "pwd\n\n"
       "Print current working directory.\n"
     );
+  } else if (matchcmd(tok, "ed")) {
+    wraptext("==Edit DV80==\n\n"
+      "ed <filepath>\n\n"
+      "Open or create a file in the builtin file editor. Press F7(Aid) in editor for editor details\n"
+    );
   } else {
     wraptext("no help for command: ");
     bk_tputs_ram(tok);

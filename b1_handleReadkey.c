@@ -13,7 +13,7 @@
 
 void handleReadkey() {
   char* peek = bk_strtokpeek(0, ' ');
-  int cursor = bk_strcmpi(str2ram("/n"), peek) == 0 ? 0 : CUR_OVERWRITE;
+  int cursor = bk_strcmpi(str2ram("/n"), peek) == 0 ? 0 : CUR_INSERT;
   if (!cursor) {
     bk_strtok(0, ' '); // consume the option token.
   }

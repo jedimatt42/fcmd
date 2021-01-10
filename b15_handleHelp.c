@@ -53,7 +53,7 @@ void handleHelp() {
     "help <command>\n\n"
     "Commands:\n\n"
     "autocmd bar cd cfmount checksum cls color copy date "
-    "delete drives echo env exit fg99 goto help "
+    "delete drives echo ed env exit fg99 goto help "
     "history if "
     "label load lvl2 mkdir path protect pwd readkey rename "
     "rmdir sysinfo tipibeeps tipihalt tipimap "
