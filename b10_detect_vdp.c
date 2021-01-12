@@ -17,7 +17,8 @@ int detect_vdp() {
   VDPWA = 4;
   VDPWA = 0x80 | 15;
 
-  reg4 = VDPST;
+  // status register 4 will have the 7 high bits set if a Yamaha VDP
+  reg4 = VDPST & 0xFE;
 
   VDPWA = 0;
   VDPWA = 0x80 | 15;
