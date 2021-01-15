@@ -61,13 +61,9 @@ rom0=8|00000|20000|../FCMDC.bin
 rom1=G|6000|2000|../FCMDG.bin
 ```
 
-* MAME
+* MAME & Js99er.net
 
-The file MAME-FCMD.RPK contains the ROM only portion of Force Command
-
-* Js99er.net
-
-The file JS99ER-FCMD.RPK contains both the ROM and auto start GROM of Force Command
+The file FCMD.RPK contains both the ROM and auto start GROM of Force Command
 
 ## Help
 
