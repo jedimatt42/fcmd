@@ -24,7 +24,7 @@ void handleDebug() {
     while (1) {
         for(int i=0; i<40; i++) {cmdline[i] = 0;}
         tputs_rom("\n] ");
-        bk_getstr(cmdline, 40, 1);
+        bk_getstr(cmdline, 40, backspace);
         bk_tputc('\n');
 
         char* tok = bk_strtok(cmdline, ' ');

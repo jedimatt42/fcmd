@@ -69,6 +69,17 @@ void prompt() {
   }
 }
 
+void checkBackspaceVar() {
+  char* bs_var = bk_vars_get(str2ram("BACKSPACE"));
+  if (bs_var != (char*) -1) {
+    if (0 == bk_strcmpi(str2ram("true"), bs_var)) {
+      backspace = 1;
+    } else if (0 == bk_strcmpi(str2ram("false"), bs_var)) {
+      backspace = 0;
+    }
+  }
+}
+
 void main()
 {
   MUTE_SOUND();
@@ -100,6 +111,7 @@ void main()
   }
 
   while(1) {
+    checkBackspaceVar();
     char commandbuf[256];
 
     VDP_INT_POLL;
@@ -132,6 +144,7 @@ int runScript(struct DeviceServiceRoutine* dsr, char* scriptName) {
   if (!ferr) {
     ran = 1;
     while(!ferr) {
+      checkBackspaceVar();
       VDP_INT_POLL;
       char commandbuf[256];
 

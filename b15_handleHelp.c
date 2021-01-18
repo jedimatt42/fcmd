@@ -96,8 +96,8 @@ void handleHelp() {
     "Set text and background color (0-15)\n\n"
     "F - foreground text color\n"
     "B - optional, background color\n\n"
-    "In 80 column mode, this sets colors for subsequent text, and current border.\n\n"
-    "In 40 column mode, it sets the full screen colors.\n\n"
+    "In F18A 80 column mode, this sets colors for subsequent text, and current border.\n\n"
+    "In in all other modes, it sets the full screen colors.\n\n"
     "colors follow TI BASIC numbering\n");
   } else if (matchcmd(tok, "copy")) {
     wraptext("==Copy Files==\n\n"

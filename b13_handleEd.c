@@ -433,7 +433,7 @@ static void save(char* devpath) {
   conio_y = 2;
   char filename[80];
   bk_strncpy(filename, devpath, displayWidth-4);
-  bk_getstr(filename, displayWidth-4, 0);
+  bk_getstr(filename, displayWidth-4, backspace);
 
   if (filename[0]) {
     struct DeviceServiceRoutine* dsr;
@@ -478,7 +478,7 @@ static void showHelp() {
   tputs_rom("F-1 : Delete Char");
   conio_x = 2;
   conio_y++;
-  tputs_rom("F-2 : Toggle Insert w/Backspace");
+  tputs_rom("F-2 : Toggle Insert");
   conio_x = 2;
   conio_y++;
   tputs_rom("F-3 : Delete Line");

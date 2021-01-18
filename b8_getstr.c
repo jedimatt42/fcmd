@@ -88,11 +88,13 @@ void getstr(char* var, int limit, int backspace) {
       case 8: // left arrow
         if (idx != 0) {
           idx--;
-          if (backspace) {
-            cputc(' ');
+          if (backspace && insertMode) {
             bk_strcpy(var+idx, var+idx+1);
             gotoxy(x+idx,y);
             cputs(var+idx);
+            if (conio_x < displayWidth - 1) {
+              cputc(' ');
+            }
           }
         }
         break;
