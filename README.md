@@ -63,7 +63,9 @@ rom1=G|6000|2000|../FCMDG.bin
 
 * MAME & Js99er.net
 
-The file FCMD.RPK contains both the ROM and auto start GROM of Force Command
+FCMD.RPK : contains both the ROM and auto start GROM of Force Command.
+
+FCMD-MAME-224.RPK : is just the ROM, for compatibility with MAME older than 225.
 
 ## Help
 
