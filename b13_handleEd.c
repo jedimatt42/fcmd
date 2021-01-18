@@ -516,7 +516,7 @@ static void edit_loop(char* devpath) {
         quit = 1;
         break;
       case KEY_LEFT:
-        if (insert_mode) {
+        if (insert_mode && backspace) {
           erase();
         } else {
           left();
