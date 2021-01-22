@@ -351,7 +351,7 @@ static void breakLine() {
   // start by inserting a line...
   int szline = sizeof(struct Line);
   struct Line* line = &(EDIT_BUFFER->lines[conio_y + EDIT_BUFFER->offset_y]);
-  char* dst = (char*) &(EDIT_BUFFER->lines[EDIT_BUFFER->lineCount]);
+  char* dst = ((char*) &(EDIT_BUFFER->lines[EDIT_BUFFER->lineCount])) + szline;
   char* src = dst - szline;
   char* end = ((char*) line) + szline;
   while(src > end) {
