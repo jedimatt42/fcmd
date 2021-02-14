@@ -176,6 +176,7 @@ struct __attribute__((__packed__)) DateTime {
 #define FC_TIPI_SENDMSG 0x6116
 #define FC_TIPI_RECVMSG 0x611a
 #define FC_DATETIME 0x611e
+#define FC_FIND_DSR 0x6122
 
 // function: void fc_tputc(int c)
 DECL_FC_API_CALL(FC_TPUTC, fc_tputc, void, (int c), (c))
@@ -296,5 +297,8 @@ DECL_FC_API_CALL(FC_TIPI_RECVMSG, fc_tipi_recvmsg, void, (unsigned int *len, uns
 
 // function: void fc_datetime(struct DateTime* dt)
 DECL_FC_API_CALL(FC_DATETIME, fc_datetime, void, (struct DateTime* dt), (dt))
+
+// function: struct DeviceServiceRoutine* fc_find_dsr(char* devicename, int crubase)
+DECL_FC_API_CALL(FC_FIND_DSR, fc_find_dsr, struct DeviceServiceRoutine*, (char* devicename, int crubase), (devicename, crubase))
 
 #endif
