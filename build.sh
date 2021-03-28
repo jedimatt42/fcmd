@@ -18,6 +18,7 @@ function build_all() {
     cp example/gcc/hello/HELLO ~/Documents/data/retro/TI99/classic99/DSK1/
     cp example/gcc/charset/CHARSET ~/Documents/data/retro/TI99/classic99/DSK1/
     cp example/gcc/ntscpal/NTSCPAL ~/Documents/data/retro/TI99/classic99/DSK1/
+    cp example/gcc/say/SAY ~/Documents/data/retro/TI99/classic99/DSK1/
   fi
 }
 
