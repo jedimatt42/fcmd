@@ -10,6 +10,9 @@
 #define SPCH_CMD_ADDR 0x40
 #define SPCH_CMD_READ 0x10
 
+#define SPCH_STATUS_TALK 0x80
+#define SPCH_STATUS_LOW 0x40
+
 // Define a default location in scratch pad for the safe read routine and
 // status byte mailbox. Requires 14 bytes.
 #ifndef SAFE_READ_PAD

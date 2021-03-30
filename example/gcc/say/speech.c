@@ -67,9 +67,26 @@ void say_vocab(int phrase_addr) {
 void say_data(const char* addr, int len) {
   SPCHWT = SPCH_CMD_EXT; // say loose data in CPU RAM
   delay_asm_12();
-  while(len > 0) {
-    SPCHWT = *addr++; // If buffer is full, speech will use READY to hold CPU
+  // Load upto the first 16 bytes
+  int i = 16;
+  while(i > 0 && len > 0) {
+    SPCHWT = *addr++;
     len--;
+    i--;
+  }
+  // Next check for buffer low, and add upto 8 bytes at a time
+  while(len > 0) {
+    SPEECH_BYTE_BOX = 0;
+    while (SPEECH_BYTE_BOX & SPCH_STATUS_LOW == 0) {
+      READ_WITH_DELAY();
+    }
+    // there is room for at least 8 bytes in the FIFO, so send upto 8
+    i = 8;
+    while(i > 0 && len > 0) {
+      SPCHWT = *addr++;
+      len--;
+      i--;
+    }
   }
 }
 
@@ -91,8 +108,8 @@ int detect_speech() {
 void speech_wait() {
   delay_asm_42();
   delay_asm_12();
-  SPEECH_BYTE_BOX = 0x80;
-  while (SPEECH_BYTE_BOX & 0x80) {
+  SPEECH_BYTE_BOX = SPCH_STATUS_TALK;
+  while (SPEECH_BYTE_BOX & SPCH_STATUS_TALK) {
     READ_WITH_DELAY();
   }
 }
