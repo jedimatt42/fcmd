@@ -48,6 +48,11 @@ void copy_safe_read() {
   }
 }
 
+unsigned char __attribute__((noinline)) call_safe_read() {
+  READ_WITH_DELAY();
+  return SPEECH_BYTE_BOX;
+}
+
 void load_speech_addr(int phrase_addr) {
   SPCHWT = SPCH_CMD_ADDR | (char)(phrase_addr & 0x000F);
   SPCHWT = SPCH_CMD_ADDR | (char)((phrase_addr >> 4) & 0x000F);
@@ -76,9 +81,9 @@ void say_data(const char* addr, int len) {
   }
   // Next check for buffer low, and add upto 8 bytes at a time
   while(len > 0) {
-    SPEECH_BYTE_BOX = 0;
-    while (SPEECH_BYTE_BOX & SPCH_STATUS_LOW == 0) {
-      READ_WITH_DELAY();
+    int statusLow = 0;
+    while (!statusLow) {
+      statusLow = ((int)call_safe_read()) & SPCH_STATUS_LOW;
     }
     // there is room for at least 8 bytes in the FIFO, so send upto 8
     i = 8;
