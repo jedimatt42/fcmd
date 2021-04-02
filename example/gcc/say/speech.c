@@ -70,26 +70,45 @@ void say_vocab(int phrase_addr) {
 }
 
 void say_data(const char* addr, int len) {
+  struct LpcPlaybackCtx ctx;
+  ctx.addr = (char*) addr;
+  ctx.remaining = len;
+
+  speech_start(&ctx);
+  while(ctx.remaining > 0) {
+    // Wait for VDP Interrupt via CRU
+    __asm__(
+      "clr r12\n\t"
+      "tb 2\n\t"
+      "jeq -4\n\t"
+      "movb @>8802,r12"
+      : : : "r12"
+    );
+
+    speech_continue(&ctx);
+  }
+}
+
+void speech_start(struct LpcPlaybackCtx* ctx) {
   SPCHWT = SPCH_CMD_EXT; // say loose data in CPU RAM
   delay_asm_12();
   // Load upto the first 16 bytes
   int i = 16;
-  while(i > 0 && len > 0) {
-    SPCHWT = *addr++;
-    len--;
+  while(i > 0 && ctx->remaining > 0) {
+    SPCHWT = *ctx->addr++;
+    ctx->remaining--;
     i--;
   }
+}
+
+void speech_continue(struct LpcPlaybackCtx* ctx) {
   // Next check for buffer low, and add upto 8 bytes at a time
-  while(len > 0) {
-    int statusLow = 0;
-    while (!statusLow) {
-      statusLow = ((int)call_safe_read()) & SPCH_STATUS_LOW;
-    }
+  if (((int)call_safe_read()) & SPCH_STATUS_LOW) {
     // there is room for at least 8 bytes in the FIFO, so send upto 8
-    i = 8;
-    while(i > 0 && len > 0) {
-      SPCHWT = *addr++;
-      len--;
+    int i = 8;
+    while (i > 0 && ctx->remaining > 0) {
+      SPCHWT = *ctx->addr++;
+      ctx->remaining--;
       i--;
     }
   }

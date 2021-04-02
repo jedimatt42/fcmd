@@ -20,6 +20,12 @@
 #endif
 
 
+struct __attribute__((__packed__)) LpcPlaybackCtx {
+    char* addr;
+    int remaining;
+};
+
+
 /*
  * Issue the reset command to the speech synthesizer.
  * (this is automatically included in a detect_speech call)
@@ -39,9 +45,20 @@ int detect_speech();
 void say_vocab(int phrase_addr);
 
 /*
- * With an LPC code loaded into CPU RAM at addr, say_data sends the say_external command and transmits the LCP into the synthesizer's FIFO.
+ * With an LPC code loaded into CPU RAM at addr, say_data sends the say_external command and transmits the entire LCP into the synthesizer's FIFO.
  */
 void say_data(const char* addr, int len);
+
+/*
+ * Given a LpcPlaybackCtx with a pointer to the LPC data, and the remaining bytes to send, sends the command code and upto the first 16 bytes of the
+ * LPC data. ctx.remaining and ctx.addr are modified to be used by subsequent speech_continue calls.
+ */
+void speech_start(struct LpcPlaybackCtx* ctx);
+
+/*
+ * Continue feeding speech data to the synthesizer, upto 8 bytes per call. ctx is modified.
+ */
+void speech_continue(struct LpcPlaybackCtx* ctx);
 
 /*
  * Wait for speech to finish producing the current phrase.
