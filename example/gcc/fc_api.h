@@ -134,6 +134,13 @@ struct __attribute__((__packed__)) DateTime {
 };
 
 /*
+  fc_parse_path_param option constants
+ */
+#define PR_OPTIONAL 0x0000
+#define PR_REQUIRED 0x0001
+#define PR_WILDCARD 0x0002
+
+/*
   Rom address tables
 */
 #define FC_TPUTC 0x6082
@@ -177,6 +184,7 @@ struct __attribute__((__packed__)) DateTime {
 #define FC_TIPI_RECVMSG 0x611a
 #define FC_DATETIME 0x611e
 #define FC_FIND_DSR 0x6122
+#define FC_PARSE_PATH_PARAM 0x6126
 
 // function: void fc_tputc(int c)
 DECL_FC_API_CALL(FC_TPUTC, fc_tputc, void, (int c), (c))
@@ -300,5 +308,8 @@ DECL_FC_API_CALL(FC_DATETIME, fc_datetime, void, (struct DateTime* dt), (dt))
 
 // function: struct DeviceServiceRoutine* fc_find_dsr(char* devicename, int crubase)
 DECL_FC_API_CALL(FC_FIND_DSR, fc_find_dsr, struct DeviceServiceRoutine*, (char* devicename, int crubase), (devicename, crubase))
+
+// function: void fc_parse_path_param(char* str_in, struct DeviceServiceRoutine** dsr, char* buffer, int requirements)
+DECL_FC_API_CALL(FC_PARSE_PATH_PARAM, fc_parse_path_param, void, (char* str_in, struct DeviceServiceRoutine** dsr, char* buffer, int requirements), (str_in, dsr, buffer, requirements))
 
 #endif

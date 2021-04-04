@@ -134,5 +134,12 @@ struct __attribute__((__packed__)) DateTime {
 };
 
 /*
+  fc_parse_path_param option constants
+ */
+#define PR_OPTIONAL 0x0000
+#define PR_REQUIRED 0x0001
+#define PR_WILDCARD 0x0002
+
+/*
   Rom address tables
 */
