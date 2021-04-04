@@ -27,6 +27,39 @@ void __attribute__((noinline)) vdp_to_ram(int vdp_addr, char* cpu_addr, int len)
   }
 }
 
+unsigned char get_nibble(unsigned char c, int* state) {
+  (*state)++;
+  if (c >= 'a' && c <= 'f') {
+    return c - 'a' + 10;
+  } else if (c >= 'A' && c <= 'F') {
+    return c - 'A' + 10;
+  } else if (c >= '0' && c <= '9') {
+    return c - '0';
+  }
+  *state = 0;
+  return 0;
+}
+
+void __attribute__((noinline)) read_sample_line(int addr, int len) {
+  // addr is VDP RAM address containing record from file, of len characters.
+  VDP_SET_ADDRESS(addr);
+  int state = 0;
+  while(len) {
+    len--;
+    unsigned char nibble = get_nibble(VDPRD, &state);
+    switch(state) {
+      case 1:
+        sample[sample_len] = nibble << 4;
+        break;
+      case 2:
+        sample[sample_len++] |= nibble;
+        break;
+      default:
+        break;
+    }
+  }
+}
+
 void __attribute__((noinline)) load_sample(char* fname_buffer, struct DeviceServiceRoutine* dsr) {
   struct PAB pab;
 
@@ -39,11 +72,7 @@ void __attribute__((noinline)) load_sample(char* fname_buffer, struct DeviceServ
   while (!ferr) {
     ferr = fc_dsr_read(dsr, &pab, 0);
     if (!ferr) {
-      int len = pab.CharCount;
-      char line[len + 1];
-      // read a line
-      vdp_to_ram(pab.VDPBuffer, line, len);
-      line[len] = 0;
+      read_sample_line(pab.VDPBuffer, pab.CharCount);
     }
   }
 
@@ -59,11 +88,6 @@ void __attribute__((noinline)) play_sample() {
 }
 
 int main(char* args) {
-  if (!detect_speech()) {
-    fc_tputs("No speech synthesizer detected :(\n");
-    return 0;
-  }
-
   // expect DV80 file of hex data
   struct DeviceServiceRoutine* dsr;
   char fname_buffer[30];
@@ -73,8 +97,14 @@ int main(char* args) {
     fc_tputs("SAY <file>\n");
   } else {
     load_sample(fname_buffer, dsr);
-    play_sample();
+    if (!sample_len) {
+      fc_tputs("Error: No speech data loaded\n");
+    } else
+    if (!detect_speech()) {
+      fc_tputs("Error: No speech synthesizer detected\n");
+    } else {
+      play_sample();
+    }
   }
-
   return 0;
 }
