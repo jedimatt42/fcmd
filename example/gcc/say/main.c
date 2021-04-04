@@ -19,14 +19,6 @@ inline void VDP_SET_ADDRESS(unsigned int x) { VDPWA = ((x) & 0xff); VDPWA = ((x)
 unsigned char* sample = (char*)0xC000;
 int sample_len = 0;
 
-void __attribute__((noinline)) vdp_to_ram(int vdp_addr, char* cpu_addr, int len) {
-  VDP_SET_ADDRESS(vdp_addr);
-  while(len > 0) {
-    *cpu_addr++ = VDPRD;
-    len--;
-  }
-}
-
 unsigned char get_nibble(unsigned char c, int* state) {
   (*state)++;
   if (c >= 'a' && c <= 'f') {

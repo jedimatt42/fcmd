@@ -37,8 +37,12 @@ $(FNAME): $(FNAME).bin
 	python3 $(XDM99) -T $< -t -f PROGRAM -n $(FNAME) -o $(FNAME)
 	mkdir -p ../../../FC/BIN && cp $(FNAME) ../../../FC/BIN/
 
+sample.spc: sample.wav pywiz.sh
+	./pywiz.sh
+
 SAMPLE: sample.spc
 	python3 $(XDM99) -T sample.spc -t -n SAMPLE -f DIS/VAR80 -o SAMPLE
+	cp SAMPLE ~/Documents/data/retro/TI99/classic99/DSK1/
 
 .phony clean:
 	rm -fr objects
