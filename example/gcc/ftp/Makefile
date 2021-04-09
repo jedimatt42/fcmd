@@ -6,7 +6,6 @@ OBJDUMP=tms9900-objdump
 XDM99?=$(shell which xdm99.py)
 
 FNAME=FTP
-UCFNAME=$(shell echo -n $(FNAME) | tr 'a-z' 'A-Z')
 
 LDFLAGS=\
   --script=linkfile

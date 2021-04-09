@@ -6,7 +6,6 @@ OBJDUMP=tms9900-objdump
 XDM99?=$(shell which xdm99.py)
 
 FNAME=SAY
-UCFNAME=$(shell echo -n $(FNAME) | tr 'a-z' 'A-Z')
 
 LDFLAGS=\
   --script=linkfile
@@ -21,7 +20,7 @@ OBJECT_LIST:=$(sort $(C_SRCS:.c=.o) $(ASM_SRCS:.asm=.o))
 
 LINK_OBJECTS:=$(addprefix objects/,$(OBJECT_LIST))
 
-all: $(FNAME)
+all: $(FNAME) SAMPLE
 
 # The size of the cart_rom segment in decimal
 # must agree with linkfile
@@ -42,11 +41,12 @@ sample.spc: sample.wav pywiz.sh
 
 SAMPLE: sample.spc
 	python3 $(XDM99) -T sample.spc -t -n SAMPLE -f DIS/VAR80 -o SAMPLE
-	cp SAMPLE ~/Documents/data/retro/TI99/classic99/DSK1/
+	mkdir -p ../../../FC/BIN && cp SAMPLE ../../../FC/BIN/
 
 .phony clean:
 	rm -fr objects
 	rm -f *.elf *.bin mapfile
+	rm -f SAMPLE
 
 objects/%.o: %.asm
 	mkdir -p objects; cd objects; $(GAS) ../$< -o $(notdir $@)
