@@ -38,7 +38,7 @@ $(FNAME): $(FNAME).bin
 	mkdir -p ../../../FC/BIN && cp $(FNAME) ../../../FC/BIN/
 
 sample.spc: sample.wav pywiz.sh
-	./pywiz.sh
+	./pywiz.sh >$@
 
 SAMPLE: sample.spc
 	python3 $(XDM99) -T sample.spc -t -n SAMPLE -f DIS/VAR80 -o SAMPLE

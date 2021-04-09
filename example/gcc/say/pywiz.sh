@@ -16,11 +16,11 @@ else
   python3 ./python_wizard \
     -w 2 \
     -u 0.3 \
-    -F 12 -V -S \
+    -F 25 -V -S \
     -p -a -0.9373 \
     -m 0.9 \
     -r 50,1000 \
-    -T tms5220 \
+    -T tms5200 \
     -f hex \
-    -p $WAV | fold -s -w 24 >sample.spc
+    -p $WAV | fold -s -w 24
 fi

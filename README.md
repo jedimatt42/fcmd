@@ -40,8 +40,6 @@ make
 
 This will compile all the binaries. 
 
-There is a build.sh script that also bundles things for release, and copies things to my classic99 system for testing.
-
 ## Installation
 
 The FCMDG.bin and FCMDC.bin go on a FinalGROM99 - or if you know what you are doing, an UberGROM
@@ -65,7 +63,22 @@ rom1=G|6000|2000|../FCMDG.bin
 
 FCMD.RPK : contains both the ROM and auto start GROM of Force Command.
 
-FCMD-MAME-224.RPK : is just the ROM, for compatibility with MAME older than 225.
+### deploy.sh script
+
+There is a script named `deploy.sh` that I use to copy the build artifacts to my TIPI, and classic99 emulation environment, etc... If some variables are not set, that destination will be skipped. To use, I wrap in a custom script that sets control variables:
+
+```
+#!/bin/bash
+
+make clean
+make -j 12
+
+export TIPI_HOST_NAME=tipi.local
+export CLASSIC99_DSK1_DIR=~/Documents/data/retro/TI99/classic99/DSK1/
+export CART_BIN_DIR=~/Documents/data/retro/TI99/
+./deploy.sh
+
+```
 
 ## Help
 

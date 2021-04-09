@@ -1,14 +1,18 @@
-GAS=tms9900-as
-LD=tms9900-ld
-CC=tms9900-gcc
-OBJCOPY=tms9900-objcopy
-OBJDUMP=tms9900-objdump
+GAS=$(shell which tms9900-as)
+LD=$(shell which tms9900-ld)
+CC=$(shell which tms9900-gcc)
+OBJCOPY=$(shell which tms9900-objcopy)
+OBJDUMP=$(shell which tms9900-objdump)
 XGA99?=$(shell which xga99.py)
 
 FNAME=FCMD
-UCFNAME=$(shell echo -n $(FNAME) | tr 'a-z' 'A-Z')
 
 BANKBINS:=$(shell seq -s ' ' -f "bank%1g.page" 0 15)
+
+VER:=$(shell grep "#define APP_VER" b0_main.h | cut -d '"' -f2)
+
+MANIFEST=FCMDG.bin FCMDC.bin README.md 
+SUPPORT=FC/LOAD FC/FCMD FC/FCMDXB FC/BIN/FTP FC/BIN/SAY
 
 LDFLAGS=\
   --script=linkfile
@@ -25,7 +29,7 @@ OBJECT_LIST:=$(filter-out api.o b3_fcbanner.o,$(OBJECT_LIST:.asm=.o)) api.o b3_f
 
 LINK_OBJECTS:=$(addprefix objects/,$(OBJECT_LIST))
 
-all: $(FNAME)G.bin $(FNAME)8.bin subdirs
+all: forcecmd_$(VER).zip
 
 # The size of the cart_rom segment in decimal
 # must agree with linkfile
@@ -48,7 +52,7 @@ bank0.page: $(FNAME).elf $(HEADBIN)
 	cat $(HEADBIN) objects/$@_tmp >$@
 	@dd if=/dev/null of=$@ bs=8192 seek=1
 
-$(FNAME)8.bin: $(BANKBINS)
+$(FNAME)C.bin: $(BANKBINS)
 	cat $^ >$@
 
 $(FNAME)G.bin: gpl-boot.g99 $(FNAME).elf
@@ -61,6 +65,7 @@ linkfile: linkfile.m4
 	m4 $< > $@
 
 clean:
+	rm -f forcecmd_*.zip
 	rm -fr objects
 	rm -f *.elf
 	rm -f *.bin
@@ -70,6 +75,7 @@ clean:
 	rm -f *.RPK
 	rm -f api.asm
 	rm -f api.banks
+	$(MAKE) -C FC clean
 	for d in $(SUBDIRS); do $(MAKE) -C example/gcc/$$d clean; done
 
 objects/%.o: %.asm
@@ -94,5 +100,15 @@ SUBDIRS=hello ntscpal charset ftp say
 subdirs: api.asm
 	for d in $(SUBDIRS); do $(MAKE) -C example/gcc/$$d; done
 
-.PHONY: clean subdirs
+support: FC/reload_fcmd.asm FC/loadxb.bas
+	$(MAKE) -C FC
+
+$(FNAME).RPK: $(FNAME)C.bin $(FNAME)G.bin layout.xml
+	zip $@ $^
+
+forcecmd_$(VER).zip: $(MANIFEST) subdirs support $(FNAME).RPK
+	rm -f $@
+	zip $@ $(MANIFEST) $(SUPPORT) $(FNAME).RPK
+
+.PHONY: clean subdirs support
 
