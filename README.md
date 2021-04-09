@@ -75,7 +75,7 @@ make -j 12
 
 export TIPI_HOST_NAME=tipi.local
 export CLASSIC99_DSK1_DIR=~/Documents/data/retro/TI99/classic99/DSK1/
-export CART_BIN_DIR=~/Documents/data/retro/TI99/
+export CART_DEPLOY_DIR=~/Documents/data/retro/TI99/
 ./deploy.sh
 
 ```
