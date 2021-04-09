@@ -24,11 +24,12 @@ fi
 if [ -z ${TIPI_HOST_NAME:-} ]; then
   echo "export TIPI_HOST_NAME to tipi.local or your appropriate host to copy support files to tipi disk"
 else
-  # Copy the support files onto my 4A's TIPI
+  # Copy the support files onto my 4A's TIPI where they are expected to be.
+  # some functionality depends on them being in the FC folder.
   scp FC/LOAD tipi@${TIPI_HOST_NAME}:/home/tipi/tipi_disk/FC/LOAD
   scp FC/FCMD tipi@${TIPI_HOST_NAME}:/home/tipi/tipi_disk/FC/FCMD
   scp FC/FCMDXB tipi@${TIPI_HOST_NAME}:/home/tipi/tipi_disk/FC/FCMDXB
-  scp example/gcc/ftp/FTP tipi@tipi4a:/home/tipi/tipi_disk/FC/BIN/
-  scp example/gcc/say/SAY tipi@tipi4a:/home/tipi/tipi_disk/FC/BIN/
+  scp example/gcc/ftp/FTP tipi@${TIPI_HOST_NAME}:/home/tipi/tipi_disk/FC/BIN/
+  scp example/gcc/say/SAY tipi@${TIPI_HOST_NAME}:/home/tipi/tipi_disk/FC/BIN/
 fi
 

@@ -73,6 +73,10 @@ There is a script named `deploy.sh` that I use to copy the build artifacts to my
 make clean
 make -j 12
 
+# Not actually necessary, used to update example/gcc/say/sample.spc from sample.wav
+export PYWIZ_DIR=$HOME/github/python_wizard
+make -C example/gcc/say sample.spc
+
 export TIPI_HOST_NAME=tipi.local
 export CLASSIC99_DSK1_DIR=~/Documents/data/retro/TI99/classic99/DSK1/
 export CART_DEPLOY_DIR=~/Documents/data/retro/TI99/

@@ -21,7 +21,7 @@ OBJECT_LIST:=$(sort $(C_SRCS:.c=.o) $(ASM_SRCS:.asm=.o))
 
 LINK_OBJECTS:=$(addprefix objects/,$(OBJECT_LIST))
 
-all: $(FNAME) SAMPLE
+all: $(FNAME)
 
 # The size of the cart_rom segment in decimal
 # must agree with linkfile
@@ -47,7 +47,6 @@ SAMPLE: sample.spc
 .phony clean:
 	rm -fr objects
 	rm -f *.elf *.bin mapfile
-	rm -f $(FNAME) SAMPLE
 
 objects/%.o: %.asm
 	mkdir -p objects; cd objects; $(GAS) ../$< -o $(notdir $@)

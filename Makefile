@@ -9,7 +9,7 @@ FNAME=FCMD
 
 BANKBINS:=$(shell seq -s ' ' -f "bank%1g.page" 0 15)
 
-VER:=$(shell grep "#define APP_VER" b0_main.h | cut -d '"' -f2)
+VER:=$(shell grep "\#define APP_VER" b0_main.h | cut -d '"' -f2)
 
 MANIFEST=FCMDG.bin FCMDC.bin README.md 
 SUPPORT=FC/LOAD FC/FCMD FC/FCMDXB FC/BIN/FTP FC/BIN/SAY

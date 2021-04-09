@@ -1,10 +1,9 @@
 #!/bin/sh
 
 export WAV=`pwd`/sample.wav
-PYWIZ_DIR=~/dev/github/python_wizard
 
 if [ ! -d $PYWIZ_DIR ]; then
-  echo "$PYWIZ_DIR not found"
+  echo "$PYWIZ_DIR not found - export set to checkout of https://github.com/ptwz/python_wizard.git"
   exit 0
 fi
 
