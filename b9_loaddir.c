@@ -17,11 +17,15 @@ unsigned int loadDir(struct DeviceServiceRoutine* dsr, const char* pathname, vol
   struct VolInfo volInfo;
   struct DirEntry dirEntry;
 
-  // specifying record length is not recommended (by TI)
   // CATALOG file must be INPUT | INTERNAL | RELATIVE
-  unsigned int ferr = bk_dsr_open(dsr, &pab, pathname, DSR_TYPE_INPUT | DSR_TYPE_DISPLAY | DSR_TYPE_FIXED | DSR_TYPE_INTERNAL | DSR_TYPE_RELATIVE, 0);
+  // try with timestamps
+  unsigned int ferr = bk_dsr_open(dsr, &pab, pathname, DSR_TYPE_INPUT | DSR_TYPE_DISPLAY | DSR_TYPE_FIXED | DSR_TYPE_INTERNAL | DSR_TYPE_RELATIVE, 146);
   if (ferr) {
-    return ferr;
+    // if that fails, try without
+    unsigned int ferr = bk_dsr_open(dsr, &pab, pathname, DSR_TYPE_INPUT | DSR_TYPE_DISPLAY | DSR_TYPE_FIXED | DSR_TYPE_INTERNAL | DSR_TYPE_RELATIVE, 38);
+    if (ferr) {
+      return ferr;
+    }
   }
 
   int recNo = 0;

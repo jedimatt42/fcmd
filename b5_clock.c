@@ -54,30 +54,29 @@ void update_ampm(struct DateTime* dt) {
 }
 
 void ide_clock(struct DateTime* dt) {
-  // TODO, "IDE." needs to be added to legal device names...
-
-
   // 100 OPEN #1:"IDE.TIME", INTERNAL, FIXED
   // 110 INPUT #1:SEC$, MIN$, HOUR$, DAY$, MONTH$, YEAR$, DAYOFWEEK$
   // 120 CLOSE #1
 
-  char clock[] = "IDE.TIME";
-  struct DeviceServiceRoutine* dsr = 0;
-  char namebuf[20];
-  bk_parsePathParam(clock, &dsr, namebuf, PR_REQUIRED);
-  if (dsr == currentDsr) {
+  char ide[4];
+  bk_strcpy(ide, "IDE");
+  struct DeviceServiceRoutine* dsr = bk_findDsr(ide, 0);
+  char namebuf[9];
+  bk_strcpy(namebuf, "IDE.TIME");
+  if (dsr == 0) {
+    tputs_rom("dsr not found");
     return;
   }
   struct PAB pab;
 
-  int flags = DSR_TYPE_INPUT | DSR_TYPE_INTERNAL | DSR_TYPE_SEQUENTIAL | DSR_TYPE_FIXED;
+  int flags = DSR_TYPE_INPUT | DSR_TYPE_INTERNAL | DSR_TYPE_RELATIVE | DSR_TYPE_FIXED;
 
   int err = bk_dsr_open(dsr, &pab, namebuf, flags, 0);
   if (err) {
     return;
   }
 
-  char linebuf[22];
+  char linebuf[30];
   err = bk_dsr_read(dsr, &pab, 0);
   if (err) {
     return;

@@ -158,8 +158,7 @@ int matchesPrefix(char* basicstr, char* device_prefix) {
 
 int isDrive(char* basicstr) {
   if (basicstr[0] == 4) {
-    char tipi[] = "TIPI";
-    if (0 == bk_basic_strcmp(basicstr, tipi)) {
+    if (0 == bk_basic_strcmp(basicstr, str2ram("TIPI"))) {
       return 1;
     } else if (basicstr[4] >= '0' && basicstr[4] <= '9') {
       return matchesPrefix(basicstr, "DSK") ||
@@ -172,14 +171,11 @@ int isDrive(char* basicstr) {
       return matchesPrefix(basicstr, "DSK");
     }
   } else if (basicstr[0] == 2) {
-    char pi[] = "PI";
-    return 0 == bk_basic_strcmp(basicstr, pi);
+    return 0 == bk_basic_strcmp(basicstr, str2ram("PI"));
   } else if (basicstr[0] == 5) {
-    char clock[] = "CLOCK";
-    return 0 == bk_basic_strcmp(basicstr, clock);
+    return 0 == bk_basic_strcmp(basicstr, str2ram("CLOCK"));
   } else if (basicstr[0] == 3) {
-    char ide[] = "IDE";
-    return 0 == bk_basic_strcmp(basicstr, ide);
+    return 0 == bk_basic_strcmp(basicstr, str2ram("IDE"));
   }
   return 0;
 }
