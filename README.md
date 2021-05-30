@@ -25,6 +25,12 @@ Supports:
 * ANSI display
 * TIPIMAP to control DSKx, URIx, and AUTO mapping
 
+## End Users Wiki
+
+The following wiki contains documentation for how to use, and where to find the pre-built binaries:
+
+[Force Command Github Wiki](https://github.com/jedimatt42/fcmd/wiki)
+
 ## Building
 
 Prerequisites: 
