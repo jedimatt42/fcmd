@@ -15,6 +15,38 @@ void corcomp_clock(struct DateTime* dt, char* clock);
 void mbp_clock(struct DateTime* dt);
 void update_ampm(struct DateTime* dt);
 
+void detectClock() {
+  char name[6];
+  memcpy(name, "CLOCK", 6);
+  char value[10];
+  struct DeviceServiceRoutine* dsr;
+  dsr = bk_findDsr(str2ram("CLOCK"), 0);
+  if (dsr) {
+    memcpy(value, "CLOCK", 6);
+    bk_vars_set(name, value);
+    return;
+  }
+  dsr = bk_findDsr(str2ram("PI"), 0);
+  if (dsr) {
+    memcpy(value, "PI.CLOCK", 9);
+    bk_vars_set(name, value);
+    return;
+  }
+  dsr = bk_findDsr(str2ram("IDE"), 0);
+  if (dsr) {
+    memcpy(value, "IDE.TIME", 9);
+    bk_vars_set(name, value);
+    return;
+  }
+  struct DateTime dt;
+  mbp_clock(&dt);
+  if (dt.month != 0 && dt.year == 0) {
+    memcpy(value, "MBP", 4);
+    bk_vars_set(name, value);
+    return;
+  }
+}
+
 void datetime(struct DateTime* dt) {
   dt->day = 0;
   dt->dayOfWeek = 0;

@@ -94,6 +94,8 @@ void main()
 
   bk_history_init();
 
+  bk_detectClock();
+
   scripton = 0;
 
   char autocmd[13];
