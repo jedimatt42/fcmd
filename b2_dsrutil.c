@@ -21,20 +21,29 @@ int matchesPrefix(char* basicstr, char* device_prefix) {
 }
 
 static int __attribute__((noinline)) isDrive(char* basicstr) {
+
+  // include IDE
   if (basicstr[0] == 3 && matchesPrefix(basicstr, "IDE")) {
     return 1;
   }
+
+  // include CLOCK
   if (basicstr[0] == 5 && matchesPrefix(basicstr, "CLO")) {
     return 1;
   }
+
+  // include PI
   if (basicstr[0] == 2 && basicstr[1] == 'P' && basicstr[2] == 'I') {
     return 1;
   }
 
+  // include TIPI
+  if (basicstr[0] == 4 && matchesPrefix(basicstr, "TIP")) {
+    return 1;
+  }
+
   if (basicstr[0] == 4) {
-    if (0 == bk_basic_strcmp(basicstr, str2ram("TIPI"))) {
-      return 1;
-    } else if (basicstr[4] >= '0' && basicstr[4] <= '9') {
+    if (basicstr[4] >= '0' && basicstr[4] <= '9') {
       return matchesPrefix(basicstr, "DSK") ||
         matchesPrefix(basicstr, "IDE") ||
         matchesPrefix(basicstr, "SCS") ||

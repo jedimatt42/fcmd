@@ -12,7 +12,6 @@ int lindexof(const char* str, int c, int start);
 int str_startswith(const char* str, const char* prefix);
 int str_endswith(const char* str, const char* suffix);
 int basicToCstr(const char* str, char* buf);
-int basic_strcmp(const char* basstr, const char* cstr);
 char* strtok(char *str, int delim);
 char* strtokpeek(char* str, int delim);
 void strset(char* buffer, int value, int limit);
@@ -44,7 +43,6 @@ DECLARE_BANKED(lindexof, BANK(1), int, bk_lindexof, (const char *str, int c, int
 DECLARE_BANKED(str_startswith, BANK(1), int, bk_str_startswith, (const char *str, const char *prefix), (str, prefix))
 DECLARE_BANKED(str_endswith, BANK(1), int, bk_str_endswith, (const char *str, const char *suffix), (str, suffix))
 DECLARE_BANKED(basicToCstr, BANK(1), int, bk_basicToCstr, (const char *str, char *buf), (str, buf))
-DECLARE_BANKED(basic_strcmp, BANK(1), int, bk_basic_strcmp, (const char *basstr, const char *cstr), (basstr, cstr))
 DECLARE_BANKED(strtok, BANK(1), char *, bk_strtok, (char *str, int delim), (str, delim))
 DECLARE_BANKED(strtokpeek, BANK(1), char *, bk_strtokpeek, (char *str, int delim), (str, delim))
 DECLARE_BANKED_VOID(strset, BANK(1), bk_strset, (char *buffer, int value, int limit), (buffer, value, limit))

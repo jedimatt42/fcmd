@@ -101,17 +101,6 @@ int lindexof(const char* str, int c, int start) {
   return -1;
 }
 
-int basic_strcmp(const char* basstr, const char* cstr) {
-  int i = 0;
-  do {
-    if (basstr[0] == i) {
-      return 0 - cstr[i];
-    }
-    i++;
-  } while(basstr[i+1] == cstr[i]);
-  return basstr[i+1] - cstr[i];
-}
-
 int basicToCstr(const char* str, char* buf) {
   int len = (int) str[0];
   for(int i=0; i<len; i++) {
