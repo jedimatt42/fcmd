@@ -57,28 +57,26 @@ void ide_clock(struct DateTime* dt) {
   // 100 OPEN #1:"IDE.TIME", INTERNAL, FIXED
   // 110 INPUT #1:SEC$, MIN$, HOUR$, DAY$, MONTH$, YEAR$, DAYOFWEEK$
   // 120 CLOSE #1
+  struct DeviceServiceRoutine* dsr = bk_findDsr(str2ram("IDE"), 0);
 
-  char ide[4];
-  bk_strcpy(ide, "IDE");
-  struct DeviceServiceRoutine* dsr = bk_findDsr(ide, 0);
-  char namebuf[9];
-  bk_strcpy(namebuf, "IDE.TIME");
   if (dsr == 0) {
-    tputs_rom("dsr not found");
+    tputs_rom("no dsr found");
     return;
   }
   struct PAB pab;
 
-  int flags = DSR_TYPE_INPUT | DSR_TYPE_INTERNAL | DSR_TYPE_RELATIVE | DSR_TYPE_FIXED;
+  int flags = DSR_TYPE_INPUT | DSR_TYPE_INTERNAL | DSR_TYPE_SEQUENTIAL | DSR_TYPE_FIXED;
 
-  int err = bk_dsr_open(dsr, &pab, namebuf, flags, 0);
+  int err = bk_dsr_open(dsr, &pab, str2ram("IDE.TIME"), flags, 0);
   if (err) {
+    tputs_rom("open failed");
     return;
   }
 
   char linebuf[30];
   err = bk_dsr_read(dsr, &pab, 0);
   if (err) {
+    tputs_rom("read failed");
     return;
   }
   vdpmemread(pab.VDPBuffer, linebuf, pab.CharCount);
