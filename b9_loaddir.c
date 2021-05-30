@@ -39,10 +39,6 @@ unsigned int loadDir(struct DeviceServiceRoutine* dsr, const char* pathname, vol
       // process Record
       if (recNo == 0) {
         int namlen = bk_basicToCstr(cbuf, volInfo.volname);
-        if (namlen == 0) {
-          tputs_rom("no device\n");
-          break;
-        }
         int a = bk_ti_floatToInt(cbuf+1+namlen);
         int j = bk_ti_floatToInt(cbuf+10+namlen);
         int k = bk_ti_floatToInt(cbuf+19+namlen);
