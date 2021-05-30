@@ -60,7 +60,6 @@ void ide_clock(struct DateTime* dt) {
   struct DeviceServiceRoutine* dsr = bk_findDsr(str2ram("IDE"), 0);
 
   if (dsr == 0) {
-    tputs_rom("no dsr found");
     return;
   }
   struct PAB pab;
@@ -69,14 +68,12 @@ void ide_clock(struct DateTime* dt) {
 
   int err = bk_dsr_open(dsr, &pab, str2ram("IDE.TIME"), flags, 0);
   if (err) {
-    tputs_rom("open failed");
     return;
   }
 
   char linebuf[30];
   err = bk_dsr_read(dsr, &pab, 0);
   if (err) {
-    tputs_rom("read failed");
     return;
   }
   vdpmemread(pab.VDPBuffer, linebuf, pab.CharCount);

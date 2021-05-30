@@ -14,6 +14,41 @@
 
 struct DeviceServiceRoutine* dsrList;
 
+int matchesPrefix(char* basicstr, char* device_prefix) {
+  return basicstr[1] == device_prefix[0] &&
+    basicstr[2] == device_prefix[1] &&
+    basicstr[3] == device_prefix[2];
+}
+
+static int __attribute__((noinline)) isDrive(char* basicstr) {
+  if (basicstr[0] == 3 && matchesPrefix(basicstr, "IDE")) {
+    return 1;
+  }
+  if (basicstr[0] == 5 && matchesPrefix(basicstr, "CLO")) {
+    return 1;
+  }
+  if (basicstr[0] == 2 && basicstr[1] == 'P' && basicstr[2] == 'I') {
+    return 1;
+  }
+
+  if (basicstr[0] == 4) {
+    if (0 == bk_basic_strcmp(basicstr, str2ram("TIPI"))) {
+      return 1;
+    } else if (basicstr[4] >= '0' && basicstr[4] <= '9') {
+      return matchesPrefix(basicstr, "DSK") ||
+        matchesPrefix(basicstr, "IDE") ||
+        matchesPrefix(basicstr, "SCS") ||
+        matchesPrefix(basicstr, "WDS") ||
+        matchesPrefix(basicstr, "HDX") ||
+        matchesPrefix(basicstr, "URI");
+    } else if (basicstr[4] >= 'A' && basicstr[4] <= 'Z') {
+      return matchesPrefix(basicstr, "DSK");
+    }
+  }
+
+  return 0;
+}
+
 unsigned int existsDir(struct DeviceServiceRoutine* dsr, const char* pathname) {
   struct PAB pab;
   initPab(&pab);
@@ -148,36 +183,6 @@ void loadDriveDSRs() {
   currentDsr = dsrList;
   bk_strcpy(currentPath, currentDsr->name);
   bk_strcat(currentPath, str2ram("."));
-}
-
-int matchesPrefix(char* basicstr, char* device_prefix) {
-  return basicstr[1] == device_prefix[0] &&
-    basicstr[2] == device_prefix[1] &&
-    basicstr[3] == device_prefix[2];
-}
-
-int isDrive(char* basicstr) {
-  if (basicstr[0] == 4) {
-    if (0 == bk_basic_strcmp(basicstr, str2ram("TIPI"))) {
-      return 1;
-    } else if (basicstr[4] >= '0' && basicstr[4] <= '9') {
-      return matchesPrefix(basicstr, "DSK") ||
-             matchesPrefix(basicstr, "IDE") ||
-             matchesPrefix(basicstr, "SCS") ||
-             matchesPrefix(basicstr, "WDS") ||
-             matchesPrefix(basicstr, "HDX") ||
-             matchesPrefix(basicstr, "URI");
-    } else if (basicstr[4] >= 'A' && basicstr[4] <= 'Z') {
-      return matchesPrefix(basicstr, "DSK");
-    }
-  } else if (basicstr[0] == 2) {
-    return 0 == bk_basic_strcmp(basicstr, str2ram("PI"));
-  } else if (basicstr[0] == 5) {
-    return 0 == bk_basic_strcmp(basicstr, str2ram("CLOCK"));
-  } else if (basicstr[0] == 3) {
-    return 0 == bk_basic_strcmp(basicstr, str2ram("IDE"));
-  }
-  return 0;
 }
 
 void enableROM(int crubase) {

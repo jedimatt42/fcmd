@@ -85,7 +85,6 @@ void loadDriveDSRs();
 
 void enableROM(int crubase);
 void disableROM(int crubase);
-int isDrive(char* basicstr);
 
 struct DeviceServiceRoutine* findDsr(char* devicename, int crubase);
 
