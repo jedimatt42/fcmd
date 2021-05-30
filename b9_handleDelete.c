@@ -22,8 +22,6 @@ static int matched;
 static int yes;
 
 void handleDelete() {
-  bk_disable_more();
-
   filecount = 0;
   matched = 0;
   srcdsr = 0;

@@ -39,9 +39,6 @@ int stage;
 unsigned char bytestr[128];
 int bs_idx;
 
-int more_on;
-int more_count;
-
 unsigned char cursor_store_x;
 unsigned char cursor_store_y;
 
@@ -65,40 +62,8 @@ void resetState() {
 void initTerminal() {
   cursor_store_x = 0;
   cursor_store_y = 0;
-  more_on = 0;
-  more_count = 0;
 
   resetState();
-}
-
-void enable_more() {
-  more_on = 1;
-  more_count = 0;
-}
-
-void disable_more() {
-  more_on = 0;
-}
-
-static void optional_pause() {
-  // only called if more_on is true
-  // disable more_on to avoid infinate recursion
-  more_on = 0;
-  more_count++;
-  int limit = displayHeight - 2;
-
-  if (more_count >= limit) {
-    tputs_rom("\n-- press any key for more --");
-    unsigned int k = cgetc(CUR_INSERT);
-    if (k == 131 || k == 2) {
-      request_break = 1;
-    }
-    more_count = 0;
-    cclearxy(0, limit, displayWidth);
-    cclearxy(0, limit + 1, displayWidth);
-    tgotoxy(0,limit);
-  }
-  more_on = 1;
 }
 
 int getParamA(int def) {
@@ -484,17 +449,11 @@ void charout(unsigned char ch) {
     case '\n': // line feed
       conio_x=0;
       inc_row();
-      if (more_on) {
-        optional_pause();
-      }
       break;
     default: // it is important to handle control codes before choosing to wrap to next line.
       if (conio_x > nTextEnd-nTextRow) {
         conio_x=0;
         inc_row();
-        if (more_on) {
-          optional_pause();
-        }
       }
       cputc(ch);
     break;

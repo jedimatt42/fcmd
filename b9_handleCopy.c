@@ -23,8 +23,6 @@ static int copycount;
 static int matched;
 
 void handleCopy() {
-  bk_disable_more();
-
   copycount = 0;
   matched = 0;
   srcdsr = 0;

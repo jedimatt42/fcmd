@@ -122,7 +122,6 @@ void main()
     history_on = 1;
     bk_getstr(commandbuf, displayWidth - 3, backspace);
     bk_tputc('\n');
-    bk_enable_more();
     history_on = 0;
     handleCommand(commandbuf);
     if (nTitleLine) {
@@ -132,7 +131,6 @@ void main()
 }
 
 int runScript(struct DeviceServiceRoutine* dsr, char* scriptName) {
-  bk_disable_more();
   int ran = 0;
   struct DeviceServiceRoutine* oldDsr = scriptDsr;
   scriptDsr = dsr;

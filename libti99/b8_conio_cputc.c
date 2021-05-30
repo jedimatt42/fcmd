@@ -17,6 +17,10 @@ void inc_row() {
   if (conio_y >= y) {
     scrn_scroll();
     conio_y = y;
+    k = kscan(5);
+    while(147 == k) {
+      k = kscan(5);
+    }
   } else {
     ++conio_y;
   }

@@ -33,10 +33,7 @@ void handleType() {
   struct PAB pab;
 
   int flags = DSR_TYPE_INPUT | DSR_TYPE_DISPLAY | DSR_TYPE_SEQUENTIAL;
-  if (ansi) {
-    // bitwise or of zero: flags |= DSR_TYPE_FIXED;
-    bk_disable_more();
-  } else {
+  if (!ansi) {
     flags |= DSR_TYPE_VARIABLE;
   }
 
