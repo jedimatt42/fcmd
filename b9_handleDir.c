@@ -158,7 +158,7 @@ void onLongDirEntry(struct DirEntry* dirEntry) {
   }
   bk_tputc(' ');
 
-  if (de_type >= 5) { // is program or dir? skip record details.
+  if (de_type >= 4) { // is program or dir? skip record details.
     cputpad(7, "");
   } else {
     char* sizestr = bk_uint2str(dirEntry->reclen);
