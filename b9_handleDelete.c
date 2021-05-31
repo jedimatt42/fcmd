@@ -113,7 +113,7 @@ static void onDeleteDirEntry(struct DirEntry *dirEntry) {
     tputs_rom("cannot delete file ");
     bk_tputs_ram(path);
     bk_tputc('\n');
+  } else {
+    filecount++;
   }
-
-  filecount++;
 }
