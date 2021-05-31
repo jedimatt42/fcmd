@@ -24,7 +24,7 @@ int binLoad(struct DeviceServiceRoutine *dsr, int iocode, char *filename, struct
 #define BIN 0xFCFC
 #define SCRIPT 0x0000
 
-void handleExecutable(const char *ext)
+void handleExecutable(char *ext)
 {
     int cmd_type = 0;
     int err = loadExecutable(ext, &cmd_type);
@@ -89,7 +89,7 @@ char* token_cursor(char* dst, char* str, int delim) {
 
 int loadExecutable(const char* ext, int* cmd_type) {
     // allow ext to be fully qualified path to command
-    if (!loadFromPath(ext, "", cmd_type)) {
+    if (!loadFromPath(ext, 0, cmd_type)) {
         return 0;
     }
 
@@ -136,7 +136,10 @@ int loadFromPath(const char *ext, const char *entry, int* cmd_type)
 
     {
         char fullname[256];
-        bk_strcpy(fullname, str2ram(entry));
+        fullname[0] = 0;
+        if (entry != 0) {
+            bk_strcpy(fullname, entry);
+        }
         bk_strcat(fullname, ext);
         bk_parsePathParam(fullname, &dsr, path, PR_REQUIRED);
         if (!dsr) {
