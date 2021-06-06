@@ -4,6 +4,7 @@ CC=$(shell which tms9900-gcc)
 OBJCOPY=$(shell which tms9900-objcopy)
 OBJDUMP=$(shell which tms9900-objdump)
 XGA99?=$(shell which xga99.py)
+XDM99?=$(shell which xdm99.py)
 
 FNAME=FCMD
 
@@ -103,12 +104,15 @@ subdirs: api.asm
 support: FC/reload_fcmd.asm FC/loadxb.bas
 	$(MAKE) -C FC
 
+$(FNAME).DSK: subdirs support
+	python3 $(XDM99) $(FNAME).DSK -X 360 -t -a FC/BIN/FTP FC/BIN/SAY FC/BIN/SAMPLE
+
 $(FNAME).RPK: $(FNAME)C.bin $(FNAME)G.bin layout.xml
 	zip $@ $^
 
-forcecmd_$(VER).zip: $(MANIFEST) subdirs support $(FNAME).RPK
+forcecmd_$(VER).zip: $(MANIFEST) subdirs support $(FNAME).RPK $(FNAME).DSK
 	rm -f $@
-	zip $@ $(MANIFEST) $(SUPPORT) $(FNAME).RPK
+	zip $@ $(MANIFEST) $(SUPPORT) $(FNAME).RPK $(FNAME).DSK
 
 .PHONY: clean subdirs support
 

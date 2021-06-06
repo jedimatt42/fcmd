@@ -22,7 +22,7 @@ int allocAndLoad(struct DeviceServiceRoutine* dsr, int iocode, char* filename, s
 int binLoad(struct DeviceServiceRoutine *dsr, int iocode, char *filename, struct AddInfo *addInfoPtr);
 
 #define BIN 0xFCFC
-#define SCRIPT 0x0000
+#define SCRIPT 0x0001
 
 void handleExecutable(char *ext)
 {
@@ -147,6 +147,11 @@ int loadFromPath(const char *ext, const char *entry, int* cmd_type)
         }
     }
 
+    if (bk_runScript(dsr, path)) {
+        *cmd_type = SCRIPT;
+        return 0;
+    }
+
     unsigned int iocode = bk_path2iocode(path);
 
     int parent_idx = bk_lindexof(path, '.', bk_strlen(path) - 1);
@@ -176,12 +181,9 @@ int loadFromPath(const char *ext, const char *entry, int* cmd_type)
     if (type) {
         *cmd_type = BIN;
         return allocAndLoad(dsr, iocode, filename, addInfoPtr);
+    } else {
+        return 1;
     }
-    // else it is DISPLAY type record file
-    // PATH has had the filename broken off, runScript needs it back on.
-    bk_strcpy(path + parent_idx + 1, filename);
-    *cmd_type = SCRIPT;
-    return !bk_runScript(dsr, path);
 }
 
 int allocAndLoad(struct DeviceServiceRoutine* dsr, int iocode, char* filename, struct AddInfo* addInfoPtr) {
