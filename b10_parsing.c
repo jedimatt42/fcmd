@@ -1,7 +1,7 @@
 #include "banks.h"
-#define MYBANK BANK(0)
+#define MYBANK BANK(10)
 
-#include "b0_parsing.h"
+#include "b10_parsing.h"
 #include "b0_main.h"
 #include "b0_globals.h"
 #include "commands.h"
@@ -52,6 +52,7 @@ int must_close_command(char* buffer) {
   if (MATCH(tok, str2ram("history"))) return 0;
   if (MATCH(tok, str2ram("lvl2"))) return 0;
   if (MATCH(tok, str2ram("mkdir"))) return 0;
+  if (MATCH(tok, str2ram("palette"))) return 0;
   if (MATCH(tok, str2ram("protect"))) return 0;
   if (MATCH(tok, str2ram("pwd"))) return 0;
   if (MATCH(tok, str2ram("readkey"))) return 0;
@@ -79,7 +80,7 @@ void handleCommand(char *buffer) {
 
   char* tok = bk_strtok(procbuf, ' ');
   COMMAND("bar", bk_handleBar)
-  else COMMAND("cls", handleCls)
+  else COMMAND("cls", bk_handleCls)
   else COMMAND("cd", bk_handleCd)
   else COMMAND("cfmount", bk_handleCFMount)
   else COMMAND("checksum", bk_handleChecksum)
@@ -93,29 +94,30 @@ void handleCommand(char *buffer) {
   else COMMAND("echo", bk_handleEcho)
   else COMMAND("ed", bk_handleEd)
   else COMMAND("env", bk_handleEnv)
-  else COMMAND("exit", handleExit)
-  else COMMAND("fg99", handleFg99)
+  else COMMAND("exit", bk_handleExit)
+  else COMMAND("fg99", bk_handleFg99)
   else COMMAND("goto", bk_handleGoto)
   else COMMAND("if", bk_handleIf)
   else COMMAND("help", bk_handleHelp)
   else COMMAND("history", bk_handleHistory)
-  else COMMAND("load", handleLoad)
+  else COMMAND("load", bk_handleLoad)
   else COMMAND("lvl2", bk_handleLvl2)
   else COMMAND("mkdir", bk_handleMkdir)
+  else COMMAND("palette", bk_handlePalette)
   else COMMAND("protect", bk_handleProtect)
   else COMMAND("pwd", bk_handlePwd)
   else COMMAND("readkey", bk_handleReadkey)
   else COMMAND("rename", bk_handleRename)
   else COMMAND("rmdir", bk_handleRmdir)
   else COMMAND("sysinfo", bk_handleSysInfo)
-  else COMMAND("tipibeeps", playtipi)
+  else COMMAND("tipibeeps", bk_handleTipiBeeps)
   else COMMAND("tipihalt", bk_handleTipiHalt)
   else COMMAND("tipimap", bk_handleTipimap)
   else COMMAND("tipireboot", bk_handleTipiReboot)
   else COMMAND("type", bk_handleType)
   else COMMAND("unprotect", bk_handleUnprotect)
-  else COMMAND("ver", titleScreen)
-  else COMMAND("width", handleWidth)
+  else COMMAND("ver", bk_handleVer)
+  else COMMAND("width", bk_handleWidth)
   else COMMAND("xb", bk_handleXb)
   else if (tok[bk_strlen(tok)-1] == ':') {
     if (scripton) {

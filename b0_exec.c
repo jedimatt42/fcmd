@@ -5,7 +5,7 @@
 #include "b0_exec.h"
 #include "b0_globals.h"
 #include "b1_strutil.h"
-#include "b0_parsing.h"
+#include "b10_parsing.h"
 #include "b0_sams.h"
 
 
@@ -19,9 +19,9 @@ int exec(char* command) {
   if (sams_next_page < sams_total_pages) {
     char stack_command[256];
     bk_strncpy(stack_command, command, 255);
-    handleCommand(stack_command);
+    bk_handleCommand(stack_command);
   } else {
-    handleCommand(command);
+    bk_handleCommand(command);
   }
   api_exec = 0;
   return 0; // maybe pass codes back someday

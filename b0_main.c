@@ -8,7 +8,7 @@
 #include <vdp.h>
 #include <conio.h>
 #include <kscan.h>
-#include "b0_parsing.h"
+#include "b10_parsing.h"
 #include "b0_globals.h"
 #include "b1_strutil.h"
 #include "b2_dsrutil.h"
@@ -26,6 +26,7 @@
 #include "b5_clock.h"
 #include "b4_variables.h"
 #include "b5_prompt.h"
+#include "b7_palette.h"
 
 const char tipibeeps[] = {
   0x04, 0x9f, 0xbf, 0xdf, 0xff, 0x02,
@@ -87,6 +88,9 @@ void main()
   foreground = 15;
   background = 4;
   bk_setupScreen(vdp_type == VDP_9918 ? 40 : 80);
+  if (vdp_type == VDP_F18A) {
+    bk_set_palette(0, 0);
+  }
   pal = bk_isPal();
 
   bk_loadDriveDSRs();
@@ -123,7 +127,7 @@ void main()
     bk_getstr(commandbuf, displayWidth - 3, backspace);
     bk_tputc('\n');
     history_on = 0;
-    handleCommand(commandbuf);
+    bk_handleCommand(commandbuf);
     if (nTitleLine) {
       bk_drawBar();
     }
@@ -164,11 +168,11 @@ int runScript(struct DeviceServiceRoutine* dsr, char* scriptName) {
         }
         // This is a bit brutish, but keeps from having to pass state around
         // close the script before invoking a command
-        volatile int must_close = must_close_command(commandbuf);
+        volatile int must_close = bk_must_close_command(commandbuf);
         if (must_close) {
           bk_dsr_close(dsr, &pab);
         }
-        handleCommand(commandbuf);
+        bk_handleCommand(commandbuf);
         if (must_close) {
           // now re-open and seek in the script to the next line.
           ferr = bk_dsr_open(dsr, &pab, scriptName, DSR_TYPE_INPUT | DSR_TYPE_DISPLAY | DSR_TYPE_VARIABLE | DSR_TYPE_SEQUENTIAL, 0);

@@ -25,9 +25,6 @@ int memcmp(const void *s1, const void *s2, int n);
 // copy a block of memory from src to dest, of cnt bytes. Returns dest.
 void *memcpy(void *dest, const void *src, int cnt);
 
-// set a block of memory at dest to src, of cnt bytes. Returns dest.
-void *memset(void *dest, int src, int cnt);
-
 // returns a pointer to a static string, a number converted as unsigned
 // Not thread safe, don't use from interrupt handlers.
 char *uint2str(unsigned int x);

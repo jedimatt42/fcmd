@@ -5,7 +5,7 @@
 #include "b8_terminal.h"
 #include "commands.h"
 #include "b0_runext.h"
-#include "b0_parsing.h"
+#include "b10_parsing.h"
 #include "b1_strutil.h"
 #include "b2_dsrutil.h"
 #include "b2_lvl2.h"
@@ -102,6 +102,10 @@ int loadExecutable(const char* ext, int* cmd_type) {
     if (path != (char*)-1) {
         char entry[64];
         char *cursor = token_cursor(entry, path, ';');
+        // ensure '.' at end of path entry
+        if (!bk_str_endswith(entry, str2ram("."))) {
+          bk_strcat(entry, str2ram("."));
+        }
 
         while(entry[0]) {
             if (!loadFromPath(ext, entry, cmd_type)) {

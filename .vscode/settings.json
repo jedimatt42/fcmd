@@ -1,6 +1,9 @@
 {
     "files.associations": {
-        "banks.h": "c"
+        "banks.h": "c",
+        "string.h": "c",
+        "strings.h": "c",
+        "b1_strutil.h": "c"
     },
     "C_Cpp.vcFormat.newLine.beforeCatch": false,
     "C_Cpp.vcFormat.newLine.beforeElse": false,

@@ -4,7 +4,7 @@
 #include "banking.h"
 #include "b2_dsrutil.h"
 
-#define APP_VER "1.20"
+#define APP_VER "1.21"
 
 void initGlobals();
 void main();

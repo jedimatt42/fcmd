@@ -60,6 +60,7 @@ int set_text80x30_color_raw() {
     VDP_SET_REGISTER(VDP_REG_SAL, 0x20);
     gSprite = 0x0A00; // to 0x0B00
     VDP_SET_REGISTER(VDP_REG_SDT, 0x02); // sprites can use any of the font patterns.
+    VDP_SET_REGISTER(24 /* palette select */, 0x00);
 
     vdpchar = vdpchar80color;
     scrn_scroll = fast_scrn_scroll_80color;

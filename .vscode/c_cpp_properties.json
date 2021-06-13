@@ -3,12 +3,13 @@
         {
             "name": "ti994a",
             "includePath": [
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/libti99"
             ],
             "defines": [
                 "BANK_STACK_SIZE=10"
             ],
-            "compilerPath": "/home/matthew/dev/tms9900gcc/build/bin/tms9900-gcc",
+            "compilerPath": "/home/matthew/dev/tms9900gcc/bin/tms9900-gcc",
             "cStandard": "c99",
             "cppStandard": "c++17",
             "intelliSenseMode": "clang-x64",
