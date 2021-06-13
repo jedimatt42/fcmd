@@ -89,6 +89,14 @@ void b14Help(char* tok) {
       "ed <filepath>\n\n"
       "Open or create a file in the builtin file editor. Press F7(Aid) in editor for editor details\n"
     );
+  } else if (matchcmd(tok, "palette")) {
+    wraptext("==Palette==\n\n"
+      "palette /r\n"
+      "palette <rgb-0> <rgb-1> ... <rgb-15>\n\n"
+      "Reset or set the first 16 F18A palette registers.\n"
+      "/r - reset to standard TMS9918A palette\n"
+      "<rgb-0..15> - 16 12bit hex value that define the palette colors.\n"
+    );
   } else {
     wraptext("no help for command: ");
     bk_tputs_ram(tok);
