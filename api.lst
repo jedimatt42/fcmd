@@ -49,3 +49,24 @@ tipi_recvmsg
 datetime
 findDsr find_dsr
 parsePathParam parse_path_param
+
+uint2str
+uint2hex
+atoi
+htoi
+strcpy
+strncpy
+strlen
+strcmp
+strcmpi
+indexof
+lindexof
+str_startswith
+str_endswith
+basicToCstr
+strset
+token_cursor next_token
+
+beep
+honk
+

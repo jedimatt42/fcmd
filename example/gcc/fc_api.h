@@ -185,6 +185,24 @@ struct __attribute__((__packed__)) DateTime {
 #define FC_DATETIME 0x611e
 #define FC_FIND_DSR 0x6122
 #define FC_PARSE_PATH_PARAM 0x6126
+#define FC_UINT2STR 0x612a
+#define FC_UINT2HEX 0x612e
+#define FC_ATOI 0x6132
+#define FC_HTOI 0x6136
+#define FC_STRCPY 0x613a
+#define FC_STRNCPY 0x613e
+#define FC_STRLEN 0x6142
+#define FC_STRCMP 0x6146
+#define FC_STRCMPI 0x614a
+#define FC_INDEXOF 0x614e
+#define FC_LINDEXOF 0x6152
+#define FC_STR_STARTSWITH 0x6156
+#define FC_STR_ENDSWITH 0x615a
+#define FC_BASICTOCSTR 0x615e
+#define FC_STRSET 0x6162
+#define FC_NEXT_TOKEN 0x6166
+#define FC_BEEP 0x616a
+#define FC_HONK 0x616e
 
 // function: void fc_tputc(int c)
 DECL_FC_API_CALL(FC_TPUTC, fc_tputc, void, (int c), (c))
@@ -311,5 +329,59 @@ DECL_FC_API_CALL(FC_FIND_DSR, fc_find_dsr, struct DeviceServiceRoutine*, (char* 
 
 // function: void fc_parse_path_param(char* str_in, struct DeviceServiceRoutine** dsr, char* buffer, int requirements)
 DECL_FC_API_CALL(FC_PARSE_PATH_PARAM, fc_parse_path_param, void, (char* str_in, struct DeviceServiceRoutine** dsr, char* buffer, int requirements), (str_in, dsr, buffer, requirements))
+
+// function: char * fc_uint2str(unsigned int x)
+DECL_FC_API_CALL(FC_UINT2STR, fc_uint2str, char *, (unsigned int x), (x))
+
+// function: char * fc_uint2hex(unsigned int x)
+DECL_FC_API_CALL(FC_UINT2HEX, fc_uint2hex, char *, (unsigned int x), (x))
+
+// function: int fc_atoi(char *s)
+DECL_FC_API_CALL(FC_ATOI, fc_atoi, int, (char *s), (s))
+
+// function: int fc_htoi(char* s)
+DECL_FC_API_CALL(FC_HTOI, fc_htoi, int, (char* s), (s))
+
+// function: char * fc_strcpy(char *d, const char *s)
+DECL_FC_API_CALL(FC_STRCPY, fc_strcpy, char *, (char *d, const char *s), (d, s))
+
+// function: char * fc_strncpy(char *dest, char *src, int limit)
+DECL_FC_API_CALL(FC_STRNCPY, fc_strncpy, char *, (char *dest, char *src, int limit), (dest, src, limit))
+
+// function: int fc_strlen(const char *s)
+DECL_FC_API_CALL(FC_STRLEN, fc_strlen, int, (const char *s), (s))
+
+// function: int fc_strcmp(const char *a, const char *b)
+DECL_FC_API_CALL(FC_STRCMP, fc_strcmp, int, (const char *a, const char *b), (a, b))
+
+// function: int fc_strcmpi(const char *a, const char *b)
+DECL_FC_API_CALL(FC_STRCMPI, fc_strcmpi, int, (const char *a, const char *b), (a, b))
+
+// function: int fc_indexof(const char *str, int c)
+DECL_FC_API_CALL(FC_INDEXOF, fc_indexof, int, (const char *str, int c), (str, c))
+
+// function: int fc_lindexof(const char *str, int c, int start)
+DECL_FC_API_CALL(FC_LINDEXOF, fc_lindexof, int, (const char *str, int c, int start), (str, c, start))
+
+// function: int fc_str_startswith(const char *str, const char *prefix)
+DECL_FC_API_CALL(FC_STR_STARTSWITH, fc_str_startswith, int, (const char *str, const char *prefix), (str, prefix))
+
+// function: int fc_str_endswith(const char *str, const char *suffix)
+DECL_FC_API_CALL(FC_STR_ENDSWITH, fc_str_endswith, int, (const char *str, const char *suffix), (str, suffix))
+
+// function: int fc_basicToCstr(const char *str, char *buf)
+DECL_FC_API_CALL(FC_BASICTOCSTR, fc_basicToCstr, int, (const char *str, char *buf), (str, buf))
+
+// function: void fc_strset(char *buffer, int value, int limit)
+DECL_FC_API_CALL(FC_STRSET, fc_strset, void, (char *buffer, int value, int limit), (buffer, value, limit))
+
+// function: char* fc_next_token(char* dst, char* str, int delim)
+DECL_FC_API_CALL(FC_NEXT_TOKEN, fc_next_token, char*, (char* dst, char* str, int delim), (dst, str, delim))
+
+// function: void fc_beep()
+DECL_FC_API_CALL(FC_BEEP, fc_beep, void, (), ())
+
+// function: void fc_honk()
+DECL_FC_API_CALL(FC_HONK, fc_honk, void, (), ())
 
 #endif
