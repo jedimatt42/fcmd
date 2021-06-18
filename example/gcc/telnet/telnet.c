@@ -157,6 +157,14 @@ int main(char* args) {
     int key = fc_kscan(5);
 
     if (KSCAN_STATUS & KSCAN_MASK) {
+      if (key == 0x01) {
+        // the F7 key
+        fc_tputs("Disconnecting...");
+        fc_tcp_close(SOCKET);
+        fc_tputs("\n");
+        return 0;
+      }
+
       // terminal may need to transform this to
       // multiple characters.
       unsigned char keybuf[4];
