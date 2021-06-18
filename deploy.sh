@@ -15,6 +15,7 @@ if [ -z ${CLASSIC99_DSK1_DIR:-} ]; then
 else
   # Copy stuff to DSK1 for use with CLASSIC99 FIAD storage
   cp example/gcc/ftp/FTP $CLASSIC99_DSK1_DIR
+  cp example/gcc/telnet/TELNET $CLASSIC99_DSK1_DIR
   cp example/gcc/hello/HELLO $CLASSIC99_DSK1_DIR
   cp example/gcc/charset/CHARSET $CLASSIC99_DSK1_DIR
   cp example/gcc/ntscpal/NTSCPAL $CLASSIC99_DSK1_DIR
@@ -31,6 +32,7 @@ else
   scp FC/FCMD tipi@${TIPI_HOST_NAME}:/home/tipi/tipi_disk/FC/FCMD
   scp FC/FCMDXB tipi@${TIPI_HOST_NAME}:/home/tipi/tipi_disk/FC/FCMDXB
   scp example/gcc/ftp/FTP tipi@${TIPI_HOST_NAME}:/home/tipi/tipi_disk/FC/BIN/
+  scp example/gcc/telnet/TELNET tipi@${TIPI_HOST_NAME}:/home/tipi/tipi_disk/FC/BIN/
   scp example/gcc/say/SAY tipi@${TIPI_HOST_NAME}:/home/tipi/tipi_disk/FC/BIN/
   scp example/gcc/say/SAMPLE tipi@${TIPI_HOST_NAME}:/home/tipi/tipi_disk/FC/BIN/
 fi
