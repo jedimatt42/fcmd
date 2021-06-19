@@ -39,5 +39,24 @@
 #define JOY_UP		0x04
 #define JOY_DOWN	0xfc
 
+// BASIC mode keyboard codes
+#define KEY_QUIT 145
+#define KEY_SAVE 147
+#define KEY_CTRL_R 146
+#define KEY_CTRL_I 137
+#define KEY_TAB 137
+#define KEY_LEFT 8
+#define KEY_RIGHT 9
+#define KEY_DOWN 10
+#define KEY_UP 11
+#define KEY_AID 1
+#define KEY_DELETE 3
+#define KEY_INSERT 4
+#define KEY_ERASE 7
+#define KEY_BACK 15
+#define KEY_SPACE 0x20
+#define KEY_TILDE 0x7E
+#define KEY_ENTER 13
+
 
 #endif

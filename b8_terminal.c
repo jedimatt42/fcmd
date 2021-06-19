@@ -22,8 +22,6 @@ void cursorGoto(int x, int y);
 void eraseDisplay(int opt);
 void eraseLine(int opt);
 void scrollUp(int lc);
-void sendTermCoord();
-void sendTermType();
 void setColors();
 void doSGRCommand();
 void doCsiCommand(unsigned char c);
@@ -41,6 +39,12 @@ int bs_idx;
 
 unsigned char cursor_store_x;
 unsigned char cursor_store_y;
+
+identify_callback identify_cb = 0;
+
+void set_identify_hook(identify_callback cb) {
+  identify_cb = cb;
+}
 
 #define STAGE_OPEN 0
 #define STAGE_ESC 1
@@ -365,6 +369,11 @@ void doCsiCommand(unsigned char c) {
       doSGRCommand();
       break;
     case 'n': // some introspection
+      if (getParamA(0) == 6) {
+        if (identify_cb) {
+          identify_cb(0x8000 | wherex() << 8 | wherey());
+        }
+      }
       break;
     case 's': // store cursor, no params
       cursor_store_x = wherex();
@@ -374,6 +383,9 @@ void doCsiCommand(unsigned char c) {
       tgotoxy(cursor_store_x, cursor_store_y);
       break;
     case 'c': // identify term type.
+      if (identify_cb) {
+        identify_cb(0);
+      }
       break;
   }
 }
@@ -404,6 +416,9 @@ int doEscCommand(unsigned char c) {
         esc_state = ESC_SIX;
         break;
       case 'Z': // vt52 ident
+        if (identify_cb) {
+          identify_cb(52);
+        }
         break;
       case 'Y': // vt52 goto
         esc_state = ESC_Y;
@@ -505,4 +520,8 @@ void tputs_ram(const char* str) {
   while(*str) {
     tputc(*str++);
   }
+}
+
+void vdp_setchar(int pAddr, int ch) {
+  vdpchar(pAddr, ch);
 }

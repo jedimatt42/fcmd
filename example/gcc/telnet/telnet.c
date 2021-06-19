@@ -1,5 +1,6 @@
 #include <fc_api.h>
 #include <kscan.h>
+#include <ioports.h>
 
 #define SOCKET 0
 
@@ -33,7 +34,11 @@ void send_window_size();
 
 
 void terminalKey(unsigned char* buf, int* len) {
-  // Length must be set to 1 before calling
+  // scan code is in buf[0] and len is 1.
+  //
+  // buf is a 4 byte array.
+  // the buf array and len can be modified to send CSI/ESC
+  // terminal key commands instead.
 
   // translate output keys into correct terminal keyboard commands
   // TI control keys ctrl-a = 129 ---> ctrl-z = 154
@@ -43,33 +48,30 @@ void terminalKey(unsigned char* buf, int* len) {
   }
 
   switch (buf[0]) {
-  case 1: // tab
-    buf[0] = 9;
+  case KEY_TAB: // tab
+    buf[0] = '\t';
     break;
-  case 8: // left-arrrow
-    /*
+  case KEY_LEFT: // left-arrrow
     buf[0] = 27; // esc
     buf[1] = 'D';
     *len = 2;
-    */
-    buf[0] = '\b';
     break;
-  case 9: // right-arrow
+  case KEY_RIGHT: // right-arrow
     buf[0] = 27;
     buf[1] = 'C';
     *len = 2;
     break;
-  case 10: // down-arrow
+  case KEY_DOWN: // down-arrow
     buf[0] = 27;
     buf[1] = 'B';
     *len = 2;
     break;
-  case 11: // up-arrow
+  case KEY_UP: // up-arrow
     buf[0] = 27;
     buf[1] = 'A';
     *len = 2;
     break;
-  case 15: // F-9
+  case KEY_BACK: // F-9
     buf[0] = 27;
     break;
   default:
@@ -255,6 +257,63 @@ unsigned char take_char(int* status) {
   }
 }
 
+void term_identify(int flag) {
+  if (flag == 1) {
+    unsigned char buf[8];
+    buf[0] = 27;
+    fc_strcpy(buf + 1, "[?1;0c");
+    fc_tcp_send_chars(SOCKET, buf, 7);
+  } else if (flag == 52) {
+    unsigned char buf[3];
+    buf[0] = 27;
+    buf[1] = '/';
+    buf[2] = 'Z';
+    fc_tcp_send_chars(SOCKET, buf, 3);
+  } else if (flag & 0x8000) {
+    unsigned int x = (((unsigned int)flag) & 0x7F00) >> 8;
+    unsigned int y = (((unsigned int)flag) & 0x00FF);
+    unsigned char buf[30];
+    buf[0] = 27;
+    buf[1] = '[';
+    unsigned char* cursor = buf + 2;
+    fc_strcpy(cursor, fc_uint2str(y));
+    cursor = buf + fc_strlen(buf);
+    *cursor = ';';
+    cursor++;
+    fc_strcpy(cursor, fc_uint2str(x));
+    cursor = buf + fc_strlen(buf);
+    *cursor = 'R';
+    cursor++;
+    *cursor = 0;
+    fc_tcp_send_chars(SOCKET, buf, fc_strlen(buf));
+  }
+}
+
+unsigned blinkenLights = 0;
+unsigned char cursor_char = 0;
+
+void unblink() {
+  if (cursor_char != 0) {
+    fc_vdp_setchar(fc_vdp_get_cursor_addr(), cursor_char);
+    cursor_char = 0;
+  }
+}
+
+void blink() {
+  if ((blinkenLights % 100) < 50) {
+    if (cursor_char == 0) {
+      int here = fc_vdp_get_cursor_addr();
+      VDP_SET_ADDRESS(here);
+      __asm__("NOP");
+      cursor_char = VDPRD;
+      fc_vdp_setchar(here, 219);
+    }
+  }
+  else {
+    unblink();
+  }
+}
+
 int main(char* args) {
   unsigned char result = connect(args);
   if (result != 255) {
@@ -263,12 +322,16 @@ int main(char* args) {
   } else {
     fc_tputs("Connected.\n");
   }
+  fc_set_identify_hook(term_identify);
 
   while( 1 ) {
+    blinkenLights++;
+    blink();
     int key = fc_kscan(5);
 
     if (KSCAN_STATUS & KSCAN_MASK) {
-      if (key == 0x01) {
+      unblink();
+      if (key == KEY_AID) {
         // the F7 key
         fc_tputs("Disconnecting...");
         fc_tcp_close(SOCKET);

@@ -141,6 +141,14 @@ struct __attribute__((__packed__)) DateTime {
 #define PR_WILDCARD 0x0002
 
 /*
+  response hook for terminal CSI commands that
+  transmit back to server. For use fc_set_identify_hook.
+  If flag is 1, send ANSI identify code, if 52, send vt52 code
+ */
+typedef void (*identify_callback)(int flag);
+
+
+/*
   Rom address tables
 */
 #define FC_TPUTC 0x6082
@@ -203,6 +211,9 @@ struct __attribute__((__packed__)) DateTime {
 #define FC_NEXT_TOKEN 0x6166
 #define FC_BEEP 0x616a
 #define FC_HONK 0x616e
+#define FC_SET_IDENTIFY_HOOK 0x6172
+#define FC_VDP_SETCHAR 0x6176
+#define FC_VDP_GET_CURSOR_ADDR 0x617a
 
 // function: void fc_tputc(int c)
 DECL_FC_API_CALL(FC_TPUTC, fc_tputc, void, (int c), (c))
@@ -383,5 +394,14 @@ DECL_FC_API_CALL(FC_BEEP, fc_beep, void, (), ())
 
 // function: void fc_honk()
 DECL_FC_API_CALL(FC_HONK, fc_honk, void, (), ())
+
+// function: void fc_set_identify_hook(identify_callback cb)
+DECL_FC_API_CALL(FC_SET_IDENTIFY_HOOK, fc_set_identify_hook, void, (identify_callback cb), (cb))
+
+// function: void fc_vdp_setchar(int pAddr, int ch)
+DECL_FC_API_CALL(FC_VDP_SETCHAR, fc_vdp_setchar, void, (int pAddr, int ch), (pAddr, ch))
+
+// function: unsigned int fc_vdp_get_cursor_addr()
+DECL_FC_API_CALL(FC_VDP_GET_CURSOR_ADDR, fc_vdp_get_cursor_addr, unsigned int, (), ())
 
 #endif

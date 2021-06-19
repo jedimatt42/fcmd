@@ -141,5 +141,13 @@ struct __attribute__((__packed__)) DateTime {
 #define PR_WILDCARD 0x0002
 
 /*
+  response hook for terminal CSI commands that
+  transmit back to server. For use fc_set_identify_hook.
+  If flag is 1, send ANSI identify code, if 52, send vt52 code
+ */
+typedef void (*identify_callback)(int flag);
+
+
+/*
   Rom address tables
 */

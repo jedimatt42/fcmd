@@ -69,4 +69,6 @@ token_cursor next_token
 
 beep
 honk
-
+set_identify_hook
+vdp_setchar
+conio_getvram vdp_get_cursor_addr
