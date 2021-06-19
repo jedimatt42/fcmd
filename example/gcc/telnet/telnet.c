@@ -3,18 +3,33 @@
 
 #define SOCKET 0
 
+// IAC code
+#define CMD 0xff
+
+// IAC request codes
 #define DO 0xfd
 #define WONT 0xfc
 #define WILL 0xfb
 #define DONT 0xfe
-#define CMD 0xff
-#define CMD_ECHO 1
-#define CMD_WINDOW_SIZE 31
+#define SUB 250
+#define SE 240
 
-// state machine variables
-int mode;
-unsigned char command;
-unsigned char param;
+// IAC param codes
+#define CMD_ECHO 1
+#define CMD_TERMINAL_TYPE 24
+#define CMD_WINDOW_SIZE 31
+#define SEND 1
+#define IS 0
+
+unsigned char tcp_buf[32];
+int tcp_buf_idx = 0;
+int tcp_buf_len = 0;
+
+unsigned char take_char(int* status);
+unsigned char take_char_blocking();
+
+void send_termtype();
+void send_window_size();
 
 
 void terminalKey(unsigned char* buf, int* len) {
@@ -62,51 +77,136 @@ void terminalKey(unsigned char* buf, int* len) {
   }
 }
 
-
-void clear_cmd_state() {
-  mode = 0;
-  command = 0;
-  param = 0;
-}
-
 int send_cmd(unsigned char req, unsigned char param) {
   unsigned char cmdbuf[3];
   cmdbuf[0] = CMD;
   cmdbuf[1] = req;
   cmdbuf[2] = param;
-
   return fc_tcp_send_chars(0, cmdbuf, 3);
 }
 
-void process(int bufsize, unsigned char* buffer) {
-  for(int i=0; i<bufsize; i++) {
-    unsigned char current = buffer[i];
-    if (mode == CMD) {
-      if (command == 0) {
-        command = current;
-      } else {
-        switch (command) {
-          case DO:
-            send_cmd(WONT, current);
-            break;
-          case DONT:
-            send_cmd(WONT, current);
-            break;
-          case WILL:
-            break;
-          case WONT:
-            break;
-          default:
-            break;
-        }
-        clear_cmd_state();
-      }
+void handle_do_cmd(unsigned char request) {
+  // fc_tputs("received: DO ");
+  // fc_tputs(fc_uint2str(request));
+  // fc_tputc('\n');
+  switch(request) {
+    case CMD_TERMINAL_TYPE:
+      send_cmd(WILL, CMD_TERMINAL_TYPE);
+      break;
+    case CMD_WINDOW_SIZE:
+      send_cmd(WILL, CMD_WINDOW_SIZE);
+      send_window_size();
+      break;
+    default:
+      send_cmd(WONT, request);
+  }
+}
+
+void handle_dont_cmd(unsigned char request) {
+  // fc_tputs("received: DONT ");
+  // fc_tputs(fc_uint2str(request));
+  // fc_tputc('\n');
+  send_cmd(WONT, request);
+}
+
+void handle_will_cmd(unsigned char request) {
+  // fc_tputs("received: WILL ");
+  // fc_tputs(fc_uint2str(request));
+  // fc_tputc('\n');
+}
+
+void handle_wont_cmd(unsigned char request) {
+  // fc_tputs("received: WONT ");
+  // fc_tputs(fc_uint2str(request));
+  // fc_tputc('\n');
+}
+
+void handle_sub_cmd(unsigned char request) {
+  // fc_tputs("received: SUB ");
+  // fc_tputs(fc_uint2str(request));
+  // fc_tputc('\n');
+  if (request == CMD_TERMINAL_TYPE) {
+    unsigned char send = take_char_blocking();
+    unsigned char iac = take_char_blocking(); // consume IAC
+    unsigned char se = take_char_blocking(); // consume SE
+    if (send == SEND && iac == CMD && se == SE) {
+      send_termtype();
+    }
+  }
+}
+
+void send_termtype() {
+  char termtype[10];
+  termtype[0] = CMD;
+  termtype[1] = SUB;
+  termtype[2] = CMD_TERMINAL_TYPE;
+  termtype[3] = IS;
+  termtype[4] = 'A';
+  termtype[5] = 'N';
+  termtype[6] = 'S';
+  termtype[7] = 'I';
+  termtype[8] = CMD;
+  termtype[9] = SE;
+  fc_tcp_send_chars(SOCKET, termtype, 10);
+}
+
+void send_window_size() {
+  struct DisplayInformation d_info;
+  fc_display_info(&d_info);
+
+  char window_size[9];
+  window_size[0] = CMD;
+  window_size[1] = SUB;
+  window_size[2] = CMD_WINDOW_SIZE;
+  window_size[3] = 0;
+  window_size[4] = d_info.displayWidth;
+  window_size[5] = 0;
+  window_size[6] = d_info.displayHeight;
+  window_size[7] = CMD;
+  window_size[8] = SE;
+  fc_tcp_send_chars(SOCKET, window_size, 9);
+}
+
+unsigned char take_char_blocking() {
+  int status = 0;
+  unsigned char result = 0;
+  while(status == 0) {
+    result = take_char(&status);
+  }
+  return result;
+}
+
+void handle_iac() {
+  unsigned char cmd = take_char_blocking();
+  unsigned char request = take_char_blocking();
+  switch(cmd) {
+    case DO:
+      handle_do_cmd(request);
+      break;
+    case DONT:
+      handle_dont_cmd(request);
+      break;
+    case WILL:
+      handle_will_cmd(request);
+      break;
+    case WONT:
+      handle_wont_cmd(request);
+      break;
+    case SUB:
+      handle_sub_cmd(request);
+      break;
+  }
+}
+
+
+void process() {
+  int status;
+  unsigned char current = take_char(&status);
+  if (status) {
+    if (current == CMD) {
+      handle_iac();
     } else {
-      if (current == CMD) {
-        mode = CMD;
-      } else {
-        fc_tputc(current);
-      }
+      fc_tputc(current);
     }
   }
 }
@@ -141,10 +241,21 @@ unsigned char connect(char* args) {
   return fc_tcp_connect(SOCKET, hostname, port);
 }
 
+unsigned char take_char(int* status) {
+  if ((tcp_buf_len - tcp_buf_idx) == 0) {
+    tcp_buf_idx = 0;
+    tcp_buf_len = fc_tcp_read_socket(SOCKET, tcp_buf, 32);
+  }
+  if (tcp_buf_len) {
+    *status = 1;
+    return tcp_buf[tcp_buf_idx++];
+  } else {
+    *status = 0;
+    return 0;
+  }
+}
 
 int main(char* args) {
-  clear_cmd_state();
-
   unsigned char result = connect(args);
   if (result != 255) {
     fc_tputs("Error connecting\n");
@@ -179,11 +290,7 @@ int main(char* args) {
         return 0;
       }
     } else {
-      char buffer[512];
-      int bufsize = fc_tcp_read_socket(SOCKET, buffer, 512);
-      if (bufsize) {
-        process(bufsize, buffer);
-      }
+      process();
     }
   }
 }
