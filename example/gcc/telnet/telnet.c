@@ -289,7 +289,9 @@ void term_identify(int flag) {
   }
 }
 
+// iteration counter used by blink() routine.
 unsigned blinkenLights = 0;
+// storage for character under cursor.
 unsigned char cursor_char = 0;
 
 void unblink() {
@@ -329,8 +331,8 @@ int main(char* args) {
     blink();
     int key = fc_kscan(5);
 
+    unblink();
     if (KSCAN_STATUS & KSCAN_MASK) {
-      unblink();
       if (key == KEY_AID) {
         // the F7 key
         fc_tputs("Disconnecting...");
