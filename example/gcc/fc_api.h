@@ -214,6 +214,8 @@ typedef void (*identify_callback)(int flag);
 #define FC_SET_IDENTIFY_HOOK 0x6172
 #define FC_VDP_SETCHAR 0x6176
 #define FC_VDP_GET_CURSOR_ADDR 0x617a
+#define FC_UI_DROP_DOWN 0x617e
+#define FC_UI_GOTOXY 0x6182
 
 // function: void fc_tputc(int c)
 DECL_FC_API_CALL(FC_TPUTC, fc_tputc, void, (int c), (c))
@@ -403,5 +405,11 @@ DECL_FC_API_CALL(FC_VDP_SETCHAR, fc_vdp_setchar, void, (int pAddr, int ch), (pAd
 
 // function: unsigned int fc_vdp_get_cursor_addr()
 DECL_FC_API_CALL(FC_VDP_GET_CURSOR_ADDR, fc_vdp_get_cursor_addr, unsigned int, (), ())
+
+// function: void fc_ui_drop_down(int linecount)
+DECL_FC_API_CALL(FC_UI_DROP_DOWN, fc_ui_drop_down, void, (int linecount), (linecount))
+
+// function: void fc_ui_gotoxy(int x, int y)
+DECL_FC_API_CALL(FC_UI_GOTOXY, fc_ui_gotoxy, void, (int x, int y), (x, y))
 
 #endif

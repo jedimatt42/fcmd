@@ -5,6 +5,7 @@
 #include "b8_getstr.h"
 #include "b0_globals.h"
 #include "b10_detect_vdp.h"
+#include "b13_honk.h"
 #include <conio.h>
 #include <string.h>
 
@@ -44,6 +45,10 @@ identify_callback identify_cb = 0;
 
 void set_identify_hook(identify_callback cb) {
   identify_cb = cb;
+}
+
+identify_callback get_identify_hook() {
+  return identify_cb;
 }
 
 #define STAGE_OPEN 0
@@ -461,6 +466,9 @@ int doEscCommand(unsigned char c) {
 
 void charout(unsigned char ch) {
   switch (ch) {
+    case 8: // BELL
+      bk_beep();
+      break;
     case '\n': // line feed
       conio_x=0;
       inc_row();

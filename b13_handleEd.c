@@ -401,7 +401,7 @@ static void dropDownSpace(int y) {
   BAD_VDPCHAR(0xb3);
 }
 
-static void dropDown(int linecount) {
+void dropDown(int linecount) {
   for(int i=0; i<linecount; i++) {
     dropDownSpace(i);
   }

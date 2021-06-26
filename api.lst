@@ -72,3 +72,5 @@ honk
 set_identify_hook
 vdp_setchar
 conio_getvram vdp_get_cursor_addr
+dropDown ui_drop_down
+cursorGoto ui_gotoxy

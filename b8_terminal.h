@@ -16,8 +16,10 @@ typedef void (*identify_callback)(int flag);
 
 void initTerminal();
 void set_identify_hook(identify_callback cb);
+identify_callback get_identify_hook();
 void tputc(int c);
 void tputs_ram(const char* str);
+void cursorGoto(int x, int y);
 
 extern unsigned char foreground;
 extern unsigned char background;
@@ -25,9 +27,11 @@ extern unsigned char background;
 
 DECLARE_BANKED_VOID(initTerminal, BANK(8), bk_initTerminal, (), ())
 DECLARE_BANKED_VOID(set_identify_hook, BANK(8), bk_set_identify_hook, (identify_callback cb), (cb))
+DECLARE_BANKED(get_identify_hook, BANK(8), identify_callback, bk_get_identify_hook, (), ())
 DECLARE_BANKED_VOID(tputc, BANK(8), bk_tputc, (int c), (c))
 DECLARE_BANKED_VOID(tputs_ram, BANK(8), bk_tputs_ram, (const char* str), (str))
 DECLARE_BANKED_VOID(gplvdp, BANK(8), bk_gplvdp, (int vect, int adr, int cnt), (vect, adr, cnt))
+DECLARE_BANKED_VOID(cursorGoto, BANK(8), bk_cursorGoto, (int x, int y), (x, y))
 
 DECLARE_BANKED(bgcolor, BANK(8), unsigned int, bk_bgcolor, (unsigned int color), (color))
 DECLARE_BANKED(textcolor, BANK(8), unsigned int, bk_textcolor, (unsigned int color), (color))
