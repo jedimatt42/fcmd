@@ -1,6 +1,7 @@
 #include <fc_api.h>
 #include <kscan.h>
 #include <ioports.h>
+#include "menu.h"
 
 #define SOCKET 0
 
@@ -22,7 +23,8 @@
 #define SEND 1
 #define IS 0
 
-unsigned char tcp_buf[32];
+#define READ_BUF_SIZE 128
+unsigned char tcp_buf[READ_BUF_SIZE];
 int tcp_buf_idx = 0;
 int tcp_buf_len = 0;
 
@@ -52,24 +54,29 @@ void terminalKey(unsigned char* buf, int* len) {
     buf[0] = '\t';
     break;
   case KEY_LEFT: // left-arrrow
-    buf[0] = 27; // esc
-    buf[1] = 'D';
-    *len = 2;
+    // buf[0] = 27; // esc
+    // buf[1] = '[';
+    // buf[2] = 'D';
+    // *len = 3;
+    buf[0] = 8;
     break;
   case KEY_RIGHT: // right-arrow
     buf[0] = 27;
-    buf[1] = 'C';
-    *len = 2;
+    buf[1] = '[';
+    buf[2] = 'C';
+    *len = 3;
     break;
   case KEY_DOWN: // down-arrow
     buf[0] = 27;
-    buf[1] = 'B';
-    *len = 2;
+    buf[1] = '[';
+    buf[2] = 'B';
+    *len = 3;
     break;
   case KEY_UP: // up-arrow
     buf[0] = 27;
-    buf[1] = 'A';
-    *len = 2;
+    buf[1] = '[';
+    buf[2] = 'A';
+    *len = 3;
     break;
   case KEY_BACK: // F-9
     buf[0] = 27;
@@ -246,7 +253,7 @@ unsigned char connect(char* args) {
 unsigned char take_char(int* status) {
   if ((tcp_buf_len - tcp_buf_idx) == 0) {
     tcp_buf_idx = 0;
-    tcp_buf_len = fc_tcp_read_socket(SOCKET, tcp_buf, 32);
+    tcp_buf_len = fc_tcp_read_socket(SOCKET, tcp_buf, READ_BUF_SIZE);
   }
   if (tcp_buf_len) {
     *status = 1;
@@ -316,6 +323,11 @@ void blink() {
   }
 }
 
+void disconnect() {
+  fc_tcp_close(SOCKET);
+  fc_tputs("Disconnected.\n");
+}
+
 int main(char* args) {
   unsigned char result = connect(args);
   if (result != 255) {
@@ -334,11 +346,11 @@ int main(char* args) {
     unblink();
     if (KSCAN_STATUS & KSCAN_MASK) {
       if (key == KEY_AID) {
-        // the F7 key
-        fc_tputs("Disconnecting...");
-        fc_tcp_close(SOCKET);
-        fc_tputs("\n");
-        return 0;
+        int choice = show_menu();
+        if (choice == KEY_QUIT) {
+          disconnect();
+          return 0;
+        }
       }
 
       // terminal may need to transform this to
@@ -350,8 +362,7 @@ int main(char* args) {
       terminalKey(keybuf, &keylen);
 
       if (!fc_tcp_send_chars(SOCKET, keybuf, keylen)) {
-        fc_tcp_close(SOCKET);
-        fc_tputs("Disconnected.\n");
+        disconnect();
         return 0;
       }
     } else {
