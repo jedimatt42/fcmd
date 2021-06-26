@@ -37,11 +37,20 @@ void handleExecutable(char *ext)
     }
 
     if (cmd_type == BIN) {
+        identify_callback old_hook = bk_get_identify_hook();
         int restoreDisplay = *(volatile int*)0xA004;
+        int old_nTitleLine = nTitleLine;
+        if (restoreDisplay != 0xFCFC) {
+            // turn bar off, cause app is using the full screen.
+            nTitleLine = 0;
+            bk_setupScreen(displayWidth);
+        }
         // Go to bank 0 to actually launch so API tables are visible.
         err = bk_runExecutable(ext);
 
+        bk_set_identify_hook(old_hook);
         if (restoreDisplay != 0xFCFC) {
+            nTitleLine = old_nTitleLine;
             bk_setupScreen(displayWidth);
         }
 
@@ -133,22 +142,24 @@ int prepareMemory() {
     return 0;
 }
 
+void setDsrAndPath(const char* ext, const char* entry, struct DeviceServiceRoutine** dsr, char* path) {
+    char fullname[256];
+    fullname[0] = 0;
+    if (entry != 0) {
+        bk_strcpy(fullname, entry);
+    }
+    bk_strcat(fullname, ext);
+    bk_parsePathParam(fullname, dsr, path, PR_REQUIRED);
+}
+
 int loadFromPath(const char *ext, const char *entry, int* cmd_type)
 {
     struct DeviceServiceRoutine *dsr = 0;
     char path[256];
 
-    {
-        char fullname[256];
-        fullname[0] = 0;
-        if (entry != 0) {
-            bk_strcpy(fullname, entry);
-        }
-        bk_strcat(fullname, ext);
-        bk_parsePathParam(fullname, &dsr, path, PR_REQUIRED);
-        if (!dsr) {
-            return 1;
-        }
+    setDsrAndPath(ext, entry, &dsr, path);
+    if (!dsr) {
+        return 1;
     }
 
     if (bk_runScript(dsr, path)) {
