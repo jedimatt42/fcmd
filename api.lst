@@ -74,3 +74,11 @@ vdp_setchar
 conio_getvram vdp_get_cursor_addr
 dropDown ui_drop_down
 cursorGoto ui_gotoxy
+
+speech_reset
+detect_speech
+say_vocab
+say_data
+speech_start
+speech_continue
+speech_wait

@@ -147,6 +147,13 @@ struct __attribute__((__packed__)) DateTime {
  */
 typedef void (*identify_callback)(int flag);
 
+/*
+  speech LPC code tracking cursor structure
+ */
+struct __attribute__((__packed__)) LpcPlaybackCtx {
+    char* addr;
+    int remaining;
+};
 
 /*
   Rom address tables
@@ -216,6 +223,13 @@ typedef void (*identify_callback)(int flag);
 #define FC_VDP_GET_CURSOR_ADDR 0x617a
 #define FC_UI_DROP_DOWN 0x617e
 #define FC_UI_GOTOXY 0x6182
+#define FC_SPEECH_RESET 0x6186
+#define FC_DETECT_SPEECH 0x618a
+#define FC_SAY_VOCAB 0x618e
+#define FC_SAY_DATA 0x6192
+#define FC_SPEECH_START 0x6196
+#define FC_SPEECH_CONTINUE 0x619a
+#define FC_SPEECH_WAIT 0x619e
 
 // function: void fc_tputc(int c)
 DECL_FC_API_CALL(FC_TPUTC, fc_tputc, void, (int c), (c))
@@ -411,5 +425,26 @@ DECL_FC_API_CALL(FC_UI_DROP_DOWN, fc_ui_drop_down, void, (int linecount), (linec
 
 // function: void fc_ui_gotoxy(int x, int y)
 DECL_FC_API_CALL(FC_UI_GOTOXY, fc_ui_gotoxy, void, (int x, int y), (x, y))
+
+// function: void fc_speech_reset()
+DECL_FC_API_CALL(FC_SPEECH_RESET, fc_speech_reset, void, (), ())
+
+// function: int fc_detect_speech()
+DECL_FC_API_CALL(FC_DETECT_SPEECH, fc_detect_speech, int, (), ())
+
+// function: void fc_say_vocab(int phrase_addr)
+DECL_FC_API_CALL(FC_SAY_VOCAB, fc_say_vocab, void, (int phrase_addr), (phrase_addr))
+
+// function: void fc_say_data(const char* addr, int len)
+DECL_FC_API_CALL(FC_SAY_DATA, fc_say_data, void, (const char* addr, int len), (addr, len))
+
+// function: void fc_speech_start(struct LpcPlaybackCtx* ctx)
+DECL_FC_API_CALL(FC_SPEECH_START, fc_speech_start, void, (struct LpcPlaybackCtx* ctx), (ctx))
+
+// function: void fc_speech_continue(struct LpcPlaybackCtx* ctx)
+DECL_FC_API_CALL(FC_SPEECH_CONTINUE, fc_speech_continue, void, (struct LpcPlaybackCtx* ctx), (ctx))
+
+// function: void fc_speech_wait()
+DECL_FC_API_CALL(FC_SPEECH_WAIT, fc_speech_wait, void, (), ())
 
 #endif

@@ -147,6 +147,13 @@ struct __attribute__((__packed__)) DateTime {
  */
 typedef void (*identify_callback)(int flag);
 
+/*
+  speech LPC code tracking cursor structure
+ */
+struct __attribute__((__packed__)) LpcPlaybackCtx {
+    char* addr;
+    int remaining;
+};
 
 /*
   Rom address tables

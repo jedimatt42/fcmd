@@ -1,6 +1,8 @@
 #ifndef _SPEECH_H
 #define _SPEECH_H 1
 
+#include "banking.h"
+
 #define SPCHRD    *((volatile unsigned char*)0x9000)
 #define SPCHWT		*((volatile unsigned char*)0x9400)
 
@@ -64,6 +66,15 @@ void speech_continue(struct LpcPlaybackCtx* ctx);
  * Wait for speech to finish producing the current phrase.
  */
 void speech_wait();
+
+
+DECLARE_BANKED_VOID(speech_reset, BANK(12), bk_speech_reset, (), ())
+DECLARE_BANKED(detect_speech, BANK(12), int, bk_detect_speech, (), ())
+DECLARE_BANKED_VOID(say_vocab, BANK(12), bk_say_vocab, (int phrase_addr), (phrase_addr))
+DECLARE_BANKED_VOID(say_data, BANK(12), bk_say_data, (const char* addr, int len), (addr, len))
+DECLARE_BANKED_VOID(speech_start, BANK(12), bk_speech_start, (struct LpcPlaybackCtx* ctx), (ctx))
+DECLARE_BANKED_VOID(speech_continue, BANK(12), bk_speech_continue, (struct LpcPlaybackCtx* ctx), (ctx))
+DECLARE_BANKED_VOID(speech_wait, BANK(12), bk_speech_wait, (), ())
 
 
 /*

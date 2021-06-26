@@ -1,5 +1,4 @@
 #include "fc_api.h"
-#include "speech.h"
 
 // ------------ borrowed from libti99 --------------
 // Read Data
@@ -73,9 +72,9 @@ void __attribute__((noinline)) load_sample(char* fname_buffer, struct DeviceServ
 
 void __attribute__((noinline)) play_sample() {
   if (sample_len > 0) {
-    speech_reset();
-    say_data(sample, sample_len);
-    speech_wait();
+    fc_speech_reset();
+    fc_say_data(sample, sample_len);
+    fc_speech_wait();
   }
 }
 
@@ -92,7 +91,7 @@ int main(char* args) {
     if (!sample_len) {
       fc_tputs("Error: No speech data loaded\n");
     } else
-    if (!detect_speech()) {
+    if (!fc_detect_speech()) {
       fc_tputs("Error: No speech synthesizer detected\n");
     } else {
       play_sample();
