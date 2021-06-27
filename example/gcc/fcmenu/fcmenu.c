@@ -79,7 +79,7 @@ int main(char* args) {
   while(entry == 0) {
     entry = pickEntry();
     if (((int)entry) == 0xFFFF) {
-      return 0;
+      break;
     } else {
       if (((int)entry) != 0) {
         fc_exec(entry->command);
@@ -89,6 +89,7 @@ int main(char* args) {
       }
     }
   }
+  fc_exec("CLS");
   return 0;
 }
 
@@ -123,12 +124,14 @@ void layoutMenu(int entry_offset) {
 struct MenuEntry* pickEntry() {
   int limit = 10 > entry_max ? entry_max : 10;
   unsigned int key = fc_kscan(5);
-  if (key == KEY_BACK) {
-    return (struct MenuEntry*) 0xFFFF;
-  }
-  for(int i = entry_idx; i<limit; i++) {
-    if (entries[i].key == key) {
-      return &entries[i];
+  if (KSCAN_STATUS & KSCAN_MASK) {
+    if (key == KEY_BACK) {
+      return (struct MenuEntry*) 0xFFFF;
+    }
+    for(int i = entry_idx; i<limit; i++) {
+      if (entries[i].key == key) {
+        return &entries[i];
+      }
     }
   }
   return 0;
