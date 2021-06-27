@@ -15,7 +15,7 @@ int entry_max;
 struct MenuEntry entries[100];
 
 void drawBackdrop();
-void layoutMenu(int entry_offset);
+void layoutMenu();
 struct MenuEntry* pickEntry();
 
 int main(char* args) {
@@ -73,7 +73,7 @@ int main(char* args) {
   fc_dsr_close(dsr, &pab);
 
   drawBackdrop();
-  layoutMenu(entry_idx);
+  layoutMenu();
 
   struct MenuEntry* entry = 0;
   while(entry == 0) {
@@ -85,7 +85,7 @@ int main(char* args) {
         fc_exec(entry->command);
         entry = 0;
         drawBackdrop();
-        layoutMenu(entry_idx);
+        layoutMenu();
       }
     }
   }
@@ -102,21 +102,35 @@ void drawBackdrop() {
   fc_tputs(" FCMenu v1.0 ");
 }
 
-void layoutMenu(int entry_offset) {
+void layoutMenu() {
   int y = 3;
-  int limit = 10 > entry_max ? entry_max : 10;
+  int disp_limit = dinfo.displayWidth == 40 ? 20 : 40;
+  int limit = disp_limit > entry_max ? entry_max : disp_limit;
+  int column = 1;
+
   for(int i = entry_idx; i<limit; i++) {
-    fc_ui_gotoxy(1, y);
+    int itemcount = i - entry_idx;
+    if (itemcount >= 30) {
+      column = 61;
+    } else if (itemcount >= 20) {
+      column = 41;
+    } else if (itemcount >= 10) {
+      column = 21;
+    }
+    fc_ui_gotoxy(column, y);
     if (entries[i].key == '-') {
       // draw a separation
       int vaddr = fc_vdp_get_cursor_addr();
       vdp_memset(vaddr, 0xC4, 18);
     } else {
       fc_tputc(entries[i].key);
-      fc_ui_gotoxy(3, y);
+      fc_ui_gotoxy(column + 2, y);
       fc_tputs(entries[i].title);
     }
     y += 2;
+    if (y > 22) {
+      y = 3;
+    }
   }
   fc_ui_gotoxy(0, dinfo.displayHeight - 1);
 }
