@@ -10,16 +10,23 @@ struct __attribute__((__packed__)) MenuEntry {
   char command[80];
 };
 
-int entry_idx;
+volatile int entry_idx;
 int entry_max;
 struct MenuEntry entries[100];
+int disp_limit;
+int page_total;
 
 void drawBackdrop();
 void layoutMenu();
-struct MenuEntry* pickEntry();
+struct MenuEntry* pickEntry(int key);
+int readKeyboard();
+int handleKey(int key);
+void previousPage();
+void nextPage();
 
 int main(char* args) {
   fc_display_info(&dinfo);
+  disp_limit = dinfo.displayWidth == 40 ? 20 : 40;
 
   entry_idx = 0;
   entry_max = 0;
@@ -71,26 +78,37 @@ int main(char* args) {
     }
   }
   fc_dsr_close(dsr, &pab);
+  page_total = (entry_max / disp_limit) + 1;
 
   drawBackdrop();
   layoutMenu();
 
-  struct MenuEntry* entry = 0;
-  while(entry == 0) {
-    entry = pickEntry();
-    if (((int)entry) == 0xFFFF) {
-      break;
-    } else {
-      if (((int)entry) != 0) {
-        fc_exec(entry->command);
-        entry = 0;
-        drawBackdrop();
-        layoutMenu();
-      }
+  while(1) {
+    fc_ui_gotoxy(1, dinfo.displayHeight - 1);
+
+    int key = readKeyboard();
+    switch(key) {
+      case KEY_BACK:
+        fc_exec("CLS");
+        return 0;
+      case ',':
+        previousPage();
+        break;
+      case '.':
+        nextPage();
+        break;
+      default:
+        {
+          struct MenuEntry* entry = pickEntry(key);
+          if (entry != 0) {
+            fc_exec(entry->command);
+            drawBackdrop();
+            layoutMenu();
+          }
+        }
+        break;
     }
   }
-  fc_exec("CLS");
-  return 0;
 }
 
 void drawBackdrop() {
@@ -103,13 +121,18 @@ void drawBackdrop() {
 }
 
 void layoutMenu() {
+  int page_total = (entry_max / disp_limit) + 1;
+  int page = (entry_idx / disp_limit) + 1;
+
   int y = 3;
-  int disp_limit = dinfo.displayWidth == 40 ? 20 : 40;
-  int limit = disp_limit > entry_max ? entry_max : disp_limit;
+  int limit = entry_idx + disp_limit;
+  if (limit > entry_max) {
+    limit = entry_max;
+  }
   int column = 1;
 
+  int itemcount = 0;
   for(int i = entry_idx; i<limit; i++) {
-    int itemcount = i - entry_idx;
     if (itemcount >= 30) {
       column = 61;
     } else if (itemcount >= 20) {
@@ -131,22 +154,53 @@ void layoutMenu() {
     if (y > 22) {
       y = 3;
     }
+    itemcount++;
   }
+
+  // draw a page indicator
+  fc_ui_gotoxy(dinfo.displayWidth - 8, dinfo.displayHeight - 1);
+  fc_tputs("Page ");
+  fc_tputs(fc_uint2str(page));
+  fc_tputc('/');
+  fc_tputs(fc_uint2str(page_total));
+
   fc_ui_gotoxy(0, dinfo.displayHeight - 1);
 }
 
-struct MenuEntry* pickEntry() {
-  int limit = 10 > entry_max ? entry_max : 10;
+int readKeyboard() {
   unsigned int key = fc_kscan(5);
   if (KSCAN_STATUS & KSCAN_MASK) {
-    if (key == KEY_BACK) {
-      return (struct MenuEntry*) 0xFFFF;
-    }
-    for(int i = entry_idx; i<limit; i++) {
-      if (entries[i].key == key) {
-        return &entries[i];
-      }
+    return key;
+  } else {
+    return 0;
+  }
+}
+
+struct MenuEntry* pickEntry(int key) {
+  int limit = entry_idx + disp_limit;
+  if (limit > entry_max) {
+    limit = entry_max;
+  }
+  for(int i = entry_idx; i<limit; i++) {
+    if (entries[i].key == key) {
+      return &entries[i];
     }
   }
   return 0;
+}
+
+void previousPage() {
+  if (entry_idx - disp_limit >= 0) {
+    entry_idx -= disp_limit;
+    drawBackdrop();
+    layoutMenu();
+  }
+}
+
+void nextPage() {
+  if (entry_idx + disp_limit < entry_max) {
+    entry_idx += disp_limit;
+    drawBackdrop();
+    layoutMenu();
+  }
 }
