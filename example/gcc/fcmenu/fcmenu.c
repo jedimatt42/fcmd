@@ -10,6 +10,7 @@ struct __attribute__((__packed__)) MenuEntry {
   char command[80];
 };
 
+int cycles;
 volatile int entry_idx;
 int entry_max;
 struct MenuEntry entries[100];
@@ -23,6 +24,10 @@ int readKeyboard();
 int handleKey(int key);
 void previousPage();
 void nextPage();
+void drawClock();
+
+#define VDP_WAIT_VBLANK_CRU	  __asm__( "clr r12\n\ttb 2\n\tjeq -4\n\tmovb @>8802,r12" : : : "r12" );
+
 
 int main(char* args) {
   fc_display_info(&dinfo);
@@ -83,7 +88,17 @@ int main(char* args) {
   drawBackdrop();
   layoutMenu();
 
+  cycles = 0;
   while(1) {
+    if (dinfo.isPal ? (cycles == 50 * 60) : (cycles == 60 * 60)) {
+      cycles = 0;
+    }
+    if (cycles == 0) {
+      drawClock();
+    }
+
+    VDP_WAIT_VBLANK_CRU;
+    cycles++;
     fc_ui_gotoxy(1, dinfo.displayHeight - 1);
 
     int key = readKeyboard();
@@ -118,6 +133,29 @@ void drawBackdrop() {
   vdp_memset((dinfo.displayHeight - 1) * dinfo.displayWidth, 0xB0, dinfo.displayWidth);
   fc_ui_gotoxy((dinfo.displayWidth / 2) - 7,0);
   fc_tputs(" FCMenu v1.0 ");
+  cycles = 0; // since we erased the clock, allow it to redraw on next attempt
+}
+
+void drawClock() {
+  struct DateTime dt;
+  fc_datetime(&dt);
+  if (dt.hours != 0 && dt.minutes != 0) {
+    fc_ui_gotoxy(dinfo.displayWidth - 9, 0);
+    fc_tputc(' ');
+    fc_tputs(fc_uint2str(dt.hours));
+    fc_tputc(':');
+    if (dt.minutes < 10) {
+      fc_tputc('0');
+    }
+    fc_tputs(fc_uint2str(dt.minutes));
+    if (dt.pm) {
+      fc_tputc('p');
+    }
+    else {
+      fc_tputc('a');
+    }
+    fc_tputs("m ");
+  }
 }
 
 void layoutMenu() {
