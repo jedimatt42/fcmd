@@ -85,6 +85,9 @@ int main(char* args) {
   fc_dsr_close(dsr, &pab);
   page_total = (entry_max / disp_limit) + 1;
 
+  // slow clear once
+  fc_exec("CLS");
+  // then color free clearing...
   drawBackdrop();
   layoutMenu();
 
