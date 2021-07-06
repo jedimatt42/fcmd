@@ -34,56 +34,30 @@ unsigned char take_char_blocking();
 void send_termtype();
 void send_window_size();
 
+unsigned char ANSI_UP[3] = { 0x1b, 0x5b, 0x41 };
+unsigned char ANSI_DOWN[3] = { 0x1b, 0x5b, 0x42 };
+unsigned char ANSI_RIGHT[3] = { 0x1b, 0x5b, 0x43 };
+unsigned char ANSI_LEFT[3] = { 0x1b, 0x5b, 0x44 };
 
-void terminalKey(unsigned char* buf, int* len) {
-  // scan code is in buf[0] and len is 1.
-  //
-  // buf is a 4 byte array.
-  // the buf array and len can be modified to send CSI/ESC
-  // terminal key commands instead.
-
+int terminalKey(unsigned char key) {
   // translate output keys into correct terminal keyboard commands
-  // TI control keys ctrl-a = 129 ---> ctrl-z = 154
-  if (buf[0] >= 129 && buf[0] <= 154) {
-    buf[0] = buf[0] - 128;
-    return;
+  // send single key byte
+  if (key == KEY_UP) {
+    return !fc_tcp_send_chars(SOCKET, ANSI_UP, 3);
+  } else if (key == KEY_DOWN) {
+    return !fc_tcp_send_chars(SOCKET, ANSI_DOWN, 3);
+  } else if (key == KEY_LEFT) {
+    return !fc_tcp_send_chars(SOCKET, ANSI_LEFT, 3);
+  } else if (key == KEY_RIGHT) {
+    return !fc_tcp_send_chars(SOCKET, ANSI_RIGHT, 3);
+  } else if (key == KEY_BACK) {
+    key = 27;
+  } else if (key >= 129 && key <= 156) {
+    // translate all the control+alpha keys
+    key -= 128;
   }
 
-  switch (buf[0]) {
-  case KEY_TAB: // tab
-    buf[0] = '\t';
-    break;
-  case KEY_LEFT: // left-arrrow
-    // buf[0] = 27; // esc
-    // buf[1] = '[';
-    // buf[2] = 'D';
-    // *len = 3;
-    buf[0] = 8;
-    break;
-  case KEY_RIGHT: // right-arrow
-    buf[0] = 27;
-    buf[1] = '[';
-    buf[2] = 'C';
-    *len = 3;
-    break;
-  case KEY_DOWN: // down-arrow
-    buf[0] = 27;
-    buf[1] = '[';
-    buf[2] = 'B';
-    *len = 3;
-    break;
-  case KEY_UP: // up-arrow
-    buf[0] = 27;
-    buf[1] = '[';
-    buf[2] = 'A';
-    *len = 3;
-    break;
-  case KEY_BACK: // F-9
-    buf[0] = 27;
-    break;
-  default:
-    break;
-  }
+  return !fc_tcp_send_chars(SOCKET, &key, 1);
 }
 
 int send_cmd(unsigned char req, unsigned char param) {
@@ -353,16 +327,7 @@ int main(char* args) {
         }
       }
 
-      // terminal may need to transform this to
-      // multiple characters.
-      unsigned char keybuf[4];
-      keybuf[0] = key;
-      int keylen = 1;
-
-      terminalKey(keybuf, &keylen);
-
-      if (!fc_tcp_send_chars(SOCKET, keybuf, keylen)) {
-        disconnect();
+      if (terminalKey(key) != 0) {
         return 0;
       }
     } else {
