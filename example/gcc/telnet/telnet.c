@@ -52,7 +52,7 @@ int terminalKey(unsigned char key) {
     return !fc_tcp_send_chars(SOCKET, ANSI_RIGHT, 3);
   } else if (key == KEY_BACK) {
     key = 27;
-  } else if (key >= 129 && key <= 156) {
+  } else if (key >= 129 && key <= 154) {
     // translate all the control+alpha keys
     key -= 128;
   }
