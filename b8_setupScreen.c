@@ -58,7 +58,11 @@ void setupScreen(int width) {
       displayHeight = 30;
     } else {
       set_text80();
+#ifdef _CLASSIC_99
+      displayHeight = 24;
+#else
       displayHeight = 26;
+#endif
     }
   } else { // 40 is the only other allowed value.
     displayWidth = 40;

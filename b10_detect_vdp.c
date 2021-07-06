@@ -23,6 +23,12 @@ int detect_vdp() {
   VDPWA = 0;
   VDPWA = 0x80 | 15;
 
+  #ifdef _CLASSIC_99
+
+  return VDP_9938;
+
+  #else
+
   if (reg4 != 0xFE) {
     return VDP_9918;
   } else {
@@ -40,5 +46,8 @@ int detect_vdp() {
     }
 
     return VDP_9938;
+
   }
+
+  #endif
 }
