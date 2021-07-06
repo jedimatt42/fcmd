@@ -38,8 +38,8 @@ $(FNAME): $(FNAME).bin
 	rm -f $(FNAME)
 
 objects/%.o: %.asm
-	mkdir -p objects; cd objects; $(GAS) ../$< -o $(notdir $@)
+	mkdir -p objects; cd objects; $(GAS) $(abspath $<) -o $(notdir $@)
 
 objects/%.o: %.c ../fc_api.h
-	mkdir -p objects; cd objects; $(CC) -c ../$< $(CFLAGS) -o $(notdir $@)
+	mkdir -p objects; cd objects; $(CC) -c $(abspath $<) $(CFLAGS) -o $(notdir $@)
 

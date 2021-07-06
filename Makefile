@@ -80,13 +80,13 @@ clean:
 	for d in $(SUBDIRS); do $(MAKE) -C example/gcc/$$d clean; done
 
 objects/%.o: %.asm
-	mkdir -p objects; cd objects; $(GAS) ../$< -o $(notdir $@)
+	mkdir -p objects; cd objects; $(GAS) $(abspath $<) -o $(notdir $@)
 
 objects/%.o: %.c
-	mkdir -p objects; cd objects; $(CC) -c ../$< $(CFLAGS) -o $(notdir $@)
+	mkdir -p objects; cd objects; $(CC) -c $(abspath $<) $(CFLAGS) -o $(notdir $@)
 
 objects/%.o: libti99/%.c
-	mkdir -p objects; cd objects; $(CC) -c ../$< $(CFLAGS) -o $(notdir $@)
+	mkdir -p objects; cd objects; $(CC) -c $(abspath $<) $(CFLAGS) -o $(notdir $@)
 
 api.asm: api.lst makeapi.py fc_api_template
 	rm -f api.asm
