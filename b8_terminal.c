@@ -466,9 +466,6 @@ int doEscCommand(unsigned char c) {
 
 void charout(unsigned char ch) {
   switch (ch) {
-    case 8: // BELL
-      bk_beep();
-      break;
     case '\n': // line feed
       conio_x=0;
       inc_row();
