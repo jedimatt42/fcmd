@@ -124,7 +124,7 @@ void main()
     bk_strset(commandbuf, 0, 255);
     prompt();
     history_on = 1;
-    bk_getstr(commandbuf, displayWidth - 3, backspace);
+    bk_getstr(commandbuf, displayWidth - conio_x, backspace);
     bk_tputc('\n');
     history_on = 0;
     bk_handleCommand(commandbuf);

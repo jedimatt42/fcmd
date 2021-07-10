@@ -9,6 +9,7 @@
 #include "b1_history.h"
 #include "b5_clock.h"
 #include "b0_globals.h"
+#include "b13_honk.h"
 
 int history_on = 0;
 
@@ -142,6 +143,7 @@ void getstr(char* var, int limit, int backspace) {
     }
     if (idx >= limit) {
       idx = limit - 1;
+      bk_honk();
     }
   }
 }
