@@ -76,6 +76,10 @@ int fcmain(char* args) {
         vdp_memread(pab.VDPBuffer, buffer, pab.CharCount);
         if (buffer[0] != '#') {
           // if not blank, and not starts with # comment, build an entry
+          // (force uppercase)
+          if (buffer[0] >= 'a' && buffer[0] <= 'z') {
+            buffer[0] -= 'a' - 'A';
+          }
           entries[entry_max].key = buffer[0];
 
           int first_delim = fc_indexof(buffer, '|');
@@ -362,7 +366,7 @@ struct MenuEntry* pickEntry(int key) {
     limit = entry_max;
   }
   for(int i = entry_idx; i<limit; i++) {
-    if (entries[i].key == key) {
+    if (entries[i].key == key || entries[i].key == (key - ('a' - 'A'))) {
       return &entries[i];
     }
   }
