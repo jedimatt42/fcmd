@@ -16,6 +16,7 @@ int entry_max;
 struct MenuEntry entries[100];
 int disp_limit;
 int page_total;
+int selection;
 
 void drawBackdrop();
 void layoutMenu();
@@ -25,11 +26,20 @@ int handleKey(int key);
 void previousPage();
 void nextPage();
 void drawClock();
+void selectionUp();
+void selectionDown();
+void selectionLeft();
+void selectionRight();
+void selectionRun();
+void clearSelection();
+void drawSelection();
+void skipSeparatorNext();
+void skipSeparatorPrev();
 
 #define VDP_WAIT_VBLANK_CRU	  __asm__( "clr r12\n\ttb 2\n\tjeq -4\n\tmovb @>8802,r12" : : : "r12" );
 
 
-int main(char* args) {
+int fcmain(char* args) {
   fc_display_info(&dinfo);
   disp_limit = dinfo.displayWidth == 40 ? 20 : 40;
 
@@ -37,6 +47,7 @@ int main(char* args) {
   entry_max = 0;
   struct DeviceServiceRoutine* dsr;
   char pathname[80];
+  selection = 0;
 
   fc_parse_path_param(args, &dsr, pathname, PR_REQUIRED);
   if (!dsr) {
@@ -115,6 +126,21 @@ int main(char* args) {
       case '.':
         nextPage();
         break;
+      case KEY_DOWN:
+        selectionDown();
+        break;
+      case KEY_UP:
+        selectionUp();
+        break;
+      case KEY_RIGHT:
+        selectionRight();
+        break;
+      case KEY_LEFT:
+        selectionLeft();
+        break;
+      case KEY_ENTER:
+        selectionRun();
+        break;
       default:
         {
           struct MenuEntry* entry = pickEntry(key);
@@ -127,6 +153,92 @@ int main(char* args) {
         break;
     }
   }
+}
+
+void selectionUp() {
+  clearSelection();
+  if (selection > 0) {
+    int old_page_offset = selection % disp_limit;
+    selection--;
+    int new_page_offset = selection % disp_limit;
+    if (old_page_offset < new_page_offset) {
+      previousPage();
+    }
+  }
+  skipSeparatorPrev();
+  drawSelection();
+}
+
+void selectionDown() {
+  clearSelection();
+  if (selection < (entry_max - 1)) {
+    int old_page_offset = selection % disp_limit;
+    selection++;
+    int new_page_offset = selection % disp_limit;
+    if (old_page_offset > new_page_offset) {
+      nextPage();
+    }
+  }
+  skipSeparatorNext();
+  drawSelection();
+}
+
+void selectionRight() {
+  clearSelection();
+  if ((selection + 10) <= (entry_max - 1)) {
+    int old_page_offset = selection % disp_limit;
+    selection += 10;
+    int new_page_offset = selection % disp_limit;
+    if (old_page_offset > new_page_offset) {
+      nextPage();
+    }
+  }
+  skipSeparatorNext();
+  drawSelection();
+}
+
+void selectionLeft() {
+  clearSelection();
+  if ((selection - 10) >= 0) {
+    int old_page_offset = selection % disp_limit;
+    selection -= 10;
+    int new_page_offset = selection % disp_limit;
+    if (old_page_offset < new_page_offset) {
+      previousPage();
+    }
+  }
+  skipSeparatorPrev();
+  drawSelection();
+}
+
+void skipSeparatorNext() {
+  if (entries[selection].key == '-') {
+    int old_page_offset = selection % disp_limit;
+    int new_page_offset = (selection + 1) % disp_limit;
+    if (selection < entry_max && new_page_offset > old_page_offset) {
+      selection++;
+    } else {
+      selection--;
+    }
+  }
+}
+
+void skipSeparatorPrev() {
+  if (entries[selection].key == '-') {
+    int old_page_offset = selection % disp_limit;
+    int new_page_offset = (selection - 1) % disp_limit;
+    if (selection > 0 && new_page_offset < old_page_offset) {
+      selection--;
+    } else {
+      selection++;
+    }
+  }
+}
+
+void selectionRun() {
+  fc_exec(entries[selection].command);
+  drawBackdrop();
+  layoutMenu();
 }
 
 void drawBackdrop() {
@@ -161,6 +273,29 @@ void drawClock() {
   }
 }
 
+void selection_x_y(int* rx, int* ry) {
+  int psel = (selection % disp_limit);
+  int tc = (psel / 10);
+  *rx = 1 + (20 * tc);
+  *ry = 3 + (2 * psel % 20);
+}
+
+void clearSelection() {
+  int x;
+  int y;
+  selection_x_y(&x, &y);
+  fc_ui_gotoxy(x, y);
+  fc_tputc(' ');
+}
+
+void drawSelection() {
+  int x;
+  int y;
+  selection_x_y(&x, &y);
+  fc_ui_gotoxy(x, y);
+  fc_tputc(0x1A);
+}
+
 void layoutMenu() {
   int page_total = (entry_max / disp_limit) + 1;
   int page = (entry_idx / disp_limit) + 1;
@@ -170,16 +305,16 @@ void layoutMenu() {
   if (limit > entry_max) {
     limit = entry_max;
   }
-  int column = 1;
+  int column = 2;
 
   int itemcount = 0;
   for(int i = entry_idx; i<limit; i++) {
     if (itemcount >= 30) {
-      column = 61;
+      column = 62;
     } else if (itemcount >= 20) {
-      column = 41;
+      column = 42;
     } else if (itemcount >= 10) {
-      column = 21;
+      column = 22;
     }
     fc_ui_gotoxy(column, y);
     if (entries[i].key == '-') {
@@ -190,6 +325,10 @@ void layoutMenu() {
       fc_tputc(entries[i].key);
       fc_ui_gotoxy(column + 2, y);
       fc_tputs(entries[i].title);
+      if (selection == i) {
+        fc_ui_gotoxy(column - 1, y);
+        fc_tputc(0x1A);
+      }
     }
     y += 2;
     if (y > 22) {

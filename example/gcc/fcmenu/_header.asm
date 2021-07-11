@@ -1,5 +1,5 @@
-    REF main
+    REF fcmain
     data 0xFCFC   ; Flag for valid Force Command binary
     data 0x0000   ; SAMS page count - 0x0000 means simply / no sams required
     data 0xFCFC   ; Flag that program promises to use screen safely
-    data main     ; program start address
+    data fcmain   ; program start address
