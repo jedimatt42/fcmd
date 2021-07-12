@@ -31,13 +31,13 @@ void handleGoto() {
     while((bk_dsr_status(scriptDsr, scriptPab) & DSR_STATUS) != DSR_STATUS_EOF) {
       int ferr = bk_dsr_read(scriptDsr, scriptPab, 0);
       if (!ferr) {
-        lineno++;
+        *goto_line_ref++;
         bk_strset(commandbuf, 0, 255);
         vdpmemread(scriptPab->VDPBuffer, commandbuf, scriptPab->CharCount);
         char* tok = bk_strtok(commandbuf, ' ');
         if (tok[bk_strlen(tok)-1] == ':') {
           tok[bk_strlen(tok)-1] = 0; // shorten to just the name
-          bk_labels_add(tok, lineno);
+          bk_labels_add(tok, *goto_line_ref);
         }
       }
     }
@@ -60,6 +60,6 @@ void handleGoto() {
       // number 0 auto advances
       bk_dsr_read(scriptDsr, scriptPab, 0);
     }
-    lineno = gotoline;
+    *goto_line_ref = gotoline;
   }
 }

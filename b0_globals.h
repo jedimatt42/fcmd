@@ -12,9 +12,9 @@ extern int backspace;
 extern unsigned int displayWidth;
 extern unsigned int displayHeight;
 extern int scripton;
-extern int lineno;
 extern int pal;
 extern int api_exec;
 extern int request_break;
+extern int* goto_line_ref;
 
 #endif

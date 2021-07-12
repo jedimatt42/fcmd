@@ -69,7 +69,7 @@ int must_close_command(char* buffer) {
 
 // NOTE command handle functions in bank 0 do not need bk_ banking stub
 
-void handleCommand(char *buffer) {
+void handleCommand(char *buffer, int lineno) {
   if (buffer[0] == 0) {
     return;
   }

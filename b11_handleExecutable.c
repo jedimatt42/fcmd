@@ -14,6 +14,7 @@
 #include "b0_globals.h"
 #include "b0_sams.h"
 #include "b8_setupScreen.h"
+#include "b0_runScript.h"
 #include <vdp.h>
 
 int loadExecutable(const char* ext, int* cmd_type);

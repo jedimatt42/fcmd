@@ -10,7 +10,7 @@ int backspace;
 unsigned int displayWidth = 40;
 unsigned int displayHeight = 24;
 int scripton = 0;
-int lineno = 0;
+int* goto_line_ref;
 struct DeviceServiceRoutine* scriptDsr = 0;
 struct PAB* scriptPab;
 int pal = 0;

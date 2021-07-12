@@ -7,7 +7,7 @@
 #define PR_REQUIRED 0x0001
 #define PR_WILDCARD 0x0002
 
-void handleCommand(char * buffer);
+void handleCommand(char * buffer, int lineno);
 int must_close_command(char* buffer);
 
 void parsePathParam(char* str_in, struct DeviceServiceRoutine** dsr, char* buffer, int requirements);
