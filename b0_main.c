@@ -59,7 +59,7 @@ void titleScreen() {
   tputs_rom(APP_VER);
   bk_tputc(' ');
   tputs_rom(__DATE__);
-  tputs_rom("\nwww.jedimatt42.com\n\n");
+  tputs_rom("\nwww.jedimatt42.com\nko-fi.com/jedimatt42\n");
 }
 
 void prompt() {

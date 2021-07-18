@@ -86,10 +86,10 @@ int fcmain(char* args) {
           int second_delim = first_delim + fc_indexof(buffer+first_delim+1, '|');
 
           int title_len = second_delim - first_delim;
-          if (title_len > 20) {
-            title_len = 20;
+          if (title_len > 17) {
+            title_len = 17;
           }
-          fc_strncpy(entries[entry_max].title, buffer + first_delim + 1, second_delim - first_delim);
+          fc_strncpy(entries[entry_max].title, buffer + first_delim + 1, title_len);
 
           fc_strncpy(entries[entry_max].command, buffer + first_delim + second_delim + 1, 80);
           entry_max++;
@@ -362,11 +362,14 @@ int readKeyboard() {
 
 struct MenuEntry* pickEntry(int key) {
   int limit = entry_idx + disp_limit;
+  if (key >= 'a' && key <= 'z') {
+    key -= 'a' - 'A';
+  }
   if (limit > entry_max) {
     limit = entry_max;
   }
   for(int i = entry_idx; i<limit; i++) {
-    if (entries[i].key == key || entries[i].key == (key - ('a' - 'A'))) {
+    if (entries[i].key == key) {
       return &entries[i];
     }
   }
