@@ -178,7 +178,27 @@ void handleKey(int key) {
 }
 
 void handleClick(int x, int y) {
+  // find 'widget' that was clicked on...
+  int i = entry_idx;
+  while(i < (disp_limit + entry_idx) && i < entry_max) {
+    if (entries[i].key != '-') {
+      int col = i / 10;
+      int ex = 8 + 3 + (col * 18 * 3);
+      int exl = ex + (18*3);
 
+      int row = i % 10;
+      int ey = (row * 16) + 15;
+      int eyl = ey + 8;
+
+      if (x >= ex && x <= exl) {
+        if (y >= ey && y <= eyl) {
+          selectionRun(&(entries[i]));
+          return;
+        }
+      }
+    }
+    i++;
+  }
 }
 
 void cleanupBeforeExit() {
