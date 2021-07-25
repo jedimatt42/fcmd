@@ -377,6 +377,9 @@ unsigned char gchar(int r, int c);
 // And finally, note that a row of 208 will disable display of all subsequent sprite numbers
 void sprite(int n, int ch, int col, int r, int c);
 
+// update only the row and column of the sprite
+void sprite_loc(int n, int r, int c);
+
 // delsprite - remove a sprite by placing it offscreen
 // Inputs: sprite number (0-31) to hide
 void delsprite(int n);

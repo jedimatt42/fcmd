@@ -22,7 +22,9 @@ void drawBackdrop();
 void layoutMenu();
 struct MenuEntry* pickEntry(int key);
 int readKeyboard();
-int handleKey(int key);
+void handleKey(int key);
+int updateMouse(struct MouseData* mouseData);
+void handleClick(int x, int y);
 void previousPage();
 void nextPage();
 void drawClock();
@@ -30,11 +32,12 @@ void selectionUp();
 void selectionDown();
 void selectionLeft();
 void selectionRight();
-void selectionRun();
+void selectionRun(struct MenuEntry* entry);
 void clearSelection();
 void drawSelection();
 void skipSeparatorNext();
 void skipSeparatorPrev();
+void cleanupBeforeExit();
 
 #define VDP_WAIT_VBLANK_CRU	  __asm__( "clr r12\n\ttb 2\n\tjeq -4\n\tmovb @>8802,r12" : : : "r12" );
 
@@ -106,6 +109,10 @@ int fcmain(char* args) {
   drawBackdrop();
   layoutMenu();
 
+  struct MouseData mouseData;
+
+  fc_tipi_mouse_enable(&mouseData);
+
   cycles = 0;
   while(1) {
     if (dinfo.isPal ? (cycles == 50 * 60) : (cycles == 60 * 60)) {
@@ -119,44 +126,64 @@ int fcmain(char* args) {
     cycles++;
     fc_ui_gotoxy(1, dinfo.displayHeight - 1);
 
+    int buttons = updateMouse(&mouseData);
+    if (buttons & MB_LEFT) {
+      handleClick(mouseData.pointerx, mouseData.pointery);
+    }
     int key = readKeyboard();
-    switch(key) {
-      case KEY_BACK:
-        fc_exec("CLS");
+    if (key) {
+      handleKey(key);
+      if (key == KEY_BACK) {
         return 0;
-      case ',':
-        previousPage();
-        break;
-      case '.':
-        nextPage();
-        break;
-      case KEY_DOWN:
-        selectionDown();
-        break;
-      case KEY_UP:
-        selectionUp();
-        break;
-      case KEY_RIGHT:
-        selectionRight();
-        break;
-      case KEY_LEFT:
-        selectionLeft();
-        break;
-      case KEY_ENTER:
-        selectionRun();
-        break;
-      default:
-        {
-          struct MenuEntry* entry = pickEntry(key);
-          if (entry != 0) {
-            fc_exec(entry->command);
-            drawBackdrop();
-            layoutMenu();
-          }
-        }
-        break;
+      }
     }
   }
+}
+
+void handleKey(int key) {
+  switch(key) {
+    case KEY_BACK:
+      cleanupBeforeExit();
+      break;
+    case ',':
+      previousPage();
+      break;
+    case '.':
+      nextPage();
+      break;
+    case KEY_DOWN:
+      selectionDown();
+      break;
+    case KEY_UP:
+      selectionUp();
+      break;
+    case KEY_RIGHT:
+      selectionRight();
+      break;
+    case KEY_LEFT:
+      selectionLeft();
+      break;
+    case KEY_ENTER:
+      selectionRun(&(entries[selection]));
+      break;
+    default:
+      {
+        struct MenuEntry* entry = pickEntry(key);
+        if (entry != 0) {
+          selectionRun(entry);
+        }
+      }
+      break;
+  }
+}
+
+void handleClick(int x, int y) {
+
+}
+
+void cleanupBeforeExit() {
+  fc_tipi_mouse_disable();
+  fc_exec("CLS");
 }
 
 void selectionUp() {
@@ -239,8 +266,9 @@ void skipSeparatorPrev() {
   }
 }
 
-void selectionRun() {
-  fc_exec(entries[selection].command);
+void selectionRun(struct MenuEntry* entry) {
+  fc_tipi_mouse_disable();
+  fc_exec(entry->command);
   drawBackdrop();
   layoutMenu();
 }
@@ -358,6 +386,11 @@ int readKeyboard() {
   } else {
     return 0;
   }
+}
+
+int updateMouse(struct MouseData* mouseData) {
+  fc_tipi_mouse_move(mouseData);
+  return mouseData->buttons;
 }
 
 struct MenuEntry* pickEntry(int key) {

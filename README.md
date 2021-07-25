@@ -33,18 +33,18 @@ The following wiki contains documentation for how to use, and where to find the 
 
 ## Building
 
-Prerequisites: 
+Prerequisites:
 
 * xdt99 suite
 * python3.8+
 * tms9900-gcc
 
-```
+```bash
 make clean
 make
 ```
 
-This will compile all the binaries. 
+This will compile all the binaries.
 
 ## Installation
 
@@ -73,7 +73,7 @@ FCMD.RPK : contains both the ROM and auto start GROM of Force Command.
 
 There is a script named `deploy.sh` that I use to copy the build artifacts to my TIPI, and classic99 emulation environment, etc... If some variables are not set, that destination will be skipped. To use, I wrap in a custom script that sets control variables:
 
-```
+```bash
 #!/bin/bash
 
 make clean
@@ -224,7 +224,7 @@ For GCC, there are inline function stubs that can be included and then called. F
 
 ## VDP Memory Map
 
-In 80 column mode, Force Command utilizes extended color attributes, and some fast scroll code for the F18A.
+In 80x30 F18A mode, Force Command utilizes extended color attributes, and some fast scroll code for the F18A.
 
 | Address | Size in bytes | Description         |
 | ------- | ------------- | ------------------- |
@@ -232,7 +232,7 @@ In 80 column mode, Force Command utilizes extended color attributes, and some fa
 | 0x0960  | 0x00A0        | /free space-------/ |
 | 0x0A00  | 0x0100        | Sprite table        |
 | 0x0B00  | 0x0500        | /free space-------/ |
-| 0x1000  | 0x0800        | Pattern table       |
+| 0x1000  | 0x0800        | Pattern table (tile & sprite) |
 | 0x1800  | 0x0960        | Color attributes    |
 | 0x2160  | varies        | /free stack ------/ |
 | 0x3FF8  | 0x0008        | Nanopeb stats       |

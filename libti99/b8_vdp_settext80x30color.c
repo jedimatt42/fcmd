@@ -46,9 +46,9 @@ int set_text80x30_color_raw() {
     nTextPos = nTextRow;
 	nTextFlags = TEXT_FLAG_IS_F18A | TEXT_FLAG_HAS_ATTRIBUTES | TEXT_WIDTH_80 | TEXT_HEIGHT_30;
 
-    int unblank = VDP_MODE1_16K | VDP_MODE1_UNBLANK | VDP_MODE1_TEXT | VDP_MODE1_INT;
+    int unblank = VDP_MODE1_16K | VDP_MODE1_UNBLANK | VDP_MODE1_TEXT | VDP_MODE1_INT | VDP_MODE1_SPRMODE16x16;
     VDP_SET_REGISTER(VDP_REG_MODE0, VDP_MODE0_80COL);
-    VDP_SET_REGISTER(VDP_REG_MODE1, VDP_MODE1_16K | VDP_MODE1_TEXT);
+    VDP_SET_REGISTER(VDP_REG_MODE1, VDP_MODE1_16K | VDP_MODE1_TEXT | VDP_MODE1_SPRMODE16x16);
     VDP_SET_REGISTER(0x31, 0x40); // set 30 row mode
     VDP_SET_REGISTER(0x32, 0x02); // set Position-based tile attributes
     VDP_SET_REGISTER(VDP_REG_SIT, 0x00);
@@ -57,15 +57,16 @@ int set_text80x30_color_raw() {
     gPattern = 0x1000; // to 0x1800
     VDP_SET_REGISTER(VDP_REG_CT, 0x60);
     gColor = 0x1800; // to 0x2160
-    VDP_SET_REGISTER(VDP_REG_SAL, 0x20);
+    VDP_SET_REGISTER(VDP_REG_SAL, 0x14);
     gSprite = 0x0A00; // to 0x0B00
     VDP_SET_REGISTER(VDP_REG_SDT, 0x02); // sprites can use any of the font patterns.
+    gSpritePat = 0x1000; // same as pattern definition table for characters.
     VDP_SET_REGISTER(24 /* palette select */, 0x00);
 
     vdpchar = vdpchar80color;
     scrn_scroll = fast_scrn_scroll_80color;
 
-    // sprites are active when F18A is unlocked
+    // sprites are active when F18A is unlocked - this turns them all off.
     VDP_SET_REGISTER(0x33, 0x00);
     vdpmemset(gSprite, 0xd0, 128);
     vdpmemset(gColor, conio_scrnCol, nTextEnd+1);	// clear the color table

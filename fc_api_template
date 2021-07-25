@@ -156,5 +156,20 @@ struct __attribute__((__packed__)) LpcPlaybackCtx {
 };
 
 /*
+  TIPI Mouse return data and butten masks
+ */
+struct __attribute__((__packed__)) MouseData {
+  char mx;
+  char my;
+  char buttons;
+  int pointerx;
+  int pointery;
+};
+
+#define MB_LEFT 0x01
+#define MB_RIGHT 0x02
+#define MB_MID 0x04
+
+/*
   Rom address tables
 */

@@ -82,3 +82,8 @@ say_data
 speech_start
 speech_continue
 speech_wait
+
+tipi_mouse
+updatePointer tipi_mouse_move
+enablePointer tipi_mouse_enable
+disablePointer tipi_mouse_disable

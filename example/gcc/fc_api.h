@@ -156,6 +156,21 @@ struct __attribute__((__packed__)) LpcPlaybackCtx {
 };
 
 /*
+  TIPI Mouse return data and butten masks
+ */
+struct __attribute__((__packed__)) MouseData {
+  char mx;
+  char my;
+  char buttons;
+  int pointerx;
+  int pointery;
+};
+
+#define MB_LEFT 0x01
+#define MB_RIGHT 0x02
+#define MB_MID 0x04
+
+/*
   Rom address tables
 */
 #define FC_TPUTC 0x6082
@@ -230,6 +245,10 @@ struct __attribute__((__packed__)) LpcPlaybackCtx {
 #define FC_SPEECH_START 0x6196
 #define FC_SPEECH_CONTINUE 0x619a
 #define FC_SPEECH_WAIT 0x619e
+#define FC_TIPI_MOUSE 0x61a2
+#define FC_TIPI_MOUSE_MOVE 0x61a6
+#define FC_TIPI_MOUSE_ENABLE 0x61aa
+#define FC_TIPI_MOUSE_DISABLE 0x61ae
 
 // function: void fc_tputc(int c)
 DECL_FC_API_CALL(FC_TPUTC, fc_tputc, void, (int c), (c))
@@ -446,5 +465,17 @@ DECL_FC_API_CALL(FC_SPEECH_CONTINUE, fc_speech_continue, void, (struct LpcPlayba
 
 // function: void fc_speech_wait()
 DECL_FC_API_CALL(FC_SPEECH_WAIT, fc_speech_wait, void, (), ())
+
+// function: void fc_tipi_mouse(struct MouseData* mouseData)
+DECL_FC_API_CALL(FC_TIPI_MOUSE, fc_tipi_mouse, void, (struct MouseData* mouseData), (mouseData))
+
+// function: void fc_tipi_mouse_move(struct MouseData* mouseData)
+DECL_FC_API_CALL(FC_TIPI_MOUSE_MOVE, fc_tipi_mouse_move, void, (struct MouseData* mouseData), (mouseData))
+
+// function: void fc_tipi_mouse_enable(struct MouseData* mouseData)
+DECL_FC_API_CALL(FC_TIPI_MOUSE_ENABLE, fc_tipi_mouse_enable, void, (struct MouseData* mouseData), (mouseData))
+
+// function: void fc_tipi_mouse_disable()
+DECL_FC_API_CALL(FC_TIPI_MOUSE_DISABLE, fc_tipi_mouse_disable, void, (), ())
 
 #endif
