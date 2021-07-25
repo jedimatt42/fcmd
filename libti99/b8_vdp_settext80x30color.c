@@ -59,8 +59,8 @@ int set_text80x30_color_raw() {
     gColor = 0x1800; // to 0x2160
     VDP_SET_REGISTER(VDP_REG_SAL, 0x14);
     gSprite = 0x0A00; // to 0x0B00
-    VDP_SET_REGISTER(VDP_REG_SDT, 0x02); // sprites can use any of the font patterns.
-    gSpritePat = 0x1000; // same as pattern definition table for characters.
+    VDP_SET_REGISTER(VDP_REG_SDT, 0x01); // sprites can use any of the font patterns.
+    gSpritePat = 0x0800; // same as pattern definition table for characters.
     VDP_SET_REGISTER(24 /* palette select */, 0x00);
 
     vdpchar = vdpchar80color;

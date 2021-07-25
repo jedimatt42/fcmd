@@ -231,12 +231,15 @@ In 80x30 F18A mode, Force Command utilizes extended color attributes, and some f
 | 0x0000  | 0x0960        | Image table         |
 | 0x0960  | 0x00A0        | /free space-------/ |
 | 0x0A00  | 0x0100        | Sprite table        |
-| 0x0B00  | 0x0500        | /free space-------/ |
-| 0x1000  | 0x0800        | Pattern table (tile & sprite) |
+| 0x0800  | 0x0800        | Sprite patterns     |
+| 0x1000  | 0x0800        | Pattern table       |
 | 0x1800  | 0x0960        | Color attributes    |
 | 0x2160  | varies        | /free stack ------/ |
 | 0x3FF8  | 0x0008        | Nanopeb stats       |
 | 0x4000  | 0x0034        | Fast scroll routine |
+
+Note: sprite pattern overlaps with sprite table, and image table. You can use the tail
+end of the sprite pattern without conflict. Table entries 20 - 39 and 60 - 255 may be used.
 
 Depending on your disk devices, there may be VDP stack allocations from 0x4000 downward.
 

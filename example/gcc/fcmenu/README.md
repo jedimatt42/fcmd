@@ -61,3 +61,5 @@ The config file should not have more than 100 items (this will be enforced in a 
 Standard 32K systems should get an error if you use ForceCommand executables such as FCMENU in as a command target, or in a script target. Only one process can be in upper memory expansion at a time.
 
 With SAMS, ForceCommand will provide a new set of pages for upper memory expansion, and executables like ForceCommaand's FTP or FCMENU can be safely executed. Upon exit, the previous calling executable will be paged back in and resume control.
+
+Mouse is only supported on F18A 80x30 column mode.

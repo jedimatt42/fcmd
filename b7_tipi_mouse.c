@@ -29,11 +29,11 @@ void enablePointer(struct MouseData* mouseData) {
     mouseData->pointerx = 256/2;
     mouseData->pointery = 192/2;
 
-    vdpmemcpy(gSpritePat, gfx_point0, 32);
-    vdpmemcpy(gSpritePat + 32, gfx_point1, 32);
+    vdpmemcpy(gSpritePat + (8*0x60), gfx_point0, 32);
+    vdpmemcpy(gSpritePat + 32 + (8*0x60), gfx_point1, 32);
 
-    sprite(0, 0, COLOR_BLACK, mouseData->pointery, mouseData->pointerx);
-    sprite(1, 4, COLOR_WHITE, mouseData->pointery, mouseData->pointerx);
+    sprite(0, 0x60, COLOR_BLACK, mouseData->pointery, mouseData->pointerx);
+    sprite(1, 0x64, COLOR_WHITE, mouseData->pointery, mouseData->pointerx);
     VDP_SET_REGISTER(0x33, 2);
   }
 }
