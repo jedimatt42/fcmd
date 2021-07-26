@@ -17,6 +17,7 @@ struct MenuEntry entries[100];
 int disp_limit;
 int page_total;
 int selection;
+int mouseOn;
 
 void drawBackdrop();
 void layoutMenu();
@@ -109,9 +110,11 @@ int fcmain(char* args) {
   drawBackdrop();
   layoutMenu();
 
+  mouseOn = 0;
   struct MouseData mouseData;
 
   fc_tipi_mouse_enable(&mouseData);
+  fc_tipi_mouse_disable(); // hide the mouse for now
 
   cycles = 0;
   while(1) {
@@ -410,6 +413,10 @@ int readKeyboard() {
 
 int updateMouse(struct MouseData* mouseData) {
   fc_tipi_mouse_move(mouseData);
+  if (!mouseOn && (mouseData->mx != 0 || mouseData->my != 0)) {
+    mouseOn = 1;
+    fc_tipi_mouse_enable(mouseData);
+  }
   return mouseData->buttons;
 }
 
