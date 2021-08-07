@@ -28,16 +28,17 @@ void handleGoto() {
     char commandbuf[255];
     // scan forward for label definitions :(
 
+    int record = *goto_line_ref;
     while((bk_dsr_status(scriptDsr, scriptPab) & DSR_STATUS) != DSR_STATUS_EOF) {
       int ferr = bk_dsr_read(scriptDsr, scriptPab, 0);
+      record++;
       if (!ferr) {
-        *goto_line_ref++;
         bk_strset(commandbuf, 0, 255);
         vdpmemread(scriptPab->VDPBuffer, commandbuf, scriptPab->CharCount);
         char* tok = bk_strtok(commandbuf, ' ');
         if (tok[bk_strlen(tok)-1] == ':') {
           tok[bk_strlen(tok)-1] = 0; // shorten to just the name
-          bk_labels_add(tok, *goto_line_ref);
+          bk_labels_add(tok, record);
         }
       }
     }
