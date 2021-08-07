@@ -19,7 +19,7 @@ LDFLAGS=\
   --script=linkfile
 
 CFLAGS=\
-  -std=gnu99 -O2 -Werror --save-temp -I.. -I../libti99 -DBANK_STACK_SIZE=15
+  -std=gnu99 -O2 -Werror --save-temp -I.. -I../libti99
 
 SRCS:=$(sort $(wildcard *.c) $(wildcard *.asm))
 LIBTI99_SRCS=$(sort $(wildcard libti99/*.c))
