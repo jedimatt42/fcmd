@@ -19,12 +19,16 @@ inline void disableTipi() {
   __asm__("mov %0,r12\n\tsbz 0" : : "r"(tipi_crubase) : "r12");
 }
 
-void tipi_on()
+int tipi_on()
 {
   if (tipi_crubase == 0) {
     tipi_lib_init();
   }
-  enableTipi();
+  if (tipi_crubase) {
+    enableTipi();
+    return 1;
+  }
+  return 0;
 }
 
 void tipi_off()

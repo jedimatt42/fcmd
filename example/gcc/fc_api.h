@@ -355,8 +355,8 @@ DECL_FC_API_CALL(FC_TCP_READ_SOCKET, fc_tcp_read_socket, int, (unsigned int sock
 // function: int fc_tcp_send_chars(unsigned int socketId, unsigned char* buf, int size)
 DECL_FC_API_CALL(FC_TCP_SEND_CHARS, fc_tcp_send_chars, int, (unsigned int socketId, unsigned char* buf, int size), (socketId, buf, size))
 
-// function: void fc_tipi_on()
-DECL_FC_API_CALL(FC_TIPI_ON, fc_tipi_on, void, (), ())
+// function: int fc_tipi_on()
+DECL_FC_API_CALL(FC_TIPI_ON, fc_tipi_on, int, (), ())
 
 // function: void fc_tipi_off()
 DECL_FC_API_CALL(FC_TIPI_OFF, fc_tipi_off, void, (), ())

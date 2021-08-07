@@ -17,11 +17,12 @@ extern unsigned char gfx_point1[32];
 void tipi_mouse(struct MouseData* mouseData) {
   unsigned char mousecode = 0x20;
   int readcount = 0;
-  tipi_on();
-  tipi_sendmsg(1, (unsigned char*)&mousecode);
-  // contract with TIPI is that this will always read 3 bytes.
-  tipi_recvmsg(&readcount, (unsigned char*)mouseData);
-  tipi_off();
+  if (tipi_on()) {
+    tipi_sendmsg(1, (unsigned char*)&mousecode);
+    // contract with TIPI is that this will always read 3 bytes.
+    tipi_recvmsg(&readcount, (unsigned char*)mouseData);
+    tipi_off();
+  }
 }
 
 void enablePointer(struct MouseData* mouseData) {
