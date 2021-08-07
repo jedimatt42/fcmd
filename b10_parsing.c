@@ -69,7 +69,7 @@ int must_close_command(char* buffer) {
 
 // NOTE command handle functions in bank 0 do not need bk_ banking stub
 
-void handleCommand(char *buffer, int lineno) {
+void handleCommand(char *buffer) {
   if (buffer[0] == 0) {
     return;
   }
@@ -122,7 +122,7 @@ void handleCommand(char *buffer, int lineno) {
   else if (tok[bk_strlen(tok)-1] == ':') {
     if (scripton) {
       tok[bk_strlen(tok)-1] = 0; // shorten to just the name
-      bk_labels_add(tok, lineno);
+      bk_labels_add(tok, *goto_line_ref);
     } else {
       tputs_rom("error, label only supported in script\n");
     }
