@@ -33,6 +33,9 @@ void labels_add(char* name, int gotoline) {
     return;
   }
   int existing = labels_get(name);
+  if (existing == gotoline) {
+    return; // all done... already defined.
+  }
   if (existing != -1) {
     tputs_rom("Error, label already defined at line: ");
     bk_tputs_ram(bk_uint2str(existing));
