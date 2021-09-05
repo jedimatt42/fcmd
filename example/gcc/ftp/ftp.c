@@ -1,8 +1,5 @@
 #include <fc_api.h>
 
-#include "string.h"
-#include "bufferedio.h"
-
 int connected = 0;
 
 struct SocketBuffer control;
@@ -92,8 +89,8 @@ void fetchInfo() {
 int main(char* args) {
   fetchInfo();
 
-  init_socket_buffer(&control, 0);
-  init_socket_buffer(&data, 1);
+  fc_init_socket_buffer(&control, TCP, 0);
+  fc_init_socket_buffer(&data, TCP, 1);
 
   // allocate a common buffers on the stack
   unsigned char host[30];
@@ -102,29 +99,29 @@ int main(char* args) {
   char commandbuf[120];
 
   if (args && args[0]) {
-    strcpy(commandbuf, "open ");
-    strcat(commandbuf, args);
-    strtok(commandbuf, ' ');
+    fc_strcpy(commandbuf, "open ");
+    fc_strcat(commandbuf, args);
+    fc_strtok(commandbuf, ' ');
     // now parsing is caught up to where open expects it.
     ftpOpen();
   }
 
   while(1) {
     fc_tputs("ftp> ");
-    strset(commandbuf, 0, 120);
+    fc_strset(commandbuf, 0, 120);
     fc_getstr(commandbuf, displayWidth - 3, 1);
     fc_tputc('\n');
 
-    char* tok = strtok(commandbuf, ' ');
-    if (!strcmpi("open", tok)) {
+    char* tok = fc_strtok(commandbuf, ' ');
+    if (!fc_strcmpi("open", tok)) {
       ftpOpen();
       continue;
-    } else if (!strcmpi("bye", tok) || !strcmpi("quit", tok) || !strcmpi("exit", tok)) {
+    } else if (!fc_strcmpi("bye", tok) || !fc_strcmpi("quit", tok) || !fc_strcmpi("exit", tok)) {
       if (connected) {
         ftpQuit();
       }
       return 0;
-    } else if (!strcmpi("help", tok)) {
+    } else if (!fc_strcmpi("help", tok)) {
       fc_tputs("open <hostname> [port] - connect to an ftp server, defaults to port 21\n");
       fc_tputs("dir [/w] [pathname] - list directory\n");
       fc_tputs("  alias: ls\n");
@@ -136,23 +133,23 @@ int main(char* args) {
       fc_tputs("bye - close connection\n");
       fc_tputs("  aliases: exit, quit\n");
       continue;
-    } else if (!strcmpi("lcd", tok)) {
+    } else if (!fc_strcmpi("lcd", tok)) {
       localCmd("CD");
       continue;
-    } else if (!strcmpi("ldir", tok)) {
+    } else if (!fc_strcmpi("ldir", tok)) {
       localCmd("DIR");
       continue;
    } else if (connected) {
-      if (!strcmpi("pwd", tok)) {
+      if (!fc_strcmpi("pwd", tok)) {
         ftpPwd();
         continue;
-      } else if (!strcmpi("cd", tok)) {
+      } else if (!fc_strcmpi("cd", tok)) {
         ftpCd();
         continue;
-      } else if (!strcmpi("dir", tok) || !strcmpi("ls", tok)) {
+      } else if (!fc_strcmpi("dir", tok) || !fc_strcmpi("ls", tok)) {
         ftpDir();
         continue;
-     } else if (!strcmpi("get", tok)) {
+     } else if (!fc_strcmpi("get", tok)) {
         ftpGet();
         continue;
       }
@@ -164,17 +161,17 @@ int main(char* args) {
 }
 
 void ftpOpen() {
-  char* host = strtok(0, ' ');
+  char* host = fc_strtok(0, ' ');
   if (!host) {
     fc_tputs("Error, no host provided.\n");
     return;
   }
-  strcpy(hostname, host); // store for pasv connections later.
-  char* port = strtok(0, ' ');
+  fc_strcpy(hostname, host); // store for pasv connections later.
+  char* port = fc_strtok(0, ' ');
   if (!port) {
     port = "21";
   } else {
-    int pint = atoi(port);
+    int pint = fc_atoi(port);
     if (!pint) {
       fc_tputs("Error, bad port specified.\n");
       return;
@@ -191,13 +188,13 @@ void ftpOpen() {
   fc_tputs("connected\n");
 
   int code = getFtpCode(&control);
-  fc_tputs(uint2str(code));
+  fc_tputs(fc_uint2str(code));
   drainChannel(&control);
 
   while(code != 230) {
     while(code != 331) {
       char login[20];
-      strset(login, 0, 20);
+      fc_strset(login, 0, 20);
       fc_tputs("login: ");
       fc_getstr(login, 20, 1);
       fc_tputc('\n');
@@ -206,10 +203,10 @@ void ftpOpen() {
 
     while(!(code == 230 || code == 530)) {
       char passwd[20];
-      strset(passwd, 0, 20);
+      fc_strset(passwd, 0, 20);
       fc_tputs("password: ");
       fc_getstr(passwd, 20, 1);
-      int plen = strlen(passwd);
+      int plen = fc_strlen(passwd);
 
       for(int i=0; i<plen; i++) {
         fc_tputc(8); // backspace
@@ -237,7 +234,7 @@ void ftpPwd() {
 }
 
 void ftpCd() {
-  char* tok = strtokpeek(0, 0);
+  char* tok = fc_strtokpeek(0, 0);
   int code = 0;
   sendFtpCommand("CWD", tok);
 }
@@ -262,7 +259,7 @@ void handleTransfer(char* type, data_handler_func dataHandler, char* params[]) {
   unsigned int port = sendFtpPasv();
   // connect second socket to provided port number.
   for (volatile int delay = 0; delay < 7000; delay++) { /* a moment for server to listen */ }
-  int res = fc_tcp_connect(data.socket_id, hostname, uint2str(port));
+  int res = fc_tcp_connect(data.socket_id, hostname, fc_uint2str(port));
   if (res) {
     dataHandler(params);
   }
@@ -271,12 +268,12 @@ void handleTransfer(char* type, data_handler_func dataHandler, char* params[]) {
 }
 
 void ftpDir() {
-  char* tok = strtokpeek(0, 0);
+  char* tok = fc_strtokpeek(0, 0);
   int nlist = 0;
-  if (str_startswith("/w ", tok)) {
+  if (fc_str_startswith("/w ", tok)) {
     nlist = 1;
-    tok = strtok(0, ' '); // consume the "/w"
-    tok = strtokpeek(0, 0);
+    tok = fc_strtok(0, ' '); // consume the "/w"
+    tok = fc_strtokpeek(0, 0);
   }
 
   char* params[1];
@@ -295,9 +292,9 @@ void onReceiveFile(char* params[]) {
   unsigned int iocode = fc_path2iocode(currentPath);
   char block[256];
 
-  int len = readstream(&data, block, 128);
+  int len = fc_readstream(&data, block, 128);
   fc_tputs("read ");
-  fc_tputs(uint2str(len));
+  fc_tputs(fc_uint2str(len));
   fc_tputs(" bytes of data\n");
 
   // should have sector loaded with first 128 bytes
@@ -324,7 +321,7 @@ void onReceiveFile(char* params[]) {
       int totalsectors = tifiles->sectors;
       int secno = 0;
       while (secno < totalsectors) {
-        len = readstream(&data, block, 256); // now work in single block chunks.
+        len = fc_readstream(&data, block, 256); // now work in single block chunks.
         vdpmemcpy(vdp_io_buf, block, 256);
         addInfoPtr->first_sector = secno++;
         ferr = fc_lvl2_output(currentDsr->crubase, iocode, params[1], 1, addInfoPtr);
@@ -345,8 +342,8 @@ void onReceiveFile(char* params[]) {
       return;
     }
     char fullfilename[256];
-    strcpy(fullfilename, currentPath);
-    strcat(fullfilename, params[1]);
+    fc_strcpy(fullfilename, currentPath);
+    fc_strcat(fullfilename, params[1]);
 
     struct PAB pab;
     int ferr = fc_dsr_open(currentDsr, &pab, fullfilename, DSR_TYPE_OUTPUT, 128);
@@ -356,7 +353,7 @@ void onReceiveFile(char* params[]) {
         fc_tputs("Error, writing file\n");
         return;
       }
-      len = readstream(&data, block, 128);
+      len = fc_readstream(&data, block, 128);
       fc_tputc('.');
     }
     if (fc_dsr_close(currentDsr, &pab)) {
@@ -367,15 +364,15 @@ void onReceiveFile(char* params[]) {
 }
 
 void ftpGet() {
-  char* tok = strtok(0, ' ');
+  char* tok = fc_strtok(0, ' ');
   if (!tok) {
     fc_tputs("Error, no file specified.\n");
     return;
   }
   char block[256];
   char safetiname[12];
-  strset(safetiname, 0, 12);
-  char* tiname = strtok(0, ' ');
+  fc_strset(safetiname, 0, 12);
+  char* tiname = fc_strtok(0, ' ');
   if (!tiname) {
     for (int i = 0; i < 10;i++) {
       if (tok[i] == '.') {
@@ -404,13 +401,13 @@ void ftpGet() {
 
 int sendFtpCommand(char* command, char* argstring) {
   char ftpcmd[80];
-  strcpy(ftpcmd, command);
+  fc_strcpy(ftpcmd, command);
   if (argstring != 0) {
-    strcat(ftpcmd, " ");
-    strcat(ftpcmd, argstring);
+    fc_strcat(ftpcmd, " ");
+    fc_strcat(ftpcmd, argstring);
   }
-  strcat(ftpcmd, EOL);
-  int len = strlen(ftpcmd);
+  fc_strcat(ftpcmd, EOL);
+  int len = fc_strlen(ftpcmd);
   int res = fc_tcp_send_chars(control.socket_id, ftpcmd, len);
   if (!res) {
     fc_tputs("Error, server disconnected\n");
@@ -427,47 +424,47 @@ unsigned int sendFtpPasv() {
   227 Entering Passive Mode (127,0,0,1,156,117).
   */
   char ftpcmd[8];
-  strcpy(ftpcmd, "PASV");
-  strcat(ftpcmd, EOL);
-  int len = strlen(ftpcmd);
+  fc_strcpy(ftpcmd, "PASV");
+  fc_strcat(ftpcmd, EOL);
+  int len = fc_strlen(ftpcmd);
   int res = fc_tcp_send_chars(control.socket_id, ftpcmd, len);
   if (!res) {
     fc_tputs("Error, server disconnected\n");
     return -1;
   }
 
-  char* line = readline(&control);
+  char* line = fc_readline(&control);
   fc_tputs(line);
-  if (!str_startswith(line, "227")) {
+  if (!fc_str_startswith(line, "227")) {
     return 0;
   }
-  char* tok = strtok(line, '(');
+  char* tok = fc_strtok(line, '(');
   for(int i=0; i<4; i++) {
-    tok = strtok(0, ',');
+    tok = fc_strtok(0, ',');
   }
-  tok = strtok(0, ',');
-  unsigned int port = ((unsigned int)atoi(tok)) << 8;
-  tok = strtok(0, ')');
-  port += (unsigned int)atoi(tok);
+  tok = fc_strtok(0, ',');
+  unsigned int port = ((unsigned int)fc_atoi(tok)) << 8;
+  tok = fc_strtok(0, ')');
+  port += (unsigned int)fc_atoi(tok);
 
   return port;
 }
 
 int getFtpCode(struct SocketBuffer* socket_buf) {
   // read until we get some response.
-  char* line = readline(socket_buf);
+  char* line = fc_readline(socket_buf);
   fc_tputs(line);
   // get code from first response...
-  int code = atoi(line);
+  int code = fc_atoi(line);
   return code;
 }
 
 void drainChannel(struct SocketBuffer* socket_buf) {
   char buf[256];
-  strset(buf, 0, 256);
+  fc_strset(buf, 0, 256);
   int retries = 0;
   while(retries < 2) {
-    int datalen = readstream(socket_buf, buf, 255); // stop short to ensure last character remains nul
+    int datalen = fc_readstream(socket_buf, buf, 255); // stop short to ensure last character remains nul
     buf[datalen] = 0;
     fc_tputs(buf);
     if (datalen) {
@@ -479,16 +476,18 @@ void drainChannel(struct SocketBuffer* socket_buf) {
 }
 
 int isTiFiles(struct TiFiles* tifiles) {
-  return !basic_strcmp((char*) tifiles, "TIFILES");
+  char buf[11];
+  fc_basicToCstr((char*) tifiles, buf);
+  return !fc_strcmp(buf, "TIFILES");
 }
 
 void localCmd(char* cmd) {
   char buf[100];
-  strcpy(buf, cmd);
-  char* tok = strtok(0, '\n');
+  fc_strcpy(buf, cmd);
+  char* tok = fc_strtok(0, '\n');
   if (tok) {
-    strcat(buf, " ");
-    strcat(buf, tok);
+    fc_strcat(buf, " ");
+    fc_strcat(buf, tok);
   }
   fc_exec(buf);
 }

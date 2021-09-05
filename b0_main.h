@@ -2,7 +2,7 @@
 #define _MAIN_H 1
 
 
-#define APP_VER "1.26"
+#define APP_VER "1.27"
 
 void initGlobals();
 void main();

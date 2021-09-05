@@ -88,10 +88,10 @@ objects/%.o: %.c
 objects/%.o: libti99/%.c
 	mkdir -p objects; cd objects; $(CC) -c $(abspath $<) $(CFLAGS) -o $(notdir $@)
 
-api.asm: api.lst makeapi.py fc_api_template
+api.asm: fc_api.lst makeapi.py fc_api_template
 	rm -f api.asm
 	grep DECLARE_BANKED libti99/*.h *.h >api.banks
-	python3 ./makeapi.py api.lst api.asm api.banks example/gcc/fc_api.h
+	python3 ./makeapi.py fc_api.lst api.asm api.banks example/gcc/fc_api.h
 
 b3_fcbanner.asm: fcbanner.ans ans2asm.py
 	python3 ./ans2asm.py

@@ -1,27 +1,40 @@
 
-#include <fc_api.h>
+#include "banks.h"
+#define MYBANK BANK(7)
 
-#include "bufferedio.h"
-#include "string.h"
+#include "b7_bufferedio.h"
+#include "b7_ti_socket.h"
+#include "b1_strutil.h"
 
 
-void init_socket_buffer(struct SocketBuffer* socket_buf, unsigned int socketId) {
-    strset(socket_buf->lastline, 0, 256);
-    strset(socket_buf->buffer, 0, 256);
+void init_socket_buffer(struct SocketBuffer* socket_buf, int tls, unsigned int socketId) {
+    bk_strset(socket_buf->lastline, 0, 256);
+    bk_strset(socket_buf->buffer, 0, 256);
     socket_buf->available = 0;
     socket_buf->loaded = 0;
     socket_buf->socket_id = socketId;
+    socket_buf->tls = tls;
+}
+
+static int socket_read(struct SocketBuffer* socket_buf) {
+    if (socket_buf->tls) {
+        return bk_tls_read_socket(socket_buf->socket_id, socket_buf->buffer, 256);
+    }
+    else {
+        return bk_tcp_read_socket(socket_buf->socket_id, socket_buf->buffer, 256);
+    }
 }
 
 /*
     Reads a line from an open socket, upto 256 characters long
 */
 char* readline(struct SocketBuffer* socket_buf) {
-    strset(socket_buf->lastline, 0, 256);
+    bk_strset(socket_buf->lastline, 0, 256);
     socket_buf->loaded = 0;
     int crlfstate = 0;
     while (socket_buf->available == 0) {
-        socket_buf->available = fc_tcp_read_socket(socket_buf->socket_id, socket_buf->buffer, 256);
+        socket_buf->available = socket_read(socket_buf);
+
         int i = 0;
         while (socket_buf->available) {
             if (crlfstate == 0 && socket_buf->buffer[i] == 13) {
@@ -46,7 +59,7 @@ char* readline(struct SocketBuffer* socket_buf) {
     Fills a block with bytes from buffer, upto limit. Returns bytes read.
 */
 int readstream(struct SocketBuffer* socket_buf, unsigned char* block, int limit) {
-    strset(block, 0, limit);
+    bk_strset(block, 0, limit);
     int blockload = 0;
     int retries = 0;
     int maxtries = 5;
@@ -55,7 +68,7 @@ int readstream(struct SocketBuffer* socket_buf, unsigned char* block, int limit)
         while (retries < maxtries && !socket_buf->available) {
             // todo: this entire routine can be rewritten to read directly into block and leaving
             // buffered data in the socket by reducing the read limit.
-            socket_buf->available = fc_tcp_read_socket(socket_buf->socket_id, socket_buf->buffer, 256);
+            socket_buf->available = socket_read(socket_buf);
             socket_buf->loaded = 0;
             if (socket_buf->available) {
                 retries = 0;

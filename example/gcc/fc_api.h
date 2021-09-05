@@ -171,8 +171,28 @@ struct __attribute__((__packed__)) MouseData {
 #define MB_MID 0x04
 
 /*
+  State for reentrant bufferedio socket api
+ */
+struct __attribute__((__packed__)) SocketBuffer {
+  unsigned int socket_id;
+  char buffer[256];
+  int available;
+  char lastline[256];
+  int loaded;
+  int tls;
+};
+
+#define TLS 1
+#define TCP 0
+
+
+/*
   Rom address tables
 */
+
+// memcpy is special, it is in all bank of the cartridge
+extern void* memcpy(void* dest, const void* src, int count);
+
 #define FC_TPUTC 0x6082
 #define FC_TPUTS 0x6086
 #define FC_GETSTR 0x608a
@@ -221,34 +241,44 @@ struct __attribute__((__packed__)) MouseData {
 #define FC_HTOI 0x6136
 #define FC_STRCPY 0x613a
 #define FC_STRNCPY 0x613e
-#define FC_STRLEN 0x6142
-#define FC_STRCMP 0x6146
-#define FC_STRCMPI 0x614a
-#define FC_INDEXOF 0x614e
-#define FC_LINDEXOF 0x6152
-#define FC_STR_STARTSWITH 0x6156
-#define FC_STR_ENDSWITH 0x615a
-#define FC_BASICTOCSTR 0x615e
-#define FC_STRSET 0x6162
-#define FC_NEXT_TOKEN 0x6166
-#define FC_BEEP 0x616a
-#define FC_HONK 0x616e
-#define FC_SET_IDENTIFY_HOOK 0x6172
-#define FC_VDP_SETCHAR 0x6176
-#define FC_VDP_GET_CURSOR_ADDR 0x617a
-#define FC_UI_DROP_DOWN 0x617e
-#define FC_UI_GOTOXY 0x6182
-#define FC_SPEECH_RESET 0x6186
-#define FC_DETECT_SPEECH 0x618a
-#define FC_SAY_VOCAB 0x618e
-#define FC_SAY_DATA 0x6192
-#define FC_SPEECH_START 0x6196
-#define FC_SPEECH_CONTINUE 0x619a
-#define FC_SPEECH_WAIT 0x619e
-#define FC_TIPI_MOUSE 0x61a2
-#define FC_TIPI_MOUSE_MOVE 0x61a6
-#define FC_TIPI_MOUSE_ENABLE 0x61aa
-#define FC_TIPI_MOUSE_DISABLE 0x61ae
+#define FC_STRCAT 0x6142
+#define FC_STRTOK 0x6146
+#define FC_STRTOKPEEK 0x614a
+#define FC_STRLEN 0x614e
+#define FC_STRCMP 0x6152
+#define FC_STRCMPI 0x6156
+#define FC_INDEXOF 0x615a
+#define FC_LINDEXOF 0x615e
+#define FC_STR_STARTSWITH 0x6162
+#define FC_STR_ENDSWITH 0x6166
+#define FC_BASICTOCSTR 0x616a
+#define FC_STRSET 0x616e
+#define FC_NEXT_TOKEN 0x6172
+#define FC_BEEP 0x6176
+#define FC_HONK 0x617a
+#define FC_SET_IDENTIFY_HOOK 0x617e
+#define FC_VDP_SETCHAR 0x6182
+#define FC_VDP_GET_CURSOR_ADDR 0x6186
+#define FC_UI_DROP_DOWN 0x618a
+#define FC_UI_GOTOXY 0x618e
+#define FC_SPEECH_RESET 0x6192
+#define FC_DETECT_SPEECH 0x6196
+#define FC_SAY_VOCAB 0x619a
+#define FC_SAY_DATA 0x619e
+#define FC_SPEECH_START 0x61a2
+#define FC_SPEECH_CONTINUE 0x61a6
+#define FC_SPEECH_WAIT 0x61aa
+#define FC_TIPI_MOUSE 0x61ae
+#define FC_TIPI_MOUSE_MOVE 0x61b2
+#define FC_TIPI_MOUSE_ENABLE 0x61b6
+#define FC_TIPI_MOUSE_DISABLE 0x61ba
+#define FC_TLS_CONNECT 0x61be
+#define FC_TLS_CLOSE 0x61c2
+#define FC_TLS_READ_SOCKET 0x61c6
+#define FC_TLS_SEND_CHARS 0x61ca
+#define FC_INIT_SOCKET_BUFFER 0x61ce
+#define FC_READLINE 0x61d2
+#define FC_READSTREAM 0x61d6
 
 // function: void fc_tputc(int c)
 DECL_FC_API_CALL(FC_TPUTC, fc_tputc, void, (int c), (c))
@@ -394,6 +424,15 @@ DECL_FC_API_CALL(FC_STRCPY, fc_strcpy, char *, (char *d, const char *s), (d, s))
 // function: char * fc_strncpy(char *dest, char *src, int limit)
 DECL_FC_API_CALL(FC_STRNCPY, fc_strncpy, char *, (char *dest, char *src, int limit), (dest, src, limit))
 
+// function: char * fc_strcat(char *dst, const char *add)
+DECL_FC_API_CALL(FC_STRCAT, fc_strcat, char *, (char *dst, const char *add), (dst, add))
+
+// function: char * fc_strtok(char *str, int delim)
+DECL_FC_API_CALL(FC_STRTOK, fc_strtok, char *, (char *str, int delim), (str, delim))
+
+// function: char * fc_strtokpeek(char *str, int delim)
+DECL_FC_API_CALL(FC_STRTOKPEEK, fc_strtokpeek, char *, (char *str, int delim), (str, delim))
+
 // function: int fc_strlen(const char *s)
 DECL_FC_API_CALL(FC_STRLEN, fc_strlen, int, (const char *s), (s))
 
@@ -477,5 +516,26 @@ DECL_FC_API_CALL(FC_TIPI_MOUSE_ENABLE, fc_tipi_mouse_enable, void, (struct Mouse
 
 // function: void fc_tipi_mouse_disable()
 DECL_FC_API_CALL(FC_TIPI_MOUSE_DISABLE, fc_tipi_mouse_disable, void, (), ())
+
+// function: unsigned int fc_tls_connect(unsigned int socketId, unsigned char* hostname, unsigned char* port)
+DECL_FC_API_CALL(FC_TLS_CONNECT, fc_tls_connect, unsigned int, (unsigned int socketId, unsigned char* hostname, unsigned char* port), (socketId, hostname, port))
+
+// function: unsigned int fc_tls_close(unsigned int socketId)
+DECL_FC_API_CALL(FC_TLS_CLOSE, fc_tls_close, unsigned int, (unsigned int socketId), (socketId))
+
+// function: int fc_tls_read_socket(unsigned int socketId, unsigned char* buf, int bufsize)
+DECL_FC_API_CALL(FC_TLS_READ_SOCKET, fc_tls_read_socket, int, (unsigned int socketId, unsigned char* buf, int bufsize), (socketId, buf, bufsize))
+
+// function: int fc_tls_send_chars(unsigned int socketId, unsigned char* buf, int size)
+DECL_FC_API_CALL(FC_TLS_SEND_CHARS, fc_tls_send_chars, int, (unsigned int socketId, unsigned char* buf, int size), (socketId, buf, size))
+
+// function: void fc_init_socket_buffer(struct SocketBuffer* socket_buf, int tls, unsigned int socketId)
+DECL_FC_API_CALL(FC_INIT_SOCKET_BUFFER, fc_init_socket_buffer, void, (struct SocketBuffer* socket_buf, int tls, unsigned int socketId), (socket_buf, tls, socketId))
+
+// function: char* fc_readline(struct SocketBuffer* socket_buf)
+DECL_FC_API_CALL(FC_READLINE, fc_readline, char*, (struct SocketBuffer* socket_buf), (socket_buf))
+
+// function: int fc_readstream(struct SocketBuffer* socket_buf, unsigned char* block, int limit)
+DECL_FC_API_CALL(FC_READSTREAM, fc_readstream, int, (struct SocketBuffer* socket_buf, unsigned char* block, int limit), (socket_buf, block, limit))
 
 #endif

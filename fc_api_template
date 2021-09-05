@@ -171,5 +171,25 @@ struct __attribute__((__packed__)) MouseData {
 #define MB_MID 0x04
 
 /*
+  State for reentrant bufferedio socket api
+ */
+struct __attribute__((__packed__)) SocketBuffer {
+  unsigned int socket_id;
+  char buffer[256];
+  int available;
+  char lastline[256];
+  int loaded;
+  int tls;
+};
+
+#define TLS 1
+#define TCP 0
+
+
+/*
   Rom address tables
 */
+
+// memcpy is special, it is in all bank of the cartridge
+extern void* memcpy(void* dest, const void* src, int count);
+

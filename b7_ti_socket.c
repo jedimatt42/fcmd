@@ -7,15 +7,52 @@
 #include <string.h>
 
 #define TI_SOCKET_REQUEST 0x22
+#define TLS_SOCKET_REQUEST 0x24
 #define TI_SOCKET_OPEN 0x01
 #define TI_SOCKET_CLOSE 0x02
 #define TI_SOCKET_WRITE 0x03
 #define TI_SOCKET_READ 0x04
 
+static unsigned int connect(unsigned char type, unsigned int socketId, unsigned char* hostname, unsigned char* port);
+static unsigned int close(unsigned char type, unsigned int socketId);
+static int send_chars(unsigned char type, unsigned int socketId, unsigned char* buf, int size);
+static int read_socket(unsigned char type, unsigned int socketId, unsigned char* buf, int bufsize);
 
 unsigned int tcp_connect(unsigned int socketId, unsigned char* hostname, unsigned char* port) {
+  return connect(TI_SOCKET_REQUEST, socketId, hostname, port);
+}
+
+unsigned int tls_connect(unsigned int socketId, unsigned char* hostname, unsigned char* port) {
+  return connect(TLS_SOCKET_REQUEST, socketId, hostname, port);
+}
+
+int tcp_send_chars(unsigned int socketId, unsigned char* buf, int size) {
+  return send_chars(TI_SOCKET_REQUEST, socketId, buf, size);
+}
+
+int tls_send_chars(unsigned int socketId, unsigned char* buf, int size) {
+  return send_chars(TLS_SOCKET_REQUEST, socketId, buf, size);
+}
+
+int tcp_read_socket(unsigned int socketId, unsigned char* buf, int bufsize) {
+  return read_socket(TI_SOCKET_REQUEST, socketId, buf, bufsize);
+}
+
+int tls_read_socket(unsigned int socketId, unsigned char* buf, int bufsize) {
+  return read_socket(TLS_SOCKET_REQUEST, socketId, buf, bufsize);
+}
+
+unsigned int tcp_close(unsigned int socketId) {
+  return close(TI_SOCKET_REQUEST, socketId);
+}
+
+unsigned int tls_close(unsigned int socketId) {
+  return close(TLS_SOCKET_REQUEST, socketId);
+}
+
+static unsigned int connect(unsigned char type, unsigned int socketId, unsigned char* hostname, unsigned char* port) {
   unsigned char tcpbuf[256];
-  tcpbuf[0] = TI_SOCKET_REQUEST;
+  tcpbuf[0] = type;
   tcpbuf[1] = socketId;
   tcpbuf[2] = TI_SOCKET_OPEN;
   unsigned char* cursor = tcpbuf + 3;
@@ -36,9 +73,9 @@ unsigned int tcp_connect(unsigned int socketId, unsigned char* hostname, unsigne
   return (unsigned int)tcpbuf[0];
 }
 
-int tcp_send_chars(unsigned int socketId, unsigned char* buf, int size) {
+static int send_chars(unsigned char type, unsigned int socketId, unsigned char* buf, int size) {
   unsigned char tcpbuf[260];
-  tcpbuf[0] = TI_SOCKET_REQUEST;
+  tcpbuf[0] = type;
   tcpbuf[1] = socketId;
   tcpbuf[2] = TI_SOCKET_WRITE;
 
@@ -57,9 +94,9 @@ int tcp_send_chars(unsigned int socketId, unsigned char* buf, int size) {
   return tcpbuf[0];
 }
 
-int tcp_read_socket(unsigned int socketId, unsigned char* buf, int bufsize) {
+static int read_socket(unsigned char type, unsigned int socketId, unsigned char* buf, int bufsize) {
   unsigned char request[5];
-  request[0] = TI_SOCKET_REQUEST;
+  request[0] = type;
   request[1] = socketId;
   request[2] = TI_SOCKET_READ;
   request[3] = bufsize >> 8;
@@ -72,9 +109,9 @@ int tcp_read_socket(unsigned int socketId, unsigned char* buf, int bufsize) {
   return recvsize;
 }
 
-unsigned int tcp_close(unsigned int socketId) {
+static unsigned int close(unsigned char type, unsigned int socketId) {
   unsigned char tcpbuf[3];
-  tcpbuf[0] = TI_SOCKET_REQUEST;
+  tcpbuf[0] = type;
   tcpbuf[1] = socketId;
   tcpbuf[2] = TI_SOCKET_CLOSE;
   tipi_on();

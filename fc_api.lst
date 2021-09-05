@@ -56,6 +56,9 @@ atoi
 htoi
 strcpy
 strncpy
+strcat
+strtok
+strtokpeek
 strlen
 strcmp
 strcmpi
@@ -87,3 +90,12 @@ tipi_mouse
 updatePointer tipi_mouse_move
 enablePointer tipi_mouse_enable
 disablePointer tipi_mouse_disable
+
+tls_connect
+tls_close
+tls_read_socket
+tls_send_chars
+
+init_socket_buffer
+readline
+readstream

@@ -3,11 +3,16 @@ MEMORY
   upper_exp  (wx) : ORIGIN = 0xA000, LENGTH = 0x6000 /* 24k upper ram */
 }
 
+/* memcpy will be called by the compiler in some implicit situations. */
+/*  use the well known address of this routine in the Force Command module */
+/*  it is at this address in every bank of the cartridge ROM */
+memcpy = 0x605a;
+
 SECTIONS
 {
   /* file header */
   header : {
-    objects/_header.o(.text)
+    objects/_header.o(.text);
   } >upper_exp
 
   /* common */
