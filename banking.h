@@ -29,9 +29,7 @@ extern int trampdata;
  *
  *   static inline int far_sum(int a, int b);
  *
- * Functions that return an 8bit value (char) must use DECLARE_BANKED_CHAR
- * instead. This is required to prevent incorrect manipulation of the
- * return value.
+ * No support for returning an 8bit value, use an int instead.
  *
  * Functions with a void return type use a different macro. Usage is the
  * same as the earlier two, but you do not specify the return_type parameter.

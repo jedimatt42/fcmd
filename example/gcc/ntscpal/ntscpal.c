@@ -1,6 +1,6 @@
 #include <fc_api.h>
 
-int main(char* args) {
+int fc_main(char* args) {
   struct DisplayInformation info;
 
   fc_display_info(&info);

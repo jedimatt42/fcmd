@@ -47,7 +47,7 @@ void ansi_table() {
    fc_tputc('\n');
 }
 
-int main(char* args) {
+int fc_main(char* args) {
   ansi_table();
 
   return 0;

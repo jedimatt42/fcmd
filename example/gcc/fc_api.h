@@ -1,6 +1,14 @@
 #ifndef _FC_API_H
 #define _FC_API_H 1
 
+/*
+ * Expected signature of main function 
+ * non-zero return indicates error to ForceCommand.
+ *   This may trigger additional environment restoration upon return.
+ * command line parameters are passed as a single un-parsed buffer.
+ */
+int fc_main(char* args);
+
 #define FC_SYS *(int *)0x6080
 
 #define DECL_FC_API_CALL(index, func, return_type, arg_sig, args)     \
@@ -58,15 +66,15 @@ struct __attribute__((__packed__)) SamsInformation {
   Peripheral Access Block
 */
 struct __attribute__((__packed__)) PAB {
-    unsigned char OpCode;			// see DSR_xxx list above
-    unsigned char Status;			// file type and error code (DSR_ERR_xxx and DSR_TYPE_xxx)
+    unsigned char OpCode;		// see DSR_xxx list above
+    unsigned char Status;		// file type and error code (DSR_ERR_xxx and DSR_TYPE_xxx)
     unsigned int  VDPBuffer;		// address of the data buffer in VDP memory
-    unsigned char RecordLength;	// size of records. Not used for PROGRAM type. >00 on open means autodetect
+    unsigned char RecordLength;		// size of records. Not used for PROGRAM type. >00 on open means autodetect
     unsigned char CharCount;		// number of bytes read or number of bytes to write
     unsigned int  RecordNumber;		// record number for normal files, available bytes (LOAD or SAVE) for PROGRAM type
-    unsigned char ScreenOffset;	// Used in BASIC for screen BIAS. Also returns file status on Status call. (DSR_STATUS_xxx)
+    unsigned char ScreenOffset;		// Used in BASIC for screen BIAS. Also returns file status on Status call. (DSR_STATUS_xxx)
     unsigned char NameLength;		// for this implementation only, set to zero to read the length from the string
-    unsigned char *pName;			// for this implementation only, must be a valid C String even if length is set
+    char *pName;			// for this implementation only, must be a valid C String even if length is set
 };
 
 /*
@@ -331,8 +339,8 @@ DECL_FC_API_CALL(FC_DSR_CLOSE, fc_dsr_close, unsigned int, (struct DeviceService
 // function: unsigned int fc_dsr_read(struct DeviceServiceRoutine* dsr, struct PAB* pab, int recordNumber)
 DECL_FC_API_CALL(FC_DSR_READ, fc_dsr_read, unsigned int, (struct DeviceServiceRoutine* dsr, struct PAB* pab, int recordNumber), (dsr, pab, recordNumber))
 
-// function: unsigned int fc_dsr_write(struct DeviceServiceRoutine* dsr, struct PAB* pab, unsigned char* record, int reclen)
-DECL_FC_API_CALL(FC_DSR_WRITE, fc_dsr_write, unsigned int, (struct DeviceServiceRoutine* dsr, struct PAB* pab, unsigned char* record, int reclen), (dsr, pab, record, reclen))
+// function: unsigned int fc_dsr_write(struct DeviceServiceRoutine* dsr, struct PAB* pab, char* record, int reclen)
+DECL_FC_API_CALL(FC_DSR_WRITE, fc_dsr_write, unsigned int, (struct DeviceServiceRoutine* dsr, struct PAB* pab, char* record, int reclen), (dsr, pab, record, reclen))
 
 // function: unsigned int fc_dsr_status(struct DeviceServiceRoutine* dsr, struct PAB* pab)
 DECL_FC_API_CALL(FC_DSR_STATUS, fc_dsr_status, unsigned int, (struct DeviceServiceRoutine* dsr, struct PAB* pab), (dsr, pab))
@@ -373,17 +381,17 @@ DECL_FC_API_CALL(FC_LVL2_RMDIR, fc_lvl2_rmdir, unsigned int, (int crubase, unsig
 // function: unsigned int fc_lvl2_rendir(int crubase, unsigned int iocode, char *oldname, char *newname)
 DECL_FC_API_CALL(FC_LVL2_RENDIR, fc_lvl2_rendir, unsigned int, (int crubase, unsigned int iocode, char *oldname, char *newname), (crubase, iocode, oldname, newname))
 
-// function: unsigned int fc_tcp_connect(unsigned int socketId, unsigned char* hostname, unsigned char* port)
-DECL_FC_API_CALL(FC_TCP_CONNECT, fc_tcp_connect, unsigned int, (unsigned int socketId, unsigned char* hostname, unsigned char* port), (socketId, hostname, port))
+// function: unsigned int fc_tcp_connect(unsigned int socketId, char* hostname, char* port)
+DECL_FC_API_CALL(FC_TCP_CONNECT, fc_tcp_connect, unsigned int, (unsigned int socketId, char* hostname, char* port), (socketId, hostname, port))
 
 // function: unsigned int fc_tcp_close(unsigned int socketId)
 DECL_FC_API_CALL(FC_TCP_CLOSE, fc_tcp_close, unsigned int, (unsigned int socketId), (socketId))
 
-// function: int fc_tcp_read_socket(unsigned int socketId, unsigned char* buf, int bufsize)
-DECL_FC_API_CALL(FC_TCP_READ_SOCKET, fc_tcp_read_socket, int, (unsigned int socketId, unsigned char* buf, int bufsize), (socketId, buf, bufsize))
+// function: int fc_tcp_read_socket(unsigned int socketId, char* buf, int bufsize)
+DECL_FC_API_CALL(FC_TCP_READ_SOCKET, fc_tcp_read_socket, int, (unsigned int socketId, char* buf, int bufsize), (socketId, buf, bufsize))
 
-// function: int fc_tcp_send_chars(unsigned int socketId, unsigned char* buf, int size)
-DECL_FC_API_CALL(FC_TCP_SEND_CHARS, fc_tcp_send_chars, int, (unsigned int socketId, unsigned char* buf, int size), (socketId, buf, size))
+// function: int fc_tcp_send_chars(unsigned int socketId, char* buf, int size)
+DECL_FC_API_CALL(FC_TCP_SEND_CHARS, fc_tcp_send_chars, int, (unsigned int socketId, char* buf, int size), (socketId, buf, size))
 
 // function: int fc_tipi_on()
 DECL_FC_API_CALL(FC_TIPI_ON, fc_tipi_on, int, (), ())
@@ -391,11 +399,11 @@ DECL_FC_API_CALL(FC_TIPI_ON, fc_tipi_on, int, (), ())
 // function: void fc_tipi_off()
 DECL_FC_API_CALL(FC_TIPI_OFF, fc_tipi_off, void, (), ())
 
-// function: void fc_tipi_sendmsg(unsigned int len, const unsigned char *buf)
-DECL_FC_API_CALL(FC_TIPI_SENDMSG, fc_tipi_sendmsg, void, (unsigned int len, const unsigned char *buf), (len, buf))
+// function: void fc_tipi_sendmsg(unsigned int len, const char* buf)
+DECL_FC_API_CALL(FC_TIPI_SENDMSG, fc_tipi_sendmsg, void, (unsigned int len, const char* buf), (len, buf))
 
-// function: void fc_tipi_recvmsg(unsigned int *len, unsigned char *buf)
-DECL_FC_API_CALL(FC_TIPI_RECVMSG, fc_tipi_recvmsg, void, (unsigned int *len, unsigned char *buf), (len, buf))
+// function: void fc_tipi_recvmsg(unsigned int* len, char* buf)
+DECL_FC_API_CALL(FC_TIPI_RECVMSG, fc_tipi_recvmsg, void, (unsigned int* len, char* buf), (len, buf))
 
 // function: void fc_datetime(struct DateTime* dt)
 DECL_FC_API_CALL(FC_DATETIME, fc_datetime, void, (struct DateTime* dt), (dt))
@@ -517,17 +525,17 @@ DECL_FC_API_CALL(FC_TIPI_MOUSE_ENABLE, fc_tipi_mouse_enable, void, (struct Mouse
 // function: void fc_tipi_mouse_disable()
 DECL_FC_API_CALL(FC_TIPI_MOUSE_DISABLE, fc_tipi_mouse_disable, void, (), ())
 
-// function: unsigned int fc_tls_connect(unsigned int socketId, unsigned char* hostname, unsigned char* port)
-DECL_FC_API_CALL(FC_TLS_CONNECT, fc_tls_connect, unsigned int, (unsigned int socketId, unsigned char* hostname, unsigned char* port), (socketId, hostname, port))
+// function: unsigned int fc_tls_connect(unsigned int socketId, char* hostname, char* port)
+DECL_FC_API_CALL(FC_TLS_CONNECT, fc_tls_connect, unsigned int, (unsigned int socketId, char* hostname, char* port), (socketId, hostname, port))
 
 // function: unsigned int fc_tls_close(unsigned int socketId)
 DECL_FC_API_CALL(FC_TLS_CLOSE, fc_tls_close, unsigned int, (unsigned int socketId), (socketId))
 
-// function: int fc_tls_read_socket(unsigned int socketId, unsigned char* buf, int bufsize)
-DECL_FC_API_CALL(FC_TLS_READ_SOCKET, fc_tls_read_socket, int, (unsigned int socketId, unsigned char* buf, int bufsize), (socketId, buf, bufsize))
+// function: int fc_tls_read_socket(unsigned int socketId, char* buf, int bufsize)
+DECL_FC_API_CALL(FC_TLS_READ_SOCKET, fc_tls_read_socket, int, (unsigned int socketId, char* buf, int bufsize), (socketId, buf, bufsize))
 
-// function: int fc_tls_send_chars(unsigned int socketId, unsigned char* buf, int size)
-DECL_FC_API_CALL(FC_TLS_SEND_CHARS, fc_tls_send_chars, int, (unsigned int socketId, unsigned char* buf, int size), (socketId, buf, size))
+// function: int fc_tls_send_chars(unsigned int socketId, char* buf, int size)
+DECL_FC_API_CALL(FC_TLS_SEND_CHARS, fc_tls_send_chars, int, (unsigned int socketId, char* buf, int size), (socketId, buf, size))
 
 // function: void fc_init_socket_buffer(struct SocketBuffer* socket_buf, int tls, unsigned int socketId)
 DECL_FC_API_CALL(FC_INIT_SOCKET_BUFFER, fc_init_socket_buffer, void, (struct SocketBuffer* socket_buf, int tls, unsigned int socketId), (socket_buf, tls, socketId))
@@ -535,7 +543,7 @@ DECL_FC_API_CALL(FC_INIT_SOCKET_BUFFER, fc_init_socket_buffer, void, (struct Soc
 // function: char* fc_readline(struct SocketBuffer* socket_buf)
 DECL_FC_API_CALL(FC_READLINE, fc_readline, char*, (struct SocketBuffer* socket_buf), (socket_buf))
 
-// function: int fc_readstream(struct SocketBuffer* socket_buf, unsigned char* block, int limit)
-DECL_FC_API_CALL(FC_READSTREAM, fc_readstream, int, (struct SocketBuffer* socket_buf, unsigned char* block, int limit), (socket_buf, block, limit))
+// function: int fc_readstream(struct SocketBuffer* socket_buf, char* block, int limit)
+DECL_FC_API_CALL(FC_READSTREAM, fc_readstream, int, (struct SocketBuffer* socket_buf, char* block, int limit), (socket_buf, block, limit))
 
 #endif

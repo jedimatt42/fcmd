@@ -15,7 +15,7 @@ inline void VDP_SET_ADDRESS(unsigned int x) { VDPWA = ((x) & 0xff); VDPWA = ((x)
 // -------------------------------------------------
 
   // use upper expansion as our buffer (after we take 8k for our own headroom)
-unsigned char* sample = (char*)0xC000;
+char* sample = (char*)0xC000;
 int sample_len = 0;
 
 unsigned char get_nibble(unsigned char c, int* state) {
@@ -78,7 +78,7 @@ void __attribute__((noinline)) play_sample() {
   }
 }
 
-int main(char* args) {
+int fc_main(char* args) {
   // expect DV80 file of hex data
   struct DeviceServiceRoutine* dsr;
   char fname_buffer[30];

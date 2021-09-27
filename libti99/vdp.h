@@ -253,7 +253,7 @@ inline void vdpmemset(int pAddr, int ch, int cnt) {
 // Inputs: VDP address to write to, CPU address to copy from, number of bytes to copy
 // void vdpmemcpy(int pAddr, const unsigned char *pSrc, int cnt);
 //   inlining this will be about the same expense as a bankswitch call.
-inline void vdpmemcpy(int pAddr, const unsigned char *pSrc, int cnt)
+inline void vdpmemcpy(int pAddr, const char *pSrc, int cnt)
 {
 	VDP_SET_ADDRESS_WRITE(pAddr);
 	while (cnt--)

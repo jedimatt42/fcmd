@@ -66,7 +66,7 @@ inline void VDP_SET_ADDRESS_WRITE(unsigned int x) { VDPWA = ((x) & 0xff); VDPWA 
 // Inputs: VDP address to write to, CPU address to copy from, number of bytes to copy
 // void vdpmemcpy(int pAddr, const unsigned char *pSrc, int cnt);
 //   inlining this will be about the same expense as a bankswitch call.
-inline void vdpmemcpy(int pAddr, const unsigned char* pSrc, int cnt)
+inline void vdpmemcpy(int pAddr, const char* pSrc, int cnt)
 {
   VDP_SET_ADDRESS_WRITE(pAddr);
   while (cnt--)
@@ -86,14 +86,14 @@ void fetchInfo() {
   vdp_io_buf = sys_info.vdp_io_buf;
 }
 
-int main(char* args) {
+int fc_main(char* args) {
   fetchInfo();
 
   fc_init_socket_buffer(&control, TCP, 0);
   fc_init_socket_buffer(&data, TCP, 1);
 
   // allocate a common buffers on the stack
-  unsigned char host[30];
+  char host[30];
   hostname = host;
 
   char commandbuf[120];

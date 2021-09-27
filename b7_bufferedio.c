@@ -18,10 +18,10 @@ void init_socket_buffer(struct SocketBuffer* socket_buf, int tls, unsigned int s
 
 static int socket_read(struct SocketBuffer* socket_buf) {
     if (socket_buf->tls) {
-        return bk_tls_read_socket(socket_buf->socket_id, socket_buf->buffer, 256);
+        return tls_read_socket(socket_buf->socket_id, socket_buf->buffer, 256);
     }
     else {
-        return bk_tcp_read_socket(socket_buf->socket_id, socket_buf->buffer, 256);
+        return tcp_read_socket(socket_buf->socket_id, socket_buf->buffer, 256);
     }
 }
 
@@ -42,8 +42,11 @@ char* readline(struct SocketBuffer* socket_buf) {
                 socket_buf->available--;
                 crlfstate = 1;
             }
-            else if (crlfstate == 1 && socket_buf->buffer[i] == 10) {
-                socket_buf->lastline[socket_buf->loaded++] = socket_buf->buffer[i++];
+            else if (socket_buf->buffer[i] == 10) {
+                socket_buf->lastline[socket_buf->loaded] = 10;
+                if (crlfstate != 1) {
+                    socket_buf->loaded++;
+                }
                 socket_buf->available--;
                 return socket_buf->lastline;
             }
@@ -58,7 +61,7 @@ char* readline(struct SocketBuffer* socket_buf) {
 /*
     Fills a block with bytes from buffer, upto limit. Returns bytes read.
 */
-int readstream(struct SocketBuffer* socket_buf, unsigned char* block, int limit) {
+int readstream(struct SocketBuffer* socket_buf, char* block, int limit) {
     bk_strset(block, 0, limit);
     int blockload = 0;
     int retries = 0;

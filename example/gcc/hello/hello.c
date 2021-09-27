@@ -113,7 +113,7 @@ void info() {
   }
 }
 
-int main(char* args) {
+int fc_main(char* args) {
   info();
 
   char buf[2];

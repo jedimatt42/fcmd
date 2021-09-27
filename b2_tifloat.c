@@ -9,7 +9,7 @@
 
 #ifndef _USE_FAC
 
-static void __attribute__((noinline)) twosComplement(unsigned char* bytes) {
+static void __attribute__((noinline)) twosComplement(char* bytes) {
   unsigned int word0 = ((unsigned int)bytes[1]) << 8;
   word0 |= ((unsigned int)bytes[2]);
   word0 = ~word0;
@@ -18,7 +18,7 @@ static void __attribute__((noinline)) twosComplement(unsigned char* bytes) {
   bytes[2] = (word0 & 0xff);
 }
 
-int ti_floatToInt(unsigned char* bytes) {
+int ti_floatToInt(char* bytes) {
   int signbit = bytes[1] & 0x80;
 
   if (signbit) {
@@ -52,9 +52,9 @@ int ti_floatToInt(unsigned char* bytes) {
 #ifdef _USE_FAC
 
 
-#define FAC ((unsigned char*)0x834A)
+#define FAC ((char*)0x834A)
 
-int ti_floatToInt(unsigned char* bytes) {
+int ti_floatToInt(char* bytes) {
   // copy to FAC in scratchpad ram - byte[0] is the BASIC data type byte (8)
   memcpy(FAC, bytes+1, 8);
 

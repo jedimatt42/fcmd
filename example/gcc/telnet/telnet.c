@@ -24,7 +24,7 @@
 #define IS 0
 
 #define READ_BUF_SIZE 128
-unsigned char tcp_buf[READ_BUF_SIZE];
+char tcp_buf[READ_BUF_SIZE];
 int tcp_buf_idx = 0;
 int tcp_buf_len = 0;
 
@@ -34,10 +34,10 @@ unsigned char take_char_blocking();
 void send_termtype();
 void send_window_size();
 
-unsigned char ANSI_UP[3] = { 0x1b, 0x5b, 0x41 };
-unsigned char ANSI_DOWN[3] = { 0x1b, 0x5b, 0x42 };
-unsigned char ANSI_RIGHT[3] = { 0x1b, 0x5b, 0x43 };
-unsigned char ANSI_LEFT[3] = { 0x1b, 0x5b, 0x44 };
+char ANSI_UP[3] = { 0x1b, 0x5b, 0x41 };
+char ANSI_DOWN[3] = { 0x1b, 0x5b, 0x42 };
+char ANSI_RIGHT[3] = { 0x1b, 0x5b, 0x43 };
+char ANSI_LEFT[3] = { 0x1b, 0x5b, 0x44 };
 
 int terminalKey(unsigned char key) {
   // translate output keys into correct terminal keyboard commands
@@ -57,11 +57,11 @@ int terminalKey(unsigned char key) {
     key -= 128;
   }
 
-  return !fc_tcp_send_chars(SOCKET, &key, 1);
+  return !fc_tcp_send_chars(SOCKET, (char*) &key, 1);
 }
 
 int send_cmd(unsigned char req, unsigned char param) {
-  unsigned char cmdbuf[3];
+  char cmdbuf[3];
   cmdbuf[0] = CMD;
   cmdbuf[1] = req;
   cmdbuf[2] = param;
@@ -119,7 +119,7 @@ void handle_sub_cmd(unsigned char request) {
 }
 
 void send_termtype() {
-  char termtype[10];
+  unsigned char termtype[10];
   termtype[0] = CMD;
   termtype[1] = SUB;
   termtype[2] = CMD_TERMINAL_TYPE;
@@ -130,14 +130,14 @@ void send_termtype() {
   termtype[7] = 'I';
   termtype[8] = CMD;
   termtype[9] = SE;
-  fc_tcp_send_chars(SOCKET, termtype, 10);
+  fc_tcp_send_chars(SOCKET, (char*) termtype, 10);
 }
 
 void send_window_size() {
   struct DisplayInformation d_info;
   fc_display_info(&d_info);
 
-  char window_size[9];
+  unsigned char window_size[9];
   window_size[0] = CMD;
   window_size[1] = SUB;
   window_size[2] = CMD_WINDOW_SIZE;
@@ -147,7 +147,7 @@ void send_window_size() {
   window_size[6] = d_info.displayHeight;
   window_size[7] = CMD;
   window_size[8] = SE;
-  fc_tcp_send_chars(SOCKET, window_size, 9);
+  fc_tcp_send_chars(SOCKET, (char*) window_size, 9);
 }
 
 unsigned char take_char_blocking() {
@@ -195,8 +195,8 @@ void process() {
 }
 
 unsigned char connect(char* args) {
-  unsigned char hostname[80];
-  unsigned char port[80];
+  char hostname[80];
+  char port[80];
 
   fc_strset(hostname, 0, 80);
   fc_strset(port, 0, 80);
@@ -240,12 +240,12 @@ unsigned char take_char(int* status) {
 
 void term_identify(int flag) {
   if (flag == 1) {
-    unsigned char buf[8];
+    char buf[8];
     buf[0] = 27;
     fc_strcpy(buf + 1, "[?1;0c");
     fc_tcp_send_chars(SOCKET, buf, 7);
   } else if (flag == 52) {
-    unsigned char buf[3];
+    char buf[3];
     buf[0] = 27;
     buf[1] = '/';
     buf[2] = 'Z';
@@ -253,10 +253,10 @@ void term_identify(int flag) {
   } else if (flag & 0x8000) {
     unsigned int x = (((unsigned int)flag) & 0x7F00) >> 8;
     unsigned int y = (((unsigned int)flag) & 0x00FF);
-    unsigned char buf[30];
+    char buf[30];
     buf[0] = 27;
     buf[1] = '[';
-    unsigned char* cursor = buf + 2;
+    char* cursor = buf + 2;
     fc_strcpy(cursor, fc_uint2str(y));
     cursor = buf + fc_strlen(buf);
     *cursor = ';';
@@ -302,7 +302,7 @@ void disconnect() {
   fc_tputs("Disconnected.\n");
 }
 
-int main(char* args) {
+int fc_main(char* args) {
   unsigned char result = connect(args);
   if (result != 255) {
     fc_tputs("Error connecting\n");

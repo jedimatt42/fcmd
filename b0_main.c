@@ -82,7 +82,7 @@ void checkBackspaceVar() {
   }
 }
 
-void main()
+void cartmain()
 {
   MUTE_SOUND();
   vdp_type = bk_detect_vdp();

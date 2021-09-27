@@ -133,7 +133,7 @@ unsigned int dsr_read(struct DeviceServiceRoutine* dsr, struct PAB* pab, int rec
   return result;
 }
 
-unsigned int dsr_write(struct DeviceServiceRoutine* dsr, struct PAB* pab, unsigned char* record, int reclen) {
+unsigned int dsr_write(struct DeviceServiceRoutine* dsr, struct PAB* pab, char* record, int reclen) {
   pab->OpCode = DSR_WRITE;
   pab->CharCount = reclen;
   vdpmemcpy(pab->VDPBuffer, record, reclen);

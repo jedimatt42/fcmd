@@ -4,8 +4,8 @@
 
 #define APP_VER "1.27"
 
+void cartmain();
 void initGlobals();
-void main();
 void sleep(int jiffies);
 void titleScreen();
 void playtipi();

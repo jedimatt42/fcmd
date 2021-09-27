@@ -8,7 +8,7 @@
 
 #include "b0_sams.h"
 
-extern int main(void);
+extern void cartmain(void);
 
 #ifdef __cplusplus
 extern "C"
@@ -79,7 +79,7 @@ void _start(void)
   }
 
   /* Start running C code */
-  main();
+  cartmain();
 
   __asm__("blwp @>0000");
 }

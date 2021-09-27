@@ -4,7 +4,7 @@
 #ifndef STRING_H
 #define STRING_H
 
-#include "banking.h"
+#include <banking.h>
 
 // strlen - returns the length of a zero terminated string
 int strlen(const char *s);

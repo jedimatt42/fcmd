@@ -4,8 +4,8 @@
 #include "b7_tipi_msg.h"
 
 
-#define GPLWS_R0 *((volatile unsigned int*)0x83E0)
-#define GPLWS_R1 *((volatile unsigned int*)0x83E2)
+#define GPLWS_R0 *((volatile int*)0x83E0)
+#define GPLWS_R1 *((volatile int*)0x83E2)
 
 void tipi_lib_init();
 
@@ -46,7 +46,7 @@ void tipi_lib_init()
 
     if (*dsrrom != 0) {
       dsrrom = ((unsigned int*) *dsrrom) + 2;
-      unsigned char* dsrname = (unsigned char*) dsrrom;
+      char* dsrname = (char*) dsrrom;
       // TIPI will always have device TIPI first in dsrlnk list.
       if (dsrname[0] == 4 && dsrname[1] == 'T' && dsrname[2] == 'I' && dsrname[3] == 'P' && dsrname[4] == 'I') {
         disableTipi();
@@ -59,18 +59,18 @@ void tipi_lib_init()
   tipi_crubase = 0x0000;
 }
 
-void tipi_recvmsg(unsigned int* len, unsigned char* buf)
+void tipi_recvmsg(unsigned int* len, char* buf)
 {
   GPLWS_R0 = 0;
-  GPLWS_R1 = (unsigned int)buf;
+  GPLWS_R1 = (int)buf;
   __asm__("lwpi >83E0\n\tmov @>4010,r4\n\tbl *r4\n\tlwpi >8300");
   *len = GPLWS_R0;
 }
 
-void tipi_sendmsg(unsigned int len, const unsigned char* buf)
+void tipi_sendmsg(unsigned int len, const char* buf)
 {
   GPLWS_R0 = len;
-  GPLWS_R1 = (unsigned int)buf;
+  GPLWS_R1 = (int)buf;
   __asm__("lwpi >83E0\n\tmov @>4012,r4\n\tbl *r4\n\tlwpi >8300");
 }
 
