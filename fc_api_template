@@ -1,6 +1,8 @@
 #ifndef _FC_API_H
 #define _FC_API_H 1
 
+#include <types.h>
+
 /*
  * Expected signature of main function 
  * non-zero return indicates error to ForceCommand.

@@ -125,6 +125,7 @@ int loadExecutable(const char* ext, int* cmd_type) {
         }
         return 1;
     }
+    return 1;
 }
 
 /* return true if there is a problem preparing memory */
@@ -214,7 +215,6 @@ int allocAndLoad(struct DeviceServiceRoutine* dsr, int iocode, char* filename, s
 int binLoad(struct DeviceServiceRoutine *dsr, int iocode, char *filename, struct AddInfo *addInfoPtr)
 {
     char *cpuAddr = (char *)0xA000;
-    unsigned char eof_offset = addInfoPtr->eof_offset;
 
     int totalBlocks = addInfoPtr->first_sector;
     if (totalBlocks == 0)

@@ -181,7 +181,7 @@ void __attribute__((noinline)) call_lvl2(int crubase, unsigned char operation) {
   struct NameLink* entry = (struct NameLink*) dsrrom->basiclnk;
   unsigned int searchname = 0x0100 | operation;
   while(entry != 0) {
-    unsigned int entryname = *((int*)entry->name);
+    unsigned int entryname = *((unsigned int*)entry->name);
     if (entryname == searchname) {
       addr = entry->routine;
       link = (unsigned int) entry;

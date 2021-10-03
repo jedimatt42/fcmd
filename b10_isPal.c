@@ -4,8 +4,6 @@
 int isPal() {
   volatile int cycles = 0;
 
-  volatile int limit = 6000;
-
   // wait for VDP interrupt
   // with limit loop, in case it doesn't physically exist
   // EVPC card might not have VDP-INT hooked up...

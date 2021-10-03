@@ -1,6 +1,6 @@
-#include "fc_api.h"
-#include "ioports.h"
-#include "kscan.h"
+#include <fc_api.h>
+#include <ioports.h>
+#include <kscan.h>
 
 struct DisplayInformation dinfo;
 

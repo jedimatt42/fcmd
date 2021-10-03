@@ -11,6 +11,7 @@ unsigned int kscan(unsigned int mode); // from kscan
 void gplvdp(int vect, int adr, int cnt); // from vdp_gplvdp
 void vdp_setchar(int pAddr, int ch); // write a char to screen address
 unsigned int conio_getvram(); // returns VDP address of cursor
+void raw_cputc(int k); // set character without advancing or term code 
 
 typedef void (*identify_callback)(int flag);
 
@@ -40,6 +41,7 @@ DECLARE_BANKED(kscan, BANK(8), unsigned int, bk_kscan, (unsigned int mode), (mod
 DECLARE_BANKED_VOID(vdp_setchar, BANK(8), bk_vdp_setchar, (int pAddr, int ch), (pAddr, ch))
 
 DECLARE_BANKED(conio_getvram, BANK(8), unsigned int, bk_conio_getvram, (), ())
+DECLARE_BANKED_VOID(raw_cputc, BANK(8), bk_raw_cputc, (int ch), (ch))
 
 #define tputs_rom(x) bk_tputs_ram(str2ram(x))
 

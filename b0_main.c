@@ -18,7 +18,6 @@
 #include "b4_dictionary.h"
 #include "b0_heap.h"
 #include "b8_terminal.h"
-#include "b8_getstr.h"
 #include "b8_setupScreen.h"
 #include "b10_isPal.h"
 #include "b10_detect_vdp.h"
@@ -28,6 +27,8 @@
 #include "b5_prompt.h"
 #include "b7_palette.h"
 #include "b0_runScript.h"
+#include "b8_getstr.h"
+#include "b13_ed.h"
 
 const char tipibeeps[] = {
   0x04, 0x9f, 0xbf, 0xdf, 0xff, 0x02,
@@ -125,7 +126,7 @@ void cartmain()
     bk_strset(commandbuf, 0, 255);
     prompt();
     history_on = 1;
-    bk_getstr(commandbuf, displayWidth - conio_x, backspace);
+    bk_commandLineEd(commandbuf, 256);
     bk_tputc('\n');
     history_on = 0;
     bk_handleCommand(commandbuf);

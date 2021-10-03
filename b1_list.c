@@ -71,7 +71,7 @@ void list_pop(struct List* list, char* buffer, int limit) {
   if (list->end > list->addr) {
     struct ListEntry* entry = (struct ListEntry*) list->addr;
     int cpylen = entry->length < limit ? entry->length : limit;
-    memcpy(buffer, entry->data, entry->length);
+    memcpy(buffer, entry->data, cpylen);
     list_remove_first(list);
   }
 }

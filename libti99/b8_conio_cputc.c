@@ -26,6 +26,10 @@ void inc_row() {
   }
 }
 
+void raw_cputc(int ch) {
+  // vdpchar(conio_getvram(), ch);
+}
+
 void cputc(int ch) {
   // handle some control codes
   switch (ch) {

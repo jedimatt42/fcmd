@@ -73,7 +73,7 @@ unsigned int existsDir(struct DeviceServiceRoutine* dsr, const char* pathname) {
 unsigned int existsFile(struct DeviceServiceRoutine* dsr, const char* pathname) {
   struct PAB pab;
   initPab(&pab);
-  pab.pName = (char*) pathname;
+  pab.pName = (unsigned char*) pathname;
   return dsr_status(dsr, &pab) != 0x0080;
 }
 
@@ -99,10 +99,10 @@ unsigned int dsr_open(struct DeviceServiceRoutine* dsr, struct PAB* pab, const c
   if (reclen != 0) {
     pab->RecordLength = reclen;
   }
-  pab->pName = (char*)fname;
+  pab->pName = (unsigned char*)fname;
 
   int res = mds_lvl3_dsrlnk(dsr->crubase, pab, VPAB);
-  vdpmemread(VPAB + 4, (&pab->RecordLength), 1);
+  vdpmemread(VPAB + 4, (char*) (&pab->RecordLength), 1);
   return res;
 }
 
@@ -126,7 +126,7 @@ unsigned int dsr_read(struct DeviceServiceRoutine* dsr, struct PAB* pab, int rec
   pab->CharCount = 0;
 
   unsigned char result = mds_lvl3_dsrlnk(dsr->crubase, pab, VPAB);
-  vdpmemread(VPAB + 5, (&pab->CharCount), 1);
+  vdpmemread(VPAB + 5, (char*) (&pab->CharCount), 1);
   if (! (pab->Status & DSR_TYPE_VARIABLE)) {
     pab->CharCount = pab->RecordLength;
   }

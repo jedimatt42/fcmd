@@ -1,6 +1,8 @@
 #ifndef _IOPORTS_H
 #define _IOPORTS_H 1
 
+#include "types.h"
+
 //*********************
 // VDP access ports
 //*********************
@@ -27,7 +29,7 @@ inline void VDP_SET_REGISTER(unsigned char r, unsigned char v) { VDPWA = (v); VD
 
 // vdpmemset - sets a count of VDP memory bytes to a value
 // Inputs: VDP address to start, the byte to set, and number of repeats
-inline void vdp_memset(int pAddr, int ch, int cnt) {
+inline void vdp_memset(uint16_t pAddr, int ch, int cnt) {
     VDP_SET_ADDRESS_WRITE(pAddr);
     while (cnt--) {
         VDPWD = ch;
@@ -38,7 +40,7 @@ inline void vdp_memset(int pAddr, int ch, int cnt) {
 // Inputs: VDP address to write to, CPU address to copy from, number of bytes to copy
 // void vdpmemcpy(int pAddr, const unsigned char *pSrc, int cnt);
 //   inlining this will be about the same expense as a bankswitch call.
-inline void vdp_memcpy(int pAddr, const unsigned char* pSrc, int cnt) {
+inline void vdp_memcpy(uint16_t pAddr, const char* pSrc, int cnt) {
     VDP_SET_ADDRESS_WRITE(pAddr);
     while (cnt--)
     {
@@ -49,7 +51,7 @@ inline void vdp_memcpy(int pAddr, const unsigned char* pSrc, int cnt) {
 // vdpmemread - copies a block of data from VDP to CPU memory
 // Inputs: VDP address to read from, CPU address to write to, number of bytes to copy
 // void vdpmemread(int pAddr, unsigned char *pDest, int cnt);
-inline void vdp_memread(int pAddr, unsigned char* pDest, int cnt) {
+inline void vdp_memread(uint16_t pAddr, char* pDest, int cnt) {
     VDP_SET_ADDRESS(pAddr);
     while (cnt--)
     {
@@ -61,7 +63,7 @@ inline void vdp_memread(int pAddr, unsigned char* pDest, int cnt) {
 // Inputs: VDP address to read
 // Outputs: byte
 // unsigned char vdpreadchar(int pAddr);
-inline unsigned char vdp_readchar(int pAddr) {
+inline unsigned char vdp_readchar(uint16_t pAddr) {
     VDP_SET_ADDRESS(pAddr);
     __asm("NOP");
     return VDPRD;

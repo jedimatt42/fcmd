@@ -264,8 +264,8 @@ inline void vdpmemcpy(int pAddr, const char *pSrc, int cnt)
 
 // vdpmemread - copies a block of data from VDP to CPU memory
 // Inputs: VDP address to read from, CPU address to write to, number of bytes to copy
-// void vdpmemread(int pAddr, unsigned char *pDest, int cnt);
-inline void vdpmemread(int pAddr, unsigned char *pDest, int cnt)
+// void vdpmemread(int pAddr, char *pDest, int cnt);
+inline void vdpmemread(int pAddr, char *pDest, int cnt)
 {
 	VDP_SET_ADDRESS(pAddr);
 	while (cnt--)

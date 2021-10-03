@@ -30,18 +30,25 @@
 
 struct __attribute__((__packed__)) Line {
   int length;
-  unsigned char data[80];
+  char data[80];
 };
 
 struct __attribute__((__packed__)) EditBuffer {
   int justRendered;
+  int screen_x;
+  int screen_y;
+  int max_lines;
+  int ed_mode;
   int offset_x;
   int offset_y;
   int lineCount;
   struct Line lines[];
 };
 
-#define MAX_LINE 250
+#define ED_FULL 1
+#define ED_LINE 2
+
+#define MAX_LINES 250
 
 #define EDIT_BUFFER ((struct EditBuffer*)0xA000)
 
@@ -50,8 +57,50 @@ static void renderLines();
 static void edit_loop(char* devpath);
 static void clearBuffer();
 
+int commandLineEd(char* cmdline, int limit) {
+  // command line editor using same code as full screen editor - mostly
+  if (sams_total_pages) {
+    int pagebase = bk_alloc_pages(1);
+    bk_map_page(pagebase, 0xA000);
+  }
+
+  EDIT_BUFFER->justRendered = 0;
+  EDIT_BUFFER->ed_mode = ED_LINE;
+  EDIT_BUFFER->max_lines = 1;
+  EDIT_BUFFER->lineCount = 1;
+  EDIT_BUFFER->screen_x = conio_x;
+  EDIT_BUFFER->screen_y = conio_y;
+  EDIT_BUFFER->offset_x = 0;
+  EDIT_BUFFER->offset_y = 0;
+
+  clearBuffer();
+
+  renderLines();
+
+  conio_x = EDIT_BUFFER->screen_x;
+  conio_y = EDIT_BUFFER->screen_y;
+
+  edit_loop(0); // null devpath as save is disabled.
+
+  bk_strncpy(cmdline, EDIT_BUFFER->lines[0].data, limit);
+
+  if (sams_total_pages) {
+    bk_free_pages(1);
+  }
+
+  return 0; // TODO return indicator of ctrl-c
+}
+
 void handleEd() {
   // A tiny DV80 editor
+  EDIT_BUFFER->justRendered = 0;
+  EDIT_BUFFER->ed_mode = ED_FULL;
+  EDIT_BUFFER->max_lines = MAX_LINES;
+  EDIT_BUFFER->lineCount = 1;
+  EDIT_BUFFER->screen_x = 0;
+  EDIT_BUFFER->screen_y = 0;
+  EDIT_BUFFER->offset_x = 0;
+  EDIT_BUFFER->offset_y = 0;
 
   struct DeviceServiceRoutine* dsr = 0;
 
@@ -89,7 +138,7 @@ void handleEd() {
     nTitleLine = 0;
     char cls[] = { 27, '[', '2', 'J', 0 };
     tputs_rom(cls);
-    renderLines();
+    renderLines(0, 0);
 
     conio_x = 0;
     conio_y = 0;
@@ -108,10 +157,11 @@ void handleEd() {
 
 static void clearBuffer() {
   // zero out the allocated memory buffer space (all of upper memory expansion)
-  bk_strset((char*)0xA000, 0, 24 * 1024);
+  bk_strset((char*)(EDIT_BUFFER->lines), 0, 80 * EDIT_BUFFER->max_lines);
 }
 
 static int loadFile(struct DeviceServiceRoutine* dsr, char* path) {
+  EDIT_BUFFER->lineCount = 0;
   clearBuffer();
 
   struct PAB pab;
@@ -141,21 +191,25 @@ static int loadFile(struct DeviceServiceRoutine* dsr, char* path) {
 static void renderLines() {
   if (!EDIT_BUFFER->justRendered) {
     EDIT_BUFFER->justRendered = 1;
+    if (EDIT_BUFFER->ed_mode == ED_FULL) {
     int y = EDIT_BUFFER->offset_y;
-    for (int i = 0; i < displayHeight; i++) {
-      // show all the lines available.
-      if (y < EDIT_BUFFER->lineCount) {
-        vdpmemcpy(gImage + (displayWidth * i), EDIT_BUFFER->lines[y].data + EDIT_BUFFER->offset_x, displayWidth);
-      } else {
-        vdpmemset(gImage + (displayWidth * i), 0, displayWidth);
+      for (int i = 0; i < displayHeight; i++) {
+	// show all the lines available.
+	if (y < EDIT_BUFFER->lineCount) {
+	  vdpmemcpy(gImage + (displayWidth * i), EDIT_BUFFER->lines[y].data + EDIT_BUFFER->offset_x, displayWidth);
+	} else {
+	  vdpmemset(gImage + (displayWidth * i), 0, displayWidth);
+	}
+	y++;
       }
-      y++;
+    } else {
+      vdpmemcpy(gImage + (displayWidth * EDIT_BUFFER->screen_y) + EDIT_BUFFER->screen_x, EDIT_BUFFER->lines[0].data + EDIT_BUFFER->offset_x, displayWidth - EDIT_BUFFER->screen_x); 
     }
   }
 }
 
 static void left() {
-  if (conio_x) {
+  if (conio_x - EDIT_BUFFER->screen_x) {
     conio_x--;
   } else {
     if (EDIT_BUFFER->offset_x) {
@@ -166,11 +220,11 @@ static void left() {
 }
 
 static void right() {
-  int lineLimit = EDIT_BUFFER->lines[conio_y + EDIT_BUFFER->offset_y].length;
-  if (conio_x < (displayWidth-1) && conio_x < lineLimit) {
+  int lineLimit = EDIT_BUFFER->lines[(conio_y - EDIT_BUFFER->screen_y) + EDIT_BUFFER->offset_y].length;
+  if (conio_x < (displayWidth-1) && (conio_x - EDIT_BUFFER->screen_x) < lineLimit) {
     conio_x++;
   } else {
-    int line_x = EDIT_BUFFER->offset_x + conio_x;
+    int line_x = EDIT_BUFFER->offset_x + (conio_x - EDIT_BUFFER->screen_x);
     if (line_x < 79 && line_x < lineLimit) {
       EDIT_BUFFER->offset_x++;
       renderLines();
@@ -180,16 +234,13 @@ static void right() {
 
 static void overwrite(int k) {
   // place the character on screen
-  int o_x = conio_x;
-  int o_y = conio_y;
-  bk_tputc(k);
-  conio_x = o_x;
-  conio_y = o_y;
+  bk_raw_cputc(k);
+
   // store in the record
-  int line_idx = conio_x + EDIT_BUFFER->offset_x;
-  struct Line* line = &(EDIT_BUFFER->lines[EDIT_BUFFER->offset_y + conio_y]);
+  int line_idx = conio_x + EDIT_BUFFER->offset_x - EDIT_BUFFER->screen_x;
+  struct Line* line = &(EDIT_BUFFER->lines[EDIT_BUFFER->offset_y + (conio_y - EDIT_BUFFER->screen_y)]);
   line->data[line_idx] = k;
-  if (conio_x + EDIT_BUFFER->offset_x == 79) {
+  if ((conio_x - EDIT_BUFFER->screen_x) + EDIT_BUFFER->offset_x == 79) {
     honk();
   } else {
     if (line->length < 80) {
@@ -203,16 +254,12 @@ static void overwrite(int k) {
 
 static void insert(int k) {
   // insert into current line
-  struct Line* line = &(EDIT_BUFFER->lines[EDIT_BUFFER->offset_y + conio_y]);
+  struct Line* line = &(EDIT_BUFFER->lines[EDIT_BUFFER->offset_y + (conio_y - EDIT_BUFFER->screen_y)]);
   if (line->length < 80) {
     // place the character on screen
-    int o_x = conio_x;
-    int o_y = conio_y;
-    bk_tputc(k);
-    conio_x = o_x;
-    conio_y = o_y;
+    bk_raw_cputc(k);
 
-    int imin = conio_x + EDIT_BUFFER->offset_x;
+    int imin = conio_x + EDIT_BUFFER->offset_x - EDIT_BUFFER->screen_x;
     for(int i = line->length-1; i >= imin; i--) {
       line->data[i+1] = line->data[i];
     }
@@ -226,9 +273,9 @@ static void insert(int k) {
 }
 
 static void erase() {
-  struct Line* line = &(EDIT_BUFFER->lines[EDIT_BUFFER->offset_y + conio_y]);
+  struct Line* line = &(EDIT_BUFFER->lines[EDIT_BUFFER->offset_y + (conio_y - EDIT_BUFFER->screen_y)]);
   // shift all the characters in the line one left
-  int x = conio_x + EDIT_BUFFER->offset_x;
+  int x = (conio_x - EDIT_BUFFER->screen_x) + EDIT_BUFFER->offset_x;
   if (x > 0) {
     x--;
     while (x < line->length) {
@@ -249,8 +296,8 @@ static void erase() {
 }
 
 static void deleteChar() {
-  struct Line* line = &(EDIT_BUFFER->lines[EDIT_BUFFER->offset_y + conio_y]);
-  int x = conio_x + EDIT_BUFFER->offset_x;
+  struct Line* line = &(EDIT_BUFFER->lines[EDIT_BUFFER->offset_y + (conio_y - EDIT_BUFFER->screen_y)]);
+  int x = (conio_x - EDIT_BUFFER->screen_x) + EDIT_BUFFER->offset_x;
   if (x == line->length) {
     honk();
     return;
@@ -264,8 +311,8 @@ static void deleteChar() {
 }
 
 static void jumpEOLonYchange() {
-  int lineLimit = EDIT_BUFFER->lines[conio_y + EDIT_BUFFER->offset_y].length;
-  while(EDIT_BUFFER->offset_x + conio_x > lineLimit) {
+  int lineLimit = EDIT_BUFFER->lines[(conio_y - EDIT_BUFFER->screen_y) + EDIT_BUFFER->offset_y].length;
+  while(EDIT_BUFFER->offset_x + (conio_x - EDIT_BUFFER->screen_x) > lineLimit) {
     EDIT_BUFFER->justRendered = 1;
     left();
   }
@@ -332,7 +379,7 @@ static void eraseLine() {
       *dst++ = *src++;
     }
     EDIT_BUFFER->lineCount--;
-    if (conio_y + EDIT_BUFFER->offset_y == EDIT_BUFFER->lineCount) {
+    if ((conio_y - EDIT_BUFFER->screen_y) + EDIT_BUFFER->offset_y == EDIT_BUFFER->lineCount) {
       up();
     }
   }
@@ -344,7 +391,7 @@ static void breakLine() {
   // text to the right of the cursor is moved to a new line inserted after the current line.
 
   // if there is no more room, honk...
-  if (EDIT_BUFFER->lineCount == MAX_LINE) {
+  if (EDIT_BUFFER->lineCount == EDIT_BUFFER->max_lines) {
     honk();
     return;
   }
@@ -513,30 +560,40 @@ static void edit_loop(char* devpath) {
     } else {
       switch (k) {
       case KEY_QUIT:
-        quit = 1;
+	if (EDIT_BUFFER->ed_mode == ED_FULL) {
+	  quit = 1;
+	}
         break;
       case KEY_LEFT:
-        if (insert_mode && backspace) {
-          erase();
-        } else {
-          left();
-        }
+	if (insert_mode && backspace) {
+	  erase();
+	} else {
+	  left();
+	}
         break;
       case KEY_RIGHT:
         right();
         break;
       case KEY_DOWN:
-        down();
+	if (EDIT_BUFFER->ed_mode == ED_FULL) {
+          down();
+	}
         break;
       case KEY_UP:
-        up();
+	if (EDIT_BUFFER->ed_mode == ED_FULL) {
+          up();
+	}
         break;
       case KEY_ENTER:
-        if (insert_mode) {
-          breakLine();
-        } else {
-          enter();
-        }
+	if (EDIT_BUFFER->ed_mode == ED_FULL) {
+	  if (insert_mode) {
+	    breakLine();
+	  } else {
+	    enter();
+	  }
+	} else {
+	  quit = 1;
+	}
         break;
       case KEY_ERASE:
         eraseLine();
@@ -545,10 +602,14 @@ static void edit_loop(char* devpath) {
         deleteChar();
         break;
       case KEY_SAVE:
-        save(devpath);
+	if (EDIT_BUFFER->ed_mode == ED_FULL) {
+          save(devpath);
+	}
         break;
       case KEY_AID:
-        showHelp();
+	if (EDIT_BUFFER->ed_mode == ED_FULL) {
+	  showHelp();
+	}
         break;
       case KEY_INSERT:
         insert_mode = !insert_mode;
