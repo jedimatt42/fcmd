@@ -14,6 +14,8 @@ void sams_hist_indexed(char* buffer, int limit, int idx);
 void vdp_hist_handler(char* buffer, int limit, int op);
 void vdp_hist_indexed(char* buffer, int limit, int idx);
 
+int history_on = 0;
+
 static void (*hist_handler)(char* buffer, int limit, int op);
 
 static int hist_page;

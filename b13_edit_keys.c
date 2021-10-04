@@ -30,6 +30,11 @@ int ed_handleKeys(char* devpath, int* insert_mode, int* cursor, int k) {
       ed_historyDown();
     }
     break;
+  case KEY_REDO:
+    if (EDIT_BUFFER->ed_mode == ED_LINE) {
+      ed_historyUp();
+    }
+    break;
   case KEY_UP:
     if (EDIT_BUFFER->ed_mode == ED_FULL) {
       ed_up();

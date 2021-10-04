@@ -11,6 +11,7 @@
 #define KEY_RIGHT 9
 #define KEY_DOWN 10
 #define KEY_UP 11
+#define KEY_REDO 6
 #define KEY_AID 1
 #define KEY_BREAK 2
 #define KEY_DELETE 3

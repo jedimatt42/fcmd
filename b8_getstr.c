@@ -6,12 +6,9 @@
 #include <string.h>
 #include <kscan.h>
 #include "b1_strutil.h"
-#include "b1_history.h"
 #include "b5_clock.h"
 #include "b0_globals.h"
 #include "b13_honk.h"
-
-int history_on = 0;
 
 // Requirements:
 //  Act like TI BASIC keyboard input as much as logical
@@ -65,27 +62,6 @@ void getstr(char* var, int limit, int backspace) {
         var[0] = 0;
         key = 13; // get out.
         break;
-      case 6: // F8 - redo
-      case 11: // Up Arrow
-        if (history_on) {
-          cclearxy(x, y, bk_strlen(var));
-          bk_history_redo(var, limit, HIST_GET);
-          gotoxy(x, y);
-          cputs(var);
-          gotoxy(x, y);
-          idx = 0;
-        }
-        break;
-      case 10: // Down Arrow
-        if (history_on) {
-          cclearxy(x, y, bk_strlen(var));
-          bk_history_redo(var, limit, HIST_GET_DEC);
-          gotoxy(x, y);
-          cputs(var);
-          gotoxy(x, y);
-          idx = 0;
-        }
-        break;
       case 8: // left arrow
         if (idx != 0) {
           idx--;
@@ -109,20 +85,6 @@ void getstr(char* var, int limit, int backspace) {
         }
         break;
       case 13: // return
-        if (var[0] == '!') {
-          int hist_ref = bk_atoi(var + 1);
-          if (hist_ref) {
-            cclearxy(x, y, bk_strlen(var));
-            bk_history_indexed(var, 256, hist_ref);
-            key = 0;
-            gotoxy(x, y);
-            cputs(var);
-            gotoxy(x, y);
-            idx = 0;
-          }
-        } else if (history_on) {
-          bk_history_redo(var, 256, HIST_STORE);
-        }
         break;
       default: // alpha numeric
         if (key >= 32 && key <= 122) {
