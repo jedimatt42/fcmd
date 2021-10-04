@@ -34,6 +34,10 @@ static int isAssignment(char* str) {
    scripts, and executables are considered
 */
 int must_close_command(char* buffer) {
+  if (isAssignment(buffer)) {
+    return 0;
+  }
+
   char* tok = bk_strtokpeek(buffer, ' ');
   if (MATCH(tok, str2ram("bar"))) return 0;
   if (MATCH(tok, str2ram("cls"))) return 0;
