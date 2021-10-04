@@ -13,7 +13,7 @@
 #include "conio.h"
 
 #define KEY_QUIT 145
-#define KEY_SAVE 147
+#define KEY_SAVE 151
 #define KEY_CTRL_R 146
 #define KEY_LEFT 8
 #define KEY_RIGHT 9
@@ -27,6 +27,8 @@
 #define KEY_SPACE 0x20
 #define KEY_TILDE 0x7E
 #define KEY_ENTER 13
+#define KEY_BEGIN 147 
+#define KEY_END 132
 
 struct __attribute__((__packed__)) Line {
   int length;
@@ -320,6 +322,21 @@ static void jumpEOLonYchange() {
   renderLines();
 }
 
+static void gotoEndOfLine() {
+  int lineLimit = EDIT_BUFFER->lines[(conio_y - EDIT_BUFFER->screen_y) + EDIT_BUFFER->offset_y].length;
+  conio_x = displayWidth - 1;
+  if (displayWidth == 40 && lineLimit > 40) {
+    EDIT_BUFFER->offset_x = (lineLimit - 40) + EDIT_BUFFER->screen_x;
+  }
+  jumpEOLonYchange();
+}
+
+static void gotoBeginningOfLine() {
+  conio_x = EDIT_BUFFER->screen_x;
+  EDIT_BUFFER->offset_x = 0;
+  renderLines();
+}
+
 static void down() {
   if (conio_y < (displayHeight-1) && conio_y < (EDIT_BUFFER->lineCount-1)) {
     conio_y++;
@@ -475,7 +492,7 @@ static void save(char* devpath) {
   dropDown(4);
   conio_x = 2;
   conio_y = 1;
-  tputs_rom("Save File: ");
+  tputs_rom("Write File: ");
   conio_x = 2;
   conio_y = 2;
   char filename[80];
@@ -512,11 +529,11 @@ static void showHelp() {
   int o_x = conio_x;
   int o_y = conio_y;
 
-  dropDown(9);
+  dropDown(11);
 
   conio_x = 2;
   conio_y = 1;
-  tputs_rom("^-S : Save");
+  tputs_rom("^-W : Write File");
   conio_x = 2;
   conio_y++;
   tputs_rom("^-Q : Quit");
@@ -529,6 +546,12 @@ static void showHelp() {
   conio_x = 2;
   conio_y++;
   tputs_rom("F-3 : Delete Line");
+  conio_x = 2;
+  conio_y++;
+  tputs_rom("^-S : Jump to Beginning of Line");
+  conio_x = 2;
+  conio_y++;
+  tputs_rom("^-D : Jump to End of Line");
   conio_x = 2;
   conio_y++;
   tputs_rom("F-7 : Show Help");
@@ -584,6 +607,12 @@ static void edit_loop(char* devpath) {
           up();
 	}
         break;
+      case KEY_END:
+	gotoEndOfLine();
+	break;
+      case KEY_BEGIN:
+	gotoBeginningOfLine();
+	break;
       case KEY_ENTER:
 	if (EDIT_BUFFER->ed_mode == ED_FULL) {
 	  if (insert_mode) {
