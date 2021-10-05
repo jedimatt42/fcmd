@@ -95,24 +95,26 @@ void ed_right() {
 
 // BUG::: things go wrong when joining the last line in the editor
 void ed_joinLines(int lineone, int linetwo) {
-  if (linetwo == 0 || EDIT_BUFFER->lineCount < linetwo) {
+  if (linetwo == 0 || linetwo >= EDIT_BUFFER->lineCount ) {
     honk();
     return;
   }
-  if (EDIT_BUFFER->lines[linetwo].length + EDIT_BUFFER->lines[lineone].length < 80) {
-    beep();
+
+  struct Line* first = EDIT_BUFFER->lines + lineone;
+  struct Line* second = EDIT_BUFFER->lines + linetwo;
+  if (first->length + second->length < 80) {
     // capture previous end of line.
-    int prevlen = EDIT_BUFFER->lines[lineone].length;
+    int prevlen = first->length;
     // copy lineno to end of lineno-1
-    bk_strncpy(EDIT_BUFFER->lines[lineone].data + prevlen, EDIT_BUFFER->lines[linetwo].data, 80 - prevlen);
-    EDIT_BUFFER->lines[lineone].length += EDIT_BUFFER->lines[linetwo].length;
+    bk_strncpy(first->data + prevlen, second->data, second->length);
+    first->length += second->length;
     // delete lineno
     conio_y = linetwo;
     ed_eraseLine(); // may have moved up if was previous last line
     // move cursor to previous end of line
     EDIT_BUFFER->offset_x = prevlen > displayWidth ? displayWidth : 0;
     conio_x = prevlen - EDIT_BUFFER->offset_x;
-    conio_y = EDIT_BUFFER->screen_y + lineone;
+    conio_y = lineone - EDIT_BUFFER->offset_y;
     // renderlines
     EDIT_BUFFER->justRendered = 0;
     ed_renderLines();
@@ -426,7 +428,7 @@ void ed_showHelp() {
   int o_x = conio_x;
   int o_y = conio_y;
 
-  dropDown(11);
+  dropDown(12);
 
   conio_x = 2;
   conio_y = 1;
@@ -449,6 +451,9 @@ void ed_showHelp() {
   conio_x = 2;
   conio_y++;
   tputs_rom("^-D : Jump to End of Line");
+  conio_x = 2;
+  conio_y++;
+  tputs_rom("^-J : Join Next Line");
   conio_x = 2;
   conio_y++;
   tputs_rom("F-7 : Show Help");

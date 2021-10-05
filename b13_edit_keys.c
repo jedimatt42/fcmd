@@ -14,7 +14,7 @@ int ed_handleKeys(char* devpath, int* insert_mode, int* cursor, int k) {
     }
     break;
   case KEY_LEFT:
-    if (insert_mode && backspace) {
+    if (*insert_mode && backspace) {
       ed_erase();
     } else {
       ed_left();
@@ -50,7 +50,7 @@ int ed_handleKeys(char* devpath, int* insert_mode, int* cursor, int k) {
     break;
   case KEY_ENTER:
     if (EDIT_BUFFER->ed_mode == ED_FULL) {
-      if (insert_mode) {
+      if (*insert_mode) {
 	ed_breakLine();
       } else {
 	ed_enter();
