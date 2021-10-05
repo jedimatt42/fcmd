@@ -85,6 +85,11 @@ int ed_handleKeys(char* devpath, int* insert_mode, int* cursor, int k) {
     *insert_mode = !*insert_mode;
     *cursor = *insert_mode ? CUR_INSERT : CUR_OVERWRITE;
     break;
+  case KEY_CTRL_J:
+    if (EDIT_BUFFER->ed_mode == ED_FULL) {
+      ed_joinToNext();
+    }
+    break;
   default:
     // ignore
     break;

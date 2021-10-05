@@ -3,26 +3,27 @@
 
 #include "b2_dsrutil.h"
 
-#define KEY_QUIT 145
-#define KEY_SAVE 151
-#define KEY_CTRL_R 146
-#define KEY_CTRL_C 131
-#define KEY_LEFT 8
-#define KEY_RIGHT 9
-#define KEY_DOWN 10
-#define KEY_UP 11
-#define KEY_REDO 6
 #define KEY_AID 1
 #define KEY_BREAK 2
 #define KEY_DELETE 3
 #define KEY_INSERT 4
+#define KEY_REDO 6
 #define KEY_ERASE 7
-#define KEY_BACK 15
-#define KEY_SPACE 0x20
-#define KEY_TILDE 0x7E
+#define KEY_LEFT 8
+#define KEY_RIGHT 9
+#define KEY_DOWN 10
+#define KEY_UP 11
 #define KEY_ENTER 13
-#define KEY_BEGIN 147 
+#define KEY_BACK 15
+#define KEY_SPACE 32
+#define KEY_TILDE 126
+#define KEY_CTRL_C 131
 #define KEY_END 132
+#define KEY_CTRL_J 138
+#define KEY_QUIT 145
+#define KEY_CTRL_R 146
+#define KEY_BEGIN 147 
+#define KEY_SAVE 151
 
 struct __attribute__((__packed__)) Line {
   int length;
@@ -70,6 +71,7 @@ void ed_historyUp();
 void ed_historyPush();
 void ed_enter();
 void ed_eraseLine();
+void ed_joinToNext();
 void ed_breakLine();
 void ed_removeTrailingSpaces();
 void ed_save(char* devpath);

@@ -93,31 +93,42 @@ void ed_right() {
   }
 }
 
-void ed_joinToPrevious() {
-  int lineno = (conio_y - EDIT_BUFFER->screen_y) + EDIT_BUFFER->offset_y;
-  if (lineno == 0) {
+// BUG::: things go wrong when joining the last line in the editor
+void ed_joinLines(int lineone, int linetwo) {
+  if (linetwo == 0 || EDIT_BUFFER->lineCount < linetwo) {
     honk();
     return;
   }
-  if (EDIT_BUFFER->lines[lineno].length + EDIT_BUFFER->lines[lineno-1].length < 80) {
+  if (EDIT_BUFFER->lines[linetwo].length + EDIT_BUFFER->lines[lineone].length < 80) {
     beep();
     // capture previous end of line.
-    int prevlen = EDIT_BUFFER->lines[lineno-1].length;
+    int prevlen = EDIT_BUFFER->lines[lineone].length;
     // copy lineno to end of lineno-1
-    bk_strncpy(EDIT_BUFFER->lines[lineno-1].data + prevlen, EDIT_BUFFER->lines[lineno].data, 80 - prevlen);
-    EDIT_BUFFER->lines[lineno-1].length += EDIT_BUFFER->lines[lineno].length;
+    bk_strncpy(EDIT_BUFFER->lines[lineone].data + prevlen, EDIT_BUFFER->lines[linetwo].data, 80 - prevlen);
+    EDIT_BUFFER->lines[lineone].length += EDIT_BUFFER->lines[linetwo].length;
     // delete lineno
+    conio_y = linetwo;
     ed_eraseLine(); // may have moved up if was previous last line
     // move cursor to previous end of line
     EDIT_BUFFER->offset_x = prevlen > displayWidth ? displayWidth : 0;
     conio_x = prevlen - EDIT_BUFFER->offset_x;
-    conio_y = EDIT_BUFFER->screen_y + lineno - 1;
+    conio_y = EDIT_BUFFER->screen_y + lineone;
     // renderlines
     EDIT_BUFFER->justRendered = 0;
     ed_renderLines();
   } else {
     honk();
   }
+}
+
+void ed_joinToNext() {
+  int lineone = (conio_y - EDIT_BUFFER->screen_y) + EDIT_BUFFER->offset_y;
+  ed_joinLines(lineone, lineone + 1);
+}
+
+void ed_joinToPrevious() {
+  int linetwo = (conio_y - EDIT_BUFFER->screen_y) + EDIT_BUFFER->offset_y;
+  ed_joinLines(linetwo - 1, linetwo);
 }
 
 void ed_overwrite(int k) {
@@ -261,6 +272,7 @@ void ed_historyDown() {
     struct Line* line = EDIT_BUFFER->lines; // always line 0 when history at play
     ed_clearLine(line);
     bk_history_redo(line->data, 80, HIST_GET_DEC);
+    line->length = bk_strlen(line->data);
     ed_gotoBeginningOfLine();
   }
 }
@@ -270,6 +282,7 @@ void ed_historyUp() {
     struct Line* line = EDIT_BUFFER->lines; // always line 0 when history at play
     ed_clearLine(line);
     bk_history_redo(line->data, 80, HIST_GET);
+    line->length = bk_strlen(line->data);
     ed_gotoBeginningOfLine();
   }
 }
