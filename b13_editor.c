@@ -93,6 +93,33 @@ void ed_right() {
   }
 }
 
+void ed_joinToPrevious() {
+  int lineno = (conio_y - EDIT_BUFFER->screen_y) + EDIT_BUFFER->offset_y;
+  if (lineno == 0) {
+    honk();
+    return;
+  }
+  if (EDIT_BUFFER->lines[lineno].length + EDIT_BUFFER->lines[lineno-1].length < 80) {
+    beep();
+    // capture previous end of line.
+    int prevlen = EDIT_BUFFER->lines[lineno-1].length;
+    // copy lineno to end of lineno-1
+    bk_strncpy(EDIT_BUFFER->lines[lineno-1].data + prevlen, EDIT_BUFFER->lines[lineno].data, 80 - prevlen);
+    EDIT_BUFFER->lines[lineno-1].length += EDIT_BUFFER->lines[lineno].length;
+    // delete lineno
+    ed_eraseLine(); // may have moved up if was previous last line
+    // move cursor to previous end of line
+    EDIT_BUFFER->offset_x = prevlen > displayWidth ? displayWidth : 0;
+    conio_x = prevlen - EDIT_BUFFER->offset_x;
+    conio_y = EDIT_BUFFER->screen_y + lineno - 1;
+    // renderlines
+    EDIT_BUFFER->justRendered = 0;
+    ed_renderLines();
+  } else {
+    honk();
+  }
+}
+
 void ed_overwrite(int k) {
   // place the character on screen
   bk_raw_cputc(k);
@@ -111,6 +138,7 @@ void ed_overwrite(int k) {
     }
   }
   ed_right();
+  ed_renderLines();
 }
 
 void ed_insert(int k) {
@@ -152,7 +180,7 @@ void ed_erase() {
     // force screen update
     ed_renderLines();
   } else {
-    honk();
+    ed_joinToPrevious();
   }
 }
 
