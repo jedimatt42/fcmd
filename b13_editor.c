@@ -109,7 +109,8 @@ void ed_joinLines(int lineone, int linetwo) {
     bk_strncpy(first->data + prevlen, second->data, second->length);
     first->length += second->length;
     // delete lineno
-    conio_y = linetwo;
+    conio_y = linetwo - EDIT_BUFFER->offset_y;
+    EDIT_BUFFER->justRendered = 1;
     ed_eraseLine(); // may have moved up if was previous last line
     // move cursor to previous end of line
     EDIT_BUFFER->offset_x = prevlen > displayWidth ? displayWidth : 0;
@@ -314,12 +315,11 @@ void ed_eraseLine() {
     struct Line* line = &(EDIT_BUFFER->lines[0]);
     ed_clearLine(line);
   } else {
-    // this gets messy if later we have live buffer in pages
     int szline = sizeof(struct Line);
     int startLine = conio_y + EDIT_BUFFER->offset_y;
     char* dst = (char*) &(EDIT_BUFFER->lines[startLine]);
     char* src = dst + szline;
-    char* end = (char*) &(EDIT_BUFFER->lines[EDIT_BUFFER->lineCount]);
+    char* end = ((char*) &(EDIT_BUFFER->lines[EDIT_BUFFER->lineCount])) + szline;
     while(src < end) {
       *dst++ = *src++;
     }
