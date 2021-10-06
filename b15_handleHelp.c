@@ -104,8 +104,8 @@ void handleHelp() {
     "copy <fileset> <path>\n\n"
     "Copy a file set to a directory or device\n"
     "fileset - path and file pattern for source files to copy. Wildcard * may be at beginning or end of name but not both\n\n"
-    "examples: DSK1.*BAS, DSK1.MUNCHM*, TELN*, *S\n"
-    "path - destination device and directory\n");
+    "examples: DSK1.*BAS, DSK1.MUNCHM*, TELN*, *S\n\n"
+    "path - destination device and directory. If path includes a new filename then wildcard is not supported in fileset.\n");
   } else if (matchcmd(tok, "delete")) {
     wraptext("==Delete File==\n\n"
     "delete [/y] <fileset>\n\n"
