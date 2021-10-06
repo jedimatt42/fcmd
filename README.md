@@ -287,25 +287,27 @@ Force Command resides in Cartridge ROM space and the RAM usage varies if SAMS is
 
 32K Systems:
 
-| Address | Size in bytes | Description             |
-| ------- | ------------- | ----------------------- |
-| 0x2000  | 0x0400        | System global variables |
-| 0x2400+ | varies        | Environment Variables   |
-| -0x3FFF | varies        | System stack            |
-| 0xA000  | varies        | executable space        |
+| Address | Size in bytes | Description              |
+| ------- | ------------- | ------------------------ |
+| 0x2000  | 0x0400        | System global variables  |
+| 0x2400+ | varies        | Environment Variables    |
+| -0x3FFF | varies        | System stack             |
+| 0xA000  | 90(temporary) | command line edit buffer |
+| 0xA000  | varies        | executable space         |
 
 If SAMS is available, then a 4K page is used at 0xA000 for command history. This is paged out when executables are loaded.
 Also when SAMS is available, executables are loaded into SAMS pages sequentially. Additional SAMS pages may be allocated by the executable.
 
 SAMS page map:
 
-| Page | Address | Purpose                    |
-| 0    | 0x2000  | Force Command runtime data |
-| 1    | 0x3000  | Force Command stack        |
-| 2    | 0xA000  | command history            |
-| 3+   | 0xA000  | executable space           |
+| Page | Address       | Purpose                    |
+| 0    | 0x2000        | Force Command runtime data |
+| 1    | 0x3000        | Force Command stack        |
+| 2    | 0xB000-0xCFFF | command history            |
+| 3    | 0xA000        | command line edit buffer   |
+| 4+   | 0xA000        | executable space           |
 
-Note, when the LOAD command is used to run a legacy EA5 program, the standard SAMS mapping is set.
+Note, when the LOAD, FG99, or XB commands are used to run a legacy EA5 program, the standard SAMS mapping is set.
 
 EA5 SAMS map:
 
