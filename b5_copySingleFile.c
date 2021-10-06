@@ -8,13 +8,18 @@
 #include "b8_terminal.h"
 #include "b2_lvl2.h"
 
-void copySingleFile(struct DeviceServiceRoutine* srcdsr, char* srcpath, char* filename, struct DeviceServiceRoutine* dstdsr, char* dstpath) {
+void copySingleFile(struct CopySpec* src, struct CopySpec* dst) {
+
+  if (dst->filename == 0) {
+    dst->filename = src->filename;
+  }
 
   tputs_rom("copying ");
-  bk_tputs_ram(srcpath);
-  bk_tputs_ram(filename);
+  bk_tputs_ram(src->path);
+  bk_tputs_ram(src->filename);
   tputs_rom(" to ");
-  bk_tputs_ram(dstpath);
+  bk_tputs_ram(dst->path);
+  bk_tputs_ram(dst->filename);
   bk_tputc('\n');
 
   // AddInfo must be in scratchpad
@@ -26,14 +31,14 @@ void copySingleFile(struct DeviceServiceRoutine* srcdsr, char* srcpath, char* fi
   addInfoPtr->records = 0;
   addInfoPtr->recs_per_sec = 0;
 
-  unsigned int source_crubase = srcdsr->crubase;
-  unsigned int source_iocode = bk_path2iocode(srcpath);
-  unsigned int dest_crubase = dstdsr->crubase;
-  unsigned int dest_iocode = bk_path2iocode(dstpath);
+  unsigned int source_crubase = src->dsr->crubase;
+  unsigned int source_iocode = bk_path2iocode(src->path);
+  unsigned int dest_crubase = dst->dsr->crubase;
+  unsigned int dest_iocode = bk_path2iocode(dst->path);
 
   // get file meta data
-  bk_lvl2_setdir(source_crubase, source_iocode, srcpath);
-  unsigned int err = bk_lvl2_input(source_crubase, source_iocode, filename, 0, addInfoPtr);
+  bk_lvl2_setdir(source_crubase, source_iocode, src->path);
+  unsigned int err = bk_lvl2_input(source_crubase, source_iocode, src->filename, 0, addInfoPtr);
   if (err) {
     tputs_rom("error reading file: ");
     bk_tputs_ram(bk_uint2hex(err));
@@ -44,8 +49,8 @@ void copySingleFile(struct DeviceServiceRoutine* srcdsr, char* srcpath, char* fi
   int totalBlocks = addInfoPtr->first_sector;
 
   // write file meta data
-  bk_lvl2_setdir(dest_crubase, dest_iocode, dstpath);
-  err = bk_lvl2_output(dest_crubase, dest_iocode, filename, 0, addInfoPtr);
+  bk_lvl2_setdir(dest_crubase, dest_iocode, dst->path);
+  err = bk_lvl2_output(dest_crubase, dest_iocode, dst->filename, 0, addInfoPtr);
   if (err) {
     tputs_rom("error writing file: ");
     bk_tputs_ram(bk_uint2hex(err));
@@ -64,8 +69,8 @@ void copySingleFile(struct DeviceServiceRoutine* srcdsr, char* srcpath, char* fi
     }
 
     // read a batch of blocks
-    bk_lvl2_setdir(source_crubase, source_iocode, srcpath);
-    err = bk_lvl2_input(source_crubase, source_iocode, filename, blk_cnt, addInfoPtr);
+    bk_lvl2_setdir(source_crubase, source_iocode, src->path);
+    err = bk_lvl2_input(source_crubase, source_iocode, src->filename, blk_cnt, addInfoPtr);
     if (err) {
       tputs_rom("\nerror reading file: ");
       bk_tputs_ram(bk_uint2hex(err));
@@ -74,8 +79,8 @@ void copySingleFile(struct DeviceServiceRoutine* srcdsr, char* srcpath, char* fi
     }
 
     // write them back out
-    bk_lvl2_setdir(dest_crubase, dest_iocode, dstpath);
-    err = bk_lvl2_output(dest_crubase, dest_iocode, filename, blk_cnt, addInfoPtr);
+    bk_lvl2_setdir(dest_crubase, dest_iocode, dst->path);
+    err = bk_lvl2_output(dest_crubase, dest_iocode, dst->filename, blk_cnt, addInfoPtr);
     if (err) {
       tputs_rom("\nerror writing file: ");
       bk_tputs_ram(bk_uint2hex(err));

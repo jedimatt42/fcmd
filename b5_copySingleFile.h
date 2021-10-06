@@ -5,9 +5,15 @@
 
 #include "b2_dsrutil.h"
 
-void copySingleFile(struct DeviceServiceRoutine* srcdsr, char* srcpath, char* filename, struct DeviceServiceRoutine* dstdsr, char* dstpath);
+struct __attribute__((__packed__)) CopySpec {
+  struct DeviceServiceRoutine* dsr;
+  char* path;
+  char* filename;
+};
 
-DECLARE_BANKED_VOID(copySingleFile, BANK(5), bk_copySingleFile, (struct DeviceServiceRoutine* srcdsr, char* srcpath, char* filename, struct DeviceServiceRoutine* dstdsr, char* dstpath), (srcdsr, srcpath, filename, dstdsr, dstpath))
+void copySingleFile(struct CopySpec* src, struct CopySpec* dst);
+
+DECLARE_BANKED_VOID(copySingleFile, BANK(5), bk_copySingleFile, (struct CopySpec* src, struct CopySpec* dst), (src, dst))
 
 
 #endif

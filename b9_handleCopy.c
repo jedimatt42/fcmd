@@ -78,19 +78,38 @@ void handleCopy() {
 }
 
 static void copyOneFile() {
-  if (dstpath[bk_strlen(dstpath) - 1] != '.') {
+  struct CopySpec src;
+  src.dsr = srcdsr;
+  src.path = srcpath;
+  src.filename = filterglob;
+  struct CopySpec dst;
+  dst.dsr = dstdsr;
+  dst.path = dstpath;
+  dst.filename = 0;
+
+  if (dstpath[bk_strlen(dstpath) - 1] == '.') {
+    unsigned int stat = bk_existsDir(dstdsr, dstpath);
+    if (stat != 0) {
+      tputs_rom("error, device/folder not found: ");
+      bk_tputs_ram(dstpath);
+      bk_tputc('\n');
+      return;
+    }
+  } else {
     bk_strcat(dstpath, str2ram("."));
+    unsigned int stat = bk_existsDir(dstdsr, dstpath);
+    if (stat != 0) {
+      // dir specified doesn't exist, so it must be a new file name.
+      // undo our add of the trailing '.'
+      dstpath[bk_strlen(dstpath) - 1] = 0;
+      char newname[12]; 
+      int paridx = bk_lindexof(dstpath, '.', bk_strlen(dstpath) - 1);
+      bk_strncpy(newname, dstpath + paridx + 1, 12);
+      dstpath[paridx + 1] = 0;
+      dst.filename = newname;
+    }
   }
-
-  unsigned int stat = bk_existsDir(dstdsr, dstpath);
-  if (stat != 0) {
-    tputs_rom("error, device/folder not found: ");
-    bk_tputs_ram(dstpath);
-    bk_tputc('\n');
-    return;
-  }
-
-  bk_copySingleFile(srcdsr, srcpath, filterglob, dstdsr, dstpath);
+  bk_copySingleFile(&src, &dst);
 }
 
 static void copyMultipleFiles() {
@@ -126,7 +145,16 @@ static void onCopyDirEntry(struct DirEntry *dirEntry) {
   }
   matched = 1;
 
-  bk_copySingleFile(srcdsr, srcpath, dirEntry->name, dstdsr, dstpath);
+  struct CopySpec src;
+  src.dsr = srcdsr;
+  src.path = srcpath;
+  src.filename = dirEntry->name;
+  struct CopySpec dst;
+  dst.dsr = dstdsr;
+  dst.path = dstpath;
+  dst.filename = 0;
+
+  bk_copySingleFile(&src, &dst);
 
   copycount++;
 }
