@@ -223,11 +223,15 @@ int globMatches(char* filename) {
   }
 
   int prelen = bk_indexof(filterglob, '*');
-  char prefix[12];
-  bk_strncpy(prefix, filterglob, prelen);
+  if (prelen == -1) {
+    return 0 == bk_strcmp(filename, filterglob);
+  } else {
+    char prefix[12];
+    bk_strncpy(prefix, filterglob, prelen);
 
-  char suffix[12];
-  bk_strcpy(suffix, filterglob+prelen+1);
+    char suffix[12];
+    bk_strcpy(suffix, filterglob+prelen+1);
 
-  return bk_str_startswith(filename, prefix) && bk_str_endswith(filename, suffix);
+    return bk_str_startswith(filename, prefix) && bk_str_endswith(filename, suffix);
+  }
 }
