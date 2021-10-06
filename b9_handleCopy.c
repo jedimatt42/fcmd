@@ -8,6 +8,7 @@
 #include "b2_dsrutil.h"
 #include "b2_lvl2.h"
 #include "b8_terminal.h"
+#include "b5_copySingleFile.h"
 #include <string.h>
 
 static void onIgnoreVolInfo(struct VolInfo *volInfo);
@@ -21,6 +22,9 @@ static char* dstpath;
 
 static int copycount;
 static int matched;
+
+static void copyMultipleFiles();
+static void copyOneFile();
 
 void handleCopy() {
   copycount = 0;
@@ -43,7 +47,7 @@ void handleCopy() {
   bk_strcpy(tmpsrc, bk_strtok(0, ' '));
 
   // parse destination first, so glob pattern is preserved on source.
-  bk_parsePathParam(0, &dstdsr, dstpath, PR_REQUIRED);
+  bk_parsePathParam(0, &dstdsr, dstpath, PR_OPTIONAL);
   if (dstdsr == 0)
   {
     tputs_rom("no path: drive or folder specified\n");
@@ -63,6 +67,33 @@ void handleCopy() {
   if (srcpath[bk_strlen(srcpath)-1] != '.') {
     bk_strcat(srcpath, str2ram("."));
   }
+
+  // maybe take a turn off and handle single file copy 
+  // special...
+  if (-1 == bk_indexof(filterglob, '*')) {
+    copyOneFile();
+  } else {
+    copyMultipleFiles();
+  }
+}
+
+static void copyOneFile() {
+  if (dstpath[bk_strlen(dstpath) - 1] != '.') {
+    bk_strcat(dstpath, str2ram("."));
+  }
+
+  unsigned int stat = bk_existsDir(dstdsr, dstpath);
+  if (stat != 0) {
+    tputs_rom("error, device/folder not found: ");
+    bk_tputs_ram(dstpath);
+    bk_tputc('\n');
+    return;
+  }
+
+  bk_copySingleFile(srcdsr, srcpath, filterglob, dstdsr, dstpath);
+}
+
+static void copyMultipleFiles() {
   if (dstpath[bk_strlen(dstpath) - 1] != '.') {
     bk_strcat(dstpath, str2ram("."));
   }
@@ -95,80 +126,7 @@ static void onCopyDirEntry(struct DirEntry *dirEntry) {
   }
   matched = 1;
 
-  tputs_rom("copying ");
-  bk_tputs_ram(srcpath);
-  bk_tputs_ram(dirEntry->name);
-  tputs_rom(" to ");
-  bk_tputs_ram(dstpath);
-  bk_tputc('\n');
+  bk_copySingleFile(srcdsr, srcpath, dirEntry->name, dstdsr, dstpath);
 
-  // AddInfo must be in scratchpad
-  struct AddInfo *addInfoPtr = (struct AddInfo *)0x8320;
-  addInfoPtr->first_sector = 0;
-  addInfoPtr->eof_offset = 0;
-  addInfoPtr->flags = 0;
-  addInfoPtr->rec_length = 0;
-  addInfoPtr->records = 0;
-  addInfoPtr->recs_per_sec = 0;
-
-  unsigned int source_crubase = srcdsr->crubase;
-  unsigned int source_iocode = bk_path2iocode(srcpath);
-  unsigned int dest_crubase = dstdsr->crubase;
-  unsigned int dest_iocode = bk_path2iocode(dstpath);
-
-  // get file meta data
-  bk_lvl2_setdir(source_crubase, source_iocode, srcpath);
-  unsigned int err = bk_lvl2_input(source_crubase, source_iocode, dirEntry->name, 0, addInfoPtr);
-  if (err) {
-    tputs_rom("error reading file: ");
-    bk_tputs_ram(bk_uint2hex(err));
-    bk_tputc('\n');
-    return;
-  }
-
-  int totalBlocks = addInfoPtr->first_sector;
-
-  // write file meta data
-  bk_lvl2_setdir(dest_crubase, dest_iocode, dstpath);
-  err = bk_lvl2_output(dest_crubase, dest_iocode, dirEntry->name, 0, addInfoPtr);
-  if (err) {
-    tputs_rom("error writing file: ");
-    bk_tputs_ram(bk_uint2hex(err));
-    bk_tputc('\n');
-    return;
-  }
-
-  // copy all the data blocks
-  int blockId = 0;
-  while(blockId < totalBlocks) {
-    addInfoPtr->first_sector = blockId;
-
-    int blk_cnt = totalBlocks - blockId;
-    if (blk_cnt > 17) {
-      blk_cnt = 17;
-    }
-
-    // read a batch of blocks
-    bk_lvl2_setdir(source_crubase, source_iocode, srcpath);
-    err = bk_lvl2_input(source_crubase, source_iocode, dirEntry->name, blk_cnt, addInfoPtr);
-    if (err) {
-      tputs_rom("\nerror reading file: ");
-      bk_tputs_ram(bk_uint2hex(err));
-      bk_tputc('\n');
-      return;
-    }
-
-    // write them back out
-    bk_lvl2_setdir(dest_crubase, dest_iocode, dstpath);
-    err = bk_lvl2_output(dest_crubase, dest_iocode, dirEntry->name, blk_cnt, addInfoPtr);
-    if (err) {
-      tputs_rom("\nerror writing file: ");
-      bk_tputs_ram(bk_uint2hex(err));
-      bk_tputc('\n');
-      return;
-    }
-
-    blockId += blk_cnt;
-  }
   copycount++;
 }
