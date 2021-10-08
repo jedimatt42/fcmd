@@ -11,16 +11,16 @@
 
 #define SUPPORT_MOUSE (vdp_type == VDP_F18A && displayHeight == 30)
 
-extern unsigned char gfx_point0[32];
-extern unsigned char gfx_point1[32];
+extern char gfx_point0[32];
+extern char gfx_point1[32];
 
 void tipi_mouse(struct MouseData* mouseData) {
-  unsigned char mousecode = 0x20;
-  int readcount = 0;
+  char mousecode = 0x20;
+  unsigned int readcount = 0;
   if (tipi_on()) {
-    tipi_sendmsg(1, (unsigned char*)&mousecode);
+    tipi_sendmsg(1, &mousecode);
     // contract with TIPI is that this will always read 3 bytes.
-    tipi_recvmsg(&readcount, (unsigned char*)mouseData);
+    tipi_recvmsg(&readcount, (char*)mouseData);
     tipi_off();
   }
 }
