@@ -303,7 +303,7 @@ void drawBackdrop() {
   vdp_memset(0, 0xB0, dinfo.displayWidth);
   vdp_memset((dinfo.displayHeight - 1) * dinfo.displayWidth, 0xB0, dinfo.displayWidth);
   fc_ui_gotoxy((dinfo.displayWidth / 2) - 7,0);
-  fc_tputs(" FCMenu v1.0 ");
+  fc_tputs(" FCMenu v1.1 ");
   cycles = 0; // since we erased the clock, allow it to redraw on next attempt
 }
 
