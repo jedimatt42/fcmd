@@ -29,37 +29,39 @@ static int socket_read(struct SocketBuffer* socket_buf) {
     Reads a line from an open socket, upto 256 characters long
 */
 char* readline(struct SocketBuffer* socket_buf) {
+    // clear the line buffer.
     bk_strset(socket_buf->lastline, 0, 256);
-    socket_buf->loaded = 0;
-    int crlfstate = 0;
-    while (socket_buf->available == 0) {
-        socket_buf->available = socket_read(socket_buf);
 
-        int i = 0;
-        while (socket_buf->available) {
-            if (crlfstate == 0 && socket_buf->buffer[i] == 13) {
-                socket_buf->lastline[socket_buf->loaded++] = socket_buf->buffer[i++];
-                socket_buf->available--;
-                crlfstate = 1;
-            }
-            else if (socket_buf->buffer[i] == 10) {
-                socket_buf->lastline[socket_buf->loaded] = 10;
-                if (crlfstate != 1) {
-                    socket_buf->loaded++;
-                }
-                socket_buf->available--;
-                return socket_buf->lastline;
-            }
-            else {
-                socket_buf->lastline[socket_buf->loaded++] = socket_buf->buffer[i++];
-                socket_buf->available--;
-            }
-        }
+    // read one char into lastline at a time
+    char* onebyte = socket_buf->lastline;
+    int space = 256;
+    while((space > 0) && readstream(socket_buf, onebyte, 1)) {
+        space--;
+        if (*onebyte == 13) {
+	    // peek to see if next is a linefeed
+            int res = readstream(socket_buf, onebyte + 1, 1);
+	    if (res) {
+	      space--;
+	    }
+	    if (*(onebyte + 1) == 10) {
+	      onebyte++;
+	    }
+	}
+        if (*onebyte == 10) {
+	   return socket_buf->lastline;
+	}
+	onebyte++;
     }
+    return 0;
 }
 
 /*
     Fills a block with bytes from buffer, upto limit. Returns bytes read.
+
+    socketBuffer->buffer = data taken from socket
+    socketBuffer->available = bytes in buffer
+    socketBuffer->lastline - not used, see readline
+    socketbuffer->loaded = offset into buffer for next byte
 */
 int readstream(struct SocketBuffer* socket_buf, char* block, int limit) {
     bk_strset(block, 0, limit);
