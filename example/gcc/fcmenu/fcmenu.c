@@ -290,6 +290,7 @@ void skipSeparatorPrev() {
 }
 
 void selectionRun(struct MenuEntry* entry) {
+  mouseOn = 0;
   fc_tipi_mouse_disable();
   fc_exec(entry->command);
   drawBackdrop();
