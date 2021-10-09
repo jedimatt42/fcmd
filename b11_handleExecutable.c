@@ -41,6 +41,8 @@ void handleExecutable(char *ext)
         identify_callback old_hook = bk_get_identify_hook();
         int restoreDisplay = *(volatile int*)0xA004;
         int old_nTitleLine = nTitleLine;
+	int old_background = background;
+	int old_foreground = foreground;
         if (restoreDisplay != 0xFCFC) {
             // turn bar off, cause app is using the full screen.
             nTitleLine = 0;
@@ -51,6 +53,8 @@ void handleExecutable(char *ext)
 
         bk_set_identify_hook(old_hook);
         if (restoreDisplay != 0xFCFC) {
+	    foreground = old_foreground;
+	    background = old_background;
             nTitleLine = old_nTitleLine;
             bk_setupScreen(displayWidth);
         }
