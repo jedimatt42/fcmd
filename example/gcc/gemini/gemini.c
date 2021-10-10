@@ -9,6 +9,7 @@
 void send_request(char* request);
 void handleSuccess(char* line);
 void handleDefault(char* line);
+void on_exit();
 
 void displayPage();
 
@@ -20,69 +21,84 @@ char CRLF[3] = {'\r', '\n', 0};
 
 struct SocketBuffer socketBuffer;
 
+void halt() {
+  while(1) { }
+}
+
 int fc_main(char* args) {
+  fc_strset((char*)&state, 0, sizeof(struct State));
+  fc_strncpy(state.url, args, 256);
+
   init_mouse();
   init_page();
   init_screen();
 
-  if (args[0] != 0) {
-    open_url(args);
+  if (state.url[0] != 0) {
+    open_url(state.url);
+  } else {
+    fc_ui_gotoxy(0, 2);
+    fc_tputs("no url\n");
   }
 
-  fc_tputs("click to exit\n");
   while(1) {
     VDP_WAIT_VBLANK_CRU
     int click = update_mouse();
     if (click & MB_LEFT) {
+      on_exit();
       return 0;
     }
+  }
+}
+
+void on_exit() {
+  fc_tipi_mouse_disable();
+  fc_sams_free_pages(state.page_count);
+}
+
+void set_hostname_and_port(char* url, char* hostname, char* port) {
+  hostname[0] = 0;
+  fc_strcpy(port, "1965");
+  if (fc_str_startswith(url, "gemini://")) {
+    int h = fc_indexof(url + 9, '/');
+    int p = fc_indexof(url + 9, ':');
+    if (h == -1) {
+      h = fc_strlen(url + 9);
+    }
+    if (p != -1) {
+      fc_strncpy(port, url + 9 + 1 + p, h - p + 1);
+      h -= h - p;
+    }
+    fc_strncpy(hostname, url + 9, h);
+  } else {
+    // maybe a different schema - which we'll error on - or be relative to
+    // our previous url
   }
 }
 
 void open_url(char* url) {
   char hostname[80];
   char port[10];
-  if (fc_str_startswith(url, "gemini://")) {
-    int i = fc_indexof(url + 9, '/');
-    if (i == -1) {
-      fc_strcpy(hostname, url + 9);
-    } else {
-      fc_strncpy(hostname, url + 9, i);
-    }
-    fc_tputs("hostname: ");
-    fc_tputs(hostname);
-    fc_tputs("\n");
 
-    i = fc_indexof(hostname, ':');
-    if (i == -1) {
-      fc_strcpy(port, "1965");
-    } else {
-      fc_strcpy(port, hostname + i + 1);
-      hostname[i] = 0;
-    }
-    fc_tputs("port: ");
-    fc_tputs(port);
-    fc_tputs("\n");
+  set_hostname_and_port(url, hostname, port); 
 
-    int err = fc_tls_connect(SOCKET_ID, hostname, port);
-    if (err /* 0 indicates failure */) {
-      err = 0;
-      fc_init_socket_buffer(&socketBuffer, TLS, SOCKET_ID);
-      send_request(url);
+  int err = fc_tls_connect(SOCKET_ID, hostname, port);
+  if (err /* 0 indicates failure */) {
+    err = 0;
+    fc_init_socket_buffer(&socketBuffer, TLS, SOCKET_ID);
+    send_request(url);
 
-      char* line = fc_readline(&socketBuffer);
-      switch(line[0]) {
-        case '2':
-          handleSuccess(line);
-          break;
-        default:
-          handleDefault(line);
-          break;
-      }
-      fc_tls_close(SOCKET_ID);
-    } else {
-      fc_tputs("connection error\n");
+    char* line = fc_readline(&socketBuffer);
+    switch(line[0]) {
+      case '2':
+	handleSuccess(line);
+	break;
+      default:
+	handleDefault(line);
+	break;
     }
+    fc_tls_close(SOCKET_ID);
+  } else {
+    fc_tputs("connection error\n");
   }
 }
 
@@ -92,7 +108,7 @@ void send_request(char* request) {
 }
 
 void handleDefault(char* line) {
-  fc_tputs("??\n");
+  fc_tputs("?? ");
   fc_tputs(line);
 }
 
@@ -113,10 +129,13 @@ void handleSuccess(char* line) {
 }
 
 void displayPage() {
+  page_clear_lines(); // erase the current page
+
   char* line = fc_readline(&socketBuffer);
   while(line) {
-    fc_tputs(line);
+    page_add_line(line);
     line = fc_readline(&socketBuffer);
   }
+  screen_redraw();
 }
 

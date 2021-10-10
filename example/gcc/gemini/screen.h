@@ -2,8 +2,8 @@
 #define _SCREEN_H 1
 
 void init_screen();
-void scroll_to(int lineno);
-void redraw();
+void screen_scroll_to(int lineno);
+void screen_redraw();
 
 #endif
 
