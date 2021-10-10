@@ -73,7 +73,7 @@ void page_add_line(char* line) {
       lastbreak = c;
     }
     if (pc > 79) {
-      pline->data[pc] = 0;
+      pline->data[pc + ((line[lastbreak] == '-') ? 1 : 0) - (c - lastbreak)] = 0;
       if (state.line_count == state.line_limit) {
 	state.page_id = add_bank();
       }
@@ -82,6 +82,11 @@ void page_add_line(char* line) {
       pline = &(PAGE->lines[idx]);
       PAGE->lines[idx].type = type;
       pc = 0;
+      if (type == LINE_TYPE_QUOTE) {
+	fc_strcpy(pline->data, "> ");
+	pc += 2;
+      }
+      c = lastbreak + 1;
     }
     pline->data[pc++] = line[c++];
   }
