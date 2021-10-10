@@ -40,6 +40,7 @@ int fc_main(char* args) {
     fc_tputs("no url\n");
   }
 
+  update_mouse(); // throw one away - the tipi mouse might queue a click
   while(1) {
     VDP_WAIT_VBLANK_CRU
     int click = update_mouse();

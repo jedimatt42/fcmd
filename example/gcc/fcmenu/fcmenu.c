@@ -116,6 +116,8 @@ int fcmain(char* args) {
   fc_tipi_mouse_enable(&mouseData);
   fc_tipi_mouse_disable(); // hide the mouse for now
 
+  updateMouse(&mouseData); // clear any click queued by tipi
+
   cycles = 0;
   while(1) {
     if (dinfo.isPal ? (cycles == 50 * 60) : (cycles == 60 * 60)) {

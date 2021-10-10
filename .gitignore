@@ -18,3 +18,4 @@ b3_fcbanner.asm
 layout.xml
 FC/BIN
 build.sh
+.ycm_extra_conf.py
