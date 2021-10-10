@@ -5,6 +5,7 @@
 #include "screen.h"
 #include "page.h"
 #include "mouse.h"
+#include "readline.h"
 
 void send_request(char* request);
 void handleSuccess(char* line);
@@ -18,8 +19,6 @@ char CRLF[3] = {'\r', '\n', 0};
 #define SOCKET_ID 0
 
 #define VDP_WAIT_VBLANK_CRU	  __asm__( "clr r12\n\ttb 2\n\tjeq -4\n\tmovb @>8802,r12" : : : "r12" );
-
-struct SocketBuffer socketBuffer;
 
 void halt() {
   while(1) { }
@@ -85,10 +84,10 @@ void open_url(char* url) {
   int err = fc_tls_connect(SOCKET_ID, hostname, port);
   if (err /* 0 indicates failure */) {
     err = 0;
-    fc_init_socket_buffer(&socketBuffer, TLS, SOCKET_ID);
+    init_readline(SOCKET_ID);
     send_request(url);
 
-    char* line = fc_readline(&socketBuffer);
+    char* line = readline();
     switch(line[0]) {
       case '2':
 	handleSuccess(line);
@@ -132,10 +131,10 @@ void handleSuccess(char* line) {
 void displayPage() {
   page_clear_lines(); // erase the current page
 
-  char* line = fc_readline(&socketBuffer);
+  char* line = readline();
   while(line) {
     page_add_line(line);
-    line = fc_readline(&socketBuffer);
+    line = readline();
   }
   screen_redraw();
 }
