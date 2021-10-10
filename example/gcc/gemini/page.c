@@ -32,7 +32,32 @@ void page_clear_lines() {
   state.page_id = add_bank();
 }
 
+int line_type(char* line) {
+  if (line[0] == '#') {
+    return LINE_TYPE_HEADING;
+  } else if (line[0] == '>') {
+    return LINE_TYPE_QUOTE;
+  } else if (line[0] == '=' && line[1] == '>') {
+    return LINE_TYPE_LINK;
+  } else if (line[0] == '`' && line[1] == '`' && line[2] == '`') {
+    return LINE_TYPE_TOGGLE;
+  } else {
+    return LINE_TYPE_NORMAL;
+  }
+}
+
 void page_add_line(char* line) {
+  int type = line_type(line);
+  if (type == LINE_TYPE_TOGGLE) {
+    state.toggle_literal = !state.toggle_literal;
+    return; // don't actually add these "```" as lines
+  }
+
+  if (state.toggle_literal) {
+    // override the line type if literal is true
+    type = LINE_TYPE_LITERAL;
+  }
+
   if (state.line_count == state.line_limit) {
     state.page_id = add_bank();
   }
@@ -42,6 +67,7 @@ void page_add_line(char* line) {
   int pc = 0;
   int lastbreak = 0;
   struct Line* pline = &(PAGE->lines[idx]);
+  PAGE->lines[idx].type = type;
   while(line[c] != 0) {
     if (line[c] == ' ' || line[c] == '-') {
       lastbreak = c;
@@ -54,6 +80,7 @@ void page_add_line(char* line) {
       state.line_count++;
       idx = state.line_count - ((state.page_id - state.base_id) * LINES_PER_BANK);
       pline = &(PAGE->lines[idx]);
+      PAGE->lines[idx].type = type;
       pc = 0;
     }
     pline->data[pc++] = line[c++];

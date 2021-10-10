@@ -5,6 +5,7 @@
 #include "gemini.h"
 
 const char BLACK_ON_GREEN[9] = "\033[30;42m";
+const char BLACK_ON_GRAY[10] = "\033[30;100m";
 const char GREEN_ON_BLACK[9] = "\033[32;40m";
 const char GRAY_ON_BLACK[9] = "\033[90;40m";
 const char CYAN_ON_BLACK[9] = "\033[96;40m";
@@ -38,10 +39,12 @@ void screen_redraw() {
   for(int i = 0; i < limit; i++) {
     fc_ui_gotoxy(1, i + 2);
     struct Line* line = page_get_line(i + state.line_offset);
-    if (line->data[0] == '#') {
+    if (line->type == LINE_TYPE_HEADING) {
       fc_tputs(CYAN_ON_BLACK);
-    } else if (line->data[0] == '=' && line->data[1] == '>') {
+    } else if (line->type == LINE_TYPE_LINK) {
       fc_tputs(GREEN_ON_BLACK);
+    } else if (line->type == LINE_TYPE_LITERAL) {
+      fc_tputs(BLACK_ON_GRAY);
     } else {
       fc_tputs(GRAY_ON_BLACK);
     }

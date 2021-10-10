@@ -8,6 +8,7 @@ struct __attribute__((__packed__)) State {
   int line_limit;
   int line_offset;
   int page_count;
+  int toggle_literal;
   char url[256];
 };
 
