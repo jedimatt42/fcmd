@@ -57,6 +57,9 @@ struct __attribute__((__packed__)) DisplayInformation {
   int vdp_type;
   int displayWidth;
   int displayHeight;
+  int imageAddr;
+  int patternAddr;
+  int colorAddr;
 };
 
 struct __attribute__((__packed__)) SamsInformation {

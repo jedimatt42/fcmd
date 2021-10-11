@@ -2,7 +2,7 @@
 #include "page.h"
 #include "gemini.h"
 
-#define LINES_PER_BANK 40
+#define LINES_PER_BANK 48
 
 struct __attribute__((__packed__)) Bank {
   int id;
@@ -18,6 +18,7 @@ struct State state;
 int add_bank();
 void next_bank();
 void prev_bank();
+void fixup_link(struct Line* line);
 
 void init_page() {
   state.base_id = add_bank();
@@ -73,7 +74,8 @@ void page_add_line(char* line) {
       lastbreak = c;
     }
     if (pc > 79) {
-      pline->data[pc + ((line[lastbreak] == '-') ? 1 : 0) - (c - lastbreak)] = 0;
+      pline->length = pc + ((line[lastbreak] == '-') ? 1 : 0) - (c - lastbreak);
+      pline->data[pline->length] = 0;
       if (state.line_count == state.line_limit) {
 	state.page_id = add_bank();
       }
@@ -91,7 +93,12 @@ void page_add_line(char* line) {
     }
     pline->data[pc++] = line[c++];
   }
+  pline->length = pc - 1;
   state.line_count++;
+  if (pline->type == LINE_TYPE_LINK) {
+    // collapse whitespace in links
+    fixup_link(pline);
+  }
 }
 
 int add_bank() {
@@ -120,5 +127,15 @@ struct Line* page_get_line(int idx) {
   fc_sams_map_page(state.page_id, SAMS_ADDR);
   int line_offset = idx - (page_offset * LINES_PER_BANK);
   return &(PAGE->lines[line_offset]);
+}
+
+void fixup_link(struct Line* line) {
+  int i = 0;
+  while(line->data[i] != 0) {
+    if (line->data[i] == 0x09) {
+      line->data[i] = ' ';
+    }
+    i++;
+  }
 }
 

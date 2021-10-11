@@ -40,6 +40,7 @@
 #define JOY_DOWN	0xfc
 
 // BASIC mode keyboard codes
+#define KEY_ESC 15
 #define KEY_QUIT 145
 #define KEY_SAVE 147
 #define KEY_CTRL_R 146

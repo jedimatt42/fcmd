@@ -9,8 +9,8 @@
 #define LINE_TYPE_TOGGLE 5
 
 struct __attribute__((__packed__)) Line {
-  int length;
   int type;
+  int length;
   char data[80];
 };
 

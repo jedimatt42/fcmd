@@ -4,6 +4,7 @@
 void init_screen();
 void screen_scroll_to(int lineno);
 void screen_redraw();
+void screen_status();
 
 #endif
 

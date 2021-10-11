@@ -6,13 +6,14 @@
 #include "page.h"
 #include "mouse.h"
 #include "readline.h"
+#include "keyboard.h"
 
 void send_request(char* request);
-void handleSuccess(char* line);
-void handleDefault(char* line);
+void handle_success(char* line);
+void handle_default(char* line);
 void on_exit();
 
-void displayPage();
+void display_page();
 
 char CRLF[3] = {'\r', '\n', 0};
 
@@ -34,18 +35,20 @@ int fc_main(char* args) {
 
   if (state.url[0] != 0) {
     open_url(state.url);
-  } else {
-    fc_ui_gotoxy(0, 2);
-    fc_tputs("no url\n");
   }
 
   update_mouse(); // throw one away - the tipi mouse might queue a click
   while(1) {
-    VDP_WAIT_VBLANK_CRU
     int click = update_mouse();
+    VDP_WAIT_VBLANK_CRU
     if (click & MB_LEFT) {
-      on_exit();
+      on_exit(); // Temporary
       return 0;
+    } else {
+      if (handle_keyboard()) {
+        on_exit();
+	return 0;
+      }
     }
   }
 }
@@ -90,10 +93,10 @@ void open_url(char* url) {
     char* line = readline();
     switch(line[0]) {
       case '2':
-	handleSuccess(line);
+	handle_success(line);
 	break;
       default:
-	handleDefault(line);
+	handle_default(line);
 	break;
     }
     fc_tls_close(SOCKET_ID);
@@ -107,20 +110,20 @@ void send_request(char* request) {
   fc_tls_send_chars(SOCKET_ID, CRLF, 2);
 }
 
-void handleDefault(char* line) {
+void handle_default(char* line) {
   fc_tputs("?? ");
   fc_tputs(line);
 }
 
-void handleSuccess(char* line) {
+void handle_success(char* line) {
   // gobbles the status code, we already know it is a '2x'
   char* tok = fc_strtok(line, ' ');
 
   tok = fc_strtok(0, ';');
   if (fc_str_startswith(tok, "text/gemini")) {
-    displayPage();
+    display_page();
   } else if (fc_str_startswith(tok, "text/plain")) {
-    displayPage();
+    display_page();
   } else {
     fc_tputs("uknown mime-type: ");
     fc_tputs(tok);
@@ -128,14 +131,18 @@ void handleSuccess(char* line) {
   }
 }
 
-void displayPage() {
+void display_page() {
   page_clear_lines(); // erase the current page
 
   char* line = readline();
   while(line) {
     page_add_line(line);
+    if (state.line_count <= 28) {
+      screen_redraw();
+    } else {
+      screen_status();
+    }
     line = readline();
   }
-  screen_redraw();
 }
 

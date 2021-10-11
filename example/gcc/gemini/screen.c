@@ -4,11 +4,28 @@
 #include "page.h"
 #include "gemini.h"
 
+#define COLOR_TRANS 0x00
+#define COLOR_BLACK 0x01
+#define COLOR_MEDGREEN 0x02
+#define COLOR_LTGREEN 0x03
+#define COLOR_DKBLUE 0x04
+#define COLOR_LTBLUE 0x05
+#define COLOR_DKRED 0x06
+#define COLOR_CYAN 0x07
+#define COLOR_MEDRED 0x08
+#define COLOR_LTRED 0x09
+#define COLOR_DKYELLOW 0x0A
+#define COLOR_LTYELLOW 0x0B
+#define COLOR_DKGREEN 0x0C
+#define COLOR_MAGENTA 0x0D
+#define COLOR_GRAY 0x0E
+#define COLOR_WHITE 0x0F
+
 const char BLACK_ON_GREEN[9] = "\033[30;42m";
-const char BLACK_ON_GRAY[10] = "\033[30;100m";
-const char GREEN_ON_BLACK[9] = "\033[32;40m";
-const char GRAY_ON_BLACK[9] = "\033[90;40m";
-const char CYAN_ON_BLACK[9] = "\033[96;40m";
+const unsigned char BLACK_ON_GRAY = (COLOR_BLACK << 4 | COLOR_GRAY);
+const unsigned char GREEN_ON_BLACK = (COLOR_LTGREEN << 4 | COLOR_BLACK);
+const unsigned char GRAY_ON_BLACK = (COLOR_GRAY << 4 | COLOR_BLACK);
+const unsigned char CYAN_ON_BLACK = (COLOR_CYAN << 4 | COLOR_BLACK);
 
 struct DisplayInformation dinfo;
 
@@ -23,9 +40,17 @@ void init_screen() {
   fc_ui_gotoxy(1, 1);
   fc_tputs(BLACK_ON_GREEN);
   fc_tputs("-< GEMINI TI-99/4A Browser v1.0 >-");
-  fc_ui_gotoxy(1, 30);
-  fc_tputs("Line: 0 of 0");
+  screen_status();
 } 
+
+void screen_status() {
+  fc_ui_gotoxy(1, 30);
+  fc_tputs(BLACK_ON_GREEN);
+  fc_tputs("Line: ");
+  fc_tputs(fc_uint2str(state.line_offset + 1));
+  fc_tputs(" of ");
+  fc_tputs(fc_uint2str(state.line_count));
+}
 
 void screen_scroll_to(int lineno) {
   if (lineno < state.line_count) {
@@ -37,22 +62,25 @@ void screen_redraw() {
   int limit = state.line_count - state.line_offset;
   limit = limit < 28 ? limit : 28;
   for(int i = 0; i < limit; i++) {
-    fc_ui_gotoxy(1, i + 2);
     struct Line* line = page_get_line(i + state.line_offset);
+    unsigned char color = GRAY_ON_BLACK;
     if (line->type == LINE_TYPE_HEADING) {
-      fc_tputs(CYAN_ON_BLACK);
+      color = CYAN_ON_BLACK;
     } else if (line->type == LINE_TYPE_LINK) {
-      fc_tputs(GREEN_ON_BLACK);
+      color = GREEN_ON_BLACK;
     } else if (line->type == LINE_TYPE_LITERAL) {
-      fc_tputs(BLACK_ON_GRAY);
-    } else {
-      fc_tputs(GRAY_ON_BLACK);
+      color = BLACK_ON_GRAY;
     }
-    fc_tputs(page_get_line(i)->data);
+    int line_offset = (i+1) * 80;
+    vdp_memcpy(dinfo.imageAddr + line_offset, line->data, line->length);
+    vdp_memset(dinfo.imageAddr + line_offset + line->length, ' ', 80 - line->length);
+    vdp_memset(dinfo.colorAddr + line_offset, color, 80);
   }
   // blank remaining lines.
   for(int i = state.line_count; i < 28; i++) {
-    vdp_memset((i+1) * 80, ' ', 80);
+    vdp_memset(dinfo.imageAddr + ((i+1) * 80), ' ', 80);
+    vdp_memset(dinfo.colorAddr + ((i+1) * 80), ' ', 80);
   }
+  screen_status();
 }
 

@@ -5,6 +5,7 @@
 #include "b0_globals.h"
 #include "b10_detect_vdp.h"
 #include "b2_lvl2.h"
+#include <vdp.h>
 
 void sys_info(struct SystemInformation* info) {
   info->dsrList = dsrList;
@@ -18,4 +19,7 @@ void display_info(struct DisplayInformation* info) {
   info->displayHeight = displayHeight;
   info->isPal = pal;
   info->vdp_type = vdp_type;
+  info->patternAddr = gPattern;
+  info->imageAddr = gImage;
+  info->colorAddr = gColor;
 }
