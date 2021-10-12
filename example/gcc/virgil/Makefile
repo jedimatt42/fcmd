@@ -5,7 +5,7 @@ OBJCOPY=tms9900-objcopy
 OBJDUMP=tms9900-objdump
 XDM99?=$(shell which xdm99.py)
 
-FNAME=GEMINI
+FNAME=VIRGIL
 
 LDFLAGS=\
   --script=linkfile

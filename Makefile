@@ -96,7 +96,7 @@ api.asm: fc_api.lst makeapi.py fc_api_template
 b3_fcbanner.asm: fcbanner.ans ans2asm.py
 	python3 ./ans2asm.py
 
-SUBDIRS=charset fcmenu ftp say telnet gemini
+SUBDIRS=charset fcmenu ftp say telnet virgil
 
 subdirs: api.asm
 	for d in $(SUBDIRS); do $(MAKE) -C example/gcc/$$d; done
@@ -105,7 +105,7 @@ support: FC/reload_fcmd.asm FC/loadxb.bas
 	$(MAKE) -C FC
 
 $(FNAME).DSK: subdirs support
-	python3 $(XDM99) $(FNAME).DSK -X 360 -t -a FC/BIN/FCMENU FC/BIN/FTP FC/BIN/TELNET FC/BIN/SAY FC/BIN/SAMPLE FC/BIN/GEMINI
+	python3 $(XDM99) $(FNAME).DSK -X 360 -t -a FC/BIN/FCMENU FC/BIN/FTP FC/BIN/TELNET FC/BIN/SAY FC/BIN/SAMPLE FC/BIN/VIRGIL
 
 $(FNAME).RPK: $(FNAME)C.bin $(FNAME)G.bin layout.xml
 	zip $@ $^

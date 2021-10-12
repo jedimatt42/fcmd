@@ -22,7 +22,7 @@ else
   cp example/gcc/ntscpal/NTSCPAL $CLASSIC99_DSK1_DIR
   cp example/gcc/say/SAY $CLASSIC99_DSK1_DIR
   cp example/gcc/say/SAMPLE $CLASSIC99_DSK1_DIR
-  cp example/gcc/gemini/GEMINI $CLASSIC99_DSK1_DIR
+  cp example/gcc/virgil/VIRGIL $CLASSIC99_DSK1_DIR
 fi
 
 if [ -z ${TIPI_HOST_NAME:-} ]; then
@@ -38,6 +38,6 @@ else
   scp example/gcc/telnet/TELNET tipi@${TIPI_HOST_NAME}:/home/tipi/tipi_disk/FC/BIN/
   scp example/gcc/say/SAY tipi@${TIPI_HOST_NAME}:/home/tipi/tipi_disk/FC/BIN/
   scp example/gcc/say/SAMPLE tipi@${TIPI_HOST_NAME}:/home/tipi/tipi_disk/FC/BIN/
-  scp example/gcc/gemini/GEMINI tipi@${TIPI_HOST_NAME}:/home/tipi/tipi_disk/FC/BIN/
+  scp example/gcc/virgil/VIRGIL tipi@${TIPI_HOST_NAME}:/home/tipi/tipi_disk/FC/BIN/
 fi
 
