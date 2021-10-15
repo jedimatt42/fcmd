@@ -29,6 +29,28 @@ int on_key_up() {
   return 0;
 }
 
+int on_page_down() {
+  if (state.line_count - state.line_offset > 28) {
+    state.line_offset += 28;
+    if (state.line_count - state.line_offset < 28) {
+      state.line_offset = state.line_count - 28;
+    }
+    return 1;
+  }
+  return 0;
+}
+
+int on_page_up() {
+  if (state.line_offset > 0) {
+    state.line_offset -= 28;
+    if (state.line_offset < 0) {
+      state.line_offset = 0;
+    }
+    return 1;
+  }
+  return 0;
+}
+
 int handle_keyboard() {
   int redraw = 0;
   int key = read_keyboard();
@@ -42,6 +64,12 @@ int handle_keyboard() {
       break;
     case KEY_UP:
       redraw = on_key_up();
+      break;
+    case KEY_CTRL_X:
+      redraw = on_page_down();
+      break;
+    case KEY_CTRL_E:
+      redraw = on_page_up();
       break;
     default:
       break;

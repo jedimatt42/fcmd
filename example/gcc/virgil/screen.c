@@ -3,6 +3,8 @@
 #include "screen.h"
 #include "page.h"
 #include "gemini.h"
+#include "version.h"
+#include "link.h"
 
 #define COLOR_TRANS 0x00
 #define COLOR_BLACK 0x01
@@ -22,6 +24,7 @@
 #define COLOR_WHITE 0x0F
 
 const char BLACK_ON_GREEN[9] = "\033[30;42m";
+const unsigned char CBLACK_ON_GREEN = (COLOR_BLACK << 4 | COLOR_MEDGREEN);
 const unsigned char BLACK_ON_GRAY = (COLOR_BLACK << 4 | COLOR_GRAY);
 const unsigned char GREEN_ON_BLACK = (COLOR_LTGREEN << 4 | COLOR_BLACK);
 const unsigned char GRAY_ON_BLACK = (COLOR_GRAY << 4 | COLOR_BLACK);
@@ -39,11 +42,13 @@ void init_screen() {
   fc_exec("CLS");
   fc_ui_gotoxy(1, 1);
   fc_tputs(BLACK_ON_GREEN);
-  fc_tputs("-< GEMINI TI-99/4A Browser v1.0 >-");
+  fc_tputs("-< " VERSION " >-");
+  vdp_memset(dinfo.colorAddr, CBLACK_ON_GREEN, 80);
   screen_status();
 } 
 
 void screen_status() {
+  vdp_memset(dinfo.colorAddr + (29 * 80), CBLACK_ON_GREEN, 80);
   fc_ui_gotoxy(1, 30);
   fc_tputs(BLACK_ON_GREEN);
   fc_tputs("Line: ");
@@ -63,23 +68,30 @@ void screen_redraw() {
   limit = limit < 28 ? limit : 28;
   for(int i = 0; i < limit; i++) {
     struct Line* line = page_get_line(i + state.line_offset);
-    unsigned char color = GRAY_ON_BLACK;
-    if (line->type == LINE_TYPE_HEADING) {
-      color = CYAN_ON_BLACK;
-    } else if (line->type == LINE_TYPE_LINK) {
-      color = GREEN_ON_BLACK;
-    } else if (line->type == LINE_TYPE_LITERAL) {
-      color = BLACK_ON_GRAY;
-    }
     int line_offset = (i+1) * 80;
-    vdp_memcpy(dinfo.imageAddr + line_offset, line->data, line->length);
-    vdp_memset(dinfo.imageAddr + line_offset + line->length, ' ', 80 - line->length);
-    vdp_memset(dinfo.colorAddr + line_offset, color, 80);
+    if (line->type == LINE_TYPE_LINK) {
+      int len = 0;
+      char* label = link_label(line->data, &len);
+      vdp_memcpy(dinfo.imageAddr + line_offset, label, len);
+      vdp_memset(dinfo.imageAddr + line_offset + len, ' ', 80 - len);
+      vdp_memset(dinfo.colorAddr + line_offset, GREEN_ON_BLACK, 80);
+    } else {
+      unsigned char color = GRAY_ON_BLACK;
+      if (line->type == LINE_TYPE_HEADING) {
+	color = CYAN_ON_BLACK;
+      } else if (line->type == LINE_TYPE_LITERAL) {
+	color = BLACK_ON_GRAY;
+      }
+      int line_offset = (i+1) * 80;
+      vdp_memcpy(dinfo.imageAddr + line_offset, line->data, line->length);
+      vdp_memset(dinfo.imageAddr + line_offset + line->length, ' ', 80 - line->length);
+      vdp_memset(dinfo.colorAddr + line_offset, color, 80);
+    }
   }
   // blank remaining lines.
   for(int i = state.line_count; i < 28; i++) {
     vdp_memset(dinfo.imageAddr + ((i+1) * 80), ' ', 80);
-    vdp_memset(dinfo.colorAddr + ((i+1) * 80), ' ', 80);
+    vdp_memset(dinfo.colorAddr + ((i+1) * 80), GRAY_ON_BLACK, 80);
   }
   screen_status();
 }

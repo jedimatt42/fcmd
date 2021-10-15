@@ -94,11 +94,11 @@ void page_add_line(char* line) {
     pline->data[pc++] = line[c++];
   }
   pline->length = pc - 1;
-  state.line_count++;
-  if (pline->type == LINE_TYPE_LINK) {
-    // collapse whitespace in links
-    fixup_link(pline);
+  if (pline->data[pline->length - 1] == 0x0D) {
+    pline->length--;
+    pline->data[pline->length - 1] = 0;
   }
+  state.line_count++;
 }
 
 int add_bank() {
@@ -127,15 +127,5 @@ struct Line* page_get_line(int idx) {
   fc_sams_map_page(state.page_id, SAMS_ADDR);
   int line_offset = idx - (page_offset * LINES_PER_BANK);
   return &(PAGE->lines[line_offset]);
-}
-
-void fixup_link(struct Line* line) {
-  int i = 0;
-  while(line->data[i] != 0) {
-    if (line->data[i] == 0x09) {
-      line->data[i] = ' ';
-    }
-    i++;
-  }
 }
 

@@ -45,6 +45,8 @@
 #define KEY_SAVE 147
 #define KEY_CTRL_R 146
 #define KEY_CTRL_I 137
+#define KEY_CTRL_E 133
+#define KEY_CTRL_X 152
 #define KEY_TAB 137
 #define KEY_LEFT 8
 #define KEY_RIGHT 9

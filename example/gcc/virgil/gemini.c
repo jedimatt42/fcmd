@@ -12,6 +12,7 @@ void send_request(char* request);
 void handle_success(char* line);
 void handle_default(char* line);
 void on_exit();
+int check_requirements();
 
 void display_page();
 
@@ -26,6 +27,10 @@ void halt() {
 }
 
 int fc_main(char* args) {
+  if (check_requirements()) {
+    return 1;
+  }
+
   fc_strset((char*)&state, 0, sizeof(struct State));
   fc_strncpy(state.url, args, 256);
 
@@ -144,5 +149,32 @@ void display_page() {
     }
     line = readline();
   }
+}
+
+void any_key() {
+  fc_tputs("press any key to continue.");
+  while(!read_keyboard()) {
+    // spin
+  }
+}
+
+int check_requirements() {
+  struct DisplayInformation dinfo;
+  fc_display_info(&dinfo);
+  int res = 0;
+  if (dinfo.vdp_type != VDP_F18A) {
+    fc_tputs("F18A required\n");
+    res = 1;
+  }
+  struct SamsInformation sinfo;
+  fc_sams_info(&sinfo);
+  if (sinfo.total_pages == 0) {
+    fc_tputs("SAMS required\n");
+    res = 1;
+  }
+  if (res) {
+    any_key();
+  }
+  return res;
 }
 
