@@ -48,12 +48,21 @@ void init_screen() {
 } 
 
 void screen_status() {
+  vdp_memset(dinfo.imageAddr + (29 * 80), ' ', 80);
   vdp_memset(dinfo.colorAddr + (29 * 80), CBLACK_ON_GREEN, 80);
   fc_ui_gotoxy(1, 30);
   fc_tputs(BLACK_ON_GREEN);
-  fc_tputs("Line: ");
-  fc_tputs(fc_uint2str(state.line_offset + 1));
-  fc_tputs(" of ");
+  if (state.error[0] != 0) {
+    fc_tputs(state.error);
+    return;
+  }
+  if (state.loading) {
+    fc_tputs("Loading ");
+  } else {
+    fc_tputs("Line: ");
+    fc_tputs(fc_uint2str(state.line_offset + 1));
+    fc_tputs(" of ");
+  }
   fc_tputs(fc_uint2str(state.line_count));
 }
 
@@ -80,7 +89,7 @@ void screen_redraw() {
       if (line->type == LINE_TYPE_HEADING) {
 	color = CYAN_ON_BLACK;
       } else if (line->type == LINE_TYPE_LITERAL) {
-	color = BLACK_ON_GRAY;
+	color = GRAY_ON_BLACK;
       }
       int line_offset = (i+1) * 80;
       vdp_memcpy(dinfo.imageAddr + line_offset, line->data, line->length);

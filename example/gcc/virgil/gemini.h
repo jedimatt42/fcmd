@@ -9,7 +9,9 @@ struct __attribute__((__packed__)) State {
   int line_offset;
   int page_count;
   int toggle_literal;
+  int loading;
   char url[256];
+  char error[80];
 };
 
 extern struct State state;

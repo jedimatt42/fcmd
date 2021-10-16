@@ -9,5 +9,7 @@ extern struct MouseData* mouseData;
 
 int update_mouse();
 
+int handle_mouse_click();
+
 #endif
 

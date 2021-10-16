@@ -47,8 +47,10 @@ int fc_main(char* args) {
     int click = update_mouse();
     VDP_WAIT_VBLANK_CRU
     if (click & MB_LEFT) {
-      on_exit(); // Temporary
-      return 0;
+      if (handle_mouse_click()) {
+        on_exit(); // Temporary
+        return 0;
+      }
     } else {
       if (handle_keyboard()) {
         on_exit();
@@ -84,6 +86,8 @@ void set_hostname_and_port(char* url, char* hostname, char* port) {
 }
 
 void open_url(char* url) {
+  state.loading = 1;
+  state.error[0] = 0;
   char hostname[80];
   char port[10];
 
@@ -106,8 +110,10 @@ void open_url(char* url) {
     }
     fc_tls_close(SOCKET_ID);
   } else {
-    fc_tputs("connection error\n");
+    fc_strcpy(state.error, "Connection error");
   }
+  state.loading = 0;
+  screen_status();
 }
 
 void send_request(char* request) {
