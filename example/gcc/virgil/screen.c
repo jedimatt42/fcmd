@@ -42,7 +42,10 @@ void init_screen() {
   fc_exec("CLS");
   fc_ui_gotoxy(1, 1);
   fc_tputs(BLACK_ON_GREEN);
+  vdp_memset(dinfo.colorAddr, CBLACK_ON_GREEN, 80);
   fc_tputs("-< " VERSION " >-");
+  fc_ui_gotoxy(75, 1);
+  fc_tputs("[QUIT]");
   vdp_memset(dinfo.colorAddr, CBLACK_ON_GREEN, 80);
   screen_status();
 } 

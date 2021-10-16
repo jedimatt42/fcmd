@@ -96,7 +96,7 @@ void page_add_line(char* line) {
   pline->length = pc - 1;
   if (pline->data[pline->length - 1] == 0x0D) {
     pline->length--;
-    pline->data[pline->length - 1] = 0;
+    pline->data[pline->length] = 0;
   }
   state.line_count++;
 }
