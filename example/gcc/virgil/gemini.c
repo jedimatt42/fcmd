@@ -151,6 +151,7 @@ void handle_success(char* line) {
 }
 
 void display_page() {
+  state.line_offset = 0;
   page_clear_lines(); // erase the current page
 
   char* line = readline();
@@ -197,6 +198,12 @@ void update_full_url(char* url) {
     fc_strcpy(state.url, url);
     return;
   }
+  if (fc_str_startswith(url, "//")) {
+    // implicit gemini: protocol
+    fc_strcpy(state.url, "gemini:");
+    fc_strcpy(state.url + 7, url);
+    return;
+  } 
   if (fc_str_startswith(url, "/")) {
     // same host and port, new path
     char hostname[80];
@@ -206,12 +213,6 @@ void update_full_url(char* url) {
     int len = 9;
     fc_strcpy(state.url + len, hostname);
     len += fc_strlen(hostname);
-    if (0 == fc_strcmp(port, "1965")) {
-      fc_strcpy(state.url + len, ":");
-      len++;
-      fc_strcpy(state.url + len, port);
-      len += fc_strlen(port);
-    }
     fc_strcpy(state.url + len, url);
     return;
   }
