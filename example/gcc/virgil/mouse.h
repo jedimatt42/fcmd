@@ -16,7 +16,7 @@ extern struct MouseData* mouseData;
 
 int update_mouse();
 
-int handle_mouse_click();
+void handle_mouse_click();
 
 void mouse_set_pointer(int p);
 

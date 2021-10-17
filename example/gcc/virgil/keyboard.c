@@ -6,11 +6,14 @@
 
 int read_keyboard() {
   unsigned int key = fc_kscan(5);
+  return key;
+  /*
   if (KSCAN_STATUS & KSCAN_MASK) {
     return key;
   } else {
     return 0;
   }
+  */
 }
 
 int on_key_down() {
@@ -51,14 +54,24 @@ int on_page_up() {
   return 0;
 }
 
-int handle_keyboard() {
+int on_stop() {
+  if (state.loading) {
+    state.stop = 1;
+    return 1;
+  } else {
+    return 0;
+  }
+}
+
+void handle_keyboard() {
   int redraw = 0;
   int key = read_keyboard();
   switch(key) {
     case 0:
       break;
     case KEY_ESC:
-      return 1;
+      state.quit = 1;
+      break;
     case KEY_DOWN:
       redraw = on_key_down();
       break;
@@ -71,12 +84,14 @@ int handle_keyboard() {
     case KEY_CTRL_E:
       redraw = on_page_up();
       break;
+    case KEY_CTRL_S:
+      redraw = on_stop();
+      break;
     default:
       break;
   }
   if (redraw) {
     screen_redraw();
   }
-  return 0;
 }
 

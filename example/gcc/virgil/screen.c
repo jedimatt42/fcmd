@@ -48,7 +48,12 @@ void screen_title() {
   fc_tputs(BLACK_ON_GREEN);
   vdp_memset(dinfo.colorAddr, CBLACK_ON_GREEN, 80);
   fc_tputs("-< " VERSION " >-");
-  fc_ui_gotoxy(75, 1);
+  fc_ui_gotoxy(69, 1);
+  if (state.loading) {
+    fc_tputs("[STOP]");
+  } else {
+    fc_tputs("[BACK]");
+  }
   fc_tputs("[QUIT]");
   vdp_memset(dinfo.colorAddr, CBLACK_ON_GREEN, 80);
 } 

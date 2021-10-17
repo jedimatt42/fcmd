@@ -45,7 +45,7 @@ int update_mouse() {
   return md.buttons;
 }
 
-int handle_mouse_click() {
+void handle_mouse_click() {
   while(MB_LEFT & update_mouse()) {
     // only handle click after mouse-button-up
   }
@@ -53,7 +53,16 @@ int handle_mouse_click() {
   int col = mouse_column();
   if (line == 1) {
     if (col > 74) { // quit button
-      return 1;
+      state.quit = 1;
+      return;
+    } else if (col > 68) {
+      if (state.loading) {
+	// stop button
+	state.stop = 1;
+      } else {
+	// back button
+      }
+      return;
     }
   } else {
     int redraw = 0;
@@ -70,7 +79,7 @@ int handle_mouse_click() {
       if (redraw) {
 	screen_redraw();
       }
-      return 0;
+      return;
     }
   } 
 
@@ -82,7 +91,7 @@ int handle_mouse_click() {
     open_url(link_url(page_line->data, &junk));
   }
   
-  return 0;
+  return;
 }
 
 #define SPR16X(a,b,c,d, e,f,g,h, i,j,k,l, m,n,o,p) { \

@@ -1,7 +1,7 @@
 #ifndef _KEYBOARD_H
 #define _KEYBOARD_H 1
 
-int handle_keyboard();
+void handle_keyboard();
 int read_keyboard();
 int on_key_up();
 int on_key_down();

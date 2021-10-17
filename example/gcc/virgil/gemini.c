@@ -8,6 +8,7 @@
 #include "readline.h"
 #include "keyboard.h"
 
+void process_input();
 void send_request(char* request);
 void handle_success(char* line);
 void handle_default(char* line);
@@ -42,22 +43,21 @@ int fc_main(char* args) {
   if (state.url[0] != 0) {
     open_url(state.url);
   }
-
   update_mouse(); // throw one away - the tipi mouse might queue a click
-  while(1) {
+  state.quit = 0;
+  while(!state.quit) {
     VDP_WAIT_VBLANK_CRU
-    int click = update_mouse();
-    if (click & MB_LEFT) {
-      if (handle_mouse_click()) {
-        on_exit(); // Temporary
-        return 0;
-      }
-    } else {
-      if (handle_keyboard()) {
-        on_exit();
-	return 0;
-      }
-    }
+    process_input();
+  }
+  on_exit();
+  return 0;
+}
+
+void process_input() {
+  handle_keyboard();
+  int click = update_mouse();
+  if (click & MB_LEFT) {
+    handle_mouse_click();
   }
 }
 
@@ -88,6 +88,7 @@ void set_hostname_and_port(char* url, char* hostname, char* port) {
 
 void open_url(char* url) {
   state.loading = 1;
+  state.stop = 0;
   state.error[0] = 0;
   char hostname[80];
   char port[10];
@@ -120,7 +121,9 @@ void open_url(char* url) {
   } else {
     fc_strcpy(state.error, "Connection error");
   }
+  fc_tls_close(SOCKET_ID);
   state.loading = 0;
+  state.stop = 0;
   screen_status();
 }
 
@@ -146,7 +149,6 @@ void handle_success(char* line) {
   } else {
     fc_tputs("uknown mime-type: ");
     fc_tputs(tok);
-    fc_tputs("\n");
   }
 }
 
@@ -155,13 +157,14 @@ void display_page() {
   page_clear_lines(); // erase the current page
 
   char* line = readline();
-  while(line) {
+  while(line && !state.stop) {
     page_add_line(line);
     if (state.line_count <= 28) {
       screen_redraw();
     } else {
       screen_status();
     }
+    process_input(); 
     line = readline();
   }
 }
@@ -194,27 +197,25 @@ int check_requirements() {
 }
 
 void update_full_url(char* url) {
+  char tmp[256];
   if (fc_str_startswith(url, "gemini://")) {
-    fc_strcpy(state.url, url);
-    return;
-  }
-  if (fc_str_startswith(url, "//")) {
+    // a little wasteful, but good enough.
+    fc_strcpy(tmp, url);
+  } else if (fc_str_startswith(url, "//")) {
     // implicit gemini: protocol
-    fc_strcpy(state.url, "gemini:");
-    fc_strcpy(state.url + 7, url);
-    return;
-  } 
-  if (fc_str_startswith(url, "/")) {
+    fc_strcpy(tmp, "gemini:");
+    fc_strcpy(tmp + 7, url);
+  } else if (fc_str_startswith(url, "/")) {
     // same host and port, new path
     char hostname[80];
     char port[8];
     set_hostname_and_port(state.url, hostname, port);
-    fc_strcpy(state.url, "gemini://");
+    fc_strcpy(tmp, "gemini://");
     int len = 9;
-    fc_strcpy(state.url + len, hostname);
+    fc_strcpy(tmp + len, hostname);
     len += fc_strlen(hostname);
-    fc_strcpy(state.url + len, url);
-    return;
+    fc_strcpy(tmp + len, url);
   }
+  fc_strcpy(state.url, tmp);
 }
 
