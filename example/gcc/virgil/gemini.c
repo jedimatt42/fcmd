@@ -45,8 +45,8 @@ int fc_main(char* args) {
 
   update_mouse(); // throw one away - the tipi mouse might queue a click
   while(1) {
-    int click = update_mouse();
     VDP_WAIT_VBLANK_CRU
+    int click = update_mouse();
     if (click & MB_LEFT) {
       if (handle_mouse_click()) {
         on_exit(); // Temporary

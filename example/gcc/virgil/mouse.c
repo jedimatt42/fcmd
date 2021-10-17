@@ -294,7 +294,7 @@ void mouse_set_pointer(int p) {
       black = scroll_up_pointer_black;
       white = scroll_up_pointer_white;
     } else if (pointer_type == MP_SCROLL_DOWN) {
-      white = scroll_down_pointer_black;
+      black = scroll_down_pointer_black;
       white = scroll_down_pointer_white;
     } else {
       black = normal_pointer_black;
