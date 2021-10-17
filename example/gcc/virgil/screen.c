@@ -6,29 +6,14 @@
 #include "version.h"
 #include "link.h"
 
-#define COLOR_TRANS 0x00
-#define COLOR_BLACK 0x01
-#define COLOR_MEDGREEN 0x02
-#define COLOR_LTGREEN 0x03
-#define COLOR_DKBLUE 0x04
-#define COLOR_LTBLUE 0x05
-#define COLOR_DKRED 0x06
-#define COLOR_CYAN 0x07
-#define COLOR_MEDRED 0x08
-#define COLOR_LTRED 0x09
-#define COLOR_DKYELLOW 0x0A
-#define COLOR_LTYELLOW 0x0B
-#define COLOR_DKGREEN 0x0C
-#define COLOR_MAGENTA 0x0D
-#define COLOR_GRAY 0x0E
-#define COLOR_WHITE 0x0F
-
-const char BLACK_ON_GREEN[9] = "\033[30;42m";
-const unsigned char CBLACK_ON_GREEN = (COLOR_BLACK << 4 | COLOR_MEDGREEN);
-const unsigned char BLACK_ON_GRAY = (COLOR_BLACK << 4 | COLOR_GRAY);
-const unsigned char GREEN_ON_BLACK = (COLOR_LTGREEN << 4 | COLOR_BLACK);
-const unsigned char GRAY_ON_BLACK = (COLOR_GRAY << 4 | COLOR_BLACK);
-const unsigned char CYAN_ON_BLACK = (COLOR_CYAN << 4 | COLOR_BLACK);
+#define BLACK_ON_GREEN "\033[30;42m"
+#define CBLACK_ON_GREEN (COLOR_BLACK << 4 | COLOR_MEDGREEN)
+#define BLACK_ON_GRAY (COLOR_BLACK << 4 | COLOR_GRAY)
+#define GREEN_ON_BLACK (COLOR_LTGREEN << 4 | COLOR_BLACK)
+#define GRAY_ON_BLACK (COLOR_GRAY << 4 | COLOR_BLACK)
+#define CYAN_ON_BLACK (COLOR_CYAN << 4 | COLOR_BLACK)
+#define YELLOW_ON_BLACK (COLOR_LTYELLOW << 4 | COLOR_BLACK)
+#define BROWN_ON_BLACK (COLOR_DKYELLOW << 4 | COLOR_BLACK)
 
 struct DisplayInformation dinfo;
 
@@ -94,10 +79,19 @@ void screen_redraw() {
     int line_offset = (i+1) * 80;
     if (line->type == LINE_TYPE_LINK) {
       int len = 0;
+      char* url = link_url(line->data, &len);
+      int color = GREEN_ON_BLACK;
+      if (fc_str_startswith(url, "http")) {
+	if (url[4] == ':' || (url[4] == 's' && url[5] == ':')) {
+	  color = YELLOW_ON_BLACK;
+	}
+      } else if (fc_str_startswith(url, "gopher:")) {
+	color = BROWN_ON_BLACK;
+      }
       char* label = link_label(line->data, &len);
       vdp_memcpy(dinfo.imageAddr + line_offset, label, len);
       vdp_memset(dinfo.imageAddr + line_offset + len, ' ', 80 - len);
-      vdp_memset(dinfo.colorAddr + line_offset, GREEN_ON_BLACK, 80);
+      vdp_memset(dinfo.colorAddr + line_offset, color, 80);
     } else {
       unsigned char color = GRAY_ON_BLACK;
       if (line->type == LINE_TYPE_HEADING) {

@@ -49,6 +49,24 @@ struct __attribute__((__packed__)) SystemInformation {
 #define VDP_9958 0x9958
 #define VDP_9918 0x9918
 
+// Color attribute values
+#define COLOR_TRANS 0x00
+#define COLOR_BLACK 0x01
+#define COLOR_MEDGREEN 0x02
+#define COLOR_LTGREEN 0x03
+#define COLOR_DKBLUE 0x04
+#define COLOR_LTBLUE 0x05
+#define COLOR_DKRED 0x06
+#define COLOR_CYAN 0x07
+#define COLOR_MEDRED 0x08
+#define COLOR_LTRED 0x09
+#define COLOR_DKYELLOW 0x0A
+#define COLOR_LTYELLOW 0x0B
+#define COLOR_DKGREEN 0x0C
+#define COLOR_MAGENTA 0x0D
+#define COLOR_GRAY 0x0E
+#define COLOR_WHITE 0x0F
+
 /*
   Display parameter structure
 */

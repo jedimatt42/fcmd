@@ -1,6 +1,7 @@
 #include <fc_api.h>
 #include "page.h"
 #include "gemini.h"
+#include "link.h"
 
 #define LINES_PER_BANK 48
 
