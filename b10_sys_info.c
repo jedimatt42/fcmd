@@ -22,4 +22,5 @@ void display_info(struct DisplayInformation* info) {
   info->patternAddr = gPattern;
   info->imageAddr = gImage;
   info->colorAddr = gColor;
+  info->spritePatternAddr = gSpritePat;
 }

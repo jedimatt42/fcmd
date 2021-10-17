@@ -23,6 +23,7 @@ struct __attribute__((__packed__)) DisplayInformation {
   int imageAddr;
   int patternAddr;
   int colorAddr;
+  int spritePatternAddr;
 };
 
 void sys_info(struct SystemInformation* info);
