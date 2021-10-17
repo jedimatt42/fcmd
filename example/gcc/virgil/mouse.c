@@ -46,6 +46,9 @@ int update_mouse() {
 }
 
 int handle_mouse_click() {
+  while(MB_LEFT & update_mouse()) {
+    // only handle click after mouse-button-up
+  }
   int line = mouse_line();
   int col = mouse_column();
   if (line == 1) {
