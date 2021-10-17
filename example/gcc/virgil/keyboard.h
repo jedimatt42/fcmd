@@ -3,5 +3,9 @@
 
 int handle_keyboard();
 int read_keyboard();
+int on_key_up();
+int on_key_down();
+int on_page_up();
+int on_page_down();
 
 #endif

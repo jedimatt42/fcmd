@@ -13,6 +13,7 @@ void handle_success(char* line);
 void handle_default(char* line);
 void on_exit();
 int check_requirements();
+void update_full_url(char* url);
 
 void display_page();
 
@@ -91,13 +92,20 @@ void open_url(char* url) {
   char hostname[80];
   char port[10];
 
-  set_hostname_and_port(url, hostname, port); 
+  screen_status();
+
+  fc_ui_gotoxy(20,30);
+  fc_tputs(url);
+
+  update_full_url(url);
+
+  set_hostname_and_port(state.url, hostname, port); 
 
   int err = fc_tls_connect(SOCKET_ID, hostname, port);
   if (err /* 0 indicates failure */) {
     err = 0;
     init_readline(SOCKET_ID);
-    send_request(url);
+    send_request(state.url);
 
     char* line = readline();
     switch(line[0]) {
@@ -122,8 +130,8 @@ void send_request(char* request) {
 }
 
 void handle_default(char* line) {
-  fc_tputs("?? ");
-  fc_tputs(line);
+  fc_strcpy(state.error, line);
+  screen_status();
 }
 
 void handle_success(char* line) {
@@ -182,5 +190,30 @@ int check_requirements() {
     any_key();
   }
   return res;
+}
+
+void update_full_url(char* url) {
+  if (fc_str_startswith(url, "gemini://")) {
+    fc_strcpy(state.url, url);
+    return;
+  }
+  if (fc_str_startswith(url, "/")) {
+    // same host and port, new path
+    char hostname[80];
+    char port[8];
+    set_hostname_and_port(state.url, hostname, port);
+    fc_strcpy(state.url, "gemini://");
+    int len = 9;
+    fc_strcpy(state.url + len, hostname);
+    len += fc_strlen(hostname);
+    if (0 == fc_strcmp(port, "1965")) {
+      fc_strcpy(state.url + len, ":");
+      len++;
+      fc_strcpy(state.url + len, port);
+      len += fc_strlen(port);
+    }
+    fc_strcpy(state.url + len, url);
+    return;
+  }
 }
 

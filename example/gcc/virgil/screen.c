@@ -40,6 +40,10 @@ void init_screen() {
   // attributes.
   fc_exec("COLOR 14 1");
   fc_exec("CLS");
+  screen_status();
+}
+
+void screen_title() {
   fc_ui_gotoxy(1, 1);
   fc_tputs(BLACK_ON_GREEN);
   vdp_memset(dinfo.colorAddr, CBLACK_ON_GREEN, 80);
@@ -47,16 +51,18 @@ void init_screen() {
   fc_ui_gotoxy(75, 1);
   fc_tputs("[QUIT]");
   vdp_memset(dinfo.colorAddr, CBLACK_ON_GREEN, 80);
-  screen_status();
 } 
 
 void screen_status() {
+  screen_title();
   vdp_memset(dinfo.imageAddr + (29 * 80), ' ', 80);
   vdp_memset(dinfo.colorAddr + (29 * 80), CBLACK_ON_GREEN, 80);
   fc_ui_gotoxy(1, 30);
   fc_tputs(BLACK_ON_GREEN);
   if (state.error[0] != 0) {
     fc_tputs(state.error);
+    fc_tputs(" ");
+    fc_tputs(state.url);
     return;
   }
   if (state.loading) {
