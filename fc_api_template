@@ -217,6 +217,22 @@ struct __attribute__((__packed__)) SocketBuffer {
 #define TLS 1
 #define TCP 0
 
+/*
+ Linked List stack that shoves oldest items off to make room if necessary.
+ Use with fc_list_ functions.
+ */
+struct __attribute__((__packed__)) List {
+  char* addr;
+  char* end;
+  char* ceiling;
+};
+  
+struct __attribute__((__packed__)) ListEntry {
+  int length;
+  char data[];
+};
+
+
 
 /*
   Rom address tables

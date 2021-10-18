@@ -217,6 +217,22 @@ struct __attribute__((__packed__)) SocketBuffer {
 #define TLS 1
 #define TCP 0
 
+/*
+ Linked List stack that shoves oldest items off to make room if necessary.
+ Use with fc_list_ functions.
+ */
+struct __attribute__((__packed__)) List {
+  char* addr;
+  char* end;
+  char* ceiling;
+};
+  
+struct __attribute__((__packed__)) ListEntry {
+  int length;
+  char data[];
+};
+
+
 
 /*
   Rom address tables
@@ -311,6 +327,10 @@ extern void* memcpy(void* dest, const void* src, int count);
 #define FC_INIT_SOCKET_BUFFER 0x61ce
 #define FC_READLINE 0x61d2
 #define FC_READSTREAM 0x61d6
+#define FC_LIST_INIT 0x61da
+#define FC_LIST_PUSH 0x61de
+#define FC_LIST_POP 0x61e2
+#define FC_LIST_GET 0x61e6
 
 // function: void fc_tputc(int c)
 DECL_FC_API_CALL(FC_TPUTC, fc_tputc, void, (int c), (c))
@@ -569,5 +589,17 @@ DECL_FC_API_CALL(FC_READLINE, fc_readline, char*, (struct SocketBuffer* socket_b
 
 // function: int fc_readstream(struct SocketBuffer* socket_buf, char* block, int limit)
 DECL_FC_API_CALL(FC_READSTREAM, fc_readstream, int, (struct SocketBuffer* socket_buf, char* block, int limit), (socket_buf, block, limit))
+
+// function: void fc_list_init(struct List* list, void* addr, void* ceiling)
+DECL_FC_API_CALL(FC_LIST_INIT, fc_list_init, void, (struct List* list, void* addr, void* ceiling), (list, addr, ceiling))
+
+// function: void fc_list_push(struct List* list, char* buffer, int length)
+DECL_FC_API_CALL(FC_LIST_PUSH, fc_list_push, void, (struct List* list, char* buffer, int length), (list, buffer, length))
+
+// function: void fc_list_pop(struct List* list, char* buffer, int limit)
+DECL_FC_API_CALL(FC_LIST_POP, fc_list_pop, void, (struct List* list, char* buffer, int limit), (list, buffer, limit))
+
+// function: struct ListEntry* fc_list_get(struct List* list, int index)
+DECL_FC_API_CALL(FC_LIST_GET, fc_list_get, struct ListEntry*, (struct List* list, int index), (list, index))
 
 #endif

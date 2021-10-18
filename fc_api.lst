@@ -99,3 +99,9 @@ tls_send_chars
 init_socket_buffer
 readline
 readstream
+
+list_init
+list_push
+list_pop
+list_get
+
