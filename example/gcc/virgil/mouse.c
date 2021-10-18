@@ -6,6 +6,7 @@
 #include "link.h"
 #include "screen.h"
 #include "keyboard.h"
+#include "history.h"
 
 struct MouseData md;
 int pointer_type;
@@ -61,6 +62,7 @@ void handle_mouse_click() {
 	state.stop = 1;
       } else {
 	// back button
+	on_back();
       }
       return;
     }
@@ -88,7 +90,9 @@ void handle_mouse_click() {
   struct Line* page_line = page_get_line(line - 2 + state.line_offset);
   if (page_line->type == LINE_TYPE_LINK) {
     int junk;
-    open_url(link_url(page_line->data, &junk));
+    char url[80];
+    fc_strcpy(url, link_url(page_line->data, &junk));
+    open_url(url, 1);
   }
   
   return;

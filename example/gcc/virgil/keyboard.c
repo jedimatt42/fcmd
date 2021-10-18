@@ -3,6 +3,8 @@
 #include "keyboard.h"
 #include "gemini.h"
 #include "screen.h"
+#include "history.h"
+#include "link.h"
 
 int read_keyboard() {
   unsigned int key = fc_kscan(5);
@@ -63,6 +65,13 @@ int on_stop() {
   }
 }
 
+void on_back() {
+  char tmp[80];
+  history_get_prev(tmp);
+  fc_strcpy(state.url, tmp);
+  open_url(state.url, 0);
+}
+
 void handle_keyboard() {
   int redraw = 0;
   int key = read_keyboard();
@@ -86,6 +95,9 @@ void handle_keyboard() {
       break;
     case KEY_CTRL_S:
       redraw = on_stop();
+      break;
+    case KEY_LEFT:
+      on_back();
       break;
     default:
       break;

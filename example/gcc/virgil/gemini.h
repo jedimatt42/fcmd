@@ -2,6 +2,7 @@
 #define _GEMINI_H 1
 
 struct __attribute__((__packed__)) State {
+  int history_id;
   int base_id;
   int page_id;
   int line_count;
@@ -18,7 +19,7 @@ struct __attribute__((__packed__)) State {
 
 extern struct State state;
 
-void open_url(char* url);
+void open_url(char* url, int push_history);
 
 #endif
 

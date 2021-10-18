@@ -8,6 +8,7 @@
 #include "mouse.h"
 #include "readline.h"
 #include "keyboard.h"
+#include "history.h"
 
 void process_input();
 void send_request(char* request);
@@ -37,11 +38,12 @@ int fc_main(char* args) {
   fc_strncpy(state.url, args, 256);
 
   init_mouse();
+  init_history();
   init_page();
   init_screen();
 
   if (state.url[0] != 0) {
-    open_url(state.url);
+    open_url(state.url, 1);
   }
   update_mouse(); // throw one away - the tipi mouse might queue a click
   state.quit = 0;
@@ -63,10 +65,10 @@ void process_input() {
 
 void on_exit() {
   fc_tipi_mouse_disable();
-  fc_sams_free_pages(state.page_count);
+  fc_sams_free_pages(state.page_count + 1 /* 1 for history */);
 }
 
-void open_url(char* url) {
+void open_url(char* url, int push_history) {
   state.loading = 1;
   state.stop = 0;
   state.error[0] = 0;
@@ -75,10 +77,10 @@ void open_url(char* url) {
 
   screen_status();
 
-  fc_ui_gotoxy(20,30);
-  fc_tputs(url);
-
   update_full_url(state.url, url);
+  if (push_history) {
+    history_add_link(state.url);
+  }
 
   set_hostname_and_port(state.url, hostname, port); 
 

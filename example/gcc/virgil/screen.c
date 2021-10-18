@@ -16,6 +16,7 @@
 #define BROWN_ON_BLACK (COLOR_DKYELLOW << 4 | COLOR_BLACK)
 
 struct DisplayInformation dinfo;
+struct SamsInformation sams_info;
 
 // Screen Coordinates are 1 based like ANSI
 
@@ -32,7 +33,12 @@ void screen_title() {
   fc_ui_gotoxy(1, 1);
   fc_tputs(BLACK_ON_GREEN);
   vdp_memset(dinfo.colorAddr, CBLACK_ON_GREEN, 80);
-  fc_tputs("-< " VERSION " >-");
+  fc_tputs("-< " VERSION " >--<");
+  fc_sams_info(&sams_info);
+  fc_tputs(fc_uint2str(sams_info.next_page * 4));
+  fc_tputs("K/");
+  fc_tputs(fc_uint2str(sams_info.total_pages * 4));
+  fc_tputs("K>-");
   fc_ui_gotoxy(69, 1);
   if (state.loading) {
     fc_tputs("[STOP]");

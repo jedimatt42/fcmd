@@ -49,6 +49,7 @@ int line_type(char* line) {
 }
 
 void page_add_line(char* line) {
+  fc_sams_map_page(state.page_id, SAMS_ADDR);
   int type = line_type(line);
   if (type == LINE_TYPE_TOGGLE) {
     state.toggle_literal = !state.toggle_literal;
