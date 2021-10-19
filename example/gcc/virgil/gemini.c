@@ -78,10 +78,6 @@ void open_url(char* url, int push_history) {
   screen_status();
 
   update_full_url(state.url, url);
-  if (push_history) {
-    history_add_link(state.url);
-  }
-
   set_hostname_and_port(state.url, hostname, port); 
 
   int err = fc_tls_connect(SOCKET_ID, hostname, port);
@@ -92,8 +88,13 @@ void open_url(char* url, int push_history) {
 
     char* line = readline();
     switch(line[0]) {
-      case '2':
-	handle_success(line);
+      case '2': 
+	{
+	  if (push_history) {
+	    history_add_link(state.url);
+	  }
+	  handle_success(line);
+	}
 	break;
       default:
 	handle_default(line);
