@@ -44,10 +44,24 @@ int fc_main(char* args) {
 
   if (state.url[0] != 0) {
     open_url(state.url, 1);
+  } else {
+    screen_prompt(state.url, "Address:");
+    if (state.url[0] != 0) {
+      open_url(state.url, 1);
+    }
   }
+
   update_mouse(); // throw one away - the tipi mouse might queue a click
   state.quit = 0;
   while(!state.quit) {
+    // reset state flags
+    state.stop = 0;
+    // handle url change here
+    if (state.reload) {
+      int hist = state.reload == RELOAD;
+      state.reload = 0;
+      open_url(state.url, hist);
+    }
     VDP_WAIT_VBLANK_CRU
     process_input();
   }
@@ -94,6 +108,17 @@ void open_url(char* url, int push_history) {
 	    history_add_link(state.url);
 	  }
 	  handle_success(line);
+	}
+	break;
+      case '1':
+	{
+	  char query[80];
+	  fc_strset(query, 0, 80);
+	  screen_prompt(query, line);
+	  int l = fc_strlen(state.url);
+	  state.url[l++] = '?';
+	  fc_strcpy(state.url + l, query);
+	  state.reload = RELOAD;
 	}
 	break;
       default:

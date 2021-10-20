@@ -30,22 +30,51 @@ void init_screen() {
 }
 
 void screen_title() {
-  fc_ui_gotoxy(1, 1);
-  fc_tputs(BLACK_ON_GREEN);
-  vdp_memset(dinfo.colorAddr, CBLACK_ON_GREEN, 80);
-  fc_tputs("-< " VERSION " >--<");
   fc_sams_info(&sams_info);
-  fc_tputs(fc_uint2str(sams_info.next_page * 4));
-  fc_tputs("K/");
-  fc_tputs(fc_uint2str(sams_info.total_pages * 4));
-  fc_tputs("K>-");
-  fc_ui_gotoxy(69, 1);
+  fc_ui_gotoxy(1, 1);
+  vdp_memset(dinfo.colorAddr, CBLACK_ON_GREEN, 80);
+  char tmp[80];
+  fc_strset(tmp, BS, 80);
+  tmp[1] = BL;
+  tmp[2] = ' ';
+  fc_strcpy(tmp + 3, VERSION);
+  int i = fc_strlen(tmp);
+  tmp[i++] = ' ';
+  tmp[i++] = BR;
+  i+=2;
+  tmp[i++] = BL;
+  fc_strcpy(tmp + i, fc_uint2str(sams_info.next_page * 4));
+  i += fc_strlen(tmp + i);
+  tmp[i++] = 'K';
+  tmp[i++] = '/';
+  fc_strcpy(tmp + i, fc_uint2str(sams_info.total_pages * 4));
+  i += fc_strlen(tmp + i);
+  tmp[i++] = 'K';
+  tmp[i++] = BR;
+
+  i = XADDRESS - 1;
+  tmp[i++] = BL;
+  fc_strcpy(tmp + i, "ADDRESS");
+  i += 7;
+  tmp[i++] = BR;
+
+  i++;
+  tmp[i++] = BL;
   if (state.loading) {
-    fc_tputs("[STOP]");
+    fc_strcpy(tmp + i, "STOP");
   } else {
-    fc_tputs("[BACK]");
+    fc_strcpy(tmp + i, "BACK");
   }
-  fc_tputs("[QUIT]");
+  i += 4;
+  tmp[i++] = BR;
+  i++;
+
+  tmp[i++] = BL;
+  fc_strcpy(tmp + i, "QUIT");
+  i += 4;
+  tmp[i] = BR;
+
+  vdp_memcpy(dinfo.imageAddr, tmp, 80);
   vdp_memset(dinfo.colorAddr, CBLACK_ON_GREEN, 80);
 } 
 
@@ -118,4 +147,16 @@ void screen_redraw() {
   }
   screen_status();
 }
+
+void screen_prompt(char* dst, char* prompt) {
+  fc_ui_gotoxy(1, 2);
+  fc_tputs(BLACK_ON_GREEN);
+  vdp_memset(dinfo.imageAddr + 80, ' ', 80 * 3);
+  vdp_memset(dinfo.colorAddr + 80, CBLACK_ON_GREEN, 80 * 3);
+  fc_tputs(prompt);
+  fc_ui_gotoxy(1,3);
+  fc_getstr(dst, 79, 1);
+  screen_redraw();
+}
+
 

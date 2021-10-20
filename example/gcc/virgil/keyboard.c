@@ -69,7 +69,22 @@ void on_back() {
   char tmp[80];
   history_get_prev(tmp);
   fc_strcpy(state.url, tmp);
-  open_url(state.url, 0);
+  state.stop = 1;
+  state.reload = RELOAD_NOHIST;
+}
+
+void on_address() {
+  char tmp[80];
+  fc_strset(tmp, 0, 80);
+  fc_strcpy(tmp, state.url);
+  screen_prompt(tmp, "Address:");
+  if (tmp[0] != 0) {
+    if (0 != fc_strcmp(tmp, state.url)) {
+      fc_strcpy(state.url, tmp);
+      state.stop = 1;
+      state.reload = RELOAD;
+    }
+  }
 }
 
 void handle_keyboard() {

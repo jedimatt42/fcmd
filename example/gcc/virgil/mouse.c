@@ -53,10 +53,10 @@ void handle_mouse_click() {
   int line = mouse_line();
   int col = mouse_column();
   if (line == 1) {
-    if (col > 74) { // quit button
+    if (col >= XQUIT && col < XQUIT) { // quit button
       state.quit = 1;
       return;
-    } else if (col > 68) {
+    } else if (col >= XSTOP && col < XSTOP + 6) {
       if (state.loading) {
 	// stop button
 	state.stop = 1;
@@ -65,6 +65,8 @@ void handle_mouse_click() {
 	on_back();
       }
       return;
+    } else if (col >= XADDRESS && col < XADDRESS + 9) {
+      on_address();
     }
   } else {
     int redraw = 0;

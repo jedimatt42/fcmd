@@ -13,9 +13,13 @@ struct __attribute__((__packed__)) State {
   int loading;
   int quit;
   int stop;
+  int reload;
   char url[256];
   char error[80];
 };
+
+#define RELOAD 1
+#define RELOAD_NOHIST 2
 
 extern struct State state;
 
