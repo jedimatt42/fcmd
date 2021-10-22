@@ -53,13 +53,13 @@ void handle_mouse_click() {
   int line = mouse_line();
   int col = mouse_column();
   if (line == 1) {
-    if (col >= XQUIT && col < XQUIT) { // quit button
-      state.quit = 1;
+    if (col >= XQUIT && col < (XQUIT + 6)) { // quit button
+      state.cmd = CMD_QUIT;
       return;
     } else if (col >= XSTOP && col < XSTOP + 6) {
       if (state.loading) {
 	// stop button
-	state.stop = 1;
+	state.cmd = CMD_STOP;
       } else {
 	// back button
 	on_back();
@@ -92,9 +92,8 @@ void handle_mouse_click() {
   struct Line* page_line = page_get_line(line - 2 + state.line_offset);
   if (page_line->type == LINE_TYPE_LINK) {
     int junk;
-    char url[80];
-    fc_strcpy(url, link_url(page_line->data, &junk));
-    open_url(url, 1);
+    fc_strcpy(state.newurl, link_url(page_line->data, &junk));
+    state.cmd = CMD_RELOAD;
   }
   
   return;

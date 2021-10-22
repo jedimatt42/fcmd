@@ -58,7 +58,7 @@ int on_page_up() {
 
 int on_stop() {
   if (state.loading) {
-    state.stop = 1;
+    state.cmd = CMD_STOP;
     return 1;
   } else {
     return 0;
@@ -68,9 +68,8 @@ int on_stop() {
 void on_back() {
   char tmp[80];
   history_get_prev(tmp);
-  fc_strcpy(state.url, tmp);
-  state.stop = 1;
-  state.reload = RELOAD_NOHIST;
+  fc_strcpy(state.newurl, tmp);
+  state.cmd = CMD_RELOAD_NOHIST;
 }
 
 void on_address() {
@@ -80,9 +79,8 @@ void on_address() {
   screen_prompt(tmp, "Address:");
   if (tmp[0] != 0) {
     if (0 != fc_strcmp(tmp, state.url)) {
-      fc_strcpy(state.url, tmp);
-      state.stop = 1;
-      state.reload = RELOAD;
+      fc_strcpy(state.newurl, tmp);
+      state.cmd = CMD_RELOAD;
     }
   }
 }
@@ -94,7 +92,7 @@ void handle_keyboard() {
     case 0:
       break;
     case KEY_ESC:
-      state.quit = 1;
+      state.cmd = CMD_QUIT;
       break;
     case KEY_DOWN:
       redraw = on_key_down();

@@ -11,15 +11,16 @@ struct __attribute__((__packed__)) State {
   int page_count;
   int toggle_literal;
   int loading;
-  int quit;
-  int stop;
-  int reload;
+  int cmd;
   char url[256];
+  char newurl[256];
   char error[80];
 };
 
-#define RELOAD 1
-#define RELOAD_NOHIST 2
+#define CMD_QUIT 1
+#define CMD_STOP 2
+#define CMD_RELOAD 3
+#define CMD_RELOAD_NOHIST 4
 
 extern struct State state;
 

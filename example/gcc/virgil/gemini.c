@@ -35,32 +35,33 @@ int fc_main(char* args) {
   }
 
   fc_strset((char*)&state, 0, sizeof(struct State));
-  fc_strncpy(state.url, args, 256);
+  fc_strncpy(state.newurl, args, 256);
 
   init_mouse();
   init_history();
   init_page();
   init_screen();
 
-  if (state.url[0] != 0) {
-    open_url(state.url, 1);
+  state.cmd = 0;
+  if (state.newurl[0] != 0) {
+    state.cmd = CMD_RELOAD;
   } else {
-    screen_prompt(state.url, "Address:");
-    if (state.url[0] != 0) {
-      open_url(state.url, 1);
+    screen_prompt(state.newurl, "Address:");
+    if (state.newurl[0] != 0) {
+      state.cmd = CMD_RELOAD;
     }
   }
 
   update_mouse(); // throw one away - the tipi mouse might queue a click
-  state.quit = 0;
-  while(!state.quit) {
-    // reset state flags
-    state.stop = 0;
+  while(state.cmd != CMD_QUIT) {
     // handle url change here
-    if (state.reload) {
-      int hist = state.reload == RELOAD;
-      state.reload = 0;
-      open_url(state.url, hist);
+    if (state.cmd == CMD_RELOAD || state.cmd == CMD_RELOAD_NOHIST) {
+      int hist = state.cmd == CMD_RELOAD;
+      open_url(state.newurl, hist);
+    }
+    if (state.cmd == CMD_STOP) {
+      state.cmd = 0;
+      state.loading = 0;
     }
     VDP_WAIT_VBLANK_CRU
     process_input();
@@ -84,7 +85,7 @@ void on_exit() {
 
 void open_url(char* url, int push_history) {
   state.loading = 1;
-  state.stop = 0;
+  state.cmd = 0;
   state.error[0] = 0;
   char hostname[80];
   char port[10];
@@ -116,9 +117,10 @@ void open_url(char* url, int push_history) {
 	  fc_strset(query, 0, 80);
 	  screen_prompt(query, line);
 	  int l = fc_strlen(state.url);
-	  state.url[l++] = '?';
-	  fc_strcpy(state.url + l, query);
-	  state.reload = RELOAD;
+	  fc_strcpy(state.newurl, state.url);
+	  state.newurl[l++] = '?';
+	  fc_strcpy(state.newurl + l, query);
+	  state.cmd = CMD_RELOAD;
 	}
 	break;
       default:
@@ -131,7 +133,6 @@ void open_url(char* url, int push_history) {
   }
   fc_tls_close(SOCKET_ID);
   state.loading = 0;
-  state.stop = 0;
   screen_status();
 }
 
@@ -165,7 +166,7 @@ void display_page() {
   page_clear_lines(); // erase the current page
 
   char* line = readline();
-  while(line && !state.stop) {
+  while(line && (state.cmd == 0)) {
     page_add_line(line);
     if (state.line_count <= 28) {
       screen_redraw();
