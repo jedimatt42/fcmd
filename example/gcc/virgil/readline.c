@@ -1,10 +1,18 @@
 #include <fc_api.h>
 
 #include "readline.h"
+#include "gemini.h"
 
 struct SocketBuffer socket_buf;
 
 #define LASTLINE ((char*) 0xE000)
+
+int vdp_read_status() {
+  int status;
+  __asm__( "movb @>8802,%0" : "=rm" (status) : : "r12" );
+  return status;
+}
+
 
 void init_readline(int socket_id) {
     fc_init_socket_buffer(&socket_buf, TLS, socket_id);
@@ -30,9 +38,12 @@ char* readline() {
 	    }
 	}
         if (*onebyte == 10) {
-	   return LASTLINE;
+	    return LASTLINE;
 	}
 	onebyte++;
+	if (vdp_read_status()) {
+	    process_input();
+	}
     }
     return 0;
 }

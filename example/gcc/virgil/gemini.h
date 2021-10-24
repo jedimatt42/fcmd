@@ -25,6 +25,7 @@ struct __attribute__((__packed__)) State {
 extern struct State state;
 
 void open_url(char* url, int push_history);
+void process_input();
 
 #endif
 

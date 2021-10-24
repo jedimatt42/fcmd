@@ -10,7 +10,6 @@
 #include "keyboard.h"
 #include "history.h"
 
-void process_input();
 void send_request(char* request);
 void handle_success(char* line);
 void handle_default(char* line);
@@ -95,9 +94,7 @@ void open_url(char* url, int push_history) {
   update_full_url(state.url, url);
   set_hostname_and_port(state.url, hostname, port); 
 
-  int err = fc_tls_connect(SOCKET_ID, hostname, port);
-  if (err /* 0 indicates failure */) {
-    err = 0;
+  if(fc_tls_connect(SOCKET_ID, hostname, port)) {
     init_readline(SOCKET_ID);
     send_request(state.url);
 
@@ -121,6 +118,11 @@ void open_url(char* url, int push_history) {
 	  state.newurl[l++] = '?';
 	  fc_strcpy(state.newurl + l, query);
 	  state.cmd = CMD_RELOAD;
+	}
+	break;
+      case '5':
+	{
+	  fc_strcpy(state.error, "5x error");
 	}
 	break;
       default:
