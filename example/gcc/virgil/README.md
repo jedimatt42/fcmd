@@ -20,7 +20,7 @@ This is a text mode browser for the text friendly `gemini` protocol over TLS.
 ## Usage
 
 ```
-GEMINI gemini://gemini.circumlunar.space/
+VIRGIL99 gemini://gemini.circumlunar.space/
 ```
 
 This will open the gemini url given, and display the page.

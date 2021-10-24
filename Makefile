@@ -105,7 +105,7 @@ support: FC/reload_fcmd.asm FC/loadxb.bas
 	$(MAKE) -C FC
 
 $(FNAME).DSK: subdirs support
-	python3 $(XDM99) $(FNAME).DSK -X 360 -t -a FC/BIN/FCMENU FC/BIN/FTP FC/BIN/TELNET FC/BIN/SAY FC/BIN/SAMPLE FC/BIN/VIRGIL
+	python3 $(XDM99) $(FNAME).DSK -X 360 -t -a FC/BIN/FCMENU FC/BIN/FTP FC/BIN/TELNET FC/BIN/SAY FC/BIN/SAMPLE FC/BIN/VIRGIL99
 
 $(FNAME).RPK: $(FNAME)C.bin $(FNAME)G.bin layout.xml
 	zip $@ $^
