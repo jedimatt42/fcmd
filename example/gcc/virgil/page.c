@@ -31,6 +31,7 @@ void page_clear_lines() {
   state.page_count = 0;
   state.line_limit = 0;
   state.line_count = 0;
+  state.line_offset = 0;
   state.page_id = add_bank();
 }
 

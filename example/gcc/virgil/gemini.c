@@ -9,6 +9,7 @@
 #include "readline.h"
 #include "keyboard.h"
 #include "history.h"
+#include "about.h"
 
 void send_request(char* request);
 void handle_success(char* line);
@@ -45,10 +46,8 @@ int fc_main(char* args) {
   if (state.newurl[0] != 0) {
     state.cmd = CMD_RELOAD;
   } else {
-    screen_prompt(state.newurl, "Address:");
-    if (state.newurl[0] != 0) {
-      state.cmd = CMD_RELOAD;
-    }
+    fc_strcpy(state.newurl, "about:");
+    state.cmd = CMD_RELOAD;
   }
 
   update_mouse(); // throw one away - the tipi mouse might queue a click
@@ -90,6 +89,13 @@ void open_url(char* url, int push_history) {
   char port[10];
 
   screen_status();
+
+  if (fc_str_startswith(url, "about:")) {
+    state.loading = 0;
+    about();
+    screen_status();
+    return;
+  }
 
   update_full_url(state.url, url);
   set_hostname_and_port(state.url, hostname, port); 
@@ -164,7 +170,6 @@ void handle_success(char* line) {
 }
 
 void display_page() {
-  state.line_offset = 0;
   page_clear_lines(); // erase the current page
 
   char* line = readline();

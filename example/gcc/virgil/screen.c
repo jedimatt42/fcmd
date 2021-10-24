@@ -94,7 +94,12 @@ void screen_status() {
     fc_tputs("Loading ");
   } else {
     fc_tputs("Line: ");
-    fc_tputs(fc_uint2str(state.line_offset + 1));
+    int offset = state.line_offset + 1;
+    fc_tputs(fc_uint2str(offset));
+    fc_tputs("-");
+    offset += 27;
+    if (offset > state.line_count) { offset = state.line_count; }
+    fc_tputs(fc_uint2str(offset));
     fc_tputs(" of ");
   }
   fc_tputs(fc_uint2str(state.line_count));
