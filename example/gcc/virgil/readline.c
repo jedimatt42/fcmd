@@ -21,7 +21,6 @@ void init_readline(int socket_id) {
 char* readline() {
     // clear the line buffer.
     int space = 4096;
-    fc_strset(LASTLINE, 0, space);
 
     // read one char into lastline at a time
     char* onebyte = LASTLINE;
@@ -38,6 +37,7 @@ char* readline() {
 	    }
 	}
         if (*onebyte == 10) {
+	    *(onebyte + 1) = 0;
 	    return LASTLINE;
 	}
 	onebyte++;
