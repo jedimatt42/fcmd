@@ -4,7 +4,7 @@
 static char buf[256];
 
 char* link_url(char* line, int* length) {
-  int i = 3;
+  int i = 2;
   // format is '=>' whitespace url whitespace label
   while(line[i] == ' ' || line[i] == '\t') {
     // consume whitespace

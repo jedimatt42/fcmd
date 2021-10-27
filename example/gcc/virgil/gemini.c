@@ -46,7 +46,7 @@ int fc_main(char* args) {
   if (state.newurl[0] != 0) {
     state.cmd = CMD_RELOAD;
   } else {
-    fc_strcpy(state.newurl, "about:");
+    fc_strncpy(state.newurl, "about:", 256);
     state.cmd = CMD_RELOAD;
   }
 
@@ -96,6 +96,10 @@ void open_url(char* url, int push_history) {
     screen_status();
     return;
   }
+  if (fc_str_startswith(url, "http:") || fc_str_startswith(url, "https:") || fc_str_startswith(url, "gopher:")) {
+    state.loading = 0;
+    return;
+  }
 
   update_full_url(state.url, url);
   set_hostname_and_port(state.url, hostname, port); 
@@ -105,6 +109,16 @@ void open_url(char* url, int push_history) {
     send_request(state.url);
 
     char* line = readline();
+    // strip any newline off
+    int i = fc_indexof(line, 13);
+    if (i != -1) {
+      line[i] = 0;
+    }
+    i = fc_indexof(line, 10);
+    if (i != -1) {
+      line[i] = 0;
+    }
+
     switch(line[0]) {
       case '2': 
 	{
@@ -118,21 +132,29 @@ void open_url(char* url, int push_history) {
 	{
 	  char query[80];
 	  fc_strset(query, 0, 80);
-	  screen_prompt(query, line);
+	  screen_prompt(query, line + 3);
 	  int l = fc_strlen(state.url);
-	  fc_strcpy(state.newurl, state.url);
+	  fc_strncpy(state.newurl, state.url, 256);
 	  state.newurl[l++] = '?';
-	  fc_strcpy(state.newurl + l, query);
+	  fc_strncpy(state.newurl + l, query, 256 - l);
 	  state.cmd = CMD_RELOAD;
 	}
 	break;
+      case '3':
+	{
+	  fc_strncpy(state.newurl, line + 3, 256);
+	  state.cmd = CMD_RELOAD;
+	}
+	break;
+      case '4':
+	{
+	  fc_strcpy(state.error, "4x error");
+	}
+        break;
       case '5':
 	{
 	  fc_strcpy(state.error, "5x error");
 	}
-	break;
-      default:
-	handle_default(line);
 	break;
     }
     fc_tls_close(SOCKET_ID);
@@ -147,11 +169,6 @@ void open_url(char* url, int push_history) {
 void send_request(char* request) {
   fc_tls_send_chars(SOCKET_ID, request, fc_strlen(request));
   fc_tls_send_chars(SOCKET_ID, CRLF, 2);
-}
-
-void handle_default(char* line) {
-  fc_strcpy(state.error, line);
-  screen_status();
 }
 
 void handle_success(char* line) {

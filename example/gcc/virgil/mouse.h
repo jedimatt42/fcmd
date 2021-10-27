@@ -12,7 +12,7 @@
 
 void init_mouse();
 
-extern struct MouseData* mouseData;
+extern struct MouseData md;
 
 int update_mouse();
 

@@ -41,7 +41,3 @@ void history_get_prev(char* dst) {
   }
 }
 
-void history_show() {
-}
-
-

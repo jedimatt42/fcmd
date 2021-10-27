@@ -5,6 +5,7 @@
 #include "gemini.h"
 #include "version.h"
 #include "link.h"
+#include "mouse.h"
 
 #define BLACK_ON_GREEN "\033[30;42m"
 #define CBLACK_ON_GREEN (COLOR_BLACK << 4 | COLOR_MEDGREEN)
@@ -18,7 +19,11 @@
 struct DisplayInformation dinfo;
 struct SamsInformation sams_info;
 
+#define XYOFF(x, y) ((x-1) + ((y-1)*80))
+
 // Screen Coordinates are 1 based like ANSI
+
+int vdp_strcpy(int vdpaddr, char* str, int limit);
 
 void init_screen() {
   fc_display_info(&dinfo);
@@ -80,29 +85,29 @@ void screen_title() {
 
 void screen_status() {
   screen_title();
-  vdp_memset(dinfo.imageAddr + (29 * 80), ' ', 80);
-  vdp_memset(dinfo.colorAddr + (29 * 80), CBLACK_ON_GREEN, 80);
-  fc_ui_gotoxy(1, 30);
-  fc_tputs(BLACK_ON_GREEN);
+  vdp_memset(dinfo.colorAddr + XYOFF(1,30), CBLACK_ON_GREEN, 80);
+  int addr = dinfo.imageAddr + XYOFF(1,30);
+  vdp_memset(addr, ' ', 80);
   if (state.error[0] != 0) {
-    fc_tputs(state.error);
-    fc_tputs(" ");
-    fc_tputs(state.url);
+    vdp_strcpy(addr, state.error, 80);
     return;
   }
   if (state.loading) {
-    fc_tputs("Loading ");
+    addr += vdp_strcpy(addr, "Loading ", 8);
   } else {
-    fc_tputs("Line: ");
+    addr += vdp_strcpy(addr, "Line: ", 6);
     int offset = state.line_offset + 1;
-    fc_tputs(fc_uint2str(offset));
-    fc_tputs("-");
+    char* intstr = fc_uint2str(offset);
+    addr += vdp_strcpy(addr, intstr, 5);
+    addr += vdp_strcpy(addr, "-", 1);
     offset += 27;
     if (offset > state.line_count) { offset = state.line_count; }
-    fc_tputs(fc_uint2str(offset));
-    fc_tputs(" of ");
+    intstr = fc_uint2str(offset);
+    addr += vdp_strcpy(addr, intstr, 5);
+    addr += vdp_strcpy(addr, " of ", 4);
   }
-  fc_tputs(fc_uint2str(state.line_count));
+  char* intstr = fc_uint2str(state.line_count);
+  vdp_strcpy(addr, intstr, 5);
 }
 
 void screen_scroll_to(int lineno) {
@@ -154,14 +159,23 @@ void screen_redraw() {
 }
 
 void screen_prompt(char* dst, char* prompt) {
+  fc_tipi_mouse_disable();
   fc_ui_gotoxy(1, 2);
   fc_tputs(BLACK_ON_GREEN);
   vdp_memset(dinfo.imageAddr + 80, ' ', 80 * 3);
   vdp_memset(dinfo.colorAddr + 80, CBLACK_ON_GREEN, 80 * 3);
-  fc_tputs(prompt);
+  vdp_strcpy(dinfo.imageAddr + 80, prompt, 80);
   fc_ui_gotoxy(1,3);
   fc_getstr(dst, 79, 1);
   screen_redraw();
+  fc_tipi_mouse_enable(&md);
 }
 
-
+int vdp_strcpy(int vdpaddr, char* str, int limit) {
+  VDP_SET_ADDRESS_WRITE(vdpaddr);
+  int i = 0;
+  while((str[i] != 0) && (i < limit)) {
+    VDPWD = str[i++];
+  }
+  return i;
+}
