@@ -51,9 +51,9 @@ This will compile all the binaries.
 The FCMDG.bin and FCMDC.bin go on a FinalGROM99 - or if you know what you are doing, an UberGROM
 The FC directory goes on your TIPI as TIPI.FC. It contains LOAD and FCMD
 
-LOAD - shim for the XB command, requires FinalGROM99 and TIPI
-FCMD - EA5 utility for FinalGROM99 to reload FCMDG.bin
-FCMDXB - XB INT/VAR 254 program for FinalGROM99 to reload FCMDG.bin
+- LOAD - shim for the XB command, requires FinalGROM99 and TIPI
+- FCMD - EA5 utility for FinalGROM99 to reload FCMDG.bin
+- FCMDXB - XB INT/VAR 254 program for FinalGROM99 to reload FCMDG.bin
 
 ### Emulators
 
