@@ -102,6 +102,7 @@ void open_url(char* url, int push_history) {
   }
 
   update_full_url(state.url, url);
+  normalize_url(state.url);
   set_hostname_and_port(state.url, hostname, port); 
 
   if(fc_tls_connect(SOCKET_ID, hostname, port)) {
@@ -200,6 +201,7 @@ void display_page() {
     process_input(); 
     line = readline();
   }
+  screen_redraw();
 }
 
 void any_key() {

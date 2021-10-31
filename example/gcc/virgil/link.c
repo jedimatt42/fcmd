@@ -101,6 +101,37 @@ void update_full_url(char* dst, char* url) {
   fc_strcpy(dst, tmp);
 }
 
+void normalize_url(char* url) {
+  char dst[256];
+
+  int u = 0;
+  int d = 0;
+  int slashes = 0;
+  int parent = 0;
+  while(u < 256 && url[u] != 0) {
+    dst[d++] = url[u++];
+    if (dst[d-1] == '/' || dst[d-1] == 0) {
+      if (dst[d-2] == '.' && dst[d-3] == '/') {
+	// replace /./ with /
+	// replace /.$ with /
+	d -= 2;
+	dst[d] = 0;
+      } else if (parent != 0 && dst[d-2] == '.' && dst[d-3] == '.' && dst[d-4] == '/') {
+	// replace /term/../ with /
+	dst[parent] = 0;
+	d = parent;
+      } else if (dst[d-1] == '/' && url[u] != '.') {
+	slashes++;
+	if (slashes >= 3) {
+	  parent = d;
+	}
+      }
+    }
+  }
+  dst[d] = 0;
+  fc_strncpy(url, dst, 256);
+}
+
 void set_hostname_and_port(char* url, char* hostname, char* port) {
   hostname[0] = 0;
   fc_strcpy(port, "1965");
