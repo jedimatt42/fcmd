@@ -40,28 +40,50 @@
 #define JOY_DOWN	0xfc
 
 // BASIC mode keyboard codes
-#define KEY_ESC 15
-#define KEY_QUIT 145
-#define KEY_CTRL_R 146
-#define KEY_CTRL_I 137
-#define KEY_CTRL_E 133
-#define KEY_CTRL_X 152
-#define KEY_CTRL_S 147
-#define KEY_CTRL_D 132
 #define KEY_CTRL_A 129
-#define KEY_TAB 137
+#define KEY_CTRL_B 130
+#define KEY_CTRL_C 131
+#define KEY_CTRL_D 132
+#define KEY_CTRL_E 133
+#define KEY_CTRL_F 134
+#define KEY_CTRL_G 135
+#define KEY_CTRL_H 136
+#define KEY_CTRL_I 137
+#define KEY_CTRL_J 138
+#define KEY_CTRL_K 139
+#define KEY_CTRL_L 140
+#define KEY_CTRL_M 141
+#define KEY_CTRL_N 142
+#define KEY_CTRL_O 143
+#define KEY_CTRL_P 144
+#define KEY_CTRL_Q 145
+#define KEY_CTRL_R 146
+#define KEY_CTRL_S 147
+#define KEY_CTRL_T 148
+#define KEY_CTRL_U 149
+#define KEY_CTRL_V 150
+#define KEY_CTRL_W 151
+#define KEY_CTRL_X 152
+#define KEY_CTRL_Y 153
+#define KEY_CTRL_Z 154
 #define KEY_LEFT 8
 #define KEY_RIGHT 9
 #define KEY_DOWN 10
 #define KEY_UP 11
-#define KEY_AID 1
 #define KEY_DELETE 3
 #define KEY_INSERT 4
 #define KEY_ERASE 7
+#define KEY_BEGIN 14
+#define KEY_PROCD 12
+#define KEY_AID 1
+#define KEY_REDO 6
 #define KEY_BACK 15
 #define KEY_SPACE 0x20
 #define KEY_TILDE 0x7E
 #define KEY_ENTER 13
+#define KEY_QUIT KEY_CTRL_Q
+#define KEY_TAB KEY_CTRL_I
+#define KEY_ESC KEY_BACK
 
 
 #endif

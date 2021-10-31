@@ -92,6 +92,10 @@ void page_add_line(char* line) {
 	pline->data[0] = '>';
 	pline->data[1] = ' ';
 	pc += 2;
+      } else if (type == LINE_TYPE_HEADING) {
+	pline->data[0] = ' ';
+	pline->data[1] = ' ';
+	pc += 2;
       }
       c = lastbreak + 1;
     }
