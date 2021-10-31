@@ -114,6 +114,14 @@ void handleXb() {
     if (-1 == (int)xb_module) {
         bk_strcpy(fg99_msg+8, str2ram("TIXB_G"));
     } else {
+        // Force module name to all caps for final grom
+        int up = 0;
+	while(xb_module[up] != 0) {
+	  if (xb_module[up] >= 'a' && xb_module[up] <= 'z') {
+	    xb_module[up] -= 'a' - 'A';
+	  }
+	  up++;
+	}
         bk_strcpy(fg99_msg+8, xb_module);
     }
 

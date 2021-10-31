@@ -23,6 +23,16 @@ void handleFg99() {
     return;
   }
 
+  // force cart image name to all caps for Final Grom
+  int up = 0;
+  while(cart[up] != 0) {
+    if (cart[up] >= 'a' && cart[up] <= 'z') {
+      cart[up] -= 'a' - 'A';
+    }
+    up++;
+  }
+
+
   char fg99_msg[20];
   for (int i = 8; i < 20; i++) {
     fg99_msg[i] = 0x00;
