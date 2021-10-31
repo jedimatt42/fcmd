@@ -112,6 +112,9 @@ void handle_keyboard() {
     case KEY_LEFT:
       on_back();
       break;
+    case KEY_CTRL_A:
+      on_address();
+      break;
     default:
       break;
   }

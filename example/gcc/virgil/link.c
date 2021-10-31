@@ -64,11 +64,11 @@ void update_full_url(char* dst, char* url) {
   if (fc_str_startswith(url, "gemini://")) {
     // a little wasteful, but good enough.
     fc_strcpy(tmp, url);
-  } else if (fc_str_startswith(url, "//")) {
+  } else if (url[0] == '/' && url[1] == '/') {
     // implicit gemini: protocol
     fc_strcpy(tmp, "gemini:");
     fc_strcpy(tmp + 7, url);
-  } else if (fc_str_startswith(url, "/")) {
+  } else if (url[0] == '/') {
     // same host and port, new path
     char hostname[80];
     char port[8];
@@ -79,6 +79,24 @@ void update_full_url(char* dst, char* url) {
     fc_strcpy(tmp + len, hostname);
     len += fc_strlen(hostname);
     fc_strcpy(tmp + len, url);
+  } else {
+    int l = 0;
+    int slashes = 0;
+    int lastSlash = 0;
+    while(dst[l] != 0) {
+      tmp[l] = dst[l];
+      if (tmp[l] == '/') {
+	slashes++;
+	lastSlash = l;
+      }
+      l++;
+    }
+    if (slashes < 3) {
+      tmp[l++] = '/';
+    } else {
+      l = lastSlash + 1;
+    }
+    fc_strncpy(tmp + l, url, 255 - l);
   }
   fc_strcpy(dst, tmp);
 }

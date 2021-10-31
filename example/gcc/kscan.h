@@ -48,6 +48,7 @@
 #define KEY_CTRL_X 152
 #define KEY_CTRL_S 147
 #define KEY_CTRL_D 132
+#define KEY_CTRL_A 129
 #define KEY_TAB 137
 #define KEY_LEFT 8
 #define KEY_RIGHT 9

@@ -21,7 +21,8 @@ void about() {
   page_add_line("top right, is page up. Near the bottom right is page down. Closer to the\n");
   page_add_line("middle right is line up and line down.\n");
   page_add_line("\n");
-  page_add_line("The top row the of the screen contains the title, and memory usage on the left. On the right are 'buttons' you can click to operate or interrupt the browser.\n");
+  page_add_line("The top row the of the screen contains the title, and memory usage on the left.\n");
+  page_add_line("On the right are 'buttons' you can click to operate or interrupt the browser.\n");
   page_add_line("\n");
   page_add_line("* ADDRESS - opens a text input dialog with the current URL to edit\n");
   page_add_line("* BACK - reload the previous page\n");
@@ -32,8 +33,11 @@ void about() {
   page_add_line("* ESC(F9) - exit the browser\n");
   page_add_line("* FCTN X - scroll down\n");
   page_add_line("* FCTN E - scroll up\n");
+  page_add_line("* FCTN S - load previous page\n");
   page_add_line("* CTRL X - page down\n");
   page_add_line("* CTRL E - page up\n");
+  page_add_line("* CTRL S - stop loading page\n");
+  page_add_line("* CTRL A - open address\n");
   page_add_line("\n");
   page_add_line("NOTE: stop, back, and address are not yet available from keyboard.\n");
   page_add_line("## Supported URL formats:\n");
