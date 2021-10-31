@@ -51,6 +51,7 @@ int must_close_command(char* buffer) {
   if (MATCH(tok, str2ram("drives"))) return 0;
   if (MATCH(tok, str2ram("echo"))) return 0;
   if (MATCH(tok, str2ram("env"))) return 0;
+  if (MATCH(tok, str2ram("goto"))) return 0;
   if (MATCH(tok, str2ram("if"))) return 0;
   if (MATCH(tok, str2ram("help"))) return 0;
   if (MATCH(tok, str2ram("history"))) return 0;

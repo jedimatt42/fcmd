@@ -38,7 +38,7 @@ void handleGoto() {
         char* tok = bk_strtok(commandbuf, ' ');
         if (tok[bk_strlen(tok)-1] == ':') {
           tok[bk_strlen(tok)-1] = 0; // shorten to just the name
-          bk_labels_add(tok, record);
+          labels_add(tok, record);
         }
       }
     }
@@ -49,18 +49,20 @@ void handleGoto() {
     tputs_rom("Error, no label named: ");
     bk_tputs_ram(label);
     bk_tputc('\n');
-    return;
+    gotoline = *goto_line_ref;
   } else {
-    // scriptPab should point to script name
-    // reset back to first record
-    bk_dsr_reset(scriptDsr, scriptPab, 0);
-    // then script to line after the label we
-    // are jumping to...
-    for(int i=0; i<gotoline; i++) {
-      // reading sequential files with record
-      // number 0 auto advances
-      bk_dsr_read(scriptDsr, scriptPab, 0);
-    }
     *goto_line_ref = gotoline;
+  }
+  // either return to where we left off, or advance to the target goto line
+
+  // scriptPab should point to script name
+  // reset back to first record
+  bk_dsr_reset(scriptDsr, scriptPab, 0);
+  // then script to line after the label we
+  // are jumping to...
+  for(int i=0; i<gotoline; i++) {
+    // reading sequential files with record
+    // number 0 auto advances
+    bk_dsr_read(scriptDsr, scriptPab, 0);
   }
 }
