@@ -45,6 +45,10 @@ char* readline() {
 	    process_input();
 	}
     }
+    if (onebyte != LASTLINE) {
+      *(onebyte + 1) = 0;
+      return LASTLINE;
+    }
     return 0;
 }
 
