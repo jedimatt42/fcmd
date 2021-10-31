@@ -105,3 +105,6 @@ list_push
 list_pop
 list_get
 
+textcolor
+bgcolor
+bordercolor

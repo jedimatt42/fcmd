@@ -11,7 +11,7 @@
 
 int isF18A() {
   unlock_f18a();
-  unsigned char testcode[6] = { 0x04, 0xE0, 0x3F, 0x00, 0x03, 0x40 };
+  char testcode[6] = { 0x04, 0xE0, 0x3F, 0x00, 0x03, 0x40 };
   vdpmemcpy(0x3F00, testcode, 6);
   {
     VDP_SET_REGISTER(0x36, 0x3F);
@@ -71,10 +71,12 @@ void setupScreen(int width) {
   }
   bk_initTerminal();
 
+  int foreground = FOREGROUND;
+  int background = BACKGROUND;
   if (displayWidth == 80 && vdp_type == VDP_F18A) {
     bgcolor(background);
     textcolor(foreground);
-    VDP_SET_REGISTER(VDP_REG_COL, background & 0x0f);
+    VDP_SET_REGISTER(VDP_REG_COL, background);
   } else {
     VDP_SET_REGISTER(VDP_REG_COL, foreground << 4 | background);
   }

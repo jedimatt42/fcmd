@@ -22,9 +22,6 @@ void tputc(int c);
 void tputs_ram(const char* str);
 void cursorGoto(int x, int y);
 
-extern unsigned char foreground;
-extern unsigned char background;
-
 
 DECLARE_BANKED_VOID(initTerminal, BANK(8), bk_initTerminal, (), ())
 DECLARE_BANKED_VOID(set_identify_hook, BANK(8), bk_set_identify_hook, (identify_callback cb), (cb))

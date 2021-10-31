@@ -21,6 +21,10 @@ unsigned int conio_getvram();
 
 // bgcolor - sets the character background color in attribute-based text modes
 extern unsigned int conio_scrnCol;
+
+#define FOREGROUND (conio_scrnCol >> 4)
+#define BACKGROUND (conio_scrnCol & 0x0f)
+
 unsigned int bgcolor(unsigned int color);
 
 // bordercolor - set the background color on the TI

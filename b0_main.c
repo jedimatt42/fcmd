@@ -87,8 +87,8 @@ void cartmain()
 {
   MUTE_SOUND();
   vdp_type = bk_detect_vdp();
-  foreground = 15;
-  background = 4;
+  bk_textcolor(15);
+  bk_bgcolor(4);
   bk_setupScreen(vdp_type == VDP_9918 ? 40 : 80);
   if (vdp_type == VDP_F18A) {
     bk_set_palette(0, 0);

@@ -13,7 +13,9 @@ void handleColor() {
   char* fore = bk_strtok(0, ' ');
   char* back = bk_strtok(0, ' ');
   int fc = bk_atoi(fore);
+  int foreground = FOREGROUND;
   int oldfc = foreground;
+  int background = BACKGROUND;
   if (fore && fc >= 0 && fc <= 15) {
     foreground = fc;
   } else {
@@ -34,7 +36,7 @@ void handleColor() {
   if (displayWidth == 80 && vdp_type == VDP_F18A) {
     bk_bgcolor(background);
     bk_textcolor(foreground);
-    VDP_SET_REGISTER(VDP_REG_COL, background & 0x0f);
+    VDP_SET_REGISTER(VDP_REG_COL, background);
   } else {
     VDP_SET_REGISTER(VDP_REG_COL, foreground << 4 | background);
   }

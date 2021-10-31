@@ -7,7 +7,6 @@
 #include "link.h"
 #include "mouse.h"
 
-#define BLACK_ON_GREEN "\033[30;42m"
 #define CBLACK_ON_GREEN (COLOR_BLACK << 4 | COLOR_MEDGREEN)
 #define BLACK_ON_GRAY (COLOR_BLACK << 4 | COLOR_GRAY)
 #define GREEN_ON_BLACK (COLOR_LTGREEN << 4 | COLOR_BLACK)
@@ -161,11 +160,12 @@ void screen_redraw() {
 void screen_prompt(char* dst, char* prompt) {
   fc_tipi_mouse_disable();
   fc_ui_gotoxy(1, 2);
-  fc_tputs(BLACK_ON_GREEN);
   vdp_memset(dinfo.imageAddr + 80, ' ', 80 * 3);
   vdp_memset(dinfo.colorAddr + 80, CBLACK_ON_GREEN, 80 * 3);
   vdp_strcpy(dinfo.imageAddr + 80, prompt, 80);
   fc_ui_gotoxy(1,3);
+  fc_bgcolor(COLOR_MEDGREEN);
+  fc_textcolor(COLOR_BLACK);
   fc_getstr(dst, 79, 1);
   screen_redraw();
   fc_tipi_mouse_enable(&md);

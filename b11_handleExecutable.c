@@ -16,6 +16,7 @@
 #include "b8_setupScreen.h"
 #include "b0_runScript.h"
 #include <vdp.h>
+#include <conio.h>
 
 int loadExecutable(const char* ext, int* cmd_type);
 int loadFromPath(const char *ext, const char *entry, int* cmd_type);
@@ -41,8 +42,7 @@ void handleExecutable(char *ext)
         identify_callback old_hook = bk_get_identify_hook();
         int restoreDisplay = *(volatile int*)0xA004;
         int old_nTitleLine = nTitleLine;
-	int old_background = background;
-	int old_foreground = foreground;
+	int old_oldcolors = conio_scrnCol;
         if (restoreDisplay != 0xFCFC) {
             // turn bar off, cause app is using the full screen.
             nTitleLine = 0;
@@ -53,8 +53,7 @@ void handleExecutable(char *ext)
 
         bk_set_identify_hook(old_hook);
         if (restoreDisplay != 0xFCFC) {
-	    foreground = old_foreground;
-	    background = old_background;
+	    conio_scrnCol = old_oldcolors;
             nTitleLine = old_nTitleLine;
             bk_setupScreen(displayWidth);
         }

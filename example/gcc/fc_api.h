@@ -331,6 +331,9 @@ extern void* memcpy(void* dest, const void* src, int count);
 #define FC_LIST_PUSH 0x61de
 #define FC_LIST_POP 0x61e2
 #define FC_LIST_GET 0x61e6
+#define FC_TEXTCOLOR 0x61ea
+#define FC_BGCOLOR 0x61ee
+#define FC_BORDERCOLOR 0x61f2
 
 // function: void fc_tputc(int c)
 DECL_FC_API_CALL(FC_TPUTC, fc_tputc, void, (int c), (c))
@@ -601,5 +604,14 @@ DECL_FC_API_CALL(FC_LIST_POP, fc_list_pop, void, (struct List* list, char* buffe
 
 // function: struct ListEntry* fc_list_get(struct List* list, int index)
 DECL_FC_API_CALL(FC_LIST_GET, fc_list_get, struct ListEntry*, (struct List* list, int index), (list, index))
+
+// function: unsigned int fc_textcolor(unsigned int color)
+DECL_FC_API_CALL(FC_TEXTCOLOR, fc_textcolor, unsigned int, (unsigned int color), (color))
+
+// function: unsigned int fc_bgcolor(unsigned int color)
+DECL_FC_API_CALL(FC_BGCOLOR, fc_bgcolor, unsigned int, (unsigned int color), (color))
+
+// function: unsigned int fc_bordercolor(unsigned int x)
+DECL_FC_API_CALL(FC_BORDERCOLOR, fc_bordercolor, unsigned int, (unsigned int x), (x))
 
 #endif

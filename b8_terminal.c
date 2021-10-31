@@ -35,7 +35,7 @@ void inc_row();
 #define COLOR_DEFAULT 7
 
 int stage;
-unsigned char bytestr[128];
+char bytestr[128];
 int bs_idx;
 
 unsigned char cursor_store_x;
@@ -95,7 +95,7 @@ int getParamB(int def) {
   if (i == 0 || i == bs_idx) {
     return def;
   }
-  unsigned char* paramb = bytestr + i + 1;
+  char* paramb = bytestr + i + 1;
   return bk_atoi(paramb);
 }
 
@@ -233,12 +233,9 @@ unsigned char colors[16] = {
   COLOR_WHITE
 };
 
-unsigned char foreground = COLOR_DEFAULT;
-unsigned char background = 0;
-
-void setColors() {
-  bgcolor(colors[background]);
-  textcolor(colors[foreground | isBold]);
+void setColors(int fore, int back) {
+  bgcolor(back);
+  textcolor(fore);
 }
 
 void doSGRCommand() {
@@ -255,20 +252,20 @@ void doSGRCommand() {
   if (bs_idx == 0) {
     // set defaults and return
     isBold = 0;
-    foreground = COLOR_DEFAULT;
-    background = 0;
-    setColors();
+    setColors(colors[COLOR_DEFAULT], COLOR_BLACK);
     return;
   }
   int i = 0;
-  unsigned char* params = bytestr;
+  char* params = bytestr;
   while(i < bs_idx) {
     int sgr = bk_atoi(params + i);
+    int foreground = FOREGROUND;
+    int background = BACKGROUND;
     switch(sgr) {
       case 0: // clear attrs
         isBold = 0;
-        foreground = COLOR_DEFAULT;
-        background = 0;
+        foreground = colors[COLOR_DEFAULT];
+        background = colors[0];
         break;
       case 1: // bold
         isBold = 8;
@@ -281,7 +278,7 @@ void doSGRCommand() {
       case 35:
       case 36:
       case 37:
-        foreground = sgr - 30;
+        foreground = colors[(sgr - 30) | isBold];
         break;
       case 40: // standard backgrounds
       case 41:
@@ -291,7 +288,7 @@ void doSGRCommand() {
       case 45:
       case 46:
       case 47:
-        background = sgr - 40;
+        background = colors[sgr - 40];
         break;
       case 90: // high intensity fore
       case 91:
@@ -301,7 +298,7 @@ void doSGRCommand() {
       case 95:
       case 96:
       case 97:
-        foreground = (sgr - 90) | 8;
+        foreground = colors[(sgr - 90) | 8];
         break;
       case 100: // high intensity background
       case 101:
@@ -311,10 +308,10 @@ void doSGRCommand() {
       case 105:
       case 106:
       case 107:
-        background = (sgr - 100) | 8;
+        background = colors[(sgr - 100) | 8];
         break;
     }
-    setColors();
+    setColors(foreground, background);
     while(i < bs_idx && params[i] >= '0' && params[i] <= '9') {
       i++;
     }
@@ -402,7 +399,7 @@ void doCsiCommand(unsigned char c) {
 #define ESC_Y 'Y'
 #define ESC_X 'X'
 
-unsigned char esc_state = ESC_OPEN;
+char esc_state = ESC_OPEN;
 
 int doEscCommand(unsigned char c) {
   if (esc_state == ESC_OPEN) {
@@ -448,7 +445,6 @@ int doEscCommand(unsigned char c) {
   } else {
     if (esc_state == ESC_Y) {
       gotoy(c - 32);
-      esc_state == ESC_X;
       return 0;
     } else if (esc_state == ESC_X) {
       gotox(c - 32);
