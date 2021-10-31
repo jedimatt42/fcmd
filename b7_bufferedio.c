@@ -64,7 +64,6 @@ char* readline(struct SocketBuffer* socket_buf) {
     socketbuffer->loaded = offset into buffer for next byte
 */
 int readstream(struct SocketBuffer* socket_buf, char* block, int limit) {
-    bk_strset(block, 0, limit);
     int blockload = 0;
     int retries = 0;
     int maxtries = 5;
