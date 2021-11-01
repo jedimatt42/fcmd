@@ -4,8 +4,7 @@
 #include "page.h"
 
 #define SAMS_ADDR 0xF000
-#define HIST_IDX *((volatile int*) SAMS_ADDR)
-#define HISTORY ((struct List*) (SAMS_ADDR + 2))
+#define HISTORY ((struct List*) (SAMS_ADDR))
 
 void map_history() {
   fc_sams_map_page(state.history_id, SAMS_ADDR);
@@ -28,16 +27,17 @@ void history_add_link(char* link) {
 
   int len = fc_strlen(tmp);
   fc_list_push(HISTORY, tmp, len);
-  HIST_IDX = 0;
 }
 
 // dst must not be in top address bank
 void history_get_prev(char* dst) {
   map_history();
-  HIST_IDX = HIST_IDX + 1;
-  struct ListEntry* entry = fc_list_get(HISTORY, HIST_IDX);
+  fc_list_pop(HISTORY, dst, 256);
+  struct ListEntry* entry = fc_list_get(HISTORY, 0);
   if (entry) {
     fc_strcpy(dst, entry->data);
+  } else {
+    dst[0] = 0;
   }
 }
 
