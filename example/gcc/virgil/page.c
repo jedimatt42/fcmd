@@ -45,6 +45,8 @@ int line_type(char* line) {
     return LINE_TYPE_LINK;
   } else if (line[0] == '`' && line[1] == '`' && line[2] == '`') {
     return LINE_TYPE_TOGGLE;
+  } else if (line[0] == '*') {
+    return LINE_TYPE_BULLET;
   } else {
     return LINE_TYPE_NORMAL;
   }
@@ -96,7 +98,12 @@ void page_add_line(char* line) {
 	pline->data[0] = ' ';
 	pline->data[1] = ' ';
 	pc += 2;
+      } else if (type == LINE_TYPE_BULLET) {
+	pline->data[0] = ' ';
+	pline->data[1] = ' ';
+	pc += 2;
       }
+
       c = lastbreak + 1;
     }
     pline->data[pc++] = line[c++];

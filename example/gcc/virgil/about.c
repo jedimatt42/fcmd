@@ -39,7 +39,6 @@ void about() {
   page_add_line("* CTRL S - stop loading page\n");
   page_add_line("* CTRL A - open address\n");
   page_add_line("\n");
-  page_add_line("NOTE: stop, back, and address are not yet available from keyboard.\n");
   page_add_line("## Supported URL formats:\n");
   page_add_line("\n");
   page_add_line("No external protocols are supported at this time.\n");
