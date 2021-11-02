@@ -79,7 +79,7 @@ void page_add_line(char* line) {
     if (line[c] == ' ' || line[c] == '-') {
       lastbreak = c;
     }
-    if (pc > 79) {
+    if (pc > 78) {
       pline->length = pc + ((line[lastbreak] == '-') ? 1 : 0) - (c - lastbreak);
       pline->data[pline->length] = 0;
       if (state.line_count == state.line_limit) {

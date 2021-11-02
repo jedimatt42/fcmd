@@ -145,7 +145,9 @@ void screen_redraw() {
       }
       int line_offset = (i+1) * 80;
       vdp_memcpy(dinfo.imageAddr + line_offset, line->data, line->length);
-      vdp_memset(dinfo.imageAddr + line_offset + line->length, ' ', 80 - line->length);
+      if (line->length < 80) {
+        vdp_memset(dinfo.imageAddr + line_offset + line->length, ' ', 80 - line->length);
+      }
       vdp_memset(dinfo.colorAddr + line_offset, color, 80);
     }
   }
