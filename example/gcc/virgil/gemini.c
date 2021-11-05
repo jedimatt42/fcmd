@@ -9,7 +9,6 @@
 #include "readline.h"
 #include "keyboard.h"
 #include "history.h"
-#include "about.h"
 
 void send_request(char* request);
 void handle_success(char* line);
@@ -22,8 +21,6 @@ void display_page();
 char CRLF[3] = {'\r', '\n', 0};
 
 #define SOCKET_ID 0
-
-#define VDP_WAIT_VBLANK_CRU	  __asm__( "clr r12\n\ttb 2\n\tjeq -4\n\tmovb @>8802,r12" : : : "r12" );
 
 void halt() {
   while(1) { }
@@ -45,24 +42,28 @@ int fc_main(char* args) {
   state.cmd = 0;
   if (state.newurl[0] != 0) {
     state.cmd = CMD_RELOAD;
-  } else {
-    fc_strncpy(state.newurl, "about:", 256);
-    state.cmd = CMD_RELOAD;
   }
 
   update_mouse(); // throw one away - the tipi mouse might queue a click
   while(state.cmd != CMD_QUIT) {
+    int prev_cmd = state.cmd;
+    int prev_lc = state.line_count;
+    int prev_lo = state.line_offset;
     // handle url change here
     if (state.cmd == CMD_RELOAD || state.cmd == CMD_RELOAD_NOHIST) {
       int hist = state.cmd == CMD_RELOAD;
       open_url(state.newurl, hist);
+    } else if (state.cmd == CMD_STOP) {
+      state.cmd = CMD_IDLE;
+    } else if (state.cmd == CMD_READPAGE) {
+      page_load();
     }
-    if (state.cmd == CMD_STOP) {
-      state.cmd = 0;
-      state.loading = 0;
+    if (prev_lc != state.line_count || prev_lo != state.line_offset || prev_cmd != state.cmd) {
+      screen_status();
     }
-    VDP_WAIT_VBLANK_CRU
-    process_input();
+    if (vdp_read_status()) {
+      process_input();
+    }
   }
   on_exit();
   return 0;
@@ -82,22 +83,12 @@ void on_exit() {
 }
 
 void open_url(char* url, int push_history) {
-  state.loading = 1;
-  state.cmd = 0;
+  state.cmd = CMD_IDLE;
   state.error[0] = 0;
   char hostname[80];
   char port[10];
 
-  screen_status();
-
-  if (fc_str_startswith(url, "about:")) {
-    state.loading = 0;
-    about();
-    screen_status();
-    return;
-  }
   if (fc_str_startswith(url, "http:") || fc_str_startswith(url, "https:") || fc_str_startswith(url, "gopher:")) {
-    state.loading = 0;
     return;
   }
 
@@ -105,7 +96,11 @@ void open_url(char* url, int push_history) {
   normalize_url(state.url);
   set_hostname_and_port(state.url, hostname, port); 
 
+  fc_strcpy(state.error, "connecting...");
+  screen_status();
+
   if(fc_tls_connect(SOCKET_ID, hostname, port)) {
+    state.error[0] = 0;
     init_readline(SOCKET_ID);
     send_request(state.url);
 
@@ -158,13 +153,12 @@ void open_url(char* url, int push_history) {
 	}
 	break;
     }
-    fc_tls_close(SOCKET_ID);
   } else {
     fc_strcpy(state.error, "Connection error");
   }
-  fc_tls_close(SOCKET_ID);
-  state.loading = 0;
-  screen_status();
+  if (state.cmd != CMD_READPAGE) {
+    fc_tls_close(SOCKET_ID);
+  }
 }
 
 void send_request(char* request) {
@@ -177,31 +171,15 @@ void handle_success(char* line) {
   char* tok = fc_strtok(line, ' ');
 
   tok = fc_strtok(0, ';');
-  if (fc_str_startswith(tok, "text/gemini")) {
-    display_page();
-  } else if (fc_str_startswith(tok, "text/plain")) {
-    display_page();
-  } else {
-    fc_tputs("uknown mime-type: ");
-    fc_tputs(tok);
-  }
-}
-
-void display_page() {
   page_clear_lines(); // erase the current page
-
-  char* line = readline();
-  while(line && (state.cmd == 0)) {
-    page_add_line(line);
-    if (state.line_count <= 28) {
-      screen_redraw();
-    } else {
-      screen_status();
-    }
-    process_input(); 
-    line = readline();
+  if (fc_str_startswith(tok, "text/gemini")) {
+    state.cmd = CMD_READPAGE;
+  } else if (fc_str_startswith(tok, "text/plain")) {
+    state.cmd = CMD_READPAGE;
+  } else {
+    fc_strcpy(state.error, "uknown mime-type: ");
+    fc_strcpy(state.error + 18, tok);
   }
-  screen_redraw();
 }
 
 void any_key() {

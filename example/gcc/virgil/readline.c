@@ -7,12 +7,6 @@ struct SocketBuffer socket_buf;
 
 #define LASTLINE ((char*) 0xE000)
 
-int vdp_read_status() {
-  int status;
-  __asm__( "movb @>8802,%0" : "=rm" (status) : : "r12" );
-  return status;
-}
-
 
 void init_readline(int socket_id) {
     fc_init_socket_buffer(&socket_buf, TLS, socket_id);
@@ -50,5 +44,10 @@ char* readline() {
       return LASTLINE;
     }
     return 0;
+}
+
+char* readbytes(int* len) {
+    *len = fc_readstream(&socket_buf, LASTLINE, 512);
+    return LASTLINE;
 }
 

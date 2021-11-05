@@ -64,7 +64,7 @@ void screen_title() {
 
   i++;
   tmp[i++] = BL;
-  if (state.loading) {
+  if (state.cmd == CMD_READPAGE) {
     fc_strcpy(tmp + i, "STOP");
   } else {
     fc_strcpy(tmp + i, "BACK");
@@ -91,7 +91,7 @@ void screen_status() {
     vdp_strcpy(addr, state.error, 80);
     return;
   }
-  if (state.loading) {
+  if (state.cmd == CMD_READPAGE) {
     addr += vdp_strcpy(addr, "Loading ", 8);
   } else {
     addr += vdp_strcpy(addr, "Line: ", 6);
@@ -144,10 +144,7 @@ void screen_redraw() {
 	color = GRAY_ON_BLACK;
       }
       int line_offset = (i+1) * 80;
-      vdp_memcpy(dinfo.imageAddr + line_offset, line->data, line->length);
-      if (line->length < 80) {
-        vdp_memset(dinfo.imageAddr + line_offset + line->length, ' ', 80 - line->length);
-      }
+      vdp_memcpy(dinfo.imageAddr + line_offset, line->data, 80);
       vdp_memset(dinfo.colorAddr + line_offset, color, 80);
     }
   }

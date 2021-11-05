@@ -57,7 +57,7 @@ int on_page_up() {
 }
 
 int on_stop() {
-  if (state.loading) {
+  if (state.cmd == CMD_READPAGE) {
     state.cmd = CMD_STOP;
     return 1;
   } else {

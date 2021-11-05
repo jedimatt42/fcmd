@@ -57,7 +57,7 @@ void handle_mouse_click() {
       state.cmd = CMD_QUIT;
       return;
     } else if (col >= XSTOP && col < XSTOP + 6) {
-      if (state.loading) {
+      if (state.cmd == CMD_READPAGE) {
 	// stop button
 	state.cmd = CMD_STOP;
       } else {

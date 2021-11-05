@@ -17,7 +17,7 @@ struct __attribute__((__packed__)) Line {
 
 void init_page();
 void page_clear_lines();
-void page_add_line(char* line);
+void page_load();
 
 struct Line* page_get_line(int idx);
 
