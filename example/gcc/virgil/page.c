@@ -96,9 +96,6 @@ inline struct Line* page_add_line() {
 // to the current line.. or wraps if necessary.
 
 void page_load() {
-  // ensure the correct page is mapped into ram:
-  last_line = page_get_line(state.line_count);
-
   int len = 0;
   char* buf = readbytes(&len);
   if (len == 0) {
@@ -109,6 +106,9 @@ void page_load() {
 }
 
 void __attribute__((noinline)) page_from_buf(char* buf, int len) {
+  // ensure the correct page is mapped into ram:
+  last_line = page_get_line(state.line_count);
+
   int i = 0;
   while(i < len) {
     // if newline, then fill current line with blank, and add a line.
@@ -130,8 +130,9 @@ void __attribute__((noinline)) page_from_buf(char* buf, int len) {
       }
       last_line = page_add_line();
       last_line->type = new_line_type;
-    } else {
-      // add the byte to the current line..
+    }
+    // add the byte to the current line..
+    if (buf[i] != 10) {
       last_line->data[last_line->length++] = buf[i];
     }
     i++;
