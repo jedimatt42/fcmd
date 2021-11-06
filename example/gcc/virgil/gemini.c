@@ -18,6 +18,7 @@ void on_exit();
 int check_requirements();
 
 void display_page();
+int must_redraw();
 
 char CRLF[3] = {'\r', '\n', 0};
 
@@ -65,7 +66,7 @@ int fc_main(char* args) {
     if (prev_lc != state.line_count || prev_lo != state.line_offset || prev_cmd != state.cmd) {
       screen_status();
     }
-    if (prev_cmd == CMD_READPAGE && state.cmd == CMD_IDLE) {
+    if (must_redraw(prev_lc, prev_lo, prev_cmd, &state)) {
       screen_redraw();
     }
     if (vdp_read_status()) {
@@ -73,6 +74,20 @@ int fc_main(char* args) {
     }
   }
   on_exit();
+  return 0;
+}
+
+int must_redraw(int prev_lc, int prev_lo, int prev_cmd, struct State* state) {
+  // redraw if we transitioned to IDLE
+  if (prev_cmd != CMD_IDLE && state->cmd == CMD_IDLE) {
+    return 1;
+  }
+  // redraw if there have been more lines, our screen isn't full, and we are not IDLE
+  if (state->cmd != CMD_IDLE) {
+    if (state->line_count >= prev_lc && (state->line_offset + 28 <= state->line_count)) {
+      return 1;
+    }
+  }
   return 0;
 }
 
@@ -100,6 +115,7 @@ void open_url(char* url, int push_history) {
   }
 
   if (!fc_strcmp(url, "about:")) {
+    page_clear_lines();
     about();
     state.cmd = CMD_IDLE;
     return;

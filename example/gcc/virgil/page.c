@@ -96,6 +96,9 @@ inline struct Line* page_add_line() {
 // to the current line.. or wraps if necessary.
 
 void page_load() {
+  // ensure the correct page is mapped into ram:
+  last_line = page_get_line(state.line_count);
+
   int len = 0;
   char* buf = readbytes(&len);
   if (len == 0) {
