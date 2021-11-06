@@ -22,7 +22,7 @@ static char* line_cursor;
 static int add_bank();
 
 void init_page() {
-  state.base_id = 0;
+  state.base_id = add_bank();
   state.page_id = state.base_id;
 }
 
@@ -37,7 +37,7 @@ void page_clear_lines() {
   line_cursor = 0;
 }
 
-void update_line_type(struct Line* line) {
+static void __attribute__((noinline)) update_line_type(struct Line* line) {
   if (line->length >= 3 && line->data[0] == '`' && line->data[1] == '`' && line->data[2] == '`') {
     line->type = LINE_TYPE_TOGGLE;
   } else if (line->length >= 2 && line->data[0] == '=' && line->data[1] == '>') {
@@ -49,13 +49,19 @@ void update_line_type(struct Line* line) {
       line->type = LINE_TYPE_QUOTE;
     } else if (line->data[0] == '*') {
       line->type = LINE_TYPE_BULLET;
+    } else if (line->data[0] == '`') {
+      line->type = LINE_TYPE_UNKNOWN;
+    } else if (line->data[0] == '=') {
+      line->type = LINE_TYPE_UNKNOWN;
+    } else {
+      line->type = LINE_TYPE_NORMAL;
     }
   } else {
-    line->type = LINE_TYPE_NORMAL;
+    line->type = LINE_TYPE_UNKNOWN;
   }
 }
 
-static int add_bank() {
+static int __attribute__((noinline)) add_bank() {
   int bank_id = fc_sams_alloc_pages(1);
   state.page_count++;
   fc_sams_map_page(bank_id, SAMS_ADDR);
@@ -64,7 +70,7 @@ static int add_bank() {
   return bank_id;
 }
 
-struct Line* page_get_line(int idx) {
+struct Line* __attribute__((noinline)) page_get_line(int idx) {
   int page_offset = idx / LINES_PER_BANK;
   state.page_id = page_offset + state.base_id;
   fc_sams_map_page(state.page_id, SAMS_ADDR);
@@ -72,7 +78,7 @@ struct Line* page_get_line(int idx) {
   return &(PAGE->lines[line_offset]);
 }
 
-struct Line* page_add_line() {
+static struct Line* __attribute__((noinline)) page_add_line() {
   state.line_count++;
   if (state.line_count > state.line_limit) {
     state.page_id = add_bank();
@@ -96,6 +102,7 @@ void page_load() {
   if (last_line == 0) {
     last_line = page_add_line();
   }
+
   int i = 0;
   while(i < len) {
     // if newline, then fill current line with blank, and add a line.
@@ -107,17 +114,23 @@ void page_load() {
       if (*final_char == 13) {
 	*final_char = 0;
       }
-      update_line_type(last_line);
+      if (last_line->type == LINE_TYPE_UNKNOWN) {
+        update_line_type(last_line);
+      }
+      int new_line_type = LINE_TYPE_UNKNOWN;
+      if (buf[i] != 10) {
+	// if we wrapped, use same linetype as previous
+	new_line_type = last_line->type;
+      }
       last_line = page_add_line();
+      last_line->type = new_line_type;
     } else {
       // add the byte to the current line..
       last_line->data[last_line->length++] = buf[i];
     }
     i++;
   }
-  if (len > 0) {
-    screen_redraw();
-  } else {
+  if (last_line->length > 0) {
     update_line_type(last_line);
   }
 }

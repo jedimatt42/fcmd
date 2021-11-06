@@ -60,6 +60,9 @@ int fc_main(char* args) {
     }
     if (prev_lc != state.line_count || prev_lo != state.line_offset || prev_cmd != state.cmd) {
       screen_status();
+      if (prev_lo != state.line_offset || state.line_count - state.line_offset <= 28) {
+        screen_redraw();
+      }
     }
     if (vdp_read_status()) {
       process_input();

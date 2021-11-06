@@ -47,7 +47,7 @@ char* readline() {
 }
 
 char* readbytes(int* len) {
-    *len = fc_readstream(&socket_buf, LASTLINE, 512);
+    *len = fc_readstream(&socket_buf, LASTLINE, 64);
     return LASTLINE;
 }
 
