@@ -2,15 +2,15 @@
 #define _GEMINI_H 1
 
 struct __attribute__((__packed__)) State {
-  int history_id;
-  int base_id;
-  int page_id;
-  int line_count;
-  int line_limit;
-  int line_offset;
-  int page_count;
-  int toggle_literal;
-  int cmd;
+  volatile int history_id;
+  volatile int base_id;
+  volatile int page_id;
+  volatile int line_count;
+  volatile int line_limit;
+  volatile int line_offset;
+  volatile int page_count;
+  volatile int toggle_literal;
+  volatile int cmd;
   char url[256];
   char newurl[256];
   char error[80];

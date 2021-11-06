@@ -16,7 +16,7 @@ struct __attribute__((__packed__)) Bank {
 
 struct State state;
 
-static struct Line* last_line;
+static volatile struct Line* last_line;
 static char* line_cursor;
 
 static int add_bank();
@@ -37,12 +37,16 @@ void page_clear_lines() {
   line_cursor = 0;
 }
 
-static void __attribute__((noinline)) update_line_type(struct Line* line) {
+static void __attribute__((noinline)) update_line_type(volatile struct Line* line) {
   if (line->length >= 3 && line->data[0] == '`' && line->data[1] == '`' && line->data[2] == '`') {
     line->type = LINE_TYPE_TOGGLE;
-  } else if (line->length >= 2 && line->data[0] == '=' && line->data[1] == '>') {
+    return;
+  } 
+  if (line->length >= 2 && line->data[0] == '=' && line->data[1] == '>') {
     line->type = LINE_TYPE_LINK;
-  } else if (line->length >= 1) {
+    return;
+  } 
+  if (line->length >= 1) {
     if (line->data[0] == '#') {
       line->type = LINE_TYPE_HEADING;
     } else if (line->data[0] == '>') {
@@ -110,7 +114,7 @@ void page_load() {
       for(int x = last_line->length; x < 80; x++) {
 	last_line->data[x] = 0;
       }
-      char* final_char = last_line->data + (last_line->length - 1);
+      char* final_char = (char*) (last_line->data + (last_line->length - 1));
       if (*final_char == 13) {
 	*final_char = 0;
       }
