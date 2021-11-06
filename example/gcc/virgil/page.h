@@ -19,6 +19,7 @@ struct __attribute__((__packed__)) Line {
 void init_page();
 void page_clear_lines();
 void page_load();
+void page_from_buf(char* buf, int len);
 
 struct Line* page_get_line(int idx);
 

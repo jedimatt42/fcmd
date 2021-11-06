@@ -1,9 +1,6 @@
 #include <fc_api.h>
 #include "page.h"
-#include "screen.h"
 #include "version.h"
-#include "history.h"
-#include "gemini.h"
 
 const char about_text[] =
   "# About " VERSION "\n"
@@ -28,6 +25,7 @@ const char about_text[] =
   "* QUIT - exit the browser\n"
   "\n"
   "## Keyboard usage:\n"
+  "\n"
   "* ESC(F9) - exit the browser\n"
   "* FCTN X - scroll down\n"
   "* FCTN E - scroll up\n"
@@ -50,3 +48,6 @@ const char about_text[] =
   "=> gopher://deadend.net Gopher URLS are Yellow\n"
   "=> http://deadend.net HTTP URLS are Pale Yellow\n";
 
+void about() {
+  page_from_buf((char*) about_text, sizeof(about_text));
+}

@@ -17,13 +17,13 @@ struct __attribute__((__packed__)) Bank {
 struct State state;
 
 static volatile struct Line* last_line;
-static char* line_cursor;
 
-static int add_bank();
+int add_bank();
 
 void init_page() {
   state.base_id = add_bank();
   state.page_id = state.base_id;
+  last_line = page_get_line(0);
 }
 
 void page_clear_lines() {
@@ -34,10 +34,10 @@ void page_clear_lines() {
   state.line_offset = 0;
   state.toggle_literal = 0;
   state.page_id = add_bank();
-  line_cursor = 0;
+  last_line = page_get_line(0);
 }
 
-static void __attribute__((noinline)) update_line_type(volatile struct Line* line) {
+void __attribute__((noinline)) update_line_type(volatile struct Line* line) {
   if (line->length >= 3 && line->data[0] == '`' && line->data[1] == '`' && line->data[2] == '`') {
     line->type = LINE_TYPE_TOGGLE;
     return;
@@ -65,7 +65,7 @@ static void __attribute__((noinline)) update_line_type(volatile struct Line* lin
   }
 }
 
-static int __attribute__((noinline)) add_bank() {
+int __attribute__((noinline)) add_bank() {
   int bank_id = fc_sams_alloc_pages(1);
   state.page_count++;
   fc_sams_map_page(bank_id, SAMS_ADDR);
@@ -76,13 +76,13 @@ static int __attribute__((noinline)) add_bank() {
 
 struct Line* __attribute__((noinline)) page_get_line(int idx) {
   int page_offset = idx / LINES_PER_BANK;
+  int line_offset = idx - (page_offset * LINES_PER_BANK);
   state.page_id = page_offset + state.base_id;
   fc_sams_map_page(state.page_id, SAMS_ADDR);
-  int line_offset = idx - (page_offset * LINES_PER_BANK);
   return &(PAGE->lines[line_offset]);
 }
 
-static struct Line* __attribute__((noinline)) page_add_line() {
+inline struct Line* page_add_line() {
   state.line_count++;
   if (state.line_count > state.line_limit) {
     state.page_id = add_bank();
@@ -102,11 +102,10 @@ void page_load() {
     state.cmd = CMD_IDLE;
     return;
   }
+  page_from_buf(buf, len);
+}
 
-  if (last_line == 0) {
-    last_line = page_add_line();
-  }
-
+void __attribute__((noinline)) page_from_buf(char* buf, int len) {
   int i = 0;
   while(i < len) {
     // if newline, then fill current line with blank, and add a line.

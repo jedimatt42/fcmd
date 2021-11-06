@@ -9,6 +9,7 @@
 #include "readline.h"
 #include "keyboard.h"
 #include "history.h"
+#include "about.h"
 
 void send_request(char* request);
 void handle_success(char* line);
@@ -40,7 +41,10 @@ int fc_main(char* args) {
   init_screen();
 
   state.cmd = 0;
-  if (state.newurl[0] != 0) {
+  if (state.newurl[0] == 0) {
+    fc_strcpy(state.newurl, "about:");
+    state.cmd = CMD_RELOAD_NOHIST;
+  } else {
     state.cmd = CMD_RELOAD;
   }
 
@@ -92,6 +96,12 @@ void open_url(char* url, int push_history) {
   char port[10];
 
   if (fc_str_startswith(url, "http:") || fc_str_startswith(url, "https:") || fc_str_startswith(url, "gopher:")) {
+    return;
+  }
+
+  if (!fc_strcmp(url, "about:")) {
+    about();
+    state.cmd = CMD_IDLE;
     return;
   }
 
