@@ -87,9 +87,8 @@ void handle_mouse_click() {
     }
   } 
 
-  // screen line is 1 based, so decrement for that, and page is draw
-  // one line down, so decrement for that.
-  struct Line* page_line = page_get_line(line - 2 + state.line_offset);
+  // page is draw one line down, so decrement for that.
+  struct Line* page_line = page_get_line(line - 1 + state.line_offset);
   if (page_line->type == LINE_TYPE_LINK) {
     int junk;
     fc_strcpy(state.newurl, link_url(page_line->data, &junk));

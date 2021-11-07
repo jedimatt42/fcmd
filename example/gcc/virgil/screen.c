@@ -11,6 +11,7 @@
 #define BLACK_ON_GRAY (COLOR_BLACK << 4 | COLOR_GRAY)
 #define GREEN_ON_BLACK (COLOR_LTGREEN << 4 | COLOR_BLACK)
 #define GRAY_ON_BLACK (COLOR_GRAY << 4 | COLOR_BLACK)
+#define WHITE_ON_BLACK (COLOR_WHITE << 4 | COLOR_BLACK)
 #define CYAN_ON_BLACK (COLOR_CYAN << 4 | COLOR_BLACK)
 #define YELLOW_ON_BLACK (COLOR_LTYELLOW << 4 | COLOR_BLACK)
 #define BROWN_ON_BLACK (COLOR_DKYELLOW << 4 | COLOR_BLACK)
@@ -119,7 +120,7 @@ void screen_redraw() {
   int limit = state.line_count - state.line_offset;
   limit = limit < 28 ? limit : 28;
   for(int i = 0; i < limit; i++) {
-    struct Line* line = page_get_line(i + state.line_offset);
+    struct Line* line = page_get_line(i + state.line_offset + 1);
     int line_offset = (i+1) * 80;
     if (line->type == LINE_TYPE_LINK) {
       int len = 0;
@@ -141,7 +142,7 @@ void screen_redraw() {
       if (line->type == LINE_TYPE_HEADING) {
 	color = CYAN_ON_BLACK;
       } else if (line->type == LINE_TYPE_LITERAL) {
-	color = BLACK_ON_GRAY;
+	color = WHITE_ON_BLACK;
       }
       int line_offset = (i+1) * 80;
       vdp_memcpy(dinfo.imageAddr + line_offset, line->data, 80);

@@ -27,10 +27,8 @@ This will open the gemini url given, and display the page.
 
 ## TODO
 
-* first line of each new SAMS page is missing (every 48th line)
 * long urls wrap and become disfunctional
 * history is wonkey again
-* eof... if last line doesn't have a 0x0A, then it isn't shown.
 
 I want to implement:
 

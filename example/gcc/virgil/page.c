@@ -22,19 +22,46 @@ int add_bank();
 
 void init_page() {
   state.base_id = add_bank();
-  state.page_id = state.base_id;
-  last_line = page_get_line(0);
+  state.line_count = 1;
+  last_line = page_get_line(1);
 }
 
 void page_clear_lines() {
   state.base_id = fc_sams_free_pages(state.page_count);
   state.page_count = 0;
   state.line_limit = 0;
-  state.line_count = 0;
+  state.line_count = 1;
   state.line_offset = 0;
   state.toggle_literal = 0;
-  state.page_id = add_bank();
-  last_line = page_get_line(0);
+  add_bank();
+  last_line = page_get_line(1);
+}
+
+int __attribute__((noinline)) add_bank() {
+  int bank_id = fc_sams_alloc_pages(1);
+  state.page_count++;
+  fc_sams_map_page(bank_id, SAMS_ADDR);
+  state.line_limit += LINES_PER_BANK;
+  fc_strset((char*)SAMS_ADDR, 0, 4096);
+  return bank_id;
+}
+
+inline struct Line* page_add_line() {
+  state.line_count++;
+  if (state.line_count > state.line_limit) {
+    add_bank();
+  }
+  return page_get_line(state.line_count);
+}
+
+// 1 based counting system
+struct Line* __attribute__((noinline)) page_get_line(int idx) {
+  idx--;
+  int page_offset = idx / LINES_PER_BANK;
+  int line_offset = idx - (page_offset * LINES_PER_BANK);
+  int page_id = page_offset + state.base_id;
+  fc_sams_map_page(page_id, SAMS_ADDR);
+  return &(PAGE->lines[line_offset]);
 }
 
 void __attribute__((noinline)) update_line_type(volatile struct Line* line) {
@@ -67,33 +94,6 @@ void __attribute__((noinline)) update_line_type(volatile struct Line* line) {
   } else {
     line->type = LINE_TYPE_UNKNOWN;
   }
-}
-
-int __attribute__((noinline)) add_bank() {
-  int bank_id = fc_sams_alloc_pages(1);
-  state.page_count++;
-  fc_sams_map_page(bank_id, SAMS_ADDR);
-  fc_strset((char*)SAMS_ADDR, 0, 4096);
-  state.line_limit += LINES_PER_BANK;
-  return bank_id;
-}
-
-struct Line* __attribute__((noinline)) page_get_line(int idx) {
-  int page_offset = idx / LINES_PER_BANK;
-  int line_offset = idx - (page_offset * LINES_PER_BANK);
-  state.page_id = page_offset + state.base_id;
-  fc_sams_map_page(state.page_id, SAMS_ADDR);
-  return &(PAGE->lines[line_offset]);
-}
-
-inline struct Line* page_add_line() {
-  state.line_count++;
-  if (state.line_count > state.line_limit) {
-    state.page_id = add_bank();
-  }
-  struct Line* new_line = page_get_line(state.line_count);
-  new_line->length = 0;
-  return new_line;
 }
 
 // page_load reads one segment from the socket, and adds it

@@ -4,7 +4,6 @@
 struct __attribute__((__packed__)) State {
   volatile int history_id;
   volatile int base_id;
-  volatile int page_id;
   volatile int line_count;
   volatile int line_limit;
   volatile int line_offset;
