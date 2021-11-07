@@ -141,7 +141,7 @@ void screen_redraw() {
       if (line->type == LINE_TYPE_HEADING) {
 	color = CYAN_ON_BLACK;
       } else if (line->type == LINE_TYPE_LITERAL) {
-	color = GRAY_ON_BLACK;
+	color = BLACK_ON_GRAY;
       }
       int line_offset = (i+1) * 80;
       vdp_memcpy(dinfo.imageAddr + line_offset, line->data, 80);

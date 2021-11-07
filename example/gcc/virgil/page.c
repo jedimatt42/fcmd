@@ -42,6 +42,10 @@ void __attribute__((noinline)) update_line_type(volatile struct Line* line) {
     line->type = LINE_TYPE_TOGGLE;
     return;
   } 
+  if (state.toggle_literal) {
+    line->type = LINE_TYPE_LITERAL;
+    return;
+  }
   if (line->length >= 2 && line->data[0] == '=' && line->data[1] == '>') {
     line->type = LINE_TYPE_LINK;
     return;
@@ -116,20 +120,51 @@ void __attribute__((noinline)) page_from_buf(char* buf, int len) {
       for(int x = last_line->length; x < 80; x++) {
 	last_line->data[x] = 0;
       }
+      // erase CR if it was (likely) CRLF
       char* final_char = (char*) (last_line->data + (last_line->length - 1));
       if (*final_char == 13) {
 	*final_char = 0;
       }
+      // set the line type based on line content
       if (last_line->type == LINE_TYPE_UNKNOWN) {
         update_line_type(last_line);
       }
       int new_line_type = LINE_TYPE_UNKNOWN;
+
+      // if we wrapped, use same linetype as previous
       if (buf[i] != 10) {
-	// if we wrapped, use same linetype as previous
 	new_line_type = last_line->type;
       }
-      last_line = page_add_line();
-      last_line->type = new_line_type;
+      
+      // don't add a new line if the line type is toggle...
+      if (last_line->type == LINE_TYPE_TOGGLE) {
+	last_line->length = 0;
+	state.toggle_literal = !state.toggle_literal;
+	if (state.toggle_literal) {
+	  last_line->type = LINE_TYPE_LITERAL;
+	} else {
+	  last_line->type = LINE_TYPE_UNKNOWN;
+	}
+      } else {
+        last_line = page_add_line();
+      }
+
+      // also if we wrapped, indent based on previous line type
+      if (buf[i] != 10 && !state.toggle_literal) {
+	last_line->type = new_line_type;
+	if (new_line_type == LINE_TYPE_QUOTE) {
+	  last_line->data[last_line->length++] = '>';
+	  last_line->data[last_line->length++] = ' ';
+	} else if (new_line_type == LINE_TYPE_BULLET || 
+		   last_line->type == LINE_TYPE_HEADING) {
+	  last_line->data[last_line->length++] = ' ';
+	  last_line->data[last_line->length++] = ' ';
+	} else if (new_line_type == LINE_TYPE_LINK) {
+	  last_line->data[last_line->length++] = ' ';
+	  last_line->data[last_line->length++] = ' ';
+	  last_line->data[last_line->length++] = ' ';
+	}
+      }
     }
     // add the byte to the current line..
     if (buf[i] != 10) {
