@@ -21,6 +21,9 @@ static volatile struct Line* last_line;
 int add_bank();
 
 void init_page() {
+  struct SamsInformation samsInfo;
+  fc_sams_info(&samsInfo);
+  state.max_page = samsInfo.total_pages;
   state.base_id = add_bank();
   state.line_count = 1;
   last_line = page_get_line(1);
@@ -174,6 +177,11 @@ void __attribute__((noinline)) page_from_buf(char* buf, int len) {
   }
   if (last_line->length > 0) {
     update_line_type(last_line);
+  }
+  // check for out of memory
+  if (state.page_count + state.base_id >= (state.max_page - 1)) {
+    state.cmd = CMD_IDLE;
+    fc_strcpy(state.error, "Out of memory");
   }
 }
 
