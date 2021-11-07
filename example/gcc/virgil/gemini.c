@@ -61,7 +61,11 @@ int fc_main(char* args) {
     } else if (state.cmd == CMD_STOP) {
       state.cmd = CMD_IDLE;
     } else if (state.cmd == CMD_READPAGE) {
-      page_load();
+      if (mouse_active) {
+	mouse_active--;
+      } else {
+	page_load();
+      }
     }
     if (prev_lc != state.line_count || prev_lo != state.line_offset || prev_cmd != state.cmd) {
       screen_status();

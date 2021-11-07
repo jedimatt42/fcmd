@@ -11,11 +11,14 @@
 struct MouseData md;
 int pointer_type;
 
+int mouse_active;
+
 void init_mouse() {
   fc_strset((char*)&md, 0, sizeof(struct MouseData));
   fc_tipi_mouse_enable(&md); // prep for reading
   pointer_type = 99;
   mouse_set_pointer(MP_NORMAL);
+  mouse_active = 0;
 }
 
 static int mouse_line() {
@@ -28,7 +31,15 @@ static int mouse_column() {
 
 int update_mouse() {
   md.buttons = 0;
+  int oldy = md.pointery;
   fc_tipi_mouse_move(&md);
+  if (oldy != md.pointery) {
+    // mouse moved, so let's set the active flag
+    // this can be a hint to other stages to allow
+    // more time for ui.
+    mouse_active = 3;
+  }
+
   int line = mouse_line();
   if (line > 1 && mouse_column() > 70) {
     if (line < 8) {

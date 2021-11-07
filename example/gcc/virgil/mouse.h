@@ -11,6 +11,8 @@
 #define MP_PAGE_UP 5
 #define MP_BUSY 6
 
+extern int mouse_active;
+
 void init_mouse();
 
 extern struct MouseData md;
