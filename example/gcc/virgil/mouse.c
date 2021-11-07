@@ -41,7 +41,7 @@ int update_mouse() {
       mouse_set_pointer(MP_PAGE_DOWN);
     }
   } else {
-    mouse_set_pointer(MP_NORMAL);
+    mouse_set_pointer(state.cmd == CMD_IDLE ? MP_NORMAL : MP_BUSY);
   }
   return md.buttons;
 }
@@ -296,11 +296,49 @@ char normal_pointer_black[32] = SPR16X(
     0b0000000000000000
 );
 
+char busy_pointer_white[32] = SPR16X(
+    0b0000000000000000,
+    0b0111111000000000,
+    0b0111110000000000,
+    0b0111100000000000,
+    0b0111110000000000,
+    0b0110111000000000,
+    0b0100011100000000,
+    0b0000001110000000,
+    0b0000000100000000,
+    0b0000000000000000,
+    0b0000000011110000,
+    0b0011110000100000,
+    0b0000100001000000,
+    0b0001000011110000,
+    0b0011110000000000,
+    0b0000000000000000
+);
+
+char busy_pointer_black[32] = SPR16X(
+    0b1111111100000000,
+    0b1000000100000000,
+    0b1000001000000000,
+    0b1000010000000000,
+    0b1000001000000000,
+    0b1001000100000000,
+    0b1010100010000000,
+    0b1100010001000000,
+    0b0000001010000000,
+    0b0000000111111000,
+    0b0111111100001000,
+    0b0100001111011000,
+    0b0111011110111000,
+    0b0110111100001000,
+    0b0100001111111000,
+    0b0111111000000000
+);
+
 void mouse_set_pointer(int p) {
   if (pointer_type != p) {
     pointer_type = p;
-    char* black = normal_pointer_black;
-    char* white = normal_pointer_white;
+    char* black;
+    char* white;
     if (pointer_type == MP_PAGE_UP) {
       black = page_up_pointer_black;
       white = page_up_pointer_white;
@@ -313,6 +351,9 @@ void mouse_set_pointer(int p) {
     } else if (pointer_type == MP_SCROLL_DOWN) {
       black = scroll_down_pointer_black;
       white = scroll_down_pointer_white;
+    } else if (pointer_type == MP_BUSY) {
+      black = busy_pointer_black;
+      white = busy_pointer_white;
     } else {
       black = normal_pointer_black;
       white = normal_pointer_white;

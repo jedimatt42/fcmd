@@ -9,6 +9,7 @@
 #define MP_SCROLL_UP 3
 #define MP_PAGE_DOWN 4
 #define MP_PAGE_UP 5
+#define MP_BUSY 6
 
 void init_mouse();
 
