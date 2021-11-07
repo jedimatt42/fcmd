@@ -1,6 +1,6 @@
-# GEMINI
+# VIRGIL99
 
-Gemini Protocol Browser
+TI-99/4A Gemini Protocol Browser
 
 * Gemini Protocol Project => https://gemini.circumlunar.space/
 
@@ -25,13 +25,18 @@ VIRGIL99 gemini://gemini.circumlunar.space/
 
 This will open the gemini url given, and display the page.
 
-Navigation to links is currently not implemented.
-Scrolling is not yet implemented.
-There is currently a 256 character line limit (bug)
-word wrap is not implemented yet.
-blockquote is not imlemented yet.
+## TODO
 
-page abort no implemented yet.
+* first line of each new SAMS page is missing (every 48th line)
+* long urls wrap and become disfunctional
+* history is wonkey again
+* eof... if last line doesn't have a 0x0A, then it isn't shown.
 
-Lots of bugs are implemented.
+I want to implement:
+
+* file:///urls... 
+* SAMS paging for code... 
+* file download
+* view history
+* bookmarks
 
