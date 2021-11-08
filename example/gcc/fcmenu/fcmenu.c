@@ -39,9 +39,11 @@ void drawSelection();
 void skipSeparatorNext();
 void skipSeparatorPrev();
 void cleanupBeforeExit();
+int childWantsQuit();
 
 #define VDP_WAIT_VBLANK_CRU	  __asm__( "clr r12\n\ttb 2\n\tjeq -4\n\tmovb @>8802,r12" : : : "r12" );
 
+#define QUITVAR "FCM"
 
 int fcmain(char* args) {
   fc_display_info(&dinfo);
@@ -139,16 +141,25 @@ int fcmain(char* args) {
     if (key) {
       handleKey(key);
       if (key == KEY_BACK) {
+        cleanupBeforeExit();
         return 0;
       }
     }
+    if (childWantsQuit()) {
+      cleanupBeforeExit();
+      return 0;
+    }
   }
+}
+
+int childWantsQuit() {
+  char* value = fc_vars_get(QUITVAR);
+  return !fc_strcmp("QUIT", value);
 }
 
 void handleKey(int key) {
   switch(key) {
     case KEY_BACK:
-      cleanupBeforeExit();
       break;
     case ',':
       previousPage();
@@ -209,6 +220,7 @@ void handleClick(int x, int y) {
 void cleanupBeforeExit() {
   fc_tipi_mouse_disable();
   fc_exec("CLS");
+  fc_vars_set(QUITVAR, "");
 }
 
 void selectionUp() {
@@ -305,7 +317,7 @@ void drawBackdrop() {
   vdp_memset(0, 0xB0, dinfo.displayWidth);
   vdp_memset((dinfo.displayHeight - 1) * dinfo.displayWidth, 0xB0, dinfo.displayWidth);
   fc_ui_gotoxy((dinfo.displayWidth / 2) - 7,0);
-  fc_tputs(" FCMenu v1.1 ");
+  fc_tputs(" FCMenu v1.2 ");
   cycles = 0; // since we erased the clock, allow it to redraw on next attempt
 }
 
