@@ -2,7 +2,7 @@
 #define _MAIN_H 1
 
 
-#define APP_VER "1.30"
+#define APP_VER "1.31"
 
 void cartmain();
 void initGlobals();

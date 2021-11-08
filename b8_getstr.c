@@ -10,6 +10,9 @@
 #include "b0_globals.h"
 #include "b13_honk.h"
 
+#define KEY_SPACE 32
+#define KEY_TILDE 126
+
 // Requirements:
 //  Act like TI BASIC keyboard input as much as logical
 //
@@ -87,7 +90,7 @@ void getstr(char* var, int limit, int backspace) {
       case 13: // return
         break;
       default: // alpha numeric
-        if (key >= 32 && key <= 122) {
+        if (key >= KEY_SPACE && key <= KEY_TILDE) {
           if (insertMode) {
             int end = bk_strlen(var);
             if (end != limit) {
