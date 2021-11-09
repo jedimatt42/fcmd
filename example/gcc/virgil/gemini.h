@@ -10,6 +10,7 @@ struct __attribute__((__packed__)) State {
   volatile int page_count;
   volatile int toggle_literal;
   volatile int cmd;
+  volatile int utfstate;
   int max_page;
   char url[256];
   char newurl[256];

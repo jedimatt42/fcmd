@@ -36,6 +36,7 @@ void page_clear_lines() {
   state.line_count = 1;
   state.line_offset = 0;
   state.toggle_literal = 0;
+  state.utfstate = 0;
   add_bank();
   last_line = page_get_line(1);
 }
@@ -118,6 +119,24 @@ void __attribute__((noinline)) page_from_buf(char* buf, int len) {
 
   int i = 0;
   while(i < len) {
+    // strip UTF8
+    if (state.utfstate) {
+      state.utfstate--;
+      i++;
+      continue;
+    }
+    if (0x80 & buf[i]) {
+      state.utfstate = 1;
+      if (0xC0 & buf[i]) {
+	state.utfstate++;
+      }
+      if (0xE0 & buf[i]) {
+	state.utfstate++;
+      }
+      i++;
+      continue;
+    }
+
     // if newline, then fill current line with blank, and add a line.
     if (buf[i] == 10 || last_line->length == 80) {
       for(int x = last_line->length; x < 80; x++) {
