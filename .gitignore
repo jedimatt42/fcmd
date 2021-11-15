@@ -19,3 +19,4 @@ layout.xml
 FC/BIN
 build.sh
 .ycm_extra_conf.py
+compile_commands.json

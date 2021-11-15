@@ -198,7 +198,36 @@ Only executables with a SAMS page count of 0 will be executed.
 
 If SAMS is present, then executables may load other executables with the `fc_exec` command. When this happens, new pages are allocated, and mapped in. When the executable returns to Force Command or a prior executable the pages are freed, and the previous set of pages are mapped back in.
 
-## PATH
+IF The executable sets the SAMS page request flag, then the specified number of 4k pages will be loaded into SAMS sequentially from the executable file. When complete, the flag will be updated to hold the base page number. This will be used when calling functions declared for bank switching. Use the following macro to declare a function:
+
+FC_SAMS_BANKED(bank_id, returntype, function_name, param_signature, param_list)
+
+Example:
+
+```c
+FC_SAMS_BANKED(0, int, refresh_title_screen, (int bgcolor, int fgcolor), (bgcolor, fgcolor));
+```
+
+That will declare your function:
+
+```c
+int refresh_title_screen(int bgcolor, int fgcolor);
+```
+
+and an inline wrapper to call for banked switch calls:
+
+```c
+int bank_refresh_title_screen(int bgcolor, int fgcolor);
+```
+
+Bank switching will use a trampoline routine in the cartridge rom bank 0. Calling the functions
+with the `bank_` prefix will allow normal calling. You will have to define MYBANK in your calling context so the call can capture what bank to return to when the routine is done.
+
+These routines will assume that the code in the executable is designed to load as overlay from `>A000 - >BFFF`, an 8K chunk. When paging, 2 consecutive pages will be mapped. >C000 -> >FFFF are left untouched. 
+
+SAMS executables should link `.text` segments/code into `>A000 - >BFFF`, `.data` and `.bss` segments should be linked into the remaining 16k at `>C000`. The loader will complete with the first 2 pages mapped into `>A000`, and the last 4 pages mapped into `>C000`
+
+# PATH
 
 Commands are searched for binary files PROGRAM images in disks and directories denoted by the PATH environment variable.
 
