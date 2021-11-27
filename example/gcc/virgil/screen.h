@@ -1,5 +1,4 @@
-#ifndef _SCREEN_H
-#define _SCREEN_H 1
+#pragma once
 
 #include <fc_api.h>
 
@@ -19,6 +18,4 @@ void screen_title();
 void screen_prompt(char* dst, char* prompt);
 
 extern struct DisplayInformation dinfo;
-
-#endif
 

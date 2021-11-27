@@ -23,6 +23,38 @@ int fc_main(char* args);
         return tramp args;                                            \
     }
 
+#define FC_SAMS_TRAMP *(int *)0x6082
+
+#define FC_SAMS_TRAMP_DATA *((int*)0x2000)
+
+#define FC_SAMS_BANKED(bank_id, return_type, function_name, param_signature, param_list)          \
+    return_type function_name param_signature ;                                                   \
+    static inline return_type banked_##function_name param_signature                              \
+    {                                                                                             \
+      static const int fcsams_data_##function_name[] = {                                          \
+        (int)bank_id,                                                                             \
+        (int)SAMS_CURRENT_BANK,                                                                   \
+        (int)function_name                                                                        \
+      };                                                                                          \
+      FC_SAMS_TRAMP_DATA = (int) fcsams_data_##function_name;                                     \
+      return_type (*fcstramp) param_signature = (return_type (*) param_signature) FC_SAMS_TRAMP;  \
+      return fcstramp param_list;                                                                 \
+    }                                                                                             \
+
+#define FC_SAMS_VOIDBANKED(bank_id, function_name, param_signature, param_list)          \
+    void function_name param_signature ;                                                 \
+    static inline void banked_##function_name param_signature                            \
+    {                                                                                    \
+      static const int fcsams_data_##function_name[] = {                                 \
+        (int)bank_id,                                                                    \
+        (int)SAMS_CURRENT_BANK,                                                          \
+        (int)function_name                                                               \
+      };                                                                                 \
+      FC_SAMS_TRAMP_DATA = (int) fcsams_data_##function_name;                            \
+      void (*fcstramp) param_signature = (void (*) param_signature) FC_SAMS_TRAMP;       \
+      fcstramp param_list;                                                               \
+    }                                                                                    \
+
 /*
   Device Service Routine pre-loaded entry
 */

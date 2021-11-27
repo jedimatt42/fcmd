@@ -1,5 +1,4 @@
-#ifndef _PAGE_H
-#define _PAGE_H 1
+#pragma once
 
 #define LINE_TYPE_UNKNOWN 0
 #define LINE_TYPE_NORMAL 1
@@ -23,5 +22,4 @@ void page_from_buf(char* buf, int len);
 
 struct Line* page_get_line(int idx);
 
-#endif
 

@@ -40,16 +40,17 @@ SECTIONS
     BANKSECTIONS(TOP_BANK,1)
   } >bank_rom
 
-  .data : {
+  .bss : {
+    __BSS_START = .;     /* _crt0 will initialize RAM from here to __BSS_END to 0x00 values */
+    objects/trampdata.o(.bss)
+    *(.bss);
+    __BSS_END = .;
+  } >lower_exp
+
+  .data ALIGN(2) : {
     __DATA_START = .;    /* define RAM location symbol so __LOAD_DATA can be copied from ROM */
     * (.data);
     __DATA_END = .;      /* identifies end of data for initialization routine. */
-  } >lower_exp
-
-  .bss  ALIGN(2) : {
-    __BSS_START = .;     /* _crt0 will initialize RAM from here to __BSS_END to 0x00 values */
-    *(.bss);
-    __BSS_END = .;
   } >lower_exp
 
   __STACK_TOP = 0x4000;

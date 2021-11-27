@@ -1,5 +1,4 @@
-#ifndef _READLINE_H 
-#define _READLINE_H 1
+#pragma once
 
 #include <fc_api.h>
 
@@ -8,5 +7,3 @@ void init_readline(int socket_id);
 char* readline();
 
 char* readbytes(int* len);
-
-#endif

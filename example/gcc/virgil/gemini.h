@@ -1,5 +1,4 @@
-#ifndef _GEMINI_H
-#define _GEMINI_H 1
+#pragma once
 
 struct __attribute__((__packed__)) State {
   volatile int history_id;
@@ -34,6 +33,4 @@ inline int vdp_read_status() {
   __asm__( "movb @>8802,%0" : "=rm" (status) : : "r12" );
   return status;
 }
-
-#endif
 

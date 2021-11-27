@@ -1,5 +1,4 @@
-#ifndef _KEYBOARD_H
-#define _KEYBOARD_H 1
+#pragma once
 
 void handle_keyboard();
 int read_keyboard();
@@ -10,4 +9,3 @@ int on_page_down();
 void on_back();
 void on_address();
 
-#endif

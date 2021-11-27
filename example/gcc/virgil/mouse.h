@@ -1,5 +1,4 @@
-#ifndef _MOUSE_H
-#define _MOUSE_H 1
+#pragma once
 
 #include <fc_api.h>
 
@@ -22,6 +21,4 @@ int update_mouse();
 void handle_mouse_click();
 
 void mouse_set_pointer(int p);
-
-#endif
 

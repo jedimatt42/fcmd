@@ -1,5 +1,5 @@
     DEF stramp
-    REF sdata
+    REF trampdata
 
 ; tramp data structure offsets
 TAR_BANK  EQU >0000
@@ -23,7 +23,7 @@ stramp:
     ; - caller bank
     ; - target function
     ; caller cheats and didn't adjust stack
-    mov @sdata,r13
+    mov @trampdata,r13
     ai  r10, -8                         ; consume stack space
     mov r11, *r10                       ; stash caller return address
     mov @RET_BANK(r13), @RET_BANK(r10)  ; stash caller bank
@@ -35,9 +35,9 @@ stramp:
     li  r12, >1E00                      ; sams mapper crubase
     swpb r13
     sbo 0
-    mov r13, @BOT_ADDR
+    mov r13, @BOT_ADDR                  ; map page into >A000
     inct r13
-    mov r13, @TOP_ADDR
+    mov r13, @TOP_ADDR                  ; map page+1 into >B000
     sbz 0
 
     bl  *r11                            ; call target
@@ -47,9 +47,9 @@ stramp:
     li  r12, >1E00                      ; sams mapper crubase
     swpb r13
     sbo 0
-    mov r13, @BOT_ADDR
+    mov r13, @BOT_ADDR                  ; original page into >A000
     inct r13
-    mov r13, @TOP_ADDR
+    mov r13, @TOP_ADDR                  ; map original page+1 into >B000
     sbz 0
 
     mov @RET_ADDR(r10), r11             ; restore return address

@@ -1,6 +1,6 @@
-#ifndef _ABOUT_H
-#define _ABOUT_H 1
+#pragma once
 
-void about();
+#include <fc_api.h>
 
-#endif
+FC_SAMS_VOIDBANKED(1, about, (), ());
+
