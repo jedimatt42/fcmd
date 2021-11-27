@@ -35,22 +35,23 @@ SECTIONS
     .bank0 {             /* list the set of modules in bank 0 */
       objects/api.o(.text)
       objects/b0_*.o(.text)
-      __LOAD_DATA = .;   /* .data segment is copied here so initial values can be loaded in RAM */
+      __LOAD_DATA = .;   /* .data segment is appended here by makefile for final ROM .bin */
     }
     BANKSECTIONS(TOP_BANK,1)
   } >bank_rom
 
-  .bss : {
-    __BSS_START = .;     /* _crt0 will initialize RAM from here to __BSS_END to 0x00 values */
-    objects/trampdata.o(.bss)
-    *(.bss);
-    __BSS_END = .;
-  } >lower_exp
-
-  .data ALIGN(2) : {
+  .data : {
     __DATA_START = .;    /* define RAM location symbol so __LOAD_DATA can be copied from ROM */
+    objects/trampdata.o (.data);
     * (.data);
     __DATA_END = .;      /* identifies end of data for initialization routine. */
+  } >lower_exp
+
+  /* We overflow off the end of .bss on purpose so this must go after .data */
+  .bss  ALIGN(2) : {
+    __BSS_START = .;     /* b0_crt0 will initialize RAM in here to 0x00 values */
+    *(.bss);
+    __BSS_END = .;
   } >lower_exp
 
   __STACK_TOP = 0x4000;

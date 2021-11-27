@@ -9,6 +9,12 @@
 #include "b0_sams.h"
 
 extern void cartmain(void);
+extern int __STACK_TOP;
+extern int __LOAD_DATA;
+extern int __DATA_START;
+extern int __DATA_END;
+extern int __BSS_START;
+extern int __BSS_END;
 
 #ifdef __cplusplus
 extern "C"
@@ -37,7 +43,6 @@ void _start(void)
 
   /* Create the stack before declaring any variables */
   {
-    extern int __STACK_TOP;
     __asm__("\tli sp, %0" : : "i" (&__STACK_TOP) );
   }
 
@@ -48,28 +53,23 @@ void _start(void)
     int tmp_next_page = sams_next_page;
     int tmp_total_pages = sams_total_pages;
 
+    // Initialize all block and stack allocation to zero
+    // - just blast all of lower mem-expansion, all 8k
     {
-      extern int __LOAD_DATA;
-      extern int __DATA_START;
-      extern int __DATA_END;
-      char *src = (char *)&__LOAD_DATA;
-      char *dst = (char *)&__DATA_START;
-      while (dst < (char *)&__DATA_END)
+      int *dst = (int*)0x2000;
+      while(dst < (int*)0x4000)
       {
-        *dst++ = *src++;
+        *dst++ = 0;
       }
     }
 
-    /* Init .bss section to all zeros-0x0000 */
+    // copy initial data values from ROM to .data ram segment
     {
-      extern int __BSS_START;
-      // extern int __BSS_END;
-      extern int __STACK_TOP; // assuming stack is in contiquous memory with BSS
-      char *dst = (char*)&__BSS_START;
-      // while(dst < (char*)&__BSS_END)
-      while(dst < (char*)&__STACK_TOP)
+      int *src = &__LOAD_DATA;
+      int *dst = &__DATA_START;
+      while (dst < &__DATA_END)
       {
-        *dst++ = 0;
+        *dst++ = *src++;
       }
     }
 
