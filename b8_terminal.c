@@ -9,8 +9,25 @@
 #include <conio.h>
 #include <string.h>
 
-extern unsigned char colors[];
-extern unsigned char isBold;
+const unsigned char colors[16] = {
+  COLOR_BLACK,
+  COLOR_MEDRED,
+  COLOR_MEDGREEN,
+  COLOR_DKYELLOW,
+  COLOR_DKBLUE,
+  COLOR_MAGENTA,
+  COLOR_CYAN,
+  COLOR_GRAY,
+  // now the BOLD variety
+  COLOR_GRAY,
+  COLOR_LTRED,
+  COLOR_LTGREEN,
+  COLOR_LTYELLOW,
+  COLOR_LTBLUE,
+  COLOR_DKRED, // bold magenta?
+  COLOR_CYAN, // ???
+  COLOR_WHITE
+};
 
 void resetState();
 int getParamA(int def);
@@ -33,6 +50,8 @@ void charout(unsigned char ch);
 void inc_row();
 
 #define COLOR_DEFAULT 7
+
+unsigned char isBold = 0;
 
 int stage;
 char bytestr[128];
@@ -210,28 +229,6 @@ void scrollUp(int lc) {
     inc_row();
   }
 }
-
-unsigned char isBold = 0;
-
-unsigned char colors[16] = {
-  COLOR_BLACK,
-  COLOR_MEDRED,
-  COLOR_MEDGREEN,
-  COLOR_DKYELLOW,
-  COLOR_DKBLUE,
-  COLOR_MAGENTA,
-  COLOR_CYAN,
-  COLOR_GRAY,
-  // now the BOLD variety
-  COLOR_GRAY,
-  COLOR_LTRED,
-  COLOR_LTGREEN,
-  COLOR_LTYELLOW,
-  COLOR_LTBLUE,
-  COLOR_DKRED, // bold magenta?
-  COLOR_CYAN, // ???
-  COLOR_WHITE
-};
 
 void setColors(int fore, int back) {
   bgcolor(back);

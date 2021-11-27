@@ -91,13 +91,20 @@ void onLongVolInfo(struct VolInfo* volInfo) {
   bk_tputc('\n');
 }
 
-const char* file_types[] = {
-  "DIS/FIX",
-  "DIS/VAR",
-  "INT/FIX",
-  "INT/VAR",
-  "PROGRAM",
-  "DIR"
+static const char ft_dis_fix[] = "DIS/FIX";
+static const char ft_dis_var[] = "DIS/VAR";
+static const char ft_int_fix[] = "INT/FIX";
+static const char ft_int_var[] = "INT/VAR";
+static const char ft_program[] = "PROGRAM";
+static const char ft_dir[] = "DIR";
+
+static const char* file_types[6] = {
+  ft_dis_fix,
+  ft_dis_var,
+  ft_int_fix,
+  ft_int_var,
+  ft_program,
+  ft_dir
 };
 
 void cputpad(int padding, char *str)
