@@ -20,11 +20,26 @@
 
 int loadExecutable(const char* ext, int* cmd_type);
 int loadFromPath(const char *ext, const char *entry, int* cmd_type);
-int allocAndLoad(struct DeviceServiceRoutine* dsr, int iocode, char* filename, struct AddInfo* addInfoPtr);
+int loadFlatFormat(struct DeviceServiceRoutine* dsr, int iocode, char* filename, struct AddInfo* addInfoPtr);
+int prepareMemory();
 int binLoad(struct DeviceServiceRoutine *dsr, int iocode, char *filename, struct AddInfo *addInfoPtr);
+int checkFormat(struct DeviceServiceRoutine* dsr, int iocode, char* filename, struct AddInfo* addInfoPtr);
+int loadPagedFormat(struct DeviceServiceRoutine* dsr, int iocode, char* filename, struct AddInfo* addInfoPtr);
+
 
 #define BIN 0xFCFC
 #define SCRIPT 0x0001
+
+#define FMT_ERR -1
+#define FMT_EXE 1
+#define FMT_SAMS 2
+
+struct __attribute__((__packed__)) FCProgramHeader {
+    int fcfc;
+    int sams;
+    int safe;
+    int start;
+};
 
 void handleExecutable(char *ext)
 {
@@ -131,22 +146,6 @@ int loadExecutable(const char* ext, int* cmd_type) {
     return 1;
 }
 
-/* return true if there is a problem preparing memory */
-int prepareMemory() {
-    if (sams_next_page + 6 > sams_total_pages) {
-        return 1;  // don't allow nested execution if we don't have space
-    }
-    int pageStart = bk_alloc_pages(6);
-    if (pageStart == -1) {
-        return 1; // no more pages, fail the same way
-    }
-    // should be good to map upper memory expansion to the new pages.
-    for (int i = 0; i < 6; i++) {
-        bk_map_page(pageStart + i, 0xA000 + (i * 0x1000));
-    }
-    return 0;
-}
-
 void setDsrAndPath(const char* ext, const char* entry, struct DeviceServiceRoutine** dsr, char* path) {
     char fullname[256];
     fullname[0] = 0;
@@ -200,13 +199,49 @@ int loadFromPath(const char *ext, const char *entry, int* cmd_type)
     int type = (addInfoPtr->flags & 0x03);
     if (type) {
         *cmd_type = BIN;
-        return allocAndLoad(dsr, iocode, filename, addInfoPtr);
+	int format = checkFormat(dsr, iocode, filename, addInfoPtr);
+        if (format == FMT_EXE) {
+          return loadFlatFormat(dsr, iocode, filename, addInfoPtr);
+	} else if (format == FMT_SAMS) {
+          return loadPagedFormat(dsr, iocode, filename, addInfoPtr);
+	}
+    }
+    return 1;
+}
+
+int checkFormat(struct DeviceServiceRoutine* dsr, int iocode, char* filename, struct AddInfo* addInfoPtr) {
+    if (addInfoPtr->first_sector == 0) {
+        tputs_rom("error, file is empty.\n");
+	return FMT_ERR;
+    }
+    // peek at first block FC header
+    addInfoPtr->first_sector = 0;
+    int err = bk_lvl2_input(dsr->crubase, iocode, filename, 1, addInfoPtr);
+    if (err) {
+        tputs_rom("error reading file: ");
+        bk_tputs_ram(bk_uint2hex(err));
+        bk_tputc('\n');
+        return FMT_ERR;
+    }
+    struct FCProgramHeader* header = (struct FCProgramHeader*) 0xA000;
+    vdpmemread(addInfoPtr->buffer, (char*)header, sizeof(struct FCProgramHeader));
+    if (header->fcfc != 0xFCFC) {
+        // not an FC executable
+        return FMT_ERR;
+    }
+
+    if (header->sams == 0) {
+        return FMT_EXE;
     } else {
-        return 1;
+        return FMT_SAMS;
     }
 }
 
-int allocAndLoad(struct DeviceServiceRoutine* dsr, int iocode, char* filename, struct AddInfo* addInfoPtr) {
+int loadPagedFormat(struct DeviceServiceRoutine* dsr, int iocode, char* filename, struct AddInfo* addInfoPtr) {
+    return 0;
+}
+
+int loadFlatFormat(struct DeviceServiceRoutine* dsr, int iocode, char* filename, struct AddInfo* addInfoPtr) {
     if (sams_total_pages) { // if sams exists
         if (prepareMemory()) {
             return 1;
@@ -215,16 +250,27 @@ int allocAndLoad(struct DeviceServiceRoutine* dsr, int iocode, char* filename, s
     return binLoad(dsr, iocode, filename, addInfoPtr);
 }
 
+/* return true if there is a problem preparing memory */
+int prepareMemory() {
+    if (sams_next_page + 6 > sams_total_pages) {
+        return 1;  // don't allow nested execution if we don't have space
+    }
+    int pageStart = bk_alloc_pages(6);
+    if (pageStart == -1) {
+        return 1; // no more pages, fail the same way
+    }
+    // should be good to map upper memory expansion to the new pages.
+    for (int i = 0; i < 6; i++) {
+        bk_map_page(pageStart + i, 0xA000 + (i * 0x1000));
+    }
+    return 0;
+}
+
 int binLoad(struct DeviceServiceRoutine *dsr, int iocode, char *filename, struct AddInfo *addInfoPtr)
 {
     char *cpuAddr = (char *)0xA000;
 
     int totalBlocks = addInfoPtr->first_sector;
-    if (totalBlocks == 0)
-    {
-        tputs_rom("error, file is empty.\n");
-        return 1;
-    }
     // Allow the file to be larger, but only load the first 24K.
     if (totalBlocks > 96) {
         totalBlocks = 96;
@@ -250,14 +296,6 @@ int binLoad(struct DeviceServiceRoutine *dsr, int iocode, char *filename, struct
         }
 
         vdpmemread(addInfoPtr->buffer, cpuAddr, load_size);
-
-        // If first block, check that it meets header requirements
-        // must start with 0xFCFC
-        if (blockId == 0) {
-            if (*(int *)cpuAddr != 0xFCFC) {
-                return 1;
-            }
-        }
 
         cpuAddr += load_size;
         blockId += blk_cnt;
