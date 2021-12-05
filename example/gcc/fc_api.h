@@ -27,6 +27,10 @@ int fc_main(char* args);
 
 #define FC_SAMS_TRAMP_DATA *((int*)0x2000)
 
+#ifndef SAMS_CURRENT_BANK
+#define SAMS_CURRENT_BANK 0
+#endif
+
 #define FC_SAMS_BANKED(bank_id, return_type, function_name, param_signature, param_list)          \
     return_type function_name param_signature ;                                                   \
     static inline return_type banked_##function_name param_signature                              \

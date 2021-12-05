@@ -120,7 +120,7 @@ void open_url(char* url, int push_history) {
 
   if (!fc_strcmp(url, "about:")) {
     page_clear_lines();
-    about();
+    banked_about();
     state.cmd = CMD_IDLE;
     return;
   }

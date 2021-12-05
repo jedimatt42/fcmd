@@ -33,7 +33,7 @@ objects/data.bin: $(FNAME).elf
 	$(OBJCOPY) -O binary -j .data $< objects/data.bin
 
 objects/%.page: $(FNAME).elf
-	$(OBJCOPY) -O binary -j .$(basename $@) $< $@
+	$(OBJCOPY) -O binary -j .$(shell basename $@ .page) $< $@
 	# grow the page to a round 8k
 	@dd if=/dev/null of=$@ bs=8192 seek=1
 
