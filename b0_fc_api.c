@@ -5,6 +5,8 @@ void fc_api() {
         "ai r10,-8\n\t"
         "mov r11,@6(r10)\n\t"
         "mov r10,@trampdata\n\t"
+	"sla r0,2\n\t"
+	"ai  r0,>6080\n\t"
         "mov *r0+,@4(r10)\n\t"
         "mov *r0,*r10\n\t"
         "li r0,>6000\n\t"

@@ -66,14 +66,10 @@ banks = get_api_banks()
 
 # Compose and write the api function lookup table assembly file
 with open(sys.argv[2], 'w') as api_asm:
-    api_asm.write(f"\tref\tfc_api\n")
-    api_asm.write(f"\tref\tstramp\n")
     for name in names:
         api_asm.write(f"\tref\t{name}\n")
     api_asm.write("\n")
 
-    api_asm.write(f"\tdata fc_api\n")
-    api_asm.write(f"\tdata stramp\n")
     for name in names:
         api_asm.write(f"\tdata {name},{banks[name]}\n")
 
@@ -87,7 +83,7 @@ with open(sys.argv[4], 'w') as client_api_h:
         for line in preamble.readlines():
             client_api_h.write(line)
 
-    fn = 0x6084
+    fn = 0 
     for name in names:
         # For each function define the table address
         #
@@ -95,7 +91,7 @@ with open(sys.argv[4], 'w') as client_api_h:
         def_name = f'fc_{aliases[name]}'.upper()
 
         client_api_h.write(f'#define {def_name} {hex(fn)}\n')
-        fn += 4
+        fn += 1
 
     for name in names:
         # For each function write something like:

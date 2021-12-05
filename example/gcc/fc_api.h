@@ -11,7 +11,7 @@
  */
 int fc_main(char* args);
 
-#define FC_SYS *(int *)0x6080
+#define FC_SYS *(int *)0x2000
 
 #define DECL_FC_API_CALL(index, func, return_type, arg_sig, args)     \
     static inline return_type func arg_sig                            \
@@ -23,13 +23,8 @@ int fc_main(char* args);
         return tramp args;                                            \
     }
 
-#define FC_SAMS_TRAMP *(int *)0x6082
-
-#define FC_SAMS_TRAMP_DATA *((int*)0x2000)
-
-#ifndef SAMS_CURRENT_BANK
-#define SAMS_CURRENT_BANK 0
-#endif
+#define FC_SAMS_TRAMP_DATA *((int*)0x2002)
+#define FC_SAMS_TRAMP *(int *)0x2004
 
 #define FC_SAMS_BANKED(bank_id, return_type, function_name, param_signature, param_list)          \
     return_type function_name param_signature ;                                                   \
@@ -277,99 +272,99 @@ struct __attribute__((__packed__)) ListEntry {
 // memcpy is special, it is in all bank of the cartridge
 extern void* memcpy(void* dest, const void* src, int count);
 
-#define FC_TPUTC 0x6084
-#define FC_TPUTS 0x6088
-#define FC_GETSTR 0x608c
-#define FC_KSCAN 0x6090
-#define FC_SAMS_MAP_PAGE 0x6094
-#define FC_SAMS_ALLOC_PAGES 0x6098
-#define FC_SAMS_FREE_PAGES 0x609c
-#define FC_SYS_INFO 0x60a0
-#define FC_DISPLAY_INFO 0x60a4
-#define FC_SAMS_INFO 0x60a8
-#define FC_VARS_GET 0x60ac
-#define FC_VARS_SET 0x60b0
-#define FC_EXEC 0x60b4
-#define FC_DSR_EA5LOAD 0x60b8
-#define FC_DSR_OPEN 0x60bc
-#define FC_DSR_CLOSE 0x60c0
-#define FC_DSR_READ 0x60c4
-#define FC_DSR_WRITE 0x60c8
-#define FC_DSR_STATUS 0x60cc
-#define FC_DSR_RESET 0x60d0
-#define FC_DSR_DELETE 0x60d4
-#define FC_DSR_CATALOG 0x60d8
-#define FC_PATH2IOCODE 0x60dc
-#define FC_LVL2_INPUT 0x60e0
-#define FC_LVL2_OUTPUT 0x60e4
-#define FC_LVL2_PROTECT 0x60e8
-#define FC_LVL2_RENAME 0x60ec
-#define FC_LVL2_SETDIR 0x60f0
-#define FC_LVL2_MKDIR 0x60f4
-#define FC_LVL2_RMDIR 0x60f8
-#define FC_LVL2_RENDIR 0x60fc
-#define FC_TCP_CONNECT 0x6100
-#define FC_TCP_CLOSE 0x6104
-#define FC_TCP_READ_SOCKET 0x6108
-#define FC_TCP_SEND_CHARS 0x610c
-#define FC_TIPI_ON 0x6110
-#define FC_TIPI_OFF 0x6114
-#define FC_TIPI_SENDMSG 0x6118
-#define FC_TIPI_RECVMSG 0x611c
-#define FC_DATETIME 0x6120
-#define FC_FIND_DSR 0x6124
-#define FC_PARSE_PATH_PARAM 0x6128
-#define FC_UINT2STR 0x612c
-#define FC_UINT2HEX 0x6130
-#define FC_ATOI 0x6134
-#define FC_HTOI 0x6138
-#define FC_STRCPY 0x613c
-#define FC_STRNCPY 0x6140
-#define FC_STRCAT 0x6144
-#define FC_STRTOK 0x6148
-#define FC_STRTOKPEEK 0x614c
-#define FC_STRLEN 0x6150
-#define FC_STRCMP 0x6154
-#define FC_STRCMPI 0x6158
-#define FC_INDEXOF 0x615c
-#define FC_LINDEXOF 0x6160
-#define FC_STR_STARTSWITH 0x6164
-#define FC_STR_ENDSWITH 0x6168
-#define FC_BASICTOCSTR 0x616c
-#define FC_STRSET 0x6170
-#define FC_NEXT_TOKEN 0x6174
-#define FC_BEEP 0x6178
-#define FC_HONK 0x617c
-#define FC_SET_IDENTIFY_HOOK 0x6180
-#define FC_VDP_SETCHAR 0x6184
-#define FC_VDP_GET_CURSOR_ADDR 0x6188
-#define FC_UI_DROP_DOWN 0x618c
-#define FC_UI_GOTOXY 0x6190
-#define FC_SPEECH_RESET 0x6194
-#define FC_DETECT_SPEECH 0x6198
-#define FC_SAY_VOCAB 0x619c
-#define FC_SAY_DATA 0x61a0
-#define FC_SPEECH_START 0x61a4
-#define FC_SPEECH_CONTINUE 0x61a8
-#define FC_SPEECH_WAIT 0x61ac
-#define FC_TIPI_MOUSE 0x61b0
-#define FC_TIPI_MOUSE_MOVE 0x61b4
-#define FC_TIPI_MOUSE_ENABLE 0x61b8
-#define FC_TIPI_MOUSE_DISABLE 0x61bc
-#define FC_TLS_CONNECT 0x61c0
-#define FC_TLS_CLOSE 0x61c4
-#define FC_TLS_READ_SOCKET 0x61c8
-#define FC_TLS_SEND_CHARS 0x61cc
-#define FC_INIT_SOCKET_BUFFER 0x61d0
-#define FC_READLINE 0x61d4
-#define FC_READSTREAM 0x61d8
-#define FC_LIST_INIT 0x61dc
-#define FC_LIST_PUSH 0x61e0
-#define FC_LIST_POP 0x61e4
-#define FC_LIST_GET 0x61e8
-#define FC_TEXTCOLOR 0x61ec
-#define FC_BGCOLOR 0x61f0
-#define FC_BORDERCOLOR 0x61f4
+#define FC_TPUTC 0x0
+#define FC_TPUTS 0x1
+#define FC_GETSTR 0x2
+#define FC_KSCAN 0x3
+#define FC_SAMS_MAP_PAGE 0x4
+#define FC_SAMS_ALLOC_PAGES 0x5
+#define FC_SAMS_FREE_PAGES 0x6
+#define FC_SYS_INFO 0x7
+#define FC_DISPLAY_INFO 0x8
+#define FC_SAMS_INFO 0x9
+#define FC_VARS_GET 0xa
+#define FC_VARS_SET 0xb
+#define FC_EXEC 0xc
+#define FC_DSR_EA5LOAD 0xd
+#define FC_DSR_OPEN 0xe
+#define FC_DSR_CLOSE 0xf
+#define FC_DSR_READ 0x10
+#define FC_DSR_WRITE 0x11
+#define FC_DSR_STATUS 0x12
+#define FC_DSR_RESET 0x13
+#define FC_DSR_DELETE 0x14
+#define FC_DSR_CATALOG 0x15
+#define FC_PATH2IOCODE 0x16
+#define FC_LVL2_INPUT 0x17
+#define FC_LVL2_OUTPUT 0x18
+#define FC_LVL2_PROTECT 0x19
+#define FC_LVL2_RENAME 0x1a
+#define FC_LVL2_SETDIR 0x1b
+#define FC_LVL2_MKDIR 0x1c
+#define FC_LVL2_RMDIR 0x1d
+#define FC_LVL2_RENDIR 0x1e
+#define FC_TCP_CONNECT 0x1f
+#define FC_TCP_CLOSE 0x20
+#define FC_TCP_READ_SOCKET 0x21
+#define FC_TCP_SEND_CHARS 0x22
+#define FC_TIPI_ON 0x23
+#define FC_TIPI_OFF 0x24
+#define FC_TIPI_SENDMSG 0x25
+#define FC_TIPI_RECVMSG 0x26
+#define FC_DATETIME 0x27
+#define FC_FIND_DSR 0x28
+#define FC_PARSE_PATH_PARAM 0x29
+#define FC_UINT2STR 0x2a
+#define FC_UINT2HEX 0x2b
+#define FC_ATOI 0x2c
+#define FC_HTOI 0x2d
+#define FC_STRCPY 0x2e
+#define FC_STRNCPY 0x2f
+#define FC_STRCAT 0x30
+#define FC_STRTOK 0x31
+#define FC_STRTOKPEEK 0x32
+#define FC_STRLEN 0x33
+#define FC_STRCMP 0x34
+#define FC_STRCMPI 0x35
+#define FC_INDEXOF 0x36
+#define FC_LINDEXOF 0x37
+#define FC_STR_STARTSWITH 0x38
+#define FC_STR_ENDSWITH 0x39
+#define FC_BASICTOCSTR 0x3a
+#define FC_STRSET 0x3b
+#define FC_NEXT_TOKEN 0x3c
+#define FC_BEEP 0x3d
+#define FC_HONK 0x3e
+#define FC_SET_IDENTIFY_HOOK 0x3f
+#define FC_VDP_SETCHAR 0x40
+#define FC_VDP_GET_CURSOR_ADDR 0x41
+#define FC_UI_DROP_DOWN 0x42
+#define FC_UI_GOTOXY 0x43
+#define FC_SPEECH_RESET 0x44
+#define FC_DETECT_SPEECH 0x45
+#define FC_SAY_VOCAB 0x46
+#define FC_SAY_DATA 0x47
+#define FC_SPEECH_START 0x48
+#define FC_SPEECH_CONTINUE 0x49
+#define FC_SPEECH_WAIT 0x4a
+#define FC_TIPI_MOUSE 0x4b
+#define FC_TIPI_MOUSE_MOVE 0x4c
+#define FC_TIPI_MOUSE_ENABLE 0x4d
+#define FC_TIPI_MOUSE_DISABLE 0x4e
+#define FC_TLS_CONNECT 0x4f
+#define FC_TLS_CLOSE 0x50
+#define FC_TLS_READ_SOCKET 0x51
+#define FC_TLS_SEND_CHARS 0x52
+#define FC_INIT_SOCKET_BUFFER 0x53
+#define FC_READLINE 0x54
+#define FC_READSTREAM 0x55
+#define FC_LIST_INIT 0x56
+#define FC_LIST_PUSH 0x57
+#define FC_LIST_POP 0x58
+#define FC_LIST_GET 0x59
+#define FC_TEXTCOLOR 0x5a
+#define FC_BGCOLOR 0x5b
+#define FC_BORDERCOLOR 0x5c
 
 // function: void fc_tputc(int c)
 DECL_FC_API_CALL(FC_TPUTC, fc_tputc, void, (int c), (c))

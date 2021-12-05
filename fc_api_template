@@ -11,7 +11,7 @@
  */
 int fc_main(char* args);
 
-#define FC_SYS *(int *)0x6080
+#define FC_SYS *(int *)0x2000
 
 #define DECL_FC_API_CALL(index, func, return_type, arg_sig, args)     \
     static inline return_type func arg_sig                            \
@@ -23,9 +23,8 @@ int fc_main(char* args);
         return tramp args;                                            \
     }
 
-#define FC_SAMS_TRAMP *(int *)0x6082
-
-#define FC_SAMS_TRAMP_DATA *((int*)0x2000)
+#define FC_SAMS_TRAMP_DATA *((int*)0x2002)
+#define FC_SAMS_TRAMP *(int *)0x2004
 
 #define FC_SAMS_BANKED(bank_id, return_type, function_name, param_signature, param_list)          \
     return_type function_name param_signature ;                                                   \
