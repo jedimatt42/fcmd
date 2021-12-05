@@ -1,7 +1,7 @@
 MEMORY
 {
   samsbanked (rx) : ORIGIN = 0xA000, LENGTH = 0x2000 /* 8k code space */
-  ram        (wx) : ORIGIN = 0xC000, LENGTH = 0x6000 /* 16k upper ram */
+  ram        (wx) : ORIGIN = 0xC000, LENGTH = 0x4000 /* 16k upper ram */
 }
 
 /* memcpy will be called by the compiler in some implicit situations. */

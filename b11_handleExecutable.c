@@ -156,6 +156,15 @@ void setDsrAndPath(const char* ext, const char* entry, struct DeviceServiceRouti
     bk_parsePathParam(fullname, dsr, path, PR_REQUIRED);
 }
 
+void clearAddInfo(struct AddInfo* addInfoPtr) {
+    addInfoPtr->first_sector = 0;
+    addInfoPtr->eof_offset = 0;
+    addInfoPtr->flags = 0;
+    addInfoPtr->rec_length = 0;
+    addInfoPtr->records = 0;
+    addInfoPtr->recs_per_sec = 0;
+}
+
 int loadFromPath(const char *ext, const char *entry, int* cmd_type)
 {
     struct DeviceServiceRoutine *dsr = 0;
@@ -182,12 +191,7 @@ int loadFromPath(const char *ext, const char *entry, int* cmd_type)
 
     // AddInfo must be in scratchpad
     struct AddInfo *addInfoPtr = (struct AddInfo *)0x8320;
-    addInfoPtr->first_sector = 0;
-    addInfoPtr->eof_offset = 0;
-    addInfoPtr->flags = 0;
-    addInfoPtr->rec_length = 0;
-    addInfoPtr->records = 0;
-    addInfoPtr->recs_per_sec = 0;
+    clearAddInfo(addInfoPtr);
 
     unsigned int err = bk_lvl2_input(dsr->crubase, iocode, filename, 0, addInfoPtr);
     if (err)
@@ -223,8 +227,10 @@ int checkFormat(struct DeviceServiceRoutine* dsr, int iocode, char* filename, st
         bk_tputc('\n');
         return FMT_ERR;
     }
-    struct FCProgramHeader* header = (struct FCProgramHeader*) 0xA000;
+    // just after the AddInfo in scratchpad
+    struct FCProgramHeader* header = (struct FCProgramHeader*) 0x832A;
     vdpmemread(addInfoPtr->buffer, (char*)header, sizeof(struct FCProgramHeader));
+
     if (header->fcfc != 0xFCFC) {
         // not an FC executable
         return FMT_ERR;
@@ -239,15 +245,6 @@ int checkFormat(struct DeviceServiceRoutine* dsr, int iocode, char* filename, st
 
 int loadPagedFormat(struct DeviceServiceRoutine* dsr, int iocode, char* filename, struct AddInfo* addInfoPtr) {
     return 0;
-}
-
-int loadFlatFormat(struct DeviceServiceRoutine* dsr, int iocode, char* filename, struct AddInfo* addInfoPtr) {
-    if (sams_total_pages) { // if sams exists
-        if (prepareMemory()) {
-            return 1;
-        }
-    }
-    return binLoad(dsr, iocode, filename, addInfoPtr);
 }
 
 /* return true if there is a problem preparing memory */
@@ -266,9 +263,18 @@ int prepareMemory() {
     return 0;
 }
 
-int binLoad(struct DeviceServiceRoutine *dsr, int iocode, char *filename, struct AddInfo *addInfoPtr)
+int loadFlatFormat(struct DeviceServiceRoutine *dsr, int iocode, char *filename, struct AddInfo *addInfoPtr)
 {
+    if (sams_total_pages) { // if sams exists
+        if (prepareMemory()) {
+            return 1;
+        }
+    }
     char *cpuAddr = (char *)0xA000;
+
+    // need to repair ?addInfo? to state before reading the first block
+    clearAddInfo(addInfoPtr);
+    bk_lvl2_input(dsr->crubase, iocode, filename, 0, addInfoPtr);
 
     int totalBlocks = addInfoPtr->first_sector;
     // Allow the file to be larger, but only load the first 24K.

@@ -19,7 +19,6 @@ else
   cp example/gcc/telnet/TELNET $CLASSIC99_DSK1_DIR
   cp example/gcc/hello/HELLO $CLASSIC99_DSK1_DIR
   cp example/gcc/charset/CHARSET $CLASSIC99_DSK1_DIR
-  cp example/gcc/ntscpal/NTSCPAL $CLASSIC99_DSK1_DIR
   cp example/gcc/say/SAY $CLASSIC99_DSK1_DIR
   cp example/gcc/say/SAMPLE $CLASSIC99_DSK1_DIR
   cp example/gcc/virgil/VIRGIL99 $CLASSIC99_DSK1_DIR

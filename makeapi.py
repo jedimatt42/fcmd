@@ -87,7 +87,7 @@ with open(sys.argv[4], 'w') as client_api_h:
         for line in preamble.readlines():
             client_api_h.write(line)
 
-    fn = 0x6082
+    fn = 0x6084
     for name in names:
         # For each function define the table address
         #
