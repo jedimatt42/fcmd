@@ -1,4 +1,5 @@
 #include "banking.h"
+#include "procinfo.h"
 
 void fc_api();
 void stramp();
@@ -11,4 +12,7 @@ int trampdata = !0;
 
 // address of sams trampoline routine
 int api_stramp = (int)stramp;
+
+// current process info
+struct ProcInfo* procInfoPtr = (struct ProcInfo*) 0xffff;
 

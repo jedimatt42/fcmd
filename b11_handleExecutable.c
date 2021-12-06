@@ -15,6 +15,7 @@
 #include "b0_sams.h"
 #include "b8_setupScreen.h"
 #include "b0_runScript.h"
+#include "procinfo.h"
 #include <vdp.h>
 #include <conio.h>
 
@@ -22,7 +23,6 @@ int loadExecutable(const char* ext, int* cmd_type);
 int loadFromPath(const char *ext, const char *entry, int* cmd_type);
 int loadFlatFormat(struct DeviceServiceRoutine* dsr, int iocode, char* filename, struct AddInfo* addInfoPtr);
 int prepareMemory();
-int binLoad(struct DeviceServiceRoutine *dsr, int iocode, char *filename, struct AddInfo *addInfoPtr);
 int checkFormat(struct DeviceServiceRoutine* dsr, int iocode, char* filename, struct AddInfo* addInfoPtr);
 int loadPagedFormat(struct DeviceServiceRoutine* dsr, int iocode, char* filename, struct AddInfo* addInfoPtr);
 
@@ -41,15 +41,26 @@ struct __attribute__((__packed__)) FCProgramHeader {
     int start;
 };
 
+void popProcInfo() {
+    procInfoPtr = procInfoPtr->prev;    
+}
+
 void handleExecutable(char *ext)
 {
     int cmd_type = 0;
+
+    struct ProcInfo procInfo;
+    procInfo.prev = procInfoPtr;
+    procInfo.base_page = 0;
+    procInfoPtr = &procInfo;
+
     int err = loadExecutable(ext, &cmd_type);
 
     if (err) {
         tputs_rom("unknown command: ");
         bk_tputs_ram(ext);
         bk_tputc('\n');
+	popProcInfo();
         return;
     }
 
@@ -88,6 +99,7 @@ void handleExecutable(char *ext)
             }
         }
     }
+    popProcInfo();
 }
 
 char* token_cursor(char* dst, char* str, int delim) {
@@ -253,6 +265,7 @@ int prepareMemory() {
         return 1;  // don't allow nested execution if we don't have space
     }
     int pageStart = bk_alloc_pages(6);
+    procInfoPtr->base_page = pageStart;
     if (pageStart == -1) {
         return 1; // no more pages, fail the same way
     }
