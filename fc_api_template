@@ -25,16 +25,19 @@ int fc_main(char* args);
 
 #define FC_SAMS_TRAMP_DATA *((int*)0x2002)
 #define FC_SAMS_TRAMP *(int *)0x2004
+#define FC_PROC_INFO *(int *)0x2006
 
 #define FC_SAMS_BANKED(bank_id, return_type, function_name, param_signature, param_list)          \
     return_type function_name param_signature ;                                                   \
     static inline return_type banked_##function_name param_signature                              \
     {                                                                                             \
-      static const int fcsams_data_##function_name[] = {                                          \
+      static int fcsams_data_##function_name[] = {                                                \
         (int)bank_id,                                                                             \
         (int)SAMS_CURRENT_BANK,                                                                   \
         (int)function_name                                                                        \
       };                                                                                          \
+      fcsams_data_##function_name[0] += FC_PROC_INFO;                                             \
+      fcsams_data_##function_name[1] += FC_PROC_INFO;                                             \
       FC_SAMS_TRAMP_DATA = (int) fcsams_data_##function_name;                                     \
       return_type (*fcstramp) param_signature = (return_type (*) param_signature) FC_SAMS_TRAMP;  \
       return fcstramp param_list;                                                                 \
@@ -44,11 +47,13 @@ int fc_main(char* args);
     void function_name param_signature ;                                                 \
     static inline void banked_##function_name param_signature                            \
     {                                                                                    \
-      static const int fcsams_data_##function_name[] = {                                 \
+      static int fcsams_data_##function_name[] = {                                       \
         (int)bank_id,                                                                    \
         (int)SAMS_CURRENT_BANK,                                                          \
         (int)function_name                                                               \
       };                                                                                 \
+      fcsams_data_##function_name[0] += FC_PROC_INFO;                                    \
+      fcsams_data_##function_name[1] += FC_PROC_INFO;                                    \
       FC_SAMS_TRAMP_DATA = (int) fcsams_data_##function_name;                            \
       void (*fcstramp) param_signature = (void (*) param_signature) FC_SAMS_TRAMP;       \
       fcstramp param_list;                                                               \
