@@ -1,5 +1,6 @@
     DEF stramp
     REF trampdata
+    REF procInfoPtr
 
 ; tramp data structure offsets
 TAR_BANK  EQU >0000
@@ -29,26 +30,32 @@ stramp:
     mov @RET_BANK(r13), @RET_BANK(r10)  ; stash caller bank
     mov r13, @STASH_R13(r10)            ; stash r13 so we can use it.
     mov @TAR_ADDR(r13), r11             ; load target address
+    mov @procInfoPtr, r12               ; bank ids are relative to process
     mov *r13, r13                       ; load target bank
+    sla r13,1                           ; page by 8k chunks, so multiply page id by 2
+    a   *r12, r13                       ; add the proc base page offset
 
     ; switch to target bank
     li  r12, >1E00                      ; sams mapper crubase
     swpb r13
     sbo 0
     mov r13, @BOT_ADDR                  ; map page into >A000
-    inct r13
+    ai  r13, >0100
     mov r13, @TOP_ADDR                  ; map page+1 into >B000
     sbz 0
 
     bl  *r11                            ; call target
     mov @RET_BANK(r10), r13             ; load the return bank
+    mov @procInfoPtr, r12               ; get the page offset data
+    sla r13,1                           ; bank id for 8k chunks.
+    a   *r12, r13                       ; add proc page offset
 
     ; switch back to source bank
     li  r12, >1E00                      ; sams mapper crubase
     swpb r13
     sbo 0
     mov r13, @BOT_ADDR                  ; original page into >A000
-    inct r13
+    ai  r13, >0100
     mov r13, @TOP_ADDR                  ; map original page+1 into >B000
     sbz 0
 
