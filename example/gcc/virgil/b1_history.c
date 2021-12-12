@@ -10,14 +10,14 @@ void map_history() {
   fc_sams_map_page(state.history_id, SAMS_ADDR);
 }
 
-void init_history() {
+void b1_init_history() {
   state.history_id = fc_sams_alloc_pages(1);
   map_history();
   fc_strset((char*)SAMS_ADDR, 0, 0x1000); 
   fc_list_init(HISTORY, (char*)(SAMS_ADDR + 8), (char*)(SAMS_ADDR + 0x0FFF));
 }
 
-void history_add_link(char* link) {
+void b1_history_add_link(char* link) {
   // page lines and history are banked into same address space
   // copy it to stack temporarily
   char tmp[80];
@@ -30,7 +30,7 @@ void history_add_link(char* link) {
 }
 
 // dst must not be in top address bank
-void history_get_prev(char* dst) {
+void b1_history_get_prev(char* dst) {
   map_history();
   fc_list_pop(HISTORY, dst, 256);
   struct ListEntry* entry = fc_list_get(HISTORY, 0);

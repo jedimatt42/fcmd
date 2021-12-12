@@ -1,5 +1,8 @@
 #pragma once
 
+#include "virgil/about.h"
+#include <fc_api.h>
+
 struct __attribute__((__packed__)) State {
   volatile int history_id;
   volatile int base_id;
@@ -25,8 +28,8 @@ struct __attribute__((__packed__)) State {
 
 extern struct State state;
 
-void open_url(char* url, int push_history);
-void process_input();
+FC_SAMS_VOIDBANKED(0, open_url, (char* url, int push_history), (url, push_history));
+FC_SAMS_VOIDBANKED(0, process_input, (), ());
 
 inline int vdp_read_status() {
   int status;

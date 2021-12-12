@@ -10,12 +10,12 @@
 #define BR 0xC7
 #define BS 0xC4
 
-void init_screen();
-void screen_scroll_to(int lineno);
-void screen_redraw();
-void screen_status();
-void screen_title();
-void screen_prompt(char* dst, char* prompt);
+FC_SAMS_VOIDBANKED(1, init_screen, (), ());
+FC_SAMS_VOIDBANKED(1, screen_scroll_to, (int lineno), (lineno));
+FC_SAMS_VOIDBANKED(1, screen_redraw, (), ());
+FC_SAMS_VOIDBANKED(1, screen_status, (), ());
+FC_SAMS_VOIDBANKED(1, screen_title, (), ());
+FC_SAMS_VOIDBANKED(1, screen_prompt, (char* dst, char* prompt), (dst, prompt));
 
 extern struct DisplayInformation dinfo;
 

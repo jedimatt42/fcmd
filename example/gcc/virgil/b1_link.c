@@ -3,7 +3,7 @@
 
 static char buf[256];
 
-char* link_url(char* line, int* length) {
+char* b1_link_url(char* line, int* length) {
   int i = 2;
   // format is '=>' whitespace url whitespace label
   while(line[i] == ' ' || line[i] == '\t') {
@@ -24,7 +24,7 @@ static int is_whitespace(char c) {
   return c == ' ' || c == '\t' || c == '\n' || c == '\r';
 }
 
-char* link_label(char* line, int* length) {
+char* b1_link_label(char* line, int* length) {
   buf[0] = '=';
   buf[1] = '>';
   buf[2] = ' ';
@@ -59,7 +59,7 @@ char* link_label(char* line, int* length) {
   return buf;
 }
 
-void update_full_url(char* dst, char* url) {
+void b1_update_full_url(char* dst, char* url) {
   char tmp[256];
   if (fc_str_startswith(url, "gemini://")) {
     // a little wasteful, but good enough.
@@ -101,7 +101,7 @@ void update_full_url(char* dst, char* url) {
   fc_strcpy(dst, tmp);
 }
 
-void normalize_url(char* url) {
+void b1_normalize_url(char* url) {
   char dst[256];
 
   int u = 0;
@@ -132,7 +132,7 @@ void normalize_url(char* url) {
   fc_strncpy(url, dst, 256);
 }
 
-void set_hostname_and_port(char* url, char* hostname, char* port) {
+void b1_set_hostname_and_port(char* url, char* hostname, char* port) {
   hostname[0] = 0;
   fc_strcpy(port, "1965");
   if (fc_str_startswith(url, "gemini://")) {

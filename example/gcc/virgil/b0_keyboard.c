@@ -6,7 +6,7 @@
 #include "history.h"
 #include "link.h"
 
-int read_keyboard() {
+int b0_read_keyboard() {
   unsigned int key = fc_kscan(5);
   return key;
   /*
@@ -18,7 +18,7 @@ int read_keyboard() {
   */
 }
 
-int on_key_down() {
+int b0_on_key_down() {
   if (state.line_count - state.line_offset > 28) {
     state.line_offset++;
     return 1;
@@ -26,7 +26,7 @@ int on_key_down() {
   return 0;
 }
 
-int on_key_up() {
+int b0_on_key_up() {
   if (state.line_offset > 0) {
     state.line_offset--;
     return 1;
@@ -34,7 +34,7 @@ int on_key_up() {
   return 0;
 }
 
-int on_page_down() {
+int b0_on_page_down() {
   if (state.line_count - state.line_offset > 28) {
     state.line_offset += 28;
     if (state.line_count - state.line_offset < 28) {
@@ -45,7 +45,7 @@ int on_page_down() {
   return 0;
 }
 
-int on_page_up() {
+int b0_on_page_up() {
   if (state.line_offset > 0) {
     state.line_offset -= 28;
     if (state.line_offset < 0) {
@@ -65,14 +65,14 @@ int on_stop() {
   }
 }
 
-void on_back() {
+void b0_on_back() {
   char tmp[80];
   history_get_prev(tmp);
   fc_strcpy(state.newurl, tmp);
   state.cmd = CMD_RELOAD_NOHIST;
 }
 
-void on_address() {
+void b0_on_address() {
   char tmp[80];
   fc_strset(tmp, 0, 80);
   fc_strcpy(tmp, state.url);
@@ -85,7 +85,7 @@ void on_address() {
   }
 }
 
-void handle_keyboard() {
+void b0_handle_keyboard() {
   int redraw = 0;
   int key = read_keyboard();
   switch(key) {

@@ -8,11 +8,11 @@ struct SocketBuffer socket_buf;
 #define LASTLINE ((char*) 0xE000)
 
 
-void init_readline(int socket_id) {
+void b0_init_readline(int socket_id) {
     fc_init_socket_buffer(&socket_buf, TLS, socket_id);
 }
 
-char* readline() {
+char* b0_readline() {
     // clear the line buffer.
     int space = 4096;
 
@@ -46,7 +46,7 @@ char* readline() {
     return 0;
 }
 
-char* readbytes(int* len) {
+char* b0_readbytes(int* len) {
     *len = fc_readstream(&socket_buf, LASTLINE, 512);
     return LASTLINE;
 }

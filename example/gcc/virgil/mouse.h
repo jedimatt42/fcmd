@@ -12,13 +12,13 @@
 
 extern int mouse_active;
 
-void init_mouse();
-
 extern struct MouseData md;
 
-int update_mouse();
+FC_SAMS_VOIDBANKED(0, init_mouse, (), ());
 
-void handle_mouse_click();
+FC_SAMS_BANKED(0, int, update_mouse, (), ());
 
-void mouse_set_pointer(int p);
+FC_SAMS_VOIDBANKED(0, handle_mouse_click, (), ());
+
+FC_SAMS_VOIDBANKED(0, mouse_set_pointer, (int p), (p));
 

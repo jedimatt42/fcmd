@@ -36,8 +36,8 @@ int fc_main(char* args) {
   fc_strset((char*)&state, 0, sizeof(struct State));
   fc_strncpy(state.newurl, args, 256);
 
-  init_mouse();
   init_history();
+  init_mouse();
   init_page();
   init_screen();
 
@@ -95,7 +95,7 @@ int must_redraw(int prev_lc, int prev_lo, int prev_cmd, struct State* state) {
   return 0;
 }
 
-void process_input() {
+void b0_process_input() {
   handle_keyboard();
   int click = update_mouse();
   if (click & MB_LEFT) {
@@ -108,7 +108,7 @@ void on_exit() {
   fc_sams_free_pages(state.page_count + 1 /* 1 for history */);
 }
 
-void open_url(char* url, int push_history) {
+void b0_open_url(char* url, int push_history) {
   state.cmd = CMD_IDLE;
   state.error[0] = 0;
   char hostname[80];
@@ -120,7 +120,7 @@ void open_url(char* url, int push_history) {
 
   if (!fc_strcmp(url, "about:")) {
     page_clear_lines();
-    banked_about();
+    about();
     state.cmd = CMD_IDLE;
     return;
   }

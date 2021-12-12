@@ -25,7 +25,7 @@ struct SamsInformation sams_info;
 
 int vdp_strcpy(int vdpaddr, char* str, int limit);
 
-void init_screen() {
+void b1_init_screen() {
   fc_display_info(&dinfo);
   // use CLS after setting color to force border and all 
   // attributes.
@@ -34,7 +34,7 @@ void init_screen() {
   screen_status();
 }
 
-void screen_title() {
+void b1_screen_title() {
   fc_sams_info(&sams_info);
   fc_ui_gotoxy(1, 1);
   vdp_memset(dinfo.colorAddr, CBLACK_ON_GREEN, 80);
@@ -83,7 +83,7 @@ void screen_title() {
   vdp_memset(dinfo.colorAddr, CBLACK_ON_GREEN, 80);
 } 
 
-void screen_status() {
+void b1_screen_status() {
   screen_title();
   vdp_memset(dinfo.colorAddr + XYOFF(1,30), CBLACK_ON_GREEN, 80);
   int addr = dinfo.imageAddr + XYOFF(1,30);
@@ -110,13 +110,13 @@ void screen_status() {
   vdp_strcpy(addr, intstr, 5);
 }
 
-void screen_scroll_to(int lineno) {
+void b1_screen_scroll_to(int lineno) {
   if (lineno < state.line_count) {
     state.line_offset = lineno;
   }
 }
 
-void screen_redraw() {
+void b1_screen_redraw() {
   int limit = state.line_count - state.line_offset;
   limit = limit < 28 ? limit : 28;
   for(int i = 0; i < limit; i++) {
@@ -157,7 +157,7 @@ void screen_redraw() {
   screen_status();
 }
 
-void screen_prompt(char* dst, char* prompt) {
+void b1_screen_prompt(char* dst, char* prompt) {
   fc_tipi_mouse_disable();
   fc_ui_gotoxy(1, 2);
   vdp_memset(dinfo.imageAddr + 80, ' ', 80 * 3);
