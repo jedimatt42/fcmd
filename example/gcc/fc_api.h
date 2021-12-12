@@ -27,10 +27,10 @@ int fc_main(char* args);
 #define FC_SAMS_TRAMP *(int *)0x2004
 
 #define FC_SAMS_BANKED(bank_id, return_type, function_name, param_signature, param_list)          \
-    return_type function_name param_signature ;                                                   \
-    static inline return_type b##bank_id##_##function_name param_signature                        \
+    static inline return_type function_name param_signature                                       \
     {                                                                                             \
-      static const int fcsams_data_##function_name[] = {                                                \
+      return_type b##bank_id##_##function_name param_signature ;                                  \
+      static const int fcsams_data_##function_name[] = {                                          \
         (int)bank_id,                                                                             \
         (int)SAMS_CURRENT_BANK,                                                                   \
         (int)function_name                                                                        \
@@ -41,10 +41,10 @@ int fc_main(char* args);
     }                                                                                             \
 
 #define FC_SAMS_VOIDBANKED(bank_id, function_name, param_signature, param_list)          \
-    void function_name param_signature ;                                                 \
-    static inline void b##bank_id##_##function_name param_signature                      \
+    static inline void function_name param_signature                                     \
     {                                                                                    \
-      static const int fcsams_data_##function_name[] = {                                       \
+      void b##bank_id##_##function_name param_signature ;                                \
+      static const int fcsams_data_##function_name[] = {                                 \
         (int)bank_id,                                                                    \
         (int)SAMS_CURRENT_BANK,                                                          \
         (int)function_name                                                               \
