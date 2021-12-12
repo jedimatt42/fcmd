@@ -6,7 +6,7 @@
 #include "history.h"
 #include "link.h"
 
-int b0_read_keyboard() {
+int FC_SAMS(0,read_keyboard()) {
   unsigned int key = fc_kscan(5);
   return key;
   /*
@@ -18,7 +18,7 @@ int b0_read_keyboard() {
   */
 }
 
-int b0_on_key_down() {
+int FC_SAMS(0,on_key_down()) {
   if (state.line_count - state.line_offset > 28) {
     state.line_offset++;
     return 1;
@@ -26,7 +26,7 @@ int b0_on_key_down() {
   return 0;
 }
 
-int b0_on_key_up() {
+int FC_SAMS(0,on_key_up()) {
   if (state.line_offset > 0) {
     state.line_offset--;
     return 1;
@@ -34,7 +34,7 @@ int b0_on_key_up() {
   return 0;
 }
 
-int b0_on_page_down() {
+int FC_SAMS(0,on_page_down()) {
   if (state.line_count - state.line_offset > 28) {
     state.line_offset += 28;
     if (state.line_count - state.line_offset < 28) {
@@ -45,7 +45,7 @@ int b0_on_page_down() {
   return 0;
 }
 
-int b0_on_page_up() {
+int FC_SAMS(0,on_page_up()) {
   if (state.line_offset > 0) {
     state.line_offset -= 28;
     if (state.line_offset < 0) {
@@ -65,14 +65,14 @@ int on_stop() {
   }
 }
 
-void b0_on_back() {
+void FC_SAMS(0,on_back()) {
   char tmp[80];
   history_get_prev(tmp);
   fc_strcpy(state.newurl, tmp);
   state.cmd = CMD_RELOAD_NOHIST;
 }
 
-void b0_on_address() {
+void FC_SAMS(0,on_address()) {
   char tmp[80];
   fc_strset(tmp, 0, 80);
   fc_strcpy(tmp, state.url);
@@ -85,7 +85,7 @@ void b0_on_address() {
   }
 }
 
-void b0_handle_keyboard() {
+void FC_SAMS(0,handle_keyboard()) {
   int redraw = 0;
   int key = read_keyboard();
   switch(key) {

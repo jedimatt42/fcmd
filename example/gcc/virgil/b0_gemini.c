@@ -95,7 +95,7 @@ int must_redraw(int prev_lc, int prev_lo, int prev_cmd, struct State* state) {
   return 0;
 }
 
-void b0_process_input() {
+void FC_SAMS(0, process_input()) {
   handle_keyboard();
   int click = update_mouse();
   if (click & MB_LEFT) {
@@ -108,7 +108,7 @@ void on_exit() {
   fc_sams_free_pages(state.page_count + 1 /* 1 for history */);
 }
 
-void b0_open_url(char* url, int push_history) {
+void FC_SAMS(0, open_url(char* url, int push_history)) {
   state.cmd = CMD_IDLE;
   state.error[0] = 0;
   char hostname[80];

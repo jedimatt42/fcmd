@@ -26,6 +26,12 @@ int fc_main(char* args);
 #define FC_SAMS_TRAMP_DATA *((int*)0x2002)
 #define FC_SAMS_TRAMP *(int *)0x2004
 
+/*
+ * Use FC_SAMS_BANKED to declare (prototype) a non-void function that can be called 
+ * with SAMS bank switching.
+ * 
+ * Define the function in the module (.c) with FC_SAMS(function_name) 
+ */
 #define FC_SAMS_BANKED(bank_id, return_type, function_name, param_signature, param_list)          \
     static inline return_type function_name param_signature                                       \
     {                                                                                             \
@@ -43,6 +49,12 @@ int fc_main(char* args);
       return fcstramp param_list;                                                                 \
     }                                                                                             \
 
+/*
+ * Use FC_SAMS_VOIDBANKED to declare (prototype) a void function that can be called 
+ * with SAMS bank switching.
+ * 
+ * Define the function in the module (.c) with FC_SAMS(function_name) 
+ */
 #define FC_SAMS_VOIDBANKED(bank_id, function_name, param_signature, param_list)          \
     static inline void function_name param_signature                                     \
     {                                                                                    \
@@ -60,6 +72,12 @@ int fc_main(char* args);
       void (*fcstramp) param_signature = (void (*) param_signature) FC_SAMS_TRAMP;       \
       fcstramp param_list;                                                               \
     }                                                                                    \
+
+/*
+ * add bank identifier to function_name when defining for SAMS banking in module (.c)
+ * files.
+ */
+#define FC_SAMS(bank_id, function_name) b##bank_id##_##function_name
 
 /*
   Device Service Routine pre-loaded entry

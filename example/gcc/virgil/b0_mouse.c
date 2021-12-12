@@ -13,7 +13,7 @@ int pointer_type;
 
 int mouse_active;
 
-void b0_init_mouse() {
+void FC_SAMS(0,init_mouse()) {
   fc_strset((char*)&md, 0, sizeof(struct MouseData));
   fc_tipi_mouse_enable(&md); // prep for reading
   pointer_type = 99;
@@ -29,7 +29,7 @@ static int mouse_column() {
   return ((md.pointerx - 8) / 3) + 1;
 }
 
-int b0_update_mouse() {
+int FC_SAMS(0,update_mouse()) {
   md.buttons = 0;
   int oldy = md.pointery;
   fc_tipi_mouse_move(&md);
@@ -57,7 +57,7 @@ int b0_update_mouse() {
   return md.buttons;
 }
 
-void b0_handle_mouse_click() {
+void FC_SAMS(0,handle_mouse_click()) {
   while(MB_LEFT & update_mouse()) {
     // only handle click after mouse-button-up
   }
@@ -344,7 +344,7 @@ char busy_pointer_black[32] = SPR16X(
     0b0111111000000000
 );
 
-void b0_mouse_set_pointer(int p) {
+void FC_SAMS(0,mouse_set_pointer(int p)) {
   if (pointer_type != p) {
     pointer_type = p;
     char* black;

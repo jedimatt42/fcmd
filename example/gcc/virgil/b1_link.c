@@ -3,7 +3,7 @@
 
 static char buf[256];
 
-char* b1_link_url(char* line, int* length) {
+char* FC_SAMS(1,link_url(char* line, int* length)) {
   int i = 2;
   // format is '=>' whitespace url whitespace label
   while(line[i] == ' ' || line[i] == '\t') {
@@ -24,7 +24,7 @@ static int is_whitespace(char c) {
   return c == ' ' || c == '\t' || c == '\n' || c == '\r';
 }
 
-char* b1_link_label(char* line, int* length) {
+char* FC_SAMS(1,link_label(char* line, int* length)) {
   buf[0] = '=';
   buf[1] = '>';
   buf[2] = ' ';
@@ -59,7 +59,7 @@ char* b1_link_label(char* line, int* length) {
   return buf;
 }
 
-void b1_update_full_url(char* dst, char* url) {
+void FC_SAMS(1,update_full_url(char* dst, char* url)) {
   char tmp[256];
   if (fc_str_startswith(url, "gemini://")) {
     // a little wasteful, but good enough.
@@ -101,7 +101,7 @@ void b1_update_full_url(char* dst, char* url) {
   fc_strcpy(dst, tmp);
 }
 
-void b1_normalize_url(char* url) {
+void FC_SAMS(1,normalize_url(char* url)) {
   char dst[256];
 
   int u = 0;
@@ -132,7 +132,7 @@ void b1_normalize_url(char* url) {
   fc_strncpy(url, dst, 256);
 }
 
-void b1_set_hostname_and_port(char* url, char* hostname, char* port) {
+void FC_SAMS(1,set_hostname_and_port(char* url, char* hostname, char* port)) {
   hostname[0] = 0;
   fc_strcpy(port, "1965");
   if (fc_str_startswith(url, "gemini://")) {
