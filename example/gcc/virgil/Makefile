@@ -31,6 +31,12 @@ $(FNAME).bin: $(BIN_ORDER)
 
 objects/data.bin: $(FNAME).elf
 	$(OBJCOPY) -O binary -j .data $< objects/data.bin
+	# grow the page to a round 4k multiple
+	DATASIZE=`stat --printf="%s" objects/data.bin`; \
+	DATASIZE=`expr $$DATASIZE / 4096`; \
+	DATASIZE=`expr 1 + $$DATASIZE`; \
+	DATASIZE=`expr 4096 \* $$DATASIZE`; \
+	dd if=/dev/null of=$@ bs=$$DATASIZE seek=1
 
 objects/%.page: $(FNAME).elf
 	$(OBJCOPY) -O binary -j .$(shell basename $@ .page) $< $@
