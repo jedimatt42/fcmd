@@ -30,6 +30,9 @@ int fc_main(char* args);
     static inline return_type function_name param_signature                                       \
     {                                                                                             \
       return_type b##bank_id##_##function_name param_signature ;                                  \
+      if (bank_id == SAMS_CURRENT_BANK) {                                                         \
+        return b##bank_id##_##function_name param_list ;                                          \
+      }                                                                                           \
       static const int fcsams_data_##function_name[] = {                                          \
         (int)bank_id,                                                                             \
         (int)SAMS_CURRENT_BANK,                                                                   \
@@ -44,6 +47,10 @@ int fc_main(char* args);
     static inline void function_name param_signature                                     \
     {                                                                                    \
       void b##bank_id##_##function_name param_signature ;                                \
+      if (bank_id == SAMS_CURRENT_BANK) {                                                \
+        b##bank_id##_##function_name param_list ;                                        \
+        return;                                                                          \
+      }                                                                                  \
       static const int fcsams_data_##function_name[] = {                                 \
         (int)bank_id,                                                                    \
         (int)SAMS_CURRENT_BANK,                                                          \

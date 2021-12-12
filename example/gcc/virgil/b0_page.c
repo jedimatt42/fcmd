@@ -28,7 +28,7 @@ void b0_init_page() {
   state.max_page = samsInfo.total_pages;
   state.base_id = add_bank();
   state.line_count = 1;
-  last_line = b0_page_get_line(1);
+  last_line = page_get_line(1);
 }
 
 void b0_page_clear_lines() {
@@ -40,7 +40,7 @@ void b0_page_clear_lines() {
   state.toggle_literal = 0;
   state.utfstate = 0;
   add_bank();
-  last_line = b0_page_get_line(1);
+  last_line = page_get_line(1);
 }
 
 int __attribute__((noinline)) add_bank() {
@@ -52,12 +52,12 @@ int __attribute__((noinline)) add_bank() {
   return bank_id;
 }
 
-inline struct Line* page_add_line() {
+struct Line* page_add_line() {
   state.line_count++;
   if (state.line_count > state.line_limit) {
     add_bank();
   }
-  return b0_page_get_line(state.line_count);
+  return page_get_line(state.line_count);
 }
 
 // 1 based counting system
@@ -117,7 +117,7 @@ void b0_page_load() {
 
 void __attribute__((noinline)) b0_page_from_buf(char* buf, int len) {
   // ensure the correct page is mapped into ram:
-  last_line = b0_page_get_line(state.line_count);
+  last_line = page_get_line(state.line_count);
 
   int i = 0;
   while(i < len) {
