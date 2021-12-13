@@ -42,7 +42,7 @@ int fc_main(char* args);
       static const int fcsams_data_##function_name[] = {                                          \
         (int)bank_id,                                                                             \
         (int)SAMS_CURRENT_BANK,                                                                   \
-        (int)function_name                                                                        \
+        (int)b##bank_id##_##function_name                                                         \
       };                                                                                          \
       FC_SAMS_TRAMP_DATA = (int) fcsams_data_##function_name;                                     \
       return_type (*fcstramp) param_signature = (return_type (*) param_signature) FC_SAMS_TRAMP;  \
@@ -66,7 +66,7 @@ int fc_main(char* args);
       static const int fcsams_data_##function_name[] = {                                 \
         (int)bank_id,                                                                    \
         (int)SAMS_CURRENT_BANK,                                                          \
-        (int)function_name                                                               \
+        (int)b##bank_id##_##function_name                                                \
       };                                                                                 \
       FC_SAMS_TRAMP_DATA = (int) fcsams_data_##function_name;                            \
       void (*fcstramp) param_signature = (void (*) param_signature) FC_SAMS_TRAMP;       \

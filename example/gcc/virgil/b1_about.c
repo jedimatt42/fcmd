@@ -48,6 +48,6 @@ const char about_text[] =
   "=> gopher://deadend.net Gopher URLS are Yellow\n"
   "=> http://deadend.net HTTP URLS are Pale Yellow\n";
 
-void about() {
+void FC_SAMS(1, about()) {
   page_from_buf((char*) about_text, sizeof(about_text));
 }

@@ -1,0 +1,32 @@
+MEMORY
+{
+  samsbanked (rx) : ORIGIN = 0xA000, LENGTH = 0x2000 /* 8k code space */
+  ram        (wx) : ORIGIN = 0xC000, LENGTH = 0x4000 /* 16k upper ram */
+}
+
+/* memcpy will be called by the compiler in some implicit situations. */
+/*  use the well known address of this routine in the Force Command module */
+/*  it is at this address in every bank of the cartridge ROM */
+memcpy = 0x605a;
+
+SECTIONS
+{
+  OVERLAY : AT (0x10000)
+  {
+    .bank0 {
+      objects/_header.o(.text)
+      objects/b0_*.o(.text)
+    }
+    .bank1 {
+      objects/b1_*.o(.text)
+    }
+  } >samsbanked
+
+  .data : {
+    * (.data);
+  } >ram
+
+  .bss  ALIGN(2) : {
+    * (.bss);
+  } >ram
+}
