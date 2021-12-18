@@ -76,7 +76,8 @@ void FC_SAMS(0,on_address()) {
   char tmp[80];
   fc_strset(tmp, 0, 80);
   fc_strcpy(tmp, state.url);
-  screen_prompt(tmp, "Address:");
+  char ramstr[10] = "Address:";
+  screen_prompt(tmp, ramstr);
   if (tmp[0] != 0) {
     if (0 != fc_strcmp(tmp, state.url)) {
       fc_strcpy(state.newurl, tmp);

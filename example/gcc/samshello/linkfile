@@ -22,6 +22,8 @@ SECTIONS
     }
   } >samsbanked
 
+  . = 0xC000;
+
   .data : {
     * (.data);
   } >ram

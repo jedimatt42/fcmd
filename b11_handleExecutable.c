@@ -41,6 +41,44 @@ struct __attribute__((__packed__)) FCProgramHeader {
   int start;
 };
 
+#define SAMS_REG(x) *((volatile int*)(0x4000 + (x << 1)))
+
+inline void snapshotSAMS(int* snapshot) {
+  __asm__(
+    "li r12,0x1E00\n\t"
+    "sbo 0\n\t"
+  );
+
+  snapshot[0] = SAMS_REG(0x0A);
+  snapshot[1] = SAMS_REG(0x0B);
+  snapshot[2] = SAMS_REG(0x0C);
+  snapshot[3] = SAMS_REG(0x0D);
+  snapshot[4] = SAMS_REG(0x0E);
+  snapshot[5] = SAMS_REG(0x0F);
+
+  __asm__(
+    "sbz 0\n\t"
+  );
+}
+
+inline void restoreSAMS(int* snapshot) {
+  __asm__(
+    "li r12,0x1E00\n\t"
+    "sbo 0\n\t"
+  );
+
+  SAMS_REG(0x0A) = snapshot[0];
+  SAMS_REG(0x0B) = snapshot[1];
+  SAMS_REG(0x0C) = snapshot[2];
+  SAMS_REG(0x0D) = snapshot[3];
+  SAMS_REG(0x0E) = snapshot[4];
+  SAMS_REG(0x0F) = snapshot[5];
+  
+  __asm__(
+    "sbz 0\n\t"
+  );
+}
+
 void popProcInfo() {
     procInfoPtr = procInfoPtr->prev;    
 }
@@ -53,6 +91,9 @@ void handleExecutable(char *ext)
   procInfo.prev = procInfoPtr;
   procInfo.base_page = 0;
   procInfoPtr = &procInfo;
+
+  int samsSnapshot[6];
+  snapshotSAMS(samsSnapshot);
 
   int err = loadExecutable(ext, &cmd_type);
 
@@ -92,10 +133,9 @@ void handleExecutable(char *ext)
 
     if (sams_total_pages) {
       // if we didn't have sams, we wouldn't be able to get here with api_exec true.
-      int newbase = bk_free_pages(6) - 6;
-      for (int i = 0; i < 6; i++) {
-	bk_map_page(newbase + i, 0xA000 + (i * 0x1000));
-      }
+      bk_free_pages(sams_next_page - procInfoPtr->base_page);
+      // restore previous sams registers for upper memory expansion
+      restoreSAMS(samsSnapshot);
     }
   }
   popProcInfo();
@@ -236,30 +276,32 @@ int checkFormat(struct DeviceServiceRoutine* dsr, int iocode, char* filename, st
     return FMT_ERR;
   }
   // just after the AddInfo in scratchpad
-  struct FCProgramHeader* header = (struct FCProgramHeader*) 0x832A;
-  vdpmemread(addInfoPtr->buffer, (char*)header, sizeof(struct FCProgramHeader));
+  struct FCProgramHeader header;
+  vdpmemread(addInfoPtr->buffer, (char*)&header, sizeof(struct FCProgramHeader));
 
-  if (header->fcfc != 0xFCFC) {
+  if (header.fcfc != 0xFCFC) {
     // not an FC executable
     return FMT_ERR;
   }
 
-  if (header->sams == 0) {
+  if (header.sams == 0) {
   *pages = 6;
     return FMT_EXE;
   } else {
-    *pages = header->sams;
+    *pages = header.sams;
     return FMT_SAMS;
   }
 }
 
 int allocatePages(int pages) {
   if (sams_next_page + pages > sams_total_pages) {
+    tputs_rom("Not enough SAMS pages remaining\n");
     return 1;  // don't allow nested execution if we don't have space
   }
   int pageStart = bk_alloc_pages(pages);
   procInfoPtr->base_page = pageStart;
   if (pageStart == -1) {
+    tputs_rom("Failed to allocate SAMS pages\n");
     return 1; // no more pages, fail the same way
   }
   return 0;
@@ -282,19 +324,23 @@ int loadPagedFormat(struct DeviceServiceRoutine* dsr, int iocode, char* filename
   bk_lvl2_input(dsr->crubase, iocode, filename, 0, addInfoPtr);
 
   int totalBlocks = addInfoPtr->first_sector;
-  int extraPages = (totalBlocks >> 4) - pages; 
   if (sams_total_pages) {
+    int extraPages = (totalBlocks >> 4) - pages;
+    if (extraPages < 4) {
+      extraPages = 4;
+    }
     if (allocatePages(pages + extraPages)) {
       return 1;
     }
   } else {
+    tputs_rom("SAMS Memory Required\n");
     return 1;
   }
 
   int blockId = 0;
   int page = 0;
   while(page < pages) {
-    int loadAddr = (page % 2 == 0) ? 0xA000 : 0xB000;
+    int loadAddr = 0xA000 + ((page & 1) << 12);
     bk_map_page(procInfoPtr->base_page + page, loadAddr);
     addInfoPtr->first_sector = blockId;
     int err = bk_lvl2_input(dsr->crubase, iocode, filename, 16, addInfoPtr);
@@ -324,6 +370,12 @@ int loadPagedFormat(struct DeviceServiceRoutine* dsr, int iocode, char* filename
     if (cpuAddr != 0xF000) {
       cpuAddr += 0x1000;
     }
+    page++;
+  }
+  while(page < (pages + 4)) {
+    bk_map_page(procInfoPtr->base_page + page, cpuAddr);
+    cpuAddr += 0x1000;
+    page++;
   }
 
   return 0;

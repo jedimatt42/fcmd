@@ -198,9 +198,13 @@ Only executables with a SAMS page count of 0 will be executed.
 
 If SAMS is present, then executables may load other executables with the `fc_exec` command. When this happens, new pages are allocated, and mapped in. When the executable returns to Force Command or a prior executable the pages are freed, and the previous set of pages are mapped back in.
 
-IF The executable sets the SAMS page request flag, then the specified number of 4k pages will be loaded into SAMS sequentially from the executable file. When complete, the flag will be updated to hold the base page number. This will be used when calling functions declared for bank switching. Use the following macro to declare a function:
+If the executable sets the SAMS page request flag, then the specified number of 4k pages will be loaded into SAMS sequentially from the executable file. When complete, the flag will be updated to hold the base page number. This will be used when calling functions declared for bank switching. Use the following macro to declare a function:
 
-FC_SAMS_BANKED(bank_id, returntype, function_name, param_signature, param_list)
+`FC_SAMS_BANKED(bank_id, returntype, function_name, param_signature, param_list)`
+
+or 
+
+`FC_SAMS_VOIDBANKED(bank_id, function_name, param_signature, param_list)`
 
 Example:
 
@@ -208,17 +212,13 @@ Example:
 FC_SAMS_BANKED(0, int, refresh_title_screen, (int bgcolor, int fgcolor), (bgcolor, fgcolor));
 ```
 
-That will declare your function:
+An inline wrapper will be created to use for banked switch calls, or the optimizer will remove the overhead if calling from the same bank.
 
 ```c
 int refresh_title_screen(int bgcolor, int fgcolor);
 ```
 
-and an inline wrapper to call for banked switch calls:
-
-```c
-int bank_refresh_title_screen(int bgcolor, int fgcolor);
-```
+Your actual function should be declared with the `FC_SAMS` macro that puts a bank based prefix on the function name.
 
 Bank switching will use a trampoline routine in the cartridge rom bank 0. Calling the functions
 with the `bank_` prefix will allow normal calling. You will have to define MYBANK in your calling context so the call can capture what bank to return to when the routine is done.
@@ -332,8 +332,8 @@ SAMS page map:
 | Page | Address       | Purpose                    |
 | 0    | 0x2000        | Force Command runtime data |
 | 1    | 0x3000        | Force Command stack        |
-| 2    | 0xB000-0xCFFF | command history            |
-| 3    | 0xA000        | command line edit buffer   |
+| 2,3  | 0xB000-0xCFFF | command history            |
+| 4    | 0xA000        | command line edit buffer   |
 | 4+   | 0xA000        | executable space           |
 
 Note, when the LOAD, FG99, or XB commands are used to run a legacy EA5 program, the standard SAMS mapping is set.

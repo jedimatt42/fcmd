@@ -116,7 +116,7 @@ void FC_SAMS(0,handle_mouse_click()) {
   i & 0xff, j & 0xff, k & 0xff, l & 0xff, m & 0xff, n & 0xff, o & 0xff, p & 0xff \
 }
 
-char scroll_down_pointer_white[32] = SPR16X(
+const char scroll_down_pointer_white[32] = SPR16X(
     0b0000000000000000,
     0b0100000100000000,
     0b0110001100000000,
@@ -135,7 +135,7 @@ char scroll_down_pointer_white[32] = SPR16X(
     0b0000000000000000
 );
 
-char scroll_down_pointer_black[32] = SPR16X(
+const char scroll_down_pointer_black[32] = SPR16X(
     0b0100000100000000,
     0b1010001010000000,
     0b1001010010000000,
@@ -154,7 +154,7 @@ char scroll_down_pointer_black[32] = SPR16X(
     0b0000000000000000
 );
 
-char scroll_up_pointer_white[32] = SPR16X(
+const char scroll_up_pointer_white[32] = SPR16X(
     0b0000000000000000,
     0b0000100000000000,
     0b0001110000000000,
@@ -173,7 +173,7 @@ char scroll_up_pointer_white[32] = SPR16X(
     0b0000000000000000
 );
 
-char scroll_up_pointer_black[32] = SPR16X(
+const char scroll_up_pointer_black[32] = SPR16X(
     0b0000100000000000,
     0b0001010000000000,
     0b0010001000000000,
@@ -192,7 +192,7 @@ char scroll_up_pointer_black[32] = SPR16X(
     0b0000000000000000
 );
 
-char page_down_pointer_white[32] = SPR16X(
+const char page_down_pointer_white[32] = SPR16X(
     0b0000000000000000,
     0b0100000100000000,
     0b0110001100000000,
@@ -211,7 +211,7 @@ char page_down_pointer_white[32] = SPR16X(
     0b0000000000000000
 );
 
-char page_down_pointer_black[32] = SPR16X(
+const char page_down_pointer_black[32] = SPR16X(
     0b0100000100000000,
     0b1010001010000000,
     0b1001010010000000,
@@ -230,7 +230,7 @@ char page_down_pointer_black[32] = SPR16X(
     0b0000000000000000
 );
 
-char page_up_pointer_white[32] = SPR16X(
+const char page_up_pointer_white[32] = SPR16X(
     0b0000000000000000,
     0b0000100000000000,
     0b0001110000000000,
@@ -249,7 +249,7 @@ char page_up_pointer_white[32] = SPR16X(
     0b0000000000000000
 );
 
-char page_up_pointer_black[32] = SPR16X(
+const char page_up_pointer_black[32] = SPR16X(
     0b0000100000000000,
     0b0001010000000000,
     0b0010001000000000,
@@ -268,7 +268,7 @@ char page_up_pointer_black[32] = SPR16X(
     0b0000000000000000
 );
 
-char normal_pointer_white[32] = SPR16X(
+const char normal_pointer_white[32] = SPR16X(
     0b0000000000000000,
     0b0111111000000000,
     0b0111110000000000,
@@ -287,7 +287,7 @@ char normal_pointer_white[32] = SPR16X(
     0b0000000000000000
 );
 
-char normal_pointer_black[32] = SPR16X(
+const char normal_pointer_black[32] = SPR16X(
     0b1111111100000000,
     0b1000000100000000,
     0b1000001000000000,
@@ -306,7 +306,7 @@ char normal_pointer_black[32] = SPR16X(
     0b0000000000000000
 );
 
-char busy_pointer_white[32] = SPR16X(
+const char busy_pointer_white[32] = SPR16X(
     0b0000000000000000,
     0b0111111000000000,
     0b0111110000000000,
@@ -325,7 +325,7 @@ char busy_pointer_white[32] = SPR16X(
     0b0000000000000000
 );
 
-char busy_pointer_black[32] = SPR16X(
+const char busy_pointer_black[32] = SPR16X(
     0b1111111100000000,
     0b1000000100000000,
     0b1000001000000000,
@@ -347,8 +347,8 @@ char busy_pointer_black[32] = SPR16X(
 void FC_SAMS(0,mouse_set_pointer(int p)) {
   if (pointer_type != p) {
     pointer_type = p;
-    char* black;
-    char* white;
+    const char* black;
+    const char* white;
     if (pointer_type == MP_PAGE_UP) {
       black = page_up_pointer_black;
       white = page_up_pointer_white;

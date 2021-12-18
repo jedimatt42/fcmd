@@ -20,7 +20,7 @@ int check_requirements();
 void display_page();
 int must_redraw();
 
-char CRLF[3] = {'\r', '\n', 0};
+const char CRLF[3] = {'\r', '\n', 0};
 
 #define SOCKET_ID 0
 
@@ -37,8 +37,8 @@ int fc_main(char* args) {
   fc_strncpy(state.newurl, args, 256);
 
   init_history();
-  init_mouse();
   init_page();
+  init_mouse();
   init_screen();
 
   state.cmd = 0;
@@ -196,7 +196,7 @@ void FC_SAMS(0, open_url(char* url, int push_history)) {
 
 void send_request(char* request) {
   fc_tls_send_chars(SOCKET_ID, request, fc_strlen(request));
-  fc_tls_send_chars(SOCKET_ID, CRLF, 2);
+  fc_tls_send_chars(SOCKET_ID, (char*) CRLF, 2);
 }
 
 void handle_success(char* line) {

@@ -23,6 +23,7 @@ int add_bank();
 void FC_SAMS(0,init_page()) {
   struct SamsInformation samsInfo;
   fc_sams_info(&samsInfo);
+  state.page_count = 0;
   state.max_page = samsInfo.total_pages;
   state.base_id = add_bank();
   state.line_count = 1;
