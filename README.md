@@ -334,7 +334,10 @@ SAMS page map:
 | 1    | 0x3000        | Force Command stack        |
 | 2,3  | 0xB000-0xCFFF | command history            |
 | 4    | 0xA000        | command line edit buffer   |
+| 4-9  | 0XA000-0xFFFF | ED file buffer             |
 | 4+   | 0xA000        | executable space           |
+
+The command line editor, and ED command free their pages when not active. The command line editor is not active between pressing ENTER and prompting again for another command.
 
 Note, when the LOAD, FG99, or XB commands are used to run a legacy EA5 program, the standard SAMS mapping is set.
 

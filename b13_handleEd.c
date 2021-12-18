@@ -52,6 +52,22 @@ int commandLineEd(char* cmdline, int limit) {
 }
 
 void handleEd() {
+  struct DeviceServiceRoutine* dsr = 0;
+  char devpath[80];
+  char* path = devpath + 5;
+  bk_parsePathParam(0, &dsr, path, PR_REQUIRED);
+  if (dsr == 0) {
+    tputs_rom("no file specified\n");
+    return;
+  }
+
+  if (sams_total_pages) {
+    int pagebase = bk_alloc_pages(6);
+    for(int i=pagebase; i<pagebase+6; i++) {
+      bk_map_page(i, 0xA000 + ((i-pagebase) * 0x1000));
+    }
+  }
+
   // A tiny DV80 editor
   EDIT_BUFFER->justRendered = 0;
   EDIT_BUFFER->ed_mode = ED_FULL;
@@ -62,26 +78,10 @@ void handleEd() {
   EDIT_BUFFER->offset_x = 0;
   EDIT_BUFFER->offset_y = 0;
 
-  struct DeviceServiceRoutine* dsr = 0;
-
-  char devpath[80];
-  char* path = devpath + 5;
-  bk_parsePathParam(0, &dsr, path, PR_REQUIRED);
-  if (dsr == 0) {
-    tputs_rom("no file specified\n");
-    return;
-  }
-
   char* dsr_cruhex = bk_uint2hex(dsr->crubase);
   bk_strncpy(devpath, dsr_cruhex, 4);
   devpath[4] = '.';
 
-  if (sams_total_pages) {
-    int pagebase = bk_alloc_pages(6);
-    for(int i=pagebase; i<pagebase+6; i++) {
-      bk_map_page(i, 0xA000 + ((i-pagebase) * 0x1000));
-    }
-  }
   int err = 0;
 
   int existing = bk_existsFile(dsr, path);
