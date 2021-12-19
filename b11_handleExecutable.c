@@ -327,6 +327,7 @@ int loadPagedFormat(struct DeviceServiceRoutine* dsr, int iocode, char* filename
   if (sams_total_pages) {
     int extraPages = (totalBlocks >> 4) - pages;
     if (extraPages < 4) {
+      // ensure we have at least enough pages to fill upper memory expansion
       extraPages = 4;
     }
     if (allocatePages(pages + extraPages)) {
@@ -372,6 +373,8 @@ int loadPagedFormat(struct DeviceServiceRoutine* dsr, int iocode, char* filename
     }
     page++;
   }
+  // pad the upper 16K out with sams pages if the exe is doesn't
+  // fill the space.
   while(page < (pages + 4)) {
     bk_map_page(procInfoPtr->base_page + page, cpuAddr);
     cpuAddr += 0x1000;
