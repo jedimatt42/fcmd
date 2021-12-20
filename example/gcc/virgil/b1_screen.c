@@ -121,7 +121,7 @@ void FC_SAMS(1,screen_redraw()) {
   limit = limit < 28 ? limit : 28;
   for(int i = 0; i < limit; i++) {
     struct Line* line = page_get_line(i + state.line_offset + 1);
-    int line_offset = (i+1) * 80;
+    int vdp_line_offset = (i+1) * 80;
     if (line->type == LINE_TYPE_LINK) {
       int len = 0;
       char* url = link_url(line->data, &len);
@@ -134,9 +134,9 @@ void FC_SAMS(1,screen_redraw()) {
 	color = BROWN_ON_BLACK;
       }
       char* label = link_label(line->data, &len);
-      vdp_memcpy(dinfo.imageAddr + line_offset, label, len);
-      vdp_memset(dinfo.imageAddr + line_offset + len, ' ', 80 - len);
-      vdp_memset(dinfo.colorAddr + line_offset, color, 80);
+      vdp_memcpy(dinfo.imageAddr + vdp_line_offset, label, len);
+      vdp_memset(dinfo.imageAddr + vdp_line_offset + len, ' ', 80 - len);
+      vdp_memset(dinfo.colorAddr + vdp_line_offset, color, 80);
     } else {
       unsigned char color = GRAY_ON_BLACK;
       if (line->type == LINE_TYPE_HEADING) {
@@ -144,9 +144,8 @@ void FC_SAMS(1,screen_redraw()) {
       } else if (line->type == LINE_TYPE_LITERAL) {
 	color = WHITE_ON_BLACK;
       }
-      int line_offset = (i+1) * 80;
-      vdp_memcpy(dinfo.imageAddr + line_offset, line->data, 80);
-      vdp_memset(dinfo.colorAddr + line_offset, color, 80);
+      vdp_memcpy(dinfo.imageAddr + vdp_line_offset, line->data, 80);
+      vdp_memset(dinfo.colorAddr + vdp_line_offset, color, 80);
     }
   }
   // blank remaining lines.
@@ -154,7 +153,6 @@ void FC_SAMS(1,screen_redraw()) {
     vdp_memset(dinfo.imageAddr + ((i+1) * 80), ' ', 80);
     vdp_memset(dinfo.colorAddr + ((i+1) * 80), GRAY_ON_BLACK, 80);
   }
-  screen_status();
 }
 
 void FC_SAMS(1,screen_prompt(char* dst, char* prompt)) {

@@ -2,7 +2,8 @@
 #include "page.h"
 #include "version.h"
 
-const char about_text[] =
+// not 'const' so that it lives in the common .data segment
+char about_text[] =
   "# About " VERSION "\n"
   "\n"
   "=> //virgil.jedimatt42.com/ti994a/virgil/ Virgil99 homepage\n"

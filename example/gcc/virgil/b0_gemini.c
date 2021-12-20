@@ -67,11 +67,11 @@ int fc_main(char* args) {
 	page_load();
       }
     }
-    if (prev_lc != state.line_count || prev_lo != state.line_offset || prev_cmd != state.cmd) {
-      screen_status();
-    }
     if (must_redraw(prev_lc, prev_lo, prev_cmd, &state)) {
       screen_redraw();
+    }
+    if (prev_lc != state.line_count || prev_lo != state.line_offset || prev_cmd != state.cmd) {
+      screen_status();
     }
     if (vdp_read_status()) {
       process_input();
