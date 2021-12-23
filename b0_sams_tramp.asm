@@ -24,11 +24,11 @@ stramp:
     ; - caller bank
     ; - target function
     ; caller cheats and didn't adjust stack
-    mov @trampdata,r13
     ai  r10, -8                         ; consume stack space
     mov r11, *r10                       ; stash caller return address
-    mov @RET_BANK(r13), @RET_BANK(r10)  ; stash caller bank
     mov r13, @STASH_R13(r10)            ; stash r13 so we can use it.
+    mov @trampdata,r13
+    mov @RET_BANK(r13), @RET_BANK(r10)  ; stash caller bank
     mov @TAR_ADDR(r13), r11             ; load target address
     mov @procInfoPtr, r12               ; bank ids are relative to process
     mov *r13, r13                       ; load target bank
