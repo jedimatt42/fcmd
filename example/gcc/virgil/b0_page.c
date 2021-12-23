@@ -18,7 +18,7 @@ struct State state;
 
 static volatile struct Line* last_line;
 
-int add_bank();
+static int add_bank();
 
 void FC_SAMS(0,init_page()) {
   struct SamsInformation samsInfo;
@@ -42,7 +42,7 @@ void FC_SAMS(0,page_clear_lines()) {
   last_line = page_get_line(1);
 }
 
-int __attribute__((noinline)) add_bank() {
+static int add_bank() {
   int bank_id = fc_sams_alloc_pages(1);
   state.page_count++;
   fc_sams_map_page(bank_id, SAMS_ADDR);
@@ -51,7 +51,7 @@ int __attribute__((noinline)) add_bank() {
   return bank_id;
 }
 
-struct Line* page_add_line() {
+static struct Line* page_add_line() {
   state.line_count++;
   if (state.line_count > state.line_limit) {
     add_bank();
@@ -60,7 +60,7 @@ struct Line* page_add_line() {
 }
 
 // 1 based counting system
-struct Line* __attribute__((noinline)) FC_SAMS(0,page_get_line(int idx)) {
+struct Line* FC_SAMS(0,page_get_line(int idx)) {
   idx--;
   int page_offset = idx / LINES_PER_BANK;
   int line_offset = idx - (page_offset * LINES_PER_BANK);
@@ -69,7 +69,7 @@ struct Line* __attribute__((noinline)) FC_SAMS(0,page_get_line(int idx)) {
   return &(PAGE->lines[line_offset]);
 }
 
-void __attribute__((noinline)) update_line_type(volatile struct Line* line) {
+static void update_line_type(volatile struct Line* line) {
   if (line->length >= 3 && line->data[0] == '`' && line->data[1] == '`' && line->data[2] == '`') {
     line->type = LINE_TYPE_TOGGLE;
     return;
@@ -114,7 +114,7 @@ void FC_SAMS(0,page_load()) {
   page_from_buf(buf, len);
 }
 
-void __attribute__((noinline)) FC_SAMS(0,page_from_buf(char* buf, int len)) {
+void FC_SAMS(0,page_from_buf(char* buf, int len)) {
   // ensure the correct page is mapped into ram:
   last_line = page_get_line(state.line_count);
 

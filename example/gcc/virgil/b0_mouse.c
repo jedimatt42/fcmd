@@ -13,7 +13,13 @@ int pointer_type;
 
 int mouse_active;
 
+static int spritePatternAddr;
+
 void FC_SAMS(0,init_mouse()) {
+  struct DisplayInformation dinfo;
+  fc_display_info(&dinfo);
+  spritePatternAddr = dinfo.spritePatternAddr;
+
   fc_strset((char*)&md, 0, sizeof(struct MouseData));
   fc_tipi_mouse_enable(&md); // prep for reading
   pointer_type = 99;
@@ -368,8 +374,8 @@ void FC_SAMS(0,mouse_set_pointer(int p)) {
       black = normal_pointer_black;
       white = normal_pointer_white;
     }
-    vdp_memcpy(dinfo.spritePatternAddr + (8*0x60), black, 32);
-    vdp_memcpy(dinfo.spritePatternAddr + 32 + (8*0x60), white, 32);
+    vdp_memcpy(spritePatternAddr + (8*0x60), black, 32);
+    vdp_memcpy(spritePatternAddr + 32 + (8*0x60), white, 32);
   }
 }
 

@@ -8,4 +8,5 @@ inline void debug(int a) {
   }
 }
 
+void b1_waitfordebugger();
 

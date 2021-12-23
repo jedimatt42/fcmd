@@ -6,6 +6,7 @@
 #include "version.h"
 #include "link.h"
 #include "mouse.h"
+#include "debug.h"
 
 #define CBLACK_ON_GREEN (COLOR_BLACK << 4 | COLOR_MEDGREEN)
 #define BLACK_ON_GRAY (COLOR_BLACK << 4 | COLOR_GRAY)
@@ -16,28 +17,52 @@
 #define YELLOW_ON_BLACK (COLOR_LTYELLOW << 4 | COLOR_BLACK)
 #define BROWN_ON_BLACK (COLOR_DKYELLOW << 4 | COLOR_BLACK)
 
-struct DisplayInformation dinfo;
-struct SamsInformation sams_info;
-
 #define XYOFF(x, y) ((x-1) + ((y-1)*80))
 
 // Screen Coordinates are 1 based like ANSI
 
-int vdp_strcpy(int vdpaddr, char* str, int limit);
+int imageAddr;
+int colorAddr;
 
 void FC_SAMS(1,init_screen()) {
-  fc_display_info(&dinfo);
   // use CLS after setting color to force border and all 
   // attributes.
   fc_exec("COLOR 14 1");
   fc_exec("CLS");
+
+  struct DisplayInformation dinfo;
+  fc_display_info(&dinfo);
+  imageAddr = dinfo.imageAddr;
+  colorAddr = dinfo.colorAddr;
+	  
   screen_status();
 }
 
+// these are forced to functions to make stepping through the debugger easier
+//  not for any other technical reason
+
+int __attribute__((noinline)) write_string(int offset, char* str, int limit) {
+  VDP_SET_ADDRESS_WRITE(imageAddr + offset);
+  int i = 0;
+  while((str[i] != 0) && (i < limit)) {
+    VDPWD = str[i++];
+  }
+  return i;
+}
+
+void __attribute__((noinline)) set_line_color(int offset, int color) {
+  vdp_memset(colorAddr + offset, color, 80);
+}
+
+void __attribute__((noinline)) set_line_text(int offset, char* text) {
+  vdp_memcpy(imageAddr + offset, text, 80);
+}
+
 void FC_SAMS(1,screen_title()) {
+  struct SamsInformation sams_info;
   fc_sams_info(&sams_info);
+
   fc_ui_gotoxy(1, 1);
-  vdp_memset(dinfo.colorAddr, CBLACK_ON_GREEN, 80);
   char tmp[80];
   fc_strset(tmp, BS, 80);
   tmp[1] = BL;
@@ -79,35 +104,36 @@ void FC_SAMS(1,screen_title()) {
   i += 4;
   tmp[i] = BR;
 
-  vdp_memcpy(dinfo.imageAddr, tmp, 80);
-  vdp_memset(dinfo.colorAddr, CBLACK_ON_GREEN, 80);
+  set_line_text(0, tmp);
+
+  set_line_color(0, CBLACK_ON_GREEN);
 } 
 
 void FC_SAMS(1,screen_status()) {
   screen_title();
-  vdp_memset(dinfo.colorAddr + XYOFF(1,30), CBLACK_ON_GREEN, 80);
-  int addr = dinfo.imageAddr + XYOFF(1,30);
-  vdp_memset(addr, ' ', 80);
+  set_line_color(XYOFF(1,30), CBLACK_ON_GREEN);
+  int offset = XYOFF(1,30);
+  vdp_memset(offset, ' ', 80);
   if (state.error[0] != 0) {
-    vdp_strcpy(addr, state.error, 80);
+    write_string(offset, state.error, 80);
     return;
   }
   if (state.cmd == CMD_READPAGE) {
-    addr += vdp_strcpy(addr, "Loading ", 8);
+    offset += write_string(offset, "Loading ", 8);
   } else {
-    addr += vdp_strcpy(addr, "Line: ", 6);
-    int offset = state.line_offset + 1;
-    char* intstr = fc_uint2str(offset);
-    addr += vdp_strcpy(addr, intstr, 5);
-    addr += vdp_strcpy(addr, "-", 1);
-    offset += 27;
-    if (offset > state.line_count) { offset = state.line_count; }
-    intstr = fc_uint2str(offset);
-    addr += vdp_strcpy(addr, intstr, 5);
-    addr += vdp_strcpy(addr, " of ", 4);
+    offset += write_string(offset, "Line: ", 6);
+    int lineno = state.line_offset + 1;
+    char* intstr = fc_uint2str(lineno);
+    offset += write_string(offset, intstr, 5);
+    offset += write_string(offset, "-", 1);
+    lineno += 27;
+    if (lineno > state.line_count) { lineno = state.line_count; }
+    intstr = fc_uint2str(lineno);
+    offset += write_string(offset, intstr, 5);
+    offset += write_string(offset, " of ", 4);
   }
   char* intstr = fc_uint2str(state.line_count);
-  vdp_strcpy(addr, intstr, 5);
+  write_string(offset, intstr, 5);
 }
 
 void FC_SAMS(1,screen_scroll_to(int lineno)) {
@@ -119,9 +145,10 @@ void FC_SAMS(1,screen_scroll_to(int lineno)) {
 void FC_SAMS(1,screen_redraw()) {
   int limit = state.line_count - state.line_offset;
   limit = limit < 28 ? limit : 28;
-  for(int i = 0; i < limit; i++) {
+  int i = 0;
+  int vdp_line_offset = 80;
+  while(i < limit) {
     struct Line* line = page_get_line(i + state.line_offset + 1);
-    int vdp_line_offset = (i+1) * 80;
     if (line->type == LINE_TYPE_LINK) {
       int len = 0;
       char* url = link_url(line->data, &len);
@@ -134,9 +161,9 @@ void FC_SAMS(1,screen_redraw()) {
 	color = BROWN_ON_BLACK;
       }
       char* label = link_label(line->data, &len);
-      vdp_memcpy(dinfo.imageAddr + vdp_line_offset, label, len);
-      vdp_memset(dinfo.imageAddr + vdp_line_offset + len, ' ', 80 - len);
-      vdp_memset(dinfo.colorAddr + vdp_line_offset, color, 80);
+      vdp_memcpy(imageAddr + vdp_line_offset, label, len);
+      vdp_memset(imageAddr + vdp_line_offset + len, ' ', 80 - len);
+      vdp_memset(colorAddr + vdp_line_offset, color, 80);
     } else {
       unsigned char color = GRAY_ON_BLACK;
       if (line->type == LINE_TYPE_HEADING) {
@@ -144,23 +171,26 @@ void FC_SAMS(1,screen_redraw()) {
       } else if (line->type == LINE_TYPE_LITERAL) {
 	color = WHITE_ON_BLACK;
       }
-      vdp_memcpy(dinfo.imageAddr + vdp_line_offset, line->data, 80);
-      vdp_memset(dinfo.colorAddr + vdp_line_offset, color, 80);
+      vdp_memcpy(imageAddr + vdp_line_offset, line->data, 80);
+      vdp_memset(colorAddr + vdp_line_offset, color, 80);
     }
+    i++;
+    vdp_line_offset += 80;
   }
+
   // blank remaining lines.
   for(int i = state.line_count; i < 28; i++) {
-    vdp_memset(dinfo.imageAddr + ((i+1) * 80), ' ', 80);
-    vdp_memset(dinfo.colorAddr + ((i+1) * 80), GRAY_ON_BLACK, 80);
+    vdp_memset(imageAddr + ((i+1) * 80), ' ', 80);
+    vdp_memset(colorAddr + ((i+1) * 80), GRAY_ON_BLACK, 80);
   }
 }
 
 void FC_SAMS(1,screen_prompt(char* dst, char* prompt)) {
   fc_tipi_mouse_disable();
   fc_ui_gotoxy(1, 2);
-  vdp_memset(dinfo.imageAddr + 80, ' ', 80 * 3);
-  vdp_memset(dinfo.colorAddr + 80, CBLACK_ON_GREEN, 80 * 3);
-  vdp_strcpy(dinfo.imageAddr + 80, prompt, 80);
+  vdp_memset(imageAddr + 80, ' ', 80 * 3);
+  vdp_memset(colorAddr + 80, CBLACK_ON_GREEN, 80 * 3);
+  write_string(80, prompt, 80);
   fc_ui_gotoxy(1,3);
   fc_bgcolor(COLOR_MEDGREEN);
   fc_textcolor(COLOR_BLACK);
@@ -169,11 +199,3 @@ void FC_SAMS(1,screen_prompt(char* dst, char* prompt)) {
   fc_tipi_mouse_enable(&md);
 }
 
-int vdp_strcpy(int vdpaddr, char* str, int limit) {
-  VDP_SET_ADDRESS_WRITE(vdpaddr);
-  int i = 0;
-  while((str[i] != 0) && (i < limit)) {
-    VDPWD = str[i++];
-  }
-  return i;
-}

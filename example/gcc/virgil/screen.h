@@ -17,5 +17,3 @@ FC_SAMS_VOIDBANKED(1, screen_status, (), ());
 FC_SAMS_VOIDBANKED(1, screen_title, (), ());
 FC_SAMS_VOIDBANKED(1, screen_prompt, (char* dst, char* prompt), (dst, prompt));
 
-extern struct DisplayInformation dinfo;
-
