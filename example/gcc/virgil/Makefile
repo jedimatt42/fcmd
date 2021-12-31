@@ -3,6 +3,7 @@ LD=tms9900-ld
 CC=tms9900-gcc
 OBJCOPY=tms9900-objcopy
 XDM99?=$(shell which xdm99.py)
+FCSDK=$(abspath ../fcsdk)
 
 FNAME=VIRGIL99
 
@@ -10,7 +11,7 @@ LDFLAGS=\
   --script=linkfile
 
 CFLAGS=\
-  -std=gnu99 -nostdlib -ffreestanding -O2 -Werror --save-temp -I../..
+  -std=gnu99 -nostdlib -ffreestanding -O2 -Werror --save-temp -I$(FCSDK)
 
 C_SRCS:=$(wildcard *.c)
 ASM_SRCS:=$(wildcard *.asm) 
@@ -59,6 +60,6 @@ define bankdefs
         -DSAMS_CURRENT_BANK=$(shell echo $(basename $1) | cut -c2)
 endef
 
-objects/%.o: %.c ../fc_api.h
+objects/%.o: %.c
 	mkdir -p objects; cd objects; $(CC) -c $(abspath $<) $(CFLAGS) $(call bankdefs,$<) -o $(notdir $@)
 

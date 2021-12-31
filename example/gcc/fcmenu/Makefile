@@ -4,6 +4,7 @@ CC=tms9900-gcc
 OBJCOPY=tms9900-objcopy
 OBJDUMP=tms9900-objdump
 XDM99?=$(shell which xdm99.py)
+FCSDK=$(abspath ../fcsdk)
 
 FNAME=FCMENU
 
@@ -11,7 +12,7 @@ LDFLAGS=\
   --script=linkfile
 
 CFLAGS=\
-  -std=gnu99 -O2 -Werror --save-temp -I../..
+  -std=gnu99 -O2 -Werror --save-temp -I$(FCSDK)
 
 C_SRCS:=$(wildcard *.c)
 ASM_SRCS:=$(wildcard *.asm) 
@@ -40,6 +41,6 @@ $(FNAME): $(FNAME).bin
 objects/%.o: %.asm
 	mkdir -p objects; cd objects; $(GAS) $(abspath $<) -o $(notdir $@)
 
-objects/%.o: %.c ../fc_api.h
+objects/%.o: %.c
 	mkdir -p objects; cd objects; $(CC) -c $(abspath $<) $(CFLAGS) -o $(notdir $@)
 

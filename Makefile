@@ -91,12 +91,12 @@ objects/%.o: libti99/%.c
 api.asm: fc_api.lst makeapi.py fc_api_template
 	rm -f api.asm
 	grep DECLARE_BANKED libti99/*.h *.h >api.banks
-	python3 ./makeapi.py fc_api.lst api.asm api.banks example/gcc/fc_api.h
+	python3 ./makeapi.py fc_api.lst api.asm api.banks example/gcc/fcsdk/fc_api.h
 
 b3_fcbanner.asm: fcbanner.ans ans2asm.py
 	python3 ./ans2asm.py
 
-SUBDIRS=charset fcmenu ftp say telnet virgil
+SUBDIRS=hello samshello charset fcmenu ftp say telnet virgil
 
 subdirs: api.asm
 	for d in $(SUBDIRS); do $(MAKE) -C example/gcc/$$d; done

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <fc_api.h>
-#include "virgil/about.h"
+#include "about.h"
 
 struct __attribute__((__packed__)) State {
   volatile int history_id;

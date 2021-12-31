@@ -9,7 +9,7 @@
 #include "b0_sams.h"
 
 
-int16_t exec(char* command) {
+int exec(char* command) {
   // we can't just use handleCommand without implementing some protections for the API caller.
   // 0. set a flag, so we know we are coming in from an API - executable loader may need to fail
   api_exec = 1;

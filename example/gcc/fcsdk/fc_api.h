@@ -1,8 +1,6 @@
 #ifndef _FC_API_H
 #define _FC_API_H 1
 
-#include <types.h>
-
 /*
  * Expected signature of main function 
  * non-zero return indicates error to ForceCommand.
@@ -427,8 +425,8 @@ DECL_FC_API_CALL(FC_VARS_GET, fc_vars_get, char*, (char* name), (name))
 // function: void fc_vars_set(char* name, char* value)
 DECL_FC_API_CALL(FC_VARS_SET, fc_vars_set, void, (char* name, char* value), (name, value))
 
-// function: int16_t fc_exec(char* command)
-DECL_FC_API_CALL(FC_EXEC, fc_exec, int16_t, (char* command), (command))
+// function: int fc_exec(char* command)
+DECL_FC_API_CALL(FC_EXEC, fc_exec, int, (char* command), (command))
 
 // function: unsigned int fc_dsr_ea5load(struct DeviceServiceRoutine * dsr, const char *fname)
 DECL_FC_API_CALL(FC_DSR_EA5LOAD, fc_dsr_ea5load, unsigned int, (struct DeviceServiceRoutine * dsr, const char *fname), (dsr, fname))
