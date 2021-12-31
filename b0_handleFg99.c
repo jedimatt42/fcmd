@@ -8,6 +8,7 @@
 #include "b8_terminal.h"
 #include "b8_setupScreen.h"
 #include "b1_fg99.h"
+#include "b9_resetSams.h"
 #include <system.h>
 
 void handleFg99() {
@@ -44,5 +45,6 @@ void handleFg99() {
   bk_strcpy(fg99_msg+8, cart);
 
   bk_setupScreen(0);
+  bk_resetSams();
   bk_fg99(fg99_msg, 0x0000);
 }
