@@ -17,6 +17,7 @@ b3_fcbanner.asm
 /linkfile
 layout.xml
 FC/BIN
+fcsdk
 build.sh
 .ycm_extra_conf.py
 compile_commands.json

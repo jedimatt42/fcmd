@@ -78,6 +78,7 @@ clean:
 	rm -f api.banks
 	$(MAKE) -C FC clean
 	for d in $(SUBDIRS); do $(MAKE) -C example/gcc/$$d clean; done
+	rm -fr fcsdk
 
 objects/%.o: %.asm
 	mkdir -p objects; cd objects; $(GAS) $(abspath $<) -o $(notdir $@)
@@ -110,9 +111,16 @@ $(FNAME).DSK: subdirs support
 $(FNAME).RPK: $(FNAME)C.bin $(FNAME)G.bin layout.xml
 	zip $@ $^
 
-forcecmd_$(VER).zip: $(MANIFEST) subdirs support $(FNAME).RPK $(FNAME).DSK
+fcsdk:
+	rm -f ./fcsdk
+	cp -a example/gcc/fcsdk ./fcsdk
+	cp -a example/gcc/hello ./fcsdk/hello
+	cp -a example/gcc/samshello ./fcsdk/samshello
+	find fcsdk -name "objects" -o -name "mapfile" -o -name "*HELLO*" | xargs rm -r
+
+forcecmd_$(VER).zip: $(MANIFEST) subdirs support $(FNAME).RPK $(FNAME).DSK fcsdk
 	rm -f $@
-	zip $@ $(MANIFEST) $(SUPPORT) $(FNAME).RPK $(FNAME).DSK
+	zip -r $@ $(MANIFEST) $(SUPPORT) $(FNAME).RPK $(FNAME).DSK fcsdk
 
 .PHONY: clean subdirs support
 
