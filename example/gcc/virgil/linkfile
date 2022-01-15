@@ -31,4 +31,8 @@ SECTIONS
   .bss  ALIGN(2) : {
     *(.bss);
   } >ram
+
+  __STATS_DATA_BSS = SIZEOF(.data) + SIZEOF(.bss);
+  __STATS_BANK_0_SIZE = SIZEOF(.bank0);
+  __STATS_BANK_1_SIZE = SIZEOF(.bank1);
 }
