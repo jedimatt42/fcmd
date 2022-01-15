@@ -147,12 +147,17 @@ void FC_SAMS(1,screen_redraw()) {
   limit = limit < 28 ? limit : 28;
   int i = 0;
   int vdp_line_offset = 80;
+  unsigned char color = GRAY_ON_BLACK;
   while(i < limit) {
     struct Line* line = page_get_line(i + state.line_offset + 1);
-    if (line->type == LINE_TYPE_LINK) {
+    if (line->type == LINE_TYPE_LINK_CONT) {
+      // use same color as previous link line
+      vdp_memcpy(imageAddr + vdp_line_offset, line->data, 80);
+      vdp_memset(colorAddr + vdp_line_offset, color, 80);
+    } else if (line->type == LINE_TYPE_LINK) {
       int len = 0;
       char* url = link_url(line->data, &len);
-      int color = GREEN_ON_BLACK;
+      color = GREEN_ON_BLACK;
       if (fc_str_startswith(url, "http")) {
 	if (url[4] == ':' || (url[4] == 's' && url[5] == ':')) {
 	  color = YELLOW_ON_BLACK;
@@ -165,7 +170,7 @@ void FC_SAMS(1,screen_redraw()) {
       vdp_memset(imageAddr + vdp_line_offset + len, ' ', 80 - len);
       vdp_memset(colorAddr + vdp_line_offset, color, 80);
     } else {
-      unsigned char color = GRAY_ON_BLACK;
+      color = GRAY_ON_BLACK;
       if (line->type == LINE_TYPE_HEADING) {
 	color = CYAN_ON_BLACK;
       } else if (line->type == LINE_TYPE_LITERAL) {

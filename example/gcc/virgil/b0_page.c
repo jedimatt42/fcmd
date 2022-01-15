@@ -157,6 +157,9 @@ void FC_SAMS(0,page_from_buf(char* buf, int len)) {
       // if we wrapped, use same linetype as previous
       if (buf[i] != 10) {
 	new_line_type = last_line->type;
+	if (new_line_type == LINE_TYPE_LINK) {
+          new_line_type = LINE_TYPE_LINK_CONT;
+	}
       }
       
       // don't add a new line if the line type is toggle...
@@ -182,9 +185,9 @@ void FC_SAMS(0,page_from_buf(char* buf, int len)) {
 		   last_line->type == LINE_TYPE_HEADING) {
 	  last_line->data[last_line->length++] = ' ';
 	  last_line->data[last_line->length++] = ' ';
-	} else if (new_line_type == LINE_TYPE_LINK) {
-	  last_line->data[last_line->length++] = ' ';
-	  last_line->data[last_line->length++] = ' ';
+	} else if (new_line_type == LINE_TYPE_LINK_CONT) {
+	  last_line->data[last_line->length++] = '-';
+	  last_line->data[last_line->length++] = '>';
 	  last_line->data[last_line->length++] = ' ';
 	}
       }

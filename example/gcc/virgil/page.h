@@ -10,6 +10,7 @@
 #define LINE_TYPE_QUOTE 5
 #define LINE_TYPE_TOGGLE 6
 #define LINE_TYPE_BULLET 7
+#define LINE_TYPE_LINK_CONT 8
 
 struct __attribute__((__packed__)) Line {
   int type;
