@@ -105,9 +105,10 @@ void FC_SAMS(0,handle_mouse_click()) {
   } 
 
   // page is draw one line down, so decrement for that.
-  struct Line* page_line = page_get_line(line - 1 + state.line_offset);
+  int line_id = line - 1 + state.line_offset;
+  struct Line* page_line = page_get_line(line_id);
   if (page_line->type == LINE_TYPE_LINK || page_line->type == LINE_TYPE_LINK_CONT) {
-    link_set_url(state.newurl, line - 1 + state.line_offset);
+    link_set_url(state.newurl, line_id);
     state.cmd = CMD_RELOAD;
   }
   

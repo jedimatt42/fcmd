@@ -25,8 +25,21 @@ void FC_SAMS(1,link_set_url(char* dst, int line_id)) {
     i++;
   }
   int b = 0;
-  while(b < 80 && line[i] != ' ' && line[i] != '\t' && line[i] != 0) {
+  while(i < 80 && line[i] != ' ' && line[i] != '\t' && line[i] != 0) {
    dst[b++] = line[i++];
+  }
+  link_line = page_get_line(++idx);
+  int done = 0;
+  while (link_line->type == LINE_TYPE_LINK_CONT && !done) {
+    line = link_line->data;
+    i = 3; // we control the '-> ' prefix
+    while(b < 255 && i < 80 && line[i] != ' ' && line[i] != '\t' && line[i] != 0) {
+      dst[b++] = line[i++];
+    }
+    if (i < 80) {
+      done = 1;
+    }
+    link_line = page_get_line(++idx);
   }
   // todo: investigate subsequent lines if we hit the limit
   buf[b] = 0;

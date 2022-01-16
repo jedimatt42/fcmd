@@ -20,7 +20,7 @@ void FC_SAMS(1,init_history()) {
 void FC_SAMS(1,history_add_link(char* link)) {
   // page lines and history are banked into same address space
   // copy it to stack temporarily
-  char tmp[80];
+  char tmp[256];
   fc_strcpy(tmp, link);
   // now bring in the history page
   map_history();
