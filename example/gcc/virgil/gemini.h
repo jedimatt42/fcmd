@@ -19,6 +19,8 @@ struct __attribute__((__packed__)) State {
   char error[80];
 };
 
+#define MAX_URL_LEN 255
+
 #define CMD_IDLE 0
 #define CMD_QUIT 1
 #define CMD_STOP 2

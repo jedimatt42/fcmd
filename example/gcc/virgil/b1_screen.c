@@ -156,10 +156,10 @@ void FC_SAMS(1,screen_redraw()) {
       vdp_memset(colorAddr + vdp_line_offset, color, 80);
     } else if (line->type == LINE_TYPE_LINK) {
       int len = 0;
-      char* url = link_url(line->data, &len);
+      char* url = link_url_scheme(line->data, &len);
       color = GREEN_ON_BLACK;
       if (fc_str_startswith(url, "http")) {
-	if (url[4] == ':' || (url[4] == 's' && url[5] == ':')) {
+	if (url[4] == 's' || (url[4] == 0)) {
 	  color = YELLOW_ON_BLACK;
 	}
       } else if (fc_str_startswith(url, "gopher:")) {

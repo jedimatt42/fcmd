@@ -66,15 +66,15 @@ int on_stop() {
 }
 
 void FC_SAMS(0,on_back()) {
-  char tmp[80];
+  char tmp[256];
   history_get_prev(tmp);
   fc_strcpy(state.newurl, tmp);
   state.cmd = CMD_RELOAD_NOHIST;
 }
 
 void FC_SAMS(0,on_address()) {
-  char tmp[80];
-  fc_strset(tmp, 0, 80);
+  char tmp[256];
+  fc_strset(tmp, 0, 256);
   fc_strcpy(tmp, state.url);
   char ramstr[10] = "Address:";
   screen_prompt(tmp, ramstr);

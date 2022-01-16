@@ -1,22 +1,57 @@
 #include <fc_api.h>
 #include "link.h"
+#include "page.h"
 
 static char buf[256];
 
-char* FC_SAMS(1,link_url(char* line, int* length)) {
+void FC_SAMS(1,link_set_url(char* dst, int line_id)) {
+  // the 'normalize_url' code needs pretty clean buffer
+  fc_strset(dst, 0, 256);
+  // find first line of link
+  int idx = line_id;
+  struct Line* link_line = page_get_line(idx);
+  while(link_line->type == LINE_TYPE_LINK_CONT) {
+    link_line = page_get_line(--idx);
+  }
+
+  // now link_line and idx reference the first part of the link.
+  
+  // format in page line is '=>' [whitespace] url [<whitespace> label]
   int i = 2;
-  // format is '=>' whitespace url whitespace label
+  char* line = link_line->data;
+
   while(line[i] == ' ' || line[i] == '\t') {
-    // consume whitespace
+    // consume optional whitespace
     i++;
   }
   int b = 0;
-  while(line[i] != ' ' && line[i] != '\t' && line[i] != 0) {
-    // copy url
+  while(b < 80 && line[i] != ' ' && line[i] != '\t' && line[i] != 0) {
+   dst[b++] = line[i++];
+  }
+  // todo: investigate subsequent lines if we hit the limit
+  buf[b] = 0;
+}
+
+char* FC_SAMS(1,link_url_scheme(char* line, int* length)) {
+  int i = 2;
+  // format is '=>' [whitespace] url [<whitespace> label]
+  while(line[i] == ' ' || line[i] == '\t') {
+    // consume optional whitespace
+    i++;
+  }
+  int b = 0;
+  while(b < 10 && line[i] != ':' && line[i] != ' ' && line[i] != '\t' && line[i] != 0) {
+    // copy scheme
     buf[b++] = line[i++];
   }
-  buf[b] = 0;
-  *length = b;
+  if (line[i] == ':') {
+    buf[b] = 0;
+    *length = b;
+  } else {
+    // default to gemini scheme
+    fc_strcpy(buf, "gemini");
+    *length = 6;
+  }
   return buf;
 }
 

@@ -15,6 +15,7 @@ void send_request(char* request);
 void handle_success(char* line);
 void handle_default(char* line);
 void on_exit();
+void restore_url();
 int check_requirements();
 
 void display_page();
@@ -183,15 +184,23 @@ void FC_SAMS(0, open_url(char* url, int push_history)) {
       case '5':
 	{
 	  fc_strcpy(state.error, "5x error");
+	  restore_url();
 	}
 	break;
     }
   } else {
     fc_strcpy(state.error, "Connection error");
+    restore_url();
   }
   if (state.cmd != CMD_READPAGE) {
     fc_tls_close(SOCKET_ID);
   }
+}
+
+void restore_url() {
+  char tmp[256];
+  history_get_prev(tmp);
+  update_full_url(state.url, tmp);
 }
 
 void send_request(char* request) {
