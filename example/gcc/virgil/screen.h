@@ -2,8 +2,8 @@
 
 #include <fc_api.h>
 
-#define XADDRESS 58
-#define XSTOP (XADDRESS + 10)
+#define XMENU 60
+#define XSTOP (XMENU + 10)
 #define XQUIT (XSTOP + 7)
 
 #define BL 0xB6
@@ -16,4 +16,5 @@ FC_SAMS_VOIDBANKED(1, screen_redraw, (), ());
 FC_SAMS_VOIDBANKED(1, screen_status, (), ());
 FC_SAMS_VOIDBANKED(1, screen_title, (), ());
 FC_SAMS_VOIDBANKED(1, screen_prompt, (char* dst, char* prompt), (dst, prompt));
+FC_SAMS_VOIDBANKED(1, screen_menu, (), ());
 

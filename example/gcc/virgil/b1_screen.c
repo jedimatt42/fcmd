@@ -82,10 +82,11 @@ void FC_SAMS(1,screen_title()) {
   tmp[i++] = 'K';
   tmp[i++] = BR;
 
-  i = XADDRESS - 1;
+  i = XMENU - 1;
   tmp[i++] = BL;
-  fc_strcpy(tmp + i, "ADDRESS");
-  i += 7;
+  tmp[i++] = 0x19; // down arrow
+  fc_strcpy(tmp + i, "MENU");
+  i += 4;
   tmp[i++] = BR;
 
   i++;
@@ -204,3 +205,13 @@ void FC_SAMS(1,screen_prompt(char* dst, char* prompt)) {
   fc_tipi_mouse_enable(&md);
 }
 
+void FC_SAMS(1,screen_menu()) {
+  for(int i=1; i < 4; i++) {
+    vdp_memset(imageAddr + (i*80) + XMENU, ' ', 10);
+    vdp_memset(colorAddr + (i*80) + XMENU, CBLACK_ON_GREEN, 10);
+  }
+  int mAddr = imageAddr + 80 + XMENU + 1;
+  vdp_memcpy(mAddr, "Address", 7);
+  vdp_memcpy(mAddr + 80, "History", 7);
+  vdp_memcpy(mAddr + 160, "About", 5);
+}

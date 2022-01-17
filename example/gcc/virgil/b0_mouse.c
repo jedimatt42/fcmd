@@ -15,6 +15,8 @@ int mouse_active;
 
 static int spritePatternAddr;
 
+void on_menu();
+
 void FC_SAMS(0,init_mouse()) {
   struct DisplayInformation dinfo;
   fc_display_info(&dinfo);
@@ -82,25 +84,46 @@ void FC_SAMS(0,handle_mouse_click()) {
 	on_back();
       }
       return;
-    } else if (col >= XADDRESS && col < XADDRESS + 9) {
-      on_address();
+    } else if (col >= XMENU && col < XMENU + 9) {
+      if (!state.menu_open) {
+        on_menu();
+        return;
+      }
     }
   } else {
-    int redraw = 0;
-    if (col > 70) {
-      if (line < 8) {
-	redraw = on_page_up();
-      } else if (line < 16) {
-	redraw = on_key_up();
-      } else if (line < 24) {
-	redraw = on_key_down();
-      } else {
-	redraw = on_page_down();
-      }
-      if (redraw) {
+    if (state.menu_open) {  
+      if (col >= XMENU && col <= XMENU + 10 && line <= 4) {
 	screen_redraw();
+	if (line == 2) {
+	  on_address();
+	} else {
+	  if (line == 3) {
+	    fc_strcpy(state.newurl, "history:");
+	  } else if (line == 4) {
+	    fc_strcpy(state.newurl, "about:");
+	  }
+          state.cmd = CMD_RELOAD_NOHIST;
+	}
+	state.menu_open = 0;
+	return;
       }
-      return;
+    } else {
+      int redraw = 0;
+      if (col > 70) {
+	if (line < 8) {
+	  redraw = on_page_up();
+	} else if (line < 16) {
+	  redraw = on_key_up();
+	} else if (line < 24) {
+	  redraw = on_key_down();
+	} else {
+	  redraw = on_page_down();
+	}
+	if (redraw) {
+	  screen_redraw();
+	}
+	return;
+      }
     }
   } 
 
@@ -110,9 +133,18 @@ void FC_SAMS(0,handle_mouse_click()) {
   if (page_line->type == LINE_TYPE_LINK || page_line->type == LINE_TYPE_LINK_CONT) {
     link_set_url(state.newurl, line_id);
     state.cmd = CMD_RELOAD;
+  } else if (state.menu_open) {
+    state.menu_open = 0;
+    screen_redraw();
   }
   
   return;
+}
+
+void on_menu() {
+  state.cmd = CMD_IDLE;
+  screen_menu();
+  state.menu_open = 1;
 }
 
 #define SPR16X(a,b,c,d, e,f,g,h, i,j,k,l, m,n,o,p) { \

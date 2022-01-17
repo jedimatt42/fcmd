@@ -2,7 +2,7 @@
 
 #include <fc_api.h>
 
-#define _READLINE_PAGE 0
+#define _READLINE_PAGE 1
 
 FC_SAMS_VOIDBANKED(_READLINE_PAGE, init_readline, (int socket_id), (socket_id));
 
