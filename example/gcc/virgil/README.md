@@ -27,14 +27,14 @@ This will open the gemini url given, and display the page.
 
 ## TODO
 
-* long urls wrap and become disfunctional
-* history is wonkey again
+* ~~long urls wrap and become disfunctional~~
+* ~~history is wonkey again~~
 
 I want to implement:
 
-* file:///urls... 
-* SAMS paging for code... 
-* file download
-* view history
-* bookmarks
+* [x] SAMS paging for code... 
+* [x] view history
+* [ ] file:///urls... 
+* [ ] file download
+* [ ] bookmarks
 
