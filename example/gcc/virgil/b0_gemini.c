@@ -126,6 +126,13 @@ void FC_SAMS(0, open_url(char* url, int push_history)) {
     return;
   }
 
+  if (!fc_strcmp(url, "history:")) {
+    page_clear_lines();
+    show_history();
+    state.cmd = CMD_IDLE;
+    return;
+  }
+
   update_full_url(state.url, url);
   normalize_url(state.url);
   set_hostname_and_port(state.url, hostname, port); 

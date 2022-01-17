@@ -33,6 +33,6 @@ SECTIONS
   } >ram
 
   __STATS_DATA_BSS = SIZEOF(.data) + SIZEOF(.bss);
-  __STATS_BANK_0_SIZE = SIZEOF(.bank0);
-  __STATS_BANK_1_SIZE = SIZEOF(.bank1);
+  __STATS_BANK_0_SIZE = 8192 - SIZEOF(.bank0);
+  __STATS_BANK_1_SIZE = 8192 - SIZEOF(.bank1);
 }

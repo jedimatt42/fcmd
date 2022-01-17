@@ -41,3 +41,35 @@ void FC_SAMS(1,history_get_prev(char* dst)) {
   }
 }
 
+// dst must not be in top address bank
+int FC_SAMS(1,history_get(char* dst, int i)) {
+  map_history();
+  struct ListEntry* entry = fc_list_get(HISTORY, i);
+  if (entry == 0) {
+    *dst = 0;
+    return 0;
+  }
+  fc_strncpy(dst, entry->data, entry->length);
+  return entry->length;
+}
+
+void FC_SAMS(1,show_history()) {
+  char link[4] = "=> ";
+  char nl[2] = "\n";
+  char line[256];
+  fc_strset(line, 0, 256);
+  fc_strcpy(line, "# Virgil99 Browser History\n\n");
+  page_from_buf(line, fc_strlen(line));
+  int hist_idx = 0;
+  int len = 1;
+  while(len > 0) {
+    fc_strset(line, 0, 256);
+    len = history_get(line, hist_idx++);
+    if (len > 0) {
+      page_from_buf(link, 3);
+      page_from_buf(line, len);
+      page_from_buf(nl, 1);
+    }
+  }
+}
+
