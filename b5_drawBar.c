@@ -44,6 +44,8 @@ void drawBar() {
     bk_tputc(RE);
     if (displayWidth == 80 && vdp_type == VDP_F18A) {
         conio_scrnCol = ((conio_scrnCol & 0x0f) << 4) | ((conio_scrnCol & 0xf0) >> 4);
+	VDP_SET_ADDRESS_WRITE(79);
+	VDPWD = ' ';
     }
     gotoxy(ox, oy);
 }
