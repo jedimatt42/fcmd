@@ -19,7 +19,7 @@ LDFLAGS=\
   --script=linkfile
 
 CFLAGS=\
-  -std=gnu99 -nostdlib -ffreestanding -O2 -Werror --save-temp -I.. -I../libti99
+  -std=gnu99 -nostdlib -ffreestanding -O2 -Werror --save-temp -I$(abspath .) -I$(abspath libti99)
 
 SRCS:=$(sort $(wildcard *.c) $(wildcard *.asm))
 LIBTI99_SRCS=$(sort $(wildcard libti99/*.c))
