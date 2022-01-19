@@ -43,40 +43,16 @@ struct __attribute__((__packed__)) FCProgramHeader {
 
 #define SAMS_REG(x) *((volatile int*)(0x4000 + (x << 1)))
 
-inline void snapshotSAMS(int* snapshot) {
-  __asm__(
-    "li r12,0x1E00\n\t"
-    "sbo 0\n\t"
-  );
-
-  snapshot[0] = SAMS_REG(0x0A);
-  snapshot[1] = SAMS_REG(0x0B);
-  snapshot[2] = SAMS_REG(0x0C);
-  snapshot[3] = SAMS_REG(0x0D);
-  snapshot[4] = SAMS_REG(0x0E);
-  snapshot[5] = SAMS_REG(0x0F);
-
-  __asm__(
-    "sbz 0\n\t"
-  );
+void snapshotSAMS(int* snapshot) {
+  for(int i=0; i<6; i++) {
+    snapshot[i] = sams_map_shadow[i];
+  }
 }
 
-inline void restoreSAMS(int* snapshot) {
-  __asm__(
-    "li r12,0x1E00\n\t"
-    "sbo 0\n\t"
-  );
-
-  SAMS_REG(0x0A) = snapshot[0];
-  SAMS_REG(0x0B) = snapshot[1];
-  SAMS_REG(0x0C) = snapshot[2];
-  SAMS_REG(0x0D) = snapshot[3];
-  SAMS_REG(0x0E) = snapshot[4];
-  SAMS_REG(0x0F) = snapshot[5];
-  
-  __asm__(
-    "sbz 0\n\t"
-  );
+void restoreSAMS(int* snapshot) {
+  for(int i=0; i<6; i++) {
+    bk_map_page(snapshot[i], 0xA000 + (i << 12));
+  }
 }
 
 void popProcInfo() {

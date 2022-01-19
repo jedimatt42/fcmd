@@ -9,6 +9,8 @@
 int sams_next_page;
 int sams_total_pages;
 
+int sams_map_shadow[6];
+
 void samsMapOn()
 {
     __asm__(
@@ -25,6 +27,11 @@ void samsMapOff()
 
 void __attribute__((noinline)) map_page(int page, int location)
 {
+    int shadow_idx = location >> 12;
+    if (shadow_idx > 0x0A) {
+       sams_map_shadow[shadow_idx - 0x0A] = page;       
+    }
+    
     __asm__(
         "LI r12, >1E00\n\t"
         "SRL %0, 12\n\t"
