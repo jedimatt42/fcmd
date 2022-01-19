@@ -11,7 +11,7 @@ LDFLAGS=\
   --script=linkfile
 
 CFLAGS=\
-  -std=gnu99 -nostdlib -ffreestanding -O2 -Werror --save-temp -I$(FCSDK)
+  -std=gnu99 -nostdlib -ffreestanding -O2 -Werror --save-temps -I$(FCSDK)
 
 C_SRCS:=$(wildcard *.c)
 ASM_SRCS:=$(wildcard *.asm) 
