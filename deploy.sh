@@ -16,6 +16,7 @@ else
   # Copy stuff to DSK1 for use with CLASSIC99 FIAD storage
   cp example/gcc/fcmenu/FCMENU $CLASSIC99_DSK1_DIR
   cp example/gcc/ftp/FTP $CLASSIC99_DSK1_DIR
+  cp example/gcc/font/FONT $CLASSIC99_DSK1_DIR
   cp example/gcc/telnet/TELNET $CLASSIC99_DSK1_DIR
   cp example/gcc/hello/HELLO $CLASSIC99_DSK1_DIR
   cp example/gcc/charset/CHARSET $CLASSIC99_DSK1_DIR
@@ -34,6 +35,7 @@ else
   scp FC/FCMDXB tipi@${TIPI_HOST_NAME}:/home/tipi/tipi_disk/FC/FCMDXB
   scp example/gcc/fcmenu/FCMENU tipi@${TIPI_HOST_NAME}:/home/tipi/tipi_disk/FC/BIN/
   scp example/gcc/ftp/FTP tipi@${TIPI_HOST_NAME}:/home/tipi/tipi_disk/FC/BIN/
+  scp example/gcc/font/FONT tipi@${TIPI_HOST_NAME}:/home/tipi/tipi_disk/FC/BIN/
   scp example/gcc/telnet/TELNET tipi@${TIPI_HOST_NAME}:/home/tipi/tipi_disk/FC/BIN/
   scp example/gcc/say/SAY tipi@${TIPI_HOST_NAME}:/home/tipi/tipi_disk/FC/BIN/
   scp example/gcc/say/SAMPLE tipi@${TIPI_HOST_NAME}:/home/tipi/tipi_disk/FC/BIN/
