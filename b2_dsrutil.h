@@ -74,6 +74,9 @@ unsigned int dsr_delete(struct DeviceServiceRoutine* dsr, struct PAB* pab);
 unsigned int dsr_ea5load(struct DeviceServiceRoutine* dsr, const char* fname);
 unsigned int dsr_reset(struct DeviceServiceRoutine* dsr, struct PAB* pab, int record);
 
+unsigned int dsr_prg_load(struct DeviceServiceRoutine* dsr, struct PAB* pab, const char* fname, int vdpaddr, int maxsize);
+unsigned int dsr_prg_save(struct DeviceServiceRoutine* dsr, struct PAB* pab, const char* fname, int vdpaddr, int count);
+
 typedef void (*vol_entry_cb)(struct VolInfo*);
 typedef void (*dir_entry_cb)(struct DirEntry*);
 
@@ -109,5 +112,9 @@ DECLARE_BANKED(dsr_reset, BANK(2), unsigned int, bk_dsr_reset, (struct DeviceSer
 DECLARE_BANKED(dsr_status, BANK(2), unsigned int, bk_dsr_status, (struct DeviceServiceRoutine* dsr, struct PAB* pab), (dsr, pab))
 DECLARE_BANKED(dsr_ea5load, BANK(9), unsigned int, bk_dsr_ea5load, (struct DeviceServiceRoutine * dsr, const char *fname), (dsr, fname))
 DECLARE_BANKED(loadDir, BANK(9), unsigned int, bk_loadDir, (struct DeviceServiceRoutine* dsr, const char* pathname, vol_entry_cb vol_cb, dir_entry_cb dir_cb), (dsr, pathname, vol_cb, dir_cb))
+
+DECLARE_BANKED(dsr_prg_load, BANK(2), unsigned int, bk_dsr_prg_load, (struct DeviceServiceRoutine* dsr, struct PAB* pab, const char* fname, int vdpaddr, int maxsize), (dsr, pab, fname, vdpaddr, maxsize))
+
+DECLARE_BANKED(dsr_prg_save, BANK(2), unsigned int, bk_dsr_prg_save, (struct DeviceServiceRoutine* dsr, struct PAB* pab, const char* fname, int vdpaddr, int count), (dsr, pab, fname, vdpaddr, count))
 
 #endif

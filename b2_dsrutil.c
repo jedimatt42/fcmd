@@ -90,6 +90,26 @@ void initPab(struct PAB* pab) {
   pab->VDPBuffer = FBUF;
 }
 
+unsigned int dsr_prg_load(struct DeviceServiceRoutine* dsr, struct PAB* pab, const char* fname, int vdpaddr, int maxsize) {
+  initPab(pab);
+  pab->OpCode = DSR_LOAD;
+  pab->VDPBuffer = vdpaddr;
+  pab->pName = (unsigned char*)fname;
+  pab->RecordNumber = maxsize;
+
+  return mds_lvl3_dsrlnk(dsr->crubase, pab, VPAB);
+}
+
+unsigned int dsr_prg_save(struct DeviceServiceRoutine* dsr, struct PAB* pab, const char* fname, int vdpaddr, int count) {
+  initPab(pab);
+  pab->OpCode = DSR_SAVE;
+  pab->VDPBuffer = vdpaddr;
+  pab->pName = (unsigned char*)fname;
+  pab->RecordNumber = count;
+
+  return mds_lvl3_dsrlnk(dsr->crubase, pab, VPAB);
+}
+
 unsigned int dsr_open(struct DeviceServiceRoutine* dsr, struct PAB* pab, const char* fname, int flags, int reclen) {
   initPab(pab);
   pab->OpCode = DSR_OPEN;

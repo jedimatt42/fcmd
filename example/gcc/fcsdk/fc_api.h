@@ -388,6 +388,8 @@ extern void* memcpy(void* dest, const void* src, int count);
 #define FC_TEXTCOLOR 0x5a
 #define FC_BGCOLOR 0x5b
 #define FC_BORDERCOLOR 0x5c
+#define FC_DSR_PRG_LOAD 0x5d
+#define FC_DSR_PRG_SAVE 0x5e
 
 // function: void fc_tputc(int c)
 DECL_FC_API_CALL(FC_TPUTC, fc_tputc, void, (int c), (c))
@@ -667,5 +669,11 @@ DECL_FC_API_CALL(FC_BGCOLOR, fc_bgcolor, unsigned int, (unsigned int color), (co
 
 // function: unsigned int fc_bordercolor(unsigned int x)
 DECL_FC_API_CALL(FC_BORDERCOLOR, fc_bordercolor, unsigned int, (unsigned int x), (x))
+
+// function: unsigned int fc_dsr_prg_load(struct DeviceServiceRoutine* dsr, struct PAB* pab, const char* fname, int vdpaddr, int maxsize)
+DECL_FC_API_CALL(FC_DSR_PRG_LOAD, fc_dsr_prg_load, unsigned int, (struct DeviceServiceRoutine* dsr, struct PAB* pab, const char* fname, int vdpaddr, int maxsize), (dsr, pab, fname, vdpaddr, maxsize))
+
+// function: unsigned int fc_dsr_prg_save(struct DeviceServiceRoutine* dsr, struct PAB* pab, const char* fname, int vdpaddr, int count)
+DECL_FC_API_CALL(FC_DSR_PRG_SAVE, fc_dsr_prg_save, unsigned int, (struct DeviceServiceRoutine* dsr, struct PAB* pab, const char* fname, int vdpaddr, int count), (dsr, pab, fname, vdpaddr, count))
 
 #endif

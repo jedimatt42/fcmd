@@ -108,3 +108,7 @@ list_get
 textcolor
 bgcolor
 bordercolor
+
+dsr_prg_load
+dsr_prg_save
+
