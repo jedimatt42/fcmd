@@ -1,11 +1,13 @@
 #include "fc_api.h"
 
+int load_offset = 0;
+
 void load_font(char* fname_buffer, struct DeviceServiceRoutine* dsr) {
   struct DisplayInformation dInfo;
   fc_display_info(&dInfo);
 
   struct PAB pab;
-  int ferr = fc_dsr_prg_load(dsr, &pab, fname_buffer, dInfo.patternAddr, 256 * 8);
+  int ferr = fc_dsr_prg_load(dsr, &pab, fname_buffer, dInfo.patternAddr + load_offset, 256 * 8);
   if (ferr) {
     fc_tputs("error loading font file\n");
   }
@@ -31,6 +33,8 @@ int fc_main(char* args) {
   int save = 0;
   if (fc_strcmpi(tmp, "/s") == 0) {
     save = 1;
+  } else if (fc_strcmpi(tmp, "/w") == 0) {
+    load_offset += 32 * 8;
   } else {
     cursor = args;
   }
@@ -38,7 +42,7 @@ int fc_main(char* args) {
   fc_parse_path_param(cursor, &dsr, tmp, PR_REQUIRED);
   if (dsr == 0) {
     fc_tputs("error no font file specified\n\n");
-    fc_tputs("FONT [/s] <file>\n");
+    fc_tputs("FONT [/s] [/w] <file>\n");
   } else {
     if (save) {
       save_font(tmp, dsr);
