@@ -6,7 +6,7 @@
 extern int sams_next_page;
 extern int sams_total_pages;
 
-extern int sams_map_shadow[6];
+extern volatile int sams_map_shadow[6];
 
 // determine how many SAMS pages are available, or 0 if no SAMS detected.
 int init_sams();

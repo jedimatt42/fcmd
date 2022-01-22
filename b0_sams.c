@@ -9,27 +9,25 @@
 int sams_next_page;
 int sams_total_pages;
 
-int sams_map_shadow[6];
+volatile int sams_map_shadow[6];
 
-void samsMapOn()
-{
+void samsMapOn() {
     __asm__(
         "LI r12, >1E00\n\t"
         "SBO 1\n\t");
 }
 
-void samsMapOff()
-{
+void samsMapOff() {
     __asm__(
         "LI r12, >1E00\n\t"
         "SBZ 1\n\t");
 }
 
-void __attribute__((noinline)) map_page(int page, int location)
-{
-    int shadow_idx = location >> 12;
-    if (shadow_idx > 0x0A) {
-       sams_map_shadow[shadow_idx - 0x0A] = page;       
+void __attribute__((noinline)) map_page(int page, int location) {
+    unsigned int shadow_idx = ((unsigned int)location);
+    if (shadow_idx >= 0xA000) {
+       shadow_idx = (shadow_idx - 0xA000) >> 12; 
+       sams_map_shadow[shadow_idx] = page;       
     }
     
     __asm__(
@@ -51,8 +49,7 @@ void sams_info(struct SamsInformation* info) {
     info->total_pages = sams_total_pages;
 }
 
-int hasSams()
-{
+int hasSams() {
     volatile int *lower_exp = (volatile int *)0x2000;
     samsMapOn();
     map_page(0, 0x2000);
@@ -65,8 +62,7 @@ int hasSams()
     return detected;
 }
 
-int samsPageCount()
-{
+int samsPageCount() {
     samsMapOn();
     volatile int *lower_exp = (volatile int *)0x2000;
 
@@ -89,8 +85,7 @@ int samsPageCount()
     return pages >> 1;
 }
 
-void check_exp_mem()
-{
+void check_exp_mem() {
     // in case we have no expansion memory at all..
     volatile int *low_mem = (int *)0x2000;
     *low_mem = 0xFCFC;

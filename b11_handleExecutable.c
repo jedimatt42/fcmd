@@ -43,13 +43,13 @@ struct __attribute__((__packed__)) FCProgramHeader {
 
 #define SAMS_REG(x) *((volatile int*)(0x4000 + (x << 1)))
 
-void snapshotSAMS(int* snapshot) {
+void __attribute__((noinline)) snapshotSAMS(int* snapshot) {
   for(int i=0; i<6; i++) {
     snapshot[i] = sams_map_shadow[i];
   }
 }
 
-void restoreSAMS(int* snapshot) {
+void __attribute__((noinline)) restoreSAMS(int* snapshot) {
   for(int i=0; i<6; i++) {
     bk_map_page(snapshot[i], 0xA000 + (i << 12));
   }
