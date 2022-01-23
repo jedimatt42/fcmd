@@ -6,6 +6,7 @@
 #include "b8_terminal.h"
 #include "b0_globals.h"
 #include "b10_detect_vdp.h"
+#include "b5_loadFont.h"
 #include <vdp.h>
 #include <conio.h>
 
@@ -83,7 +84,10 @@ void setupScreen(int width) {
 
   clrscr();
   gotoxy(0,nTitleLine);
-  bk_defineChars();
+  if (bk_load_font()) {
+    // if font file fails to load, then use ROM font
+    bk_defineChars();
+  }
 }
 
 
