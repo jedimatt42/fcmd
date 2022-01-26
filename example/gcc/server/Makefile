@@ -4,7 +4,6 @@ CC=tms9900-gcc
 OBJCOPY=tms9900-objcopy
 OBJDUMP=tms9900-objdump
 XDM99?=$(shell which xdm99.py)
-XAS99?=$(shell which xas99.py)
 FCSDK=$(abspath ../fcsdk)
 
 FNAME=SERVER
