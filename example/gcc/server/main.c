@@ -14,10 +14,12 @@ int bind_server_port() {
     fc_strcpy(bind_request + 3, "0.0.0.0:9640");
     unsigned int len = 15;
 
+    fc_tipi_on();
     fc_tipi_sendmsg(len, bind_request);
 
     char bind_response;
     fc_tipi_recvmsg(&len, &bind_response);;
+    fc_tipi_off();
 
     if (bind_response == 0) {
       fc_tputs(".");
@@ -39,10 +41,12 @@ char server_accept() {
   accept_request[1] = 0x00;
   accept_request[2] = 0x07;
 
+  fc_tipi_on();
   fc_tipi_sendmsg(3, accept_request);
   char client_id = 0;
   unsigned int len = 0;
   fc_tipi_recvmsg(&len, &client_id);
+  fc_tipi_off();
   return client_id;
 }
 
@@ -51,10 +55,12 @@ void close_client(char client_id) {
   close_request[0] = 0x22;
   close_request[1] = client_id;
   close_request[2] = 0x02;
+  fc_tipi_on();
   fc_tipi_sendmsg(3, close_request);
   // always receive after sending... in this case the value is always one byte
   unsigned int dummy = 0;
   fc_tipi_recvmsg(&dummy, (char*) &dummy);
+  fc_tipi_off();
 }
 
 void remove_client(char* client_ids, int idx) {
@@ -79,10 +85,12 @@ int handle_client(char client_id) {
   read_request[3] = 0;
   read_request[4] = 80;
 
+  fc_tipi_on();
   fc_tipi_sendmsg(5, read_request);
 
   unsigned int len = 0;
   fc_tipi_recvmsg(&len, line);
+  fc_tipi_off();
 
   // send something client unique back
   if (len) {
@@ -98,9 +106,11 @@ int handle_client(char client_id) {
     fc_strcpy(line + 3, "your id is ");
     fc_strcpy(line + 14, fc_uint2hex(client_id));
 
+    fc_tipi_on();
     fc_tipi_sendmsg(fc_strlen(line), line);
     // we'll just re-use line here.. only 1 byte is returned.
     fc_tipi_recvmsg(&len, line);
+    fc_tipi_off();
     return line[0] == 0; // if it is zero, it is an error.
   } else {
     // send a null character just to verify the connection
@@ -108,8 +118,10 @@ int handle_client(char client_id) {
     line[1] = client_id;
     line[2] = 0x03;
     line[3] = 0;
+    fc_tipi_on();
     fc_tipi_sendmsg(4, line);
     fc_tipi_recvmsg(&len, line);
+    fc_tipi_off();
     if (len == 1 && line[0] == 0) {
       return 1; // detected failure to write
     }
@@ -118,10 +130,8 @@ int handle_client(char client_id) {
 }
 
 int fc_main(char* args) {
-  fc_tipi_on();
   int err = bind_server_port();
   if (err) {
-    fc_tipi_off();
     return err;
   }
 
@@ -136,7 +146,6 @@ int fc_main(char* args) {
       int client_id = server_accept();
       if (client_id == 0xff) {
         fc_tputs("server socket error\n");
-        fc_tipi_off();
         return 1;
       }    
       if (client_id != 0) {
@@ -154,6 +163,5 @@ int fc_main(char* args) {
     }
   }
 
-  fc_tipi_off();
   return 0;
 }
