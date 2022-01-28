@@ -11,7 +11,7 @@ void map_bookmarks() {
 }
 
 void FC_SAMS(_BOOKMARKS_BANK,init_bookmarks()) {
-  state.history_id = fc_sams_alloc_pages(1);
+  state.bookmarks_id = fc_sams_alloc_pages(1);
   map_bookmarks();
   fc_strset((char*)SAMS_ADDR, 0, 0x1000); 
   fc_list_init(BOOKMARKS, (char*)(SAMS_ADDR + 8), (char*)(SAMS_ADDR + 0x0FFF));

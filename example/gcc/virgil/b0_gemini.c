@@ -9,6 +9,7 @@
 #include "readline.h"
 #include "keyboard.h"
 #include "history.h"
+#include "bookmarks.h"
 #include "about.h"
 
 void send_request(char* request);
@@ -38,6 +39,7 @@ int fc_main(char* args) {
   fc_strncpy(state.newurl, args, 256);
 
   init_history();
+  init_bookmarks();
   init_page();
   init_mouse();
   init_screen();
@@ -129,6 +131,13 @@ void FC_SAMS(0, open_url(char* url, int push_history)) {
   if (!fc_strcmp(url, "history:")) {
     page_clear_lines();
     show_history();
+    state.cmd = CMD_IDLE;
+    return;
+  }
+
+  if (!fc_strcmp(url, "bookmarks:")) {
+    page_clear_lines();
+    show_bookmarks();
     state.cmd = CMD_IDLE;
     return;
   }

@@ -92,14 +92,16 @@ void FC_SAMS(0,handle_mouse_click()) {
     }
   } else {
     if (state.menu_open) {  
-      if (col >= XMENU && col <= XMENU + 10 && line <= 4) {
+      if (col >= XMENU && col <= XMENU + 10 && line <= 5) {
 	screen_redraw();
 	if (line == 2) {
 	  on_address();
 	} else {
 	  if (line == 3) {
-	    fc_strcpy(state.newurl, "history:");
+	    fc_strcpy(state.newurl, "bookmarks:");
 	  } else if (line == 4) {
+	    fc_strcpy(state.newurl, "history:");
+	  } else if (line == 5) {
 	    fc_strcpy(state.newurl, "about:");
 	  }
           state.cmd = CMD_RELOAD_NOHIST;
