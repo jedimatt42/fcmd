@@ -39,7 +39,6 @@ int fc_main(char* args) {
   fc_strncpy(state.newurl, args, 256);
 
   init_history();
-  init_bookmarks();
   init_page();
   init_mouse();
   init_screen();
@@ -220,8 +219,10 @@ void restore_url() {
 }
 
 void send_request(char* request) {
-  fc_tls_send_chars(SOCKET_ID, request, fc_strlen(request));
-  fc_tls_send_chars(SOCKET_ID, (char*) CRLF, 2);
+  char tmp[256];
+  fc_strcpy(tmp, request);
+  fc_strcat(tmp, CRLF);
+  fc_tls_send_chars(SOCKET_ID, tmp, fc_strlen(tmp));
 }
 
 void handle_success(char* line) {
