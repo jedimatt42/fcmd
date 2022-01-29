@@ -8,11 +8,11 @@ struct SocketBuffer socket_buf;
 #define LASTLINE ((char*) 0xE000)
 
 
-void FC_SAMS(_READLINE_PAGE,init_readline(int socket_id)) {
+void FC_SAMS(1,init_readline(int socket_id)) {
     fc_init_socket_buffer(&socket_buf, TLS, socket_id);
 }
 
-char* FC_SAMS(_READLINE_PAGE,readline()) {
+char* FC_SAMS(1,readline()) {
     // clear the line buffer.
     int space = 4096;
 
@@ -46,7 +46,7 @@ char* FC_SAMS(_READLINE_PAGE,readline()) {
     return 0;
 }
 
-char* FC_SAMS(_READLINE_PAGE,readbytes(int* len)) {
+char* FC_SAMS(1,readbytes(int* len)) {
     *len = fc_readstream(&socket_buf, LASTLINE, 512);
     return LASTLINE;
 }

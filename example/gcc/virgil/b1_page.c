@@ -20,7 +20,7 @@ static volatile struct Line* last_line;
 
 static int add_bank();
 
-void FC_SAMS(_PAGE_PAGE,init_page()) {
+void FC_SAMS(1,init_page()) {
   struct SamsInformation samsInfo;
   fc_sams_info(&samsInfo);
   state.page_count = 0;
@@ -30,7 +30,7 @@ void FC_SAMS(_PAGE_PAGE,init_page()) {
   last_line = page_get_line(1);
 }
 
-void FC_SAMS(_PAGE_PAGE,page_clear_lines()) {
+void FC_SAMS(1,page_clear_lines()) {
   state.base_id = fc_sams_free_pages(state.page_count);
   state.page_count = 0;
   state.line_limit = 0;
@@ -60,7 +60,7 @@ static struct Line* page_add_line() {
 }
 
 // 1 based counting system
-struct Line* FC_SAMS(_PAGE_PAGE,page_get_line(int idx)) {
+struct Line* FC_SAMS(1,page_get_line(int idx)) {
   idx--;
   int page_offset = idx / LINES_PER_BANK;
   int line_offset = idx - (page_offset * LINES_PER_BANK);
@@ -104,7 +104,7 @@ static void update_line_type(volatile struct Line* line) {
 // page_load reads one segment from the socket, and adds it
 // to the current line.. or wraps if necessary.
 
-void FC_SAMS(_PAGE_PAGE,page_load()) {
+void FC_SAMS(1,page_load()) {
   int len = 0;
   char* buf = readbytes(&len);
   if (len == 0) {
@@ -114,7 +114,7 @@ void FC_SAMS(_PAGE_PAGE,page_load()) {
   page_from_buf(buf, len);
 }
 
-void FC_SAMS(_PAGE_PAGE,page_from_buf(char* buf, int len)) {
+void FC_SAMS(1,page_from_buf(char* buf, int len)) {
   // ensure the correct page is mapped into ram:
   last_line = page_get_line(state.line_count);
 
