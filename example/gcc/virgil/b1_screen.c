@@ -206,13 +206,14 @@ void FC_SAMS(1,screen_prompt(char* dst, char* prompt)) {
 }
 
 void FC_SAMS(1,screen_menu()) {
-  for(int i=1; i < 5; i++) {
+  for(int i=1; i < 6; i++) {
     vdp_memset(imageAddr + (i*80) + XMENU, ' ', 11);
     vdp_memset(colorAddr + (i*80) + XMENU, CBLACK_ON_GREEN, 11);
   }
   int mAddr = imageAddr + 80 + XMENU + 1;
   vdp_memcpy(mAddr, "Address", 7);
-  vdp_memcpy(mAddr + 80, "Bookmarks", 9);
-  vdp_memcpy(mAddr + 160, "History", 7);
-  vdp_memcpy(mAddr + 240, "About", 5);
+  vdp_memcpy(mAddr + (1*80), "Bookmarks", 9);
+  vdp_memcpy(mAddr + (2*80), "+Bookmark", 9);
+  vdp_memcpy(mAddr + (3*80), "History", 7);
+  vdp_memcpy(mAddr + (4*80), "About", 5);
 }

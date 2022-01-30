@@ -7,6 +7,7 @@
 #include "screen.h"
 #include "keyboard.h"
 #include "history.h"
+#include "bookmarks.h"
 
 struct MouseData md;
 int pointer_type;
@@ -92,19 +93,22 @@ void FC_SAMS(0,handle_mouse_click()) {
     }
   } else {
     if (state.menu_open) {  
-      if (col >= XMENU && col <= XMENU + 10 && line <= 5) {
+      if (col >= XMENU && col <= XMENU + 11 && line <= 6) {
 	screen_redraw();
 	if (line == 2) {
 	  on_address();
 	} else {
+          state.cmd = CMD_RELOAD;
 	  if (line == 3) {
 	    fc_strcpy(state.newurl, "bookmarks:");
 	  } else if (line == 4) {
-	    fc_strcpy(state.newurl, "history:");
+	    state.cmd = CMD_IDLE;
+	    bookmarks_add_link(state.url);
 	  } else if (line == 5) {
+	    fc_strcpy(state.newurl, "history:");
+	  } else if (line == 6) {
 	    fc_strcpy(state.newurl, "about:");
 	  }
-          state.cmd = CMD_RELOAD;
 	}
 	state.menu_open = 0;
 	return;
