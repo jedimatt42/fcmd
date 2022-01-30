@@ -6,8 +6,28 @@
 
 #include "debug.h"
 
+static struct DeviceServiceRoutine* get_bookmark_filename(char* filename) {
+  char* favs = fc_vars_get("VIRGIL_FAVS");
+  if (favs == 0 || favs[0] == 0) {
+    favs = "TIPI.FC.VIRGIL.BOOKMARKS";
+  }
+  struct DeviceServiceRoutine* dsr;
+  fc_parse_path_param(favs, &dsr, filename, PR_REQUIRED);
+  return dsr;
+}
 
-void FC_SAMS(0,bookmarks_add_link(char* link)) {
+int FC_SAMS(0,bookmarks_add_link(char* link)) {
+  char filename[80];
+  struct DeviceServiceRoutine* dsr = get_bookmark_filename(filename);
+
+  struct PAB pab;
+  int ferr = fc_dsr_open(dsr, &pab, filename, DSR_TYPE_VARIABLE | DSR_TYPE_APPEND, 80);
+  if (ferr) {
+    return 1;
+  }
+  fc_dsr_write(dsr, &pab, link, fc_strlen(link));
+  fc_dsr_close(dsr, &pab);
+  return 0;
 }
 
 void FC_SAMS(0,show_bookmarks()) {
@@ -16,14 +36,10 @@ void FC_SAMS(0,show_bookmarks()) {
   fc_strcpy(line, "# Bookmarks\n\n");
   page_from_buf(line, 13);
 
-  char* favs = fc_vars_get("VIRGIL_FAVS");
-  if (favs == 0 || favs[0] == 0) {
-    favs = "TIPI.FC.VIRGIL.BOOKMARKS";
-  }
-  struct PAB pab;
-  struct DeviceServiceRoutine* dsr;
   char filename[30];
-  fc_parse_path_param(favs, &dsr, filename, PR_REQUIRED);
+  struct DeviceServiceRoutine* dsr = get_bookmark_filename(filename);
+
+  struct PAB pab;
   int ferr = fc_dsr_open(dsr, &pab, filename, DSR_TYPE_VARIABLE | DSR_TYPE_INPUT, 80);
   if (ferr) {
     return; // no book marks file to load

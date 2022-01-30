@@ -39,7 +39,34 @@
 #define JOY_UP		0x04
 #define JOY_DOWN	0xfc
 
-// BASIC mode keyboard codes
+// BASIC mode 5 keyboard codes
+// for 0-9, A-Z, a-z, and symbols, the standard ASCII char value is used. 
+#define KEY_FCTN_A 124
+#define KEY_FCTN_B 190
+#define KEY_FCTN_C 96
+#define KEY_FCTN_D 9
+#define KEY_FCTN_E 11
+#define KEY_FCTN_F 123
+#define KEY_FCTN_G 125
+#define KEY_FCTN_H 192
+#define KEY_FCTN_I 63
+#define KEY_FCTN_J 192
+#define KEY_FCTN_K 193
+#define KEY_FCTN_L 194
+#define KEY_FCTN_M 195
+#define KEY_FCTN_N 196
+#define KEY_FCTN_O 39
+#define KEY_FCTN_P 34
+#define KEY_FCTN_Q 197
+#define KEY_FCTN_R 91
+#define KEY_FCTN_S 8
+#define KEY_FCTN_T 93
+#define KEY_FCTN_U 95
+#define KEY_FCTN_V 127
+#define KEY_FCTN_W 126
+#define KEY_FCTN_X 10
+#define KEY_FCTN_Y 198
+#define KEY_FCTN_Z 92
 #define KEY_CTRL_A 129
 #define KEY_CTRL_B 130
 #define KEY_CTRL_C 131

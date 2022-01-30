@@ -104,7 +104,7 @@ void FC_SAMS(0,handle_mouse_click()) {
 	  } else if (line == 5) {
 	    fc_strcpy(state.newurl, "about:");
 	  }
-          state.cmd = CMD_RELOAD_NOHIST;
+          state.cmd = CMD_RELOAD;
 	}
 	state.menu_open = 0;
 	return;

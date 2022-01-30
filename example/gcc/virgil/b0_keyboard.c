@@ -4,18 +4,18 @@
 #include "gemini.h"
 #include "screen.h"
 #include "history.h"
+#include "bookmarks.h"
 #include "link.h"
 
 int FC_SAMS(0,read_keyboard()) {
   unsigned int key = fc_kscan(5);
-  return key;
-  /*
+  
+  // return key;
   if (KSCAN_STATUS & KSCAN_MASK) {
     return key;
   } else {
     return 0;
   }
-  */
 }
 
 int FC_SAMS(0,on_key_down()) {
@@ -86,6 +86,11 @@ void FC_SAMS(0,on_address()) {
   }
 }
 
+void internalUri(char* url) {
+  fc_strcpy(state.newurl, url);
+  state.cmd = CMD_RELOAD;
+}
+
 void FC_SAMS(0,handle_keyboard()) {
   int redraw = 0;
   int key = read_keyboard();
@@ -94,6 +99,9 @@ void FC_SAMS(0,handle_keyboard()) {
       break;
     case KEY_ESC:
       state.cmd = CMD_QUIT;
+      break;
+    case KEY_AID:
+      internalUri("about:");
       break;
     case KEY_DOWN:
       redraw = on_key_down();
@@ -115,6 +123,12 @@ void FC_SAMS(0,handle_keyboard()) {
       break;
     case KEY_CTRL_A:
       on_address();
+      break;
+    case KEY_CTRL_B:
+      internalUri("bookmarks:");
+      break;
+    case KEY_FCTN_B:
+      bookmarks_add_link(state.url);
       break;
     default:
       break;
