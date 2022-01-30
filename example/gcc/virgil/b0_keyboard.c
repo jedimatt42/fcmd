@@ -130,6 +130,9 @@ void FC_SAMS(0,handle_keyboard()) {
     case KEY_FCTN_B:
       bookmarks_add_link(state.url);
       break;
+    case KEY_CTRL_H:
+      internalUri("history:");
+      break;
     default:
       break;
   }

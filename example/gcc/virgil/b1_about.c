@@ -38,6 +38,7 @@ char about_text[] =
   "* CTRL A - open address\n"
   "* CTRL B - show bookmarks: page\n"
   "* FCTN B - add current address to bookmarks\n"
+  "* CTRL H - show history: page\n"
   "\n"
   "## Supported URL formats:\n"
   "\n"
