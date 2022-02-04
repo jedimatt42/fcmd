@@ -20,7 +20,7 @@ OBJECT_LIST:=$(sort $(C_SRCS:.c=.o) $(ASM_SRCS:.asm=.o))
 
 LINK_OBJECTS:=$(addprefix objects/,$(OBJECT_LIST))
 
-BIN_ORDER=objects/bank0.page objects/bank1.page objects/data.bin
+BIN_ORDER=objects/bank0.page objects/bank1.page objects/bank2.page objects/data.bin
 
 all: $(FNAME)
 

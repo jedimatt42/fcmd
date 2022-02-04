@@ -3,8 +3,8 @@
 #include <fc_api.h>
 
 #define XMENU 60
-#define XSTOP (XMENU + 10)
-#define XQUIT (XSTOP + 7)
+#define XSTOP 68
+#define XQUIT 75
 
 #define BL 0xB6
 #define BR 0xC7

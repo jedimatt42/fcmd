@@ -20,6 +20,9 @@ SECTIONS
     .bank1 {
       objects/b1_*.o(.text)
     }
+    .bank2 {
+      objects/b2_*.o(.text)
+    }
   } >samsbanked
 
   . = 0xC000;
@@ -35,4 +38,5 @@ SECTIONS
   __STATS_DATA_BSS = SIZEOF(.data) + SIZEOF(.bss);
   __STATS_BANK_0_SIZE = 8192 - SIZEOF(.bank0);
   __STATS_BANK_1_SIZE = 8192 - SIZEOF(.bank1);
+  __STATS_BANK_2_SIZE = 8192 - SIZEOF(.bank2);
 }

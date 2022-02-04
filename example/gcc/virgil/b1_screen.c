@@ -89,7 +89,7 @@ void FC_SAMS(1,screen_title()) {
   i += 4;
   tmp[i++] = BR;
 
-  i++;
+  i = XSTOP - 1;
   tmp[i++] = BL;
   if (state.cmd == CMD_READPAGE) {
     fc_strcpy(tmp + i, "STOP");
@@ -98,8 +98,8 @@ void FC_SAMS(1,screen_title()) {
   }
   i += 4;
   tmp[i++] = BR;
-  i++;
 
+  i = XQUIT - 1;
   tmp[i++] = BL;
   fc_strcpy(tmp + i, "QUIT");
   i += 4;
@@ -115,7 +115,7 @@ void FC_SAMS(1,screen_status()) {
   set_line_color(XYOFF(1,30), CBLACK_ON_GREEN);
   int offset = XYOFF(1,30);
   vdp_memset(offset, ' ', 80);
-  if (state.error[0] != 0) {
+  if (state.error[0] != 0 && state.error_ticks > 0) {
     write_string(offset, state.error, 80);
     return;
   }

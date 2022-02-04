@@ -204,7 +204,7 @@ void FC_SAMS(1,page_from_buf(char* buf, int len)) {
   // check for out of memory
   if (state.page_count + state.base_id >= (state.max_page - 1)) {
     state.cmd = CMD_IDLE;
-    fc_strcpy(state.error, "Out of memory");
+    set_error("Out of memory", 0x7fff);
   }
 }
 

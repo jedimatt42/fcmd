@@ -85,7 +85,7 @@ void FC_SAMS(0,handle_mouse_click()) {
 	on_back();
       }
       return;
-    } else if (col >= XMENU && col < XMENU + 9) {
+    } else if (col >= XMENU && col < XMENU + 5) {
       if (!state.menu_open) {
         on_menu();
         return;

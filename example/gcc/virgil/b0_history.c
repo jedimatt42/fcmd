@@ -25,6 +25,7 @@ void FC_SAMS(0,history_add_link(char* link)) {
   // now bring in the history page
   map_history();
 
+  fc_tipi_log(tmp);
   int len = fc_strlen(tmp);
   fc_list_push(HISTORY, tmp, len);
 }
@@ -33,11 +34,12 @@ void FC_SAMS(0,history_add_link(char* link)) {
 void FC_SAMS(0,history_get_prev(char* dst)) {
   map_history();
   fc_list_pop(HISTORY, dst, 256);
-  struct ListEntry* entry = fc_list_get(HISTORY, 0);
-  if (entry) {
-    fc_strcpy(dst, entry->data);
-  } else {
-    dst[0] = 0;
+  fc_tipi_log("history popped");
+  fc_tipi_log(dst);
+  if (state.history_pop) {
+    fc_list_pop(HISTORY, dst, 256);
+    fc_tipi_log("history popped twice");
+    fc_tipi_log(dst);
   }
 }
 

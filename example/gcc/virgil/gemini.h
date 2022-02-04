@@ -15,10 +15,12 @@ struct __attribute__((__packed__)) State {
   volatile int cmd;
   volatile int utfstate;
   volatile int menu_open;
+  volatile int history_pop;
   int max_page;
   char url[256];
   char newurl[256];
   char error[80];
+  int error_ticks;
 };
 
 #define MAX_URL_LEN 255
@@ -27,17 +29,18 @@ struct __attribute__((__packed__)) State {
 #define CMD_QUIT 1
 #define CMD_STOP 2
 #define CMD_RELOAD 3
-#define CMD_RELOAD_NOHIST 4
 #define CMD_READPAGE 5
 
 extern struct State state;
 
-FC_SAMS_VOIDBANKED(0, open_url, (char* url, int push_history), (url, push_history));
+FC_SAMS_VOIDBANKED(0, open_url, (char* url), (url));
 FC_SAMS_VOIDBANKED(0, process_input, (), ());
+FC_SAMS_VOIDBANKED(0, set_error, (char* msg, int ticks), (msg, ticks));
 
 inline int vdp_read_status() {
   int status;
   __asm__( "movb @>8802,%0" : "=rm" (status) : : "r12" );
   return status;
 }
+
 

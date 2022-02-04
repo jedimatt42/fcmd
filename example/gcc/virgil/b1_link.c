@@ -128,9 +128,12 @@ void FC_SAMS(1,update_full_url(char* dst, char* url)) {
     len += fc_strlen(hostname);
     fc_strcpy(tmp + len, url);
   } else {
+    fc_strset(tmp, 0, 256);
     int l = 0;
     int slashes = 0;
     int lastSlash = 0;
+    // find the index of the last slash in previous url
+    // while copying into tmp
     while(dst[l] != 0) {
       tmp[l] = dst[l];
       if (tmp[l] == '/') {

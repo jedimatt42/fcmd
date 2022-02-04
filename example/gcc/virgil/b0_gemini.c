@@ -43,10 +43,10 @@ int fc_main(char* args) {
   init_mouse();
   init_screen();
 
-  state.cmd = 0;
+  state.cmd = CMD_IDLE;
   if (state.newurl[0] == 0) {
     fc_strcpy(state.newurl, "about:");
-    state.cmd = CMD_RELOAD_NOHIST;
+    state.cmd = CMD_RELOAD;
   } else {
     state.cmd = CMD_RELOAD;
   }
@@ -56,12 +56,13 @@ int fc_main(char* args) {
     int prev_cmd = state.cmd;
     int prev_lc = state.line_count;
     int prev_lo = state.line_offset;
+
     // handle url change here
-    if (state.cmd == CMD_RELOAD || state.cmd == CMD_RELOAD_NOHIST) {
-      int hist = state.cmd == CMD_RELOAD;
-      open_url(state.newurl, hist);
+    if (state.cmd == CMD_RELOAD) {
+      open_url(state.newurl);
     } else if (state.cmd == CMD_STOP) {
       state.cmd = CMD_IDLE;
+      screen_redraw();
     } else if (state.cmd == CMD_READPAGE) {
       if (mouse_active) {
 	mouse_active--;
@@ -76,6 +77,12 @@ int fc_main(char* args) {
       screen_status();
     }
     if (vdp_read_status()) {
+      if (state.error_ticks) {
+        state.error_ticks--;
+	if (state.error_ticks == 0) {
+          screen_status();
+	}
+      }
       process_input();
     }
   }
@@ -110,34 +117,42 @@ void on_exit() {
   fc_sams_free_pages(state.page_count + 1 /* 1 for history */);
 }
 
-void FC_SAMS(0, open_url(char* url, int push_history)) {
+void prepare_for_builtin_url(char* url) {
+    page_clear_lines();
+    state.cmd = CMD_IDLE;
+    fc_strcpy(state.url, url);
+    history_add_link(state.url);
+    state.history_pop = 1;
+}
+
+void FC_SAMS(0, open_url(char* url)) {
   state.cmd = CMD_IDLE;
   state.error[0] = 0;
   char hostname[80];
   char port[10];
 
+  state.history_pop = 0;
+
   if (fc_str_startswith(url, "http:") || fc_str_startswith(url, "https:") || fc_str_startswith(url, "gopher:")) {
+    set_error("unsupported protocol", 0);
     return;
   }
 
   if (!fc_strcmp(url, "about:")) {
-    page_clear_lines();
+    prepare_for_builtin_url(url);
     about();
-    state.cmd = CMD_IDLE;
     return;
   }
 
   if (!fc_strcmp(url, "history:")) {
-    page_clear_lines();
+    prepare_for_builtin_url(url);
     show_history();
-    state.cmd = CMD_IDLE;
     return;
   }
 
   if (!fc_strcmp(url, "bookmarks:")) {
-    page_clear_lines();
+    prepare_for_builtin_url(url);
     show_bookmarks();
-    state.cmd = CMD_IDLE;
     return;
   }
 
@@ -145,7 +160,7 @@ void FC_SAMS(0, open_url(char* url, int push_history)) {
   normalize_url(state.url);
   set_hostname_and_port(state.url, hostname, port); 
 
-  fc_strcpy(state.error, "connecting...");
+  set_error("connecting...", 0x7fff);
   screen_status();
 
   if(fc_tls_connect(SOCKET_ID, hostname, port)) {
@@ -167,9 +182,8 @@ void FC_SAMS(0, open_url(char* url, int push_history)) {
     switch(line[0]) {
       case '2': 
 	{
-	  if (push_history) {
-	    history_add_link(state.url);
-	  }
+	  history_add_link(state.url);
+	  state.history_pop = 1;
 	  handle_success(line);
 	}
 	break;
@@ -193,18 +207,18 @@ void FC_SAMS(0, open_url(char* url, int push_history)) {
 	break;
       case '4':
 	{
-	  fc_strcpy(state.error, "4x error");
+	  set_error("4x error", 0);
 	}
         break;
       case '5':
 	{
-	  fc_strcpy(state.error, "5x error");
+	  set_error("5x error", 0);
 	  restore_url();
 	}
 	break;
     }
   } else {
-    fc_strcpy(state.error, "Connection error");
+    set_error("Connection error", 0);
     restore_url();
   }
   if (state.cmd != CMD_READPAGE) {
@@ -236,8 +250,10 @@ void handle_success(char* line) {
   } else if (fc_str_startswith(tok, "text/plain")) {
     state.cmd = CMD_READPAGE;
   } else {
-    fc_strcpy(state.error, "uknown mime-type: ");
-    fc_strcpy(state.error + 18, tok);
+    char msg[80];
+    fc_strcpy(msg, "uknown mime-type: ");
+    fc_strncpy(msg + 18, tok, 80-18);
+    set_error(msg, 0);
   }
 }
 
@@ -268,3 +284,10 @@ int check_requirements() {
   return res;
 }
 
+void FC_SAMS(0, set_error(char* msg, int ticks)) {
+  fc_strncpy(state.error, msg, 80);
+  if (ticks == 0) {
+    ticks = 15*60; // 60 ticks a second
+  }
+  state.error_ticks = ticks;
+}
