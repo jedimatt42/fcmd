@@ -10,6 +10,7 @@
 #include "keyboard.h"
 #include "history.h"
 #include "bookmarks.h"
+#include "fileload.h"
 #include "about.h"
 
 void send_request(char* request);
@@ -153,6 +154,12 @@ void FC_SAMS(0, open_url(char* url)) {
   if (!fc_strcmp(url, "bookmarks:")) {
     prepare_for_builtin_url(url);
     show_bookmarks();
+    return;
+  }
+
+  if (file_exists(url)) {
+    page_clear_lines();
+    file_load(url);
     return;
   }
 
