@@ -67,7 +67,13 @@ int on_stop() {
 
 void FC_SAMS(0,on_back()) {
   char tmp[256];
-  history_get_prev(tmp);
+  if (state.builtin) {
+    fc_strcpy(tmp, state.lasturl);
+  } else {
+    // have to read twice...
+    history_pop(tmp);
+    history_pop(tmp);
+  }
   fc_strcpy(state.newurl, tmp);
   state.cmd = CMD_RELOAD;
 }

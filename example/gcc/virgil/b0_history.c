@@ -17,7 +17,7 @@ void FC_SAMS(0,init_history()) {
   fc_list_init(HISTORY, (char*)(SAMS_ADDR + 6), (char*)(SAMS_ADDR + 0x0FFF));
 }
 
-void FC_SAMS(0,history_add_link(char* link)) {
+void FC_SAMS(0,history_push(char* link)) {
   // page lines and history are banked into same address space
   // copy it to stack temporarily
   char tmp[256];
@@ -31,7 +31,7 @@ void FC_SAMS(0,history_add_link(char* link)) {
 }
 
 // dst must not be in top address bank
-void FC_SAMS(0,history_get_prev(char* dst)) {
+void FC_SAMS(0,history_pop(char* dst)) {
   map_history();
   fc_strset(dst, 0, 256);
   fc_list_pop(HISTORY, dst, 256);

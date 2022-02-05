@@ -122,6 +122,7 @@ void prepare_for_builtin_url(char* url) {
     page_clear_lines();
     state.cmd = CMD_IDLE;
     fc_strcpy(state.newurl, url);
+    state.builtin = 1;
 }
 
 void FC_SAMS(0, open_url(char* url)) {
@@ -156,10 +157,12 @@ void FC_SAMS(0, open_url(char* url)) {
   if (file_exists(url)) {
     page_clear_lines();
     fc_strcpy(state.lasturl, url);
-    history_add_link(state.lasturl);
+    history_push(state.lasturl);
     file_load(url);
     return;
   }
+
+  state.builtin = 0;
 
   update_full_url(state.lasturl, url);
   normalize_url(state.lasturl);
@@ -187,7 +190,7 @@ void FC_SAMS(0, open_url(char* url)) {
     switch(line[0]) {
       case '2': 
 	{
-	  history_add_link(state.lasturl);
+	  history_push(state.lasturl);
 	  handle_success(line);
 	}
 	break;
@@ -232,7 +235,7 @@ void FC_SAMS(0, open_url(char* url)) {
 
 void restore_url() {
   char tmp[256];
-  history_get_prev(tmp);
+  history_pop(tmp);
   update_full_url(state.lasturl, tmp);
 }
 
