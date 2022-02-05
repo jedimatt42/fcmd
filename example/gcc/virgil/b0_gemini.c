@@ -71,12 +71,6 @@ int fc_main(char* args) {
 	page_load();
       }
     }
-    if (must_redraw(prev_lc, prev_lo, prev_cmd, &state)) {
-      screen_redraw();
-    }
-    if (prev_lc != state.line_count || prev_lo != state.line_offset || prev_cmd != state.cmd) {
-      screen_status();
-    }
     if (vdp_read_status()) {
       if (state.error_ticks) {
         state.error_ticks--;
@@ -85,6 +79,12 @@ int fc_main(char* args) {
 	}
       }
       process_input();
+    }
+    if (must_redraw(prev_lc, prev_lo, prev_cmd, &state)) {
+      screen_redraw();
+    }
+    if (prev_lc != state.line_count || prev_lo != state.line_offset || prev_cmd != state.cmd) {
+      screen_status();
     }
   }
   on_exit();
@@ -130,8 +130,6 @@ void FC_SAMS(0, open_url(char* url)) {
   char hostname[80];
   char port[10];
 
-  state.history_pop = 0;
-
   if (fc_str_startswith(url, "http:") || fc_str_startswith(url, "https:") || fc_str_startswith(url, "gopher:")) {
     set_error("unsupported protocol", 0);
     return;
@@ -157,7 +155,6 @@ void FC_SAMS(0, open_url(char* url)) {
 
   if (file_exists(url)) {
     page_clear_lines();
-    state.history_pop = 1;
     fc_strcpy(state.url, url);
     history_add_link(state.url);
     file_load(url);

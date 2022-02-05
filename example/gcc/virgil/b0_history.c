@@ -28,20 +28,15 @@ void FC_SAMS(0,history_add_link(char* link)) {
   fc_tipi_log(tmp);
   int len = fc_strlen(tmp);
   fc_list_push(HISTORY, tmp, len);
-  state.history_pop = 1;
 }
 
 // dst must not be in top address bank
 void FC_SAMS(0,history_get_prev(char* dst)) {
   map_history();
+  fc_strset(dst, 0, 256);
   fc_list_pop(HISTORY, dst, 256);
   fc_tipi_log("history popped");
   fc_tipi_log(dst);
-  if (state.history_pop) {
-    fc_list_pop(HISTORY, dst, 256);
-    fc_tipi_log("history popped twice");
-    fc_tipi_log(dst);
-  }
 }
 
 // dst must not be in top address bank

@@ -66,7 +66,9 @@ int on_stop() {
 }
 
 void FC_SAMS(0,on_back()) {
-  history_get_prev(state.newurl);
+  char tmp[256];
+  history_get_prev(tmp);
+  fc_strcpy(state.url, tmp);
   state.cmd = CMD_RELOAD;
 }
 
