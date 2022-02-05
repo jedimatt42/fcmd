@@ -10,7 +10,16 @@ int FC_SAMS(2, file_exists(char* args)) {
   struct DeviceServiceRoutine* dsr = 0;
   fc_parse_path_param(args, &dsr, filename, PR_REQUIRED);
 
-  return dsr != 0;
+  int isFile = 0;
+  if (dsr) {
+    struct PAB pab;
+    int ferr = fc_dsr_open(dsr, &pab, filename, DSR_TYPE_VARIABLE | DSR_TYPE_INPUT, 80);
+    if (!ferr) {
+      fc_dsr_close(dsr, &pab);
+      isFile = 1;
+    }
+  }
+  return isFile;
 }
 
 void FC_SAMS(2,file_load(char* args)) {

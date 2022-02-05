@@ -122,8 +122,6 @@ void prepare_for_builtin_url(char* url) {
     page_clear_lines();
     state.cmd = CMD_IDLE;
     fc_strcpy(state.url, url);
-    history_add_link(state.url);
-    state.history_pop = 1;
 }
 
 void FC_SAMS(0, open_url(char* url)) {
@@ -159,6 +157,9 @@ void FC_SAMS(0, open_url(char* url)) {
 
   if (file_exists(url)) {
     page_clear_lines();
+    state.history_pop = 1;
+    fc_strcpy(state.url, url);
+    history_add_link(state.url);
     file_load(url);
     return;
   }
@@ -190,7 +191,6 @@ void FC_SAMS(0, open_url(char* url)) {
       case '2': 
 	{
 	  history_add_link(state.url);
-	  state.history_pop = 1;
 	  handle_success(line);
 	}
 	break;

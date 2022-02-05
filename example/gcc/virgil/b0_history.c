@@ -28,6 +28,7 @@ void FC_SAMS(0,history_add_link(char* link)) {
   fc_tipi_log(tmp);
   int len = fc_strlen(tmp);
   fc_list_push(HISTORY, tmp, len);
+  state.history_pop = 1;
 }
 
 // dst must not be in top address bank
