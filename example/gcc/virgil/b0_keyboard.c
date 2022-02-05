@@ -68,7 +68,8 @@ int on_stop() {
 void FC_SAMS(0,on_back()) {
   char tmp[256];
   if (state.builtin) {
-    fc_strcpy(tmp, state.lasturl);
+    history_pop(tmp);
+    // fc_strcpy(tmp, state.lasturl);
   } else {
     // have to read twice...
     history_pop(tmp);
