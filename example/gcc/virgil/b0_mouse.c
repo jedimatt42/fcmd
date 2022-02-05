@@ -103,7 +103,7 @@ void FC_SAMS(0,handle_mouse_click()) {
 	    fc_strcpy(state.newurl, "bookmarks:");
 	  } else if (line == 4) {
 	    state.cmd = CMD_IDLE;
-	    bookmarks_add_link(state.url);
+	    bookmarks_add_link(state.lasturl);
 	  } else if (line == 5) {
 	    fc_strcpy(state.newurl, "history:");
 	  } else if (line == 6) {

@@ -16,10 +16,11 @@ struct __attribute__((__packed__)) State {
   volatile int utfstate;
   volatile int menu_open;
   int max_page;
-  char url[256];
+  char lasturl[256];
   char newurl[256];
   char error[80];
   int error_ticks;
+  int builtin;
 };
 
 #define MAX_URL_LEN 255

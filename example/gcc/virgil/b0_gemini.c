@@ -121,7 +121,7 @@ void on_exit() {
 void prepare_for_builtin_url(char* url) {
     page_clear_lines();
     state.cmd = CMD_IDLE;
-    fc_strcpy(state.url, url);
+    fc_strcpy(state.newurl, url);
 }
 
 void FC_SAMS(0, open_url(char* url)) {
@@ -155,15 +155,15 @@ void FC_SAMS(0, open_url(char* url)) {
 
   if (file_exists(url)) {
     page_clear_lines();
-    fc_strcpy(state.url, url);
-    history_add_link(state.url);
+    fc_strcpy(state.lasturl, url);
+    history_add_link(state.lasturl);
     file_load(url);
     return;
   }
 
-  update_full_url(state.url, url);
-  normalize_url(state.url);
-  set_hostname_and_port(state.url, hostname, port); 
+  update_full_url(state.lasturl, url);
+  normalize_url(state.lasturl);
+  set_hostname_and_port(state.lasturl, hostname, port); 
 
   set_error("connecting...", 0x7fff);
   screen_status();
@@ -171,7 +171,7 @@ void FC_SAMS(0, open_url(char* url)) {
   if(fc_tls_connect(SOCKET_ID, hostname, port)) {
     state.error[0] = 0;
     init_readline(SOCKET_ID);
-    send_request(state.url);
+    send_request(state.lasturl);
 
     char* line = readline();
     // strip any newline off
@@ -187,7 +187,7 @@ void FC_SAMS(0, open_url(char* url)) {
     switch(line[0]) {
       case '2': 
 	{
-	  history_add_link(state.url);
+	  history_add_link(state.lasturl);
 	  handle_success(line);
 	}
 	break;
@@ -196,8 +196,8 @@ void FC_SAMS(0, open_url(char* url)) {
 	  char query[80];
 	  fc_strset(query, 0, 80);
 	  screen_prompt(query, line + 3);
-	  int l = fc_strlen(state.url);
-	  fc_strncpy(state.newurl, state.url, 256);
+	  int l = fc_strlen(state.lasturl);
+	  fc_strncpy(state.newurl, state.lasturl, 256);
 	  state.newurl[l++] = '?';
 	  fc_strncpy(state.newurl + l, query, 256 - l);
 	  state.cmd = CMD_RELOAD;
@@ -233,7 +233,7 @@ void FC_SAMS(0, open_url(char* url)) {
 void restore_url() {
   char tmp[256];
   history_get_prev(tmp);
-  update_full_url(state.url, tmp);
+  update_full_url(state.lasturl, tmp);
 }
 
 void send_request(char* request) {

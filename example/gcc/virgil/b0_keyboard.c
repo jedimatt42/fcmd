@@ -68,18 +68,18 @@ int on_stop() {
 void FC_SAMS(0,on_back()) {
   char tmp[256];
   history_get_prev(tmp);
-  fc_strcpy(state.url, tmp);
+  fc_strcpy(state.newurl, tmp);
   state.cmd = CMD_RELOAD;
 }
 
 void FC_SAMS(0,on_address()) {
   char tmp[256];
   fc_strset(tmp, 0, 256);
-  fc_strcpy(tmp, state.url);
+  fc_strcpy(tmp, state.newurl);
   char ramstr[10] = "Address:";
   screen_prompt(tmp, ramstr);
   if (tmp[0] != 0) {
-    if (0 != fc_strcmp(tmp, state.url)) {
+    if (0 != fc_strcmp(tmp, state.lasturl)) {
       fc_strcpy(state.newurl, tmp);
       state.cmd = CMD_RELOAD;
     }
@@ -128,7 +128,7 @@ void FC_SAMS(0,handle_keyboard()) {
       internalUri("bookmarks:");
       break;
     case KEY_FCTN_B:
-      bookmarks_add_link(state.url);
+      bookmarks_add_link(state.lasturl);
       break;
     case KEY_CTRL_H:
       internalUri("history:");
