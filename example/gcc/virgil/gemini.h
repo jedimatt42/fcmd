@@ -17,6 +17,7 @@ struct __attribute__((__packed__)) State {
   volatile int menu_open;
   volatile int builtin;
   volatile int error_ticks;
+  volatile int history_count;
   int max_page;
   char lasturl[256];
   char newurl[256];
