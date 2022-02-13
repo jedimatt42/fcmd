@@ -255,18 +255,25 @@ void handle_success(char* line) {
   char* tok = fc_strtok(line, ' ');
 
   tok = fc_strtok(0, ';');
-  page_clear_lines(); // erase the current page
   if (fc_str_startswith(tok, "text/gemini")) {
     state.cmd = CMD_READPAGE;
   } else if (fc_str_startswith(tok, "text/plain")) {
     state.cmd = CMD_READPAGE;
   } else if (fc_str_startswith(tok, "application/octet-stream")) {
+    restore_url();
+    restore_url(); // twice to be at page currently on the screen
+    history_push(state.lasturl); // make top of history stack correct
     gemini_download_begin();
   } else {
     char msg[80];
     fc_strcpy(msg, "uknown mime-type: ");
     fc_strncpy(msg + 18, tok, 80-18);
     set_error(msg, 0);
+  }
+  if (state.cmd == CMD_READPAGE) {
+    // erase the current page when going from RELOAD to READPAGE
+    // don't when errors or downloads occur
+    page_clear_lines(); 
   }
 }
 
