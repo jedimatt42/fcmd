@@ -1,4 +1,4 @@
 #pragma once
 
-#define VERSION "VIRGIL99 1.7"
+#define VERSION "VIRGIL99 1.8"
 

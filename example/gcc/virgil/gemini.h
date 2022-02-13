@@ -31,6 +31,7 @@ struct __attribute__((__packed__)) State {
 #define CMD_STOP 2
 #define CMD_RELOAD 3
 #define CMD_READPAGE 5
+#define CMD_DOWNLOAD 6
 
 extern struct State state;
 

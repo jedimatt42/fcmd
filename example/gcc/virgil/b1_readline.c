@@ -51,3 +51,8 @@ char* FC_SAMS(1,readbytes(int* len)) {
     return LASTLINE;
 }
 
+char* FC_SAMS(1,readbytes_limit(int* len, int limit)) {
+    *len = fc_readstream(&socket_buf, LASTLINE, limit);
+    return LASTLINE;
+}
+

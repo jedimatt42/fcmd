@@ -16,7 +16,7 @@ static struct DeviceServiceRoutine* get_bookmark_filename(char* filename) {
   return dsr;
 }
 
-int FC_SAMS(0,bookmarks_add_link(char* link)) {
+int FC_SAMS(2,bookmarks_add_link(char* link)) {
   char filename[80];
   struct DeviceServiceRoutine* dsr = get_bookmark_filename(filename);
 
@@ -30,7 +30,7 @@ int FC_SAMS(0,bookmarks_add_link(char* link)) {
   return 0;
 }
 
-void FC_SAMS(0,show_bookmarks()) {
+void FC_SAMS(2,show_bookmarks()) {
   char line[14];
   fc_strset(line, 0, 14);
   fc_strcpy(line, "# Bookmarks\n\n");

@@ -12,6 +12,7 @@
 #include "bookmarks.h"
 #include "fileload.h"
 #include "about.h"
+#include "download.h"
 
 void send_request(char* request);
 void handle_success(char* line);
@@ -61,8 +62,11 @@ int fc_main(char* args) {
     // handle url change here
     if (state.cmd == CMD_RELOAD) {
       open_url(state.newurl);
+    } else if (state.cmd == CMD_DOWNLOAD) {
+      gemini_download_continue();
     } else if (state.cmd == CMD_STOP) {
       state.cmd = CMD_IDLE;
+      fc_tls_close(SOCKET_ID);
       screen_redraw();
     } else if (state.cmd == CMD_READPAGE) {
       if (mouse_active) {
@@ -228,7 +232,7 @@ void FC_SAMS(0, open_url(char* url)) {
     set_error("Connection error", 0);
     restore_url();
   }
-  if (state.cmd != CMD_READPAGE) {
+  if (state.cmd != CMD_READPAGE && state.cmd != CMD_DOWNLOAD) {
     fc_tls_close(SOCKET_ID);
   }
 }
@@ -256,6 +260,8 @@ void handle_success(char* line) {
     state.cmd = CMD_READPAGE;
   } else if (fc_str_startswith(tok, "text/plain")) {
     state.cmd = CMD_READPAGE;
+  } else if (fc_str_startswith(tok, "application/octet-stream")) {
+    gemini_download_begin();
   } else {
     char msg[80];
     fc_strcpy(msg, "uknown mime-type: ");
