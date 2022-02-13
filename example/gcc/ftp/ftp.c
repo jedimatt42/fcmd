@@ -122,6 +122,7 @@ int fc_main(char* args) {
       }
       return 0;
     } else if (!fc_strcmpi("help", tok)) {
+      fc_tputs(" -- ftp version 1.1 -- \n");
       fc_tputs("open <hostname> [port] - connect to an ftp server, defaults to port 21\n");
       fc_tputs("dir [/w] [pathname] - list directory\n");
       fc_tputs("  alias: ls\n");
@@ -477,7 +478,11 @@ void drainChannel(struct SocketBuffer* socket_buf) {
 
 int isTiFiles(struct TiFiles* tifiles) {
   char buf[11];
-  fc_basicToCstr((char*) tifiles, buf);
+  char* raw = (char*) tifiles;
+  if (raw[0] != 7) {
+    return 0; 
+  }
+  fc_basicToCstr(raw, buf);
   return !fc_strcmp(buf, "TIFILES");
 }
 
