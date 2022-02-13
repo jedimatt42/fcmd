@@ -69,33 +69,54 @@ void set_download_filename(char* filename) {
   fc_tipi_log(filename);
 }
 
+struct DeviceServiceRoutine* get_downloads_dir(char* pathname) {
+  char* dls = fc_vars_get("DOWNLOADS");
+  if (dls == 0 || dls[0] == 0) {
+    dls = "TIPI.DOWNLOADS.";
+  }
+  struct DeviceServiceRoutine* dsr;
+  fc_parse_path_param(dls, &dsr, pathname, PR_REQUIRED);
+  int plen = fc_strlen(pathname);
+  if (pathname[plen - 1] != '.') {
+    pathname[plen] = '.';
+    pathname[plen+1] = 0;
+  }
+  return dsr;
+}
+
 void saveTiFiles(struct TiFiles* tifiles) {
   // create 'sector' 0 - FDR of file from TIFILES data
+  char pathname[256];
+  struct DeviceServiceRoutine* dsr = get_downloads_dir(pathname);
+  crubase = dsr->crubase;
  
   struct SystemInformation sys_info;
   fc_sys_info(&sys_info); 
-  crubase = sys_info.currentDsr->crubase;
   vdp_io_buf = sys_info.vdp_io_buf;
 
   // addinfo must be in scratchpad
   struct AddInfo* addInfoPtr = (struct AddInfo*)0x8320;
   memcpy(&(addInfoPtr->first_sector), &(tifiles->sectors), 8);
   
-  iocode = fc_path2iocode(sys_info.currentPath);
-  fc_lvl2_setdir(crubase, iocode, (char*)sys_info.currentPath);
+  iocode = fc_path2iocode(pathname);
+  char msg[80];
+  int ferr = fc_lvl2_setdir(crubase, iocode, pathname);
+  if (ferr) {
+    fc_strcpy(msg, "download directory does not exist");
+    set_error(msg, 0);
+    state.cmd = CMD_STOP;
+    return;
+  }
 
   set_download_filename(filename);
 
-  // TODO: If file exists, abort with error
-
-  int ferr = fc_lvl2_output(crubase, iocode, filename, 0, addInfoPtr);
+  ferr = fc_lvl2_output(crubase, iocode, filename, 0, addInfoPtr);
   if (ferr) {
-    char msg[80];
     fc_strcpy(msg, "error saving file");
     set_error(msg, 0);
     state.cmd = CMD_STOP;
   }
-  // should be able to do 256 byte chunks to finish the file out
+  // main loop will continue to do 256 byte chunks to finish the file out
   // in gemini_download_continue
   sector_no = 0;
 }
