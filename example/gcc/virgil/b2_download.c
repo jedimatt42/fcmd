@@ -64,8 +64,9 @@ void FC_SAMS(2, gemini_download_continue()) {
 }
 
 void set_download_filename(char* filename) {
-  // TODO: take name from state.newurl
-  fc_strcpy(filename, "HELLO");
+  int filepart = 1 + fc_lindexof(state.newurl, '/', fc_strlen(state.newurl));
+  fc_strncpy(filename, state.newurl + filepart, 11);
+  fc_tipi_log(filename);
 }
 
 void saveTiFiles(struct TiFiles* tifiles) {
