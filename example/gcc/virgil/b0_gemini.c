@@ -64,6 +64,7 @@ int fc_main(char* args) {
       open_url(state.newurl);
     } else if (state.cmd == CMD_DOWNLOAD) {
       gemini_download_continue();
+      screen_status();
     } else if (state.cmd == CMD_STOP) {
       state.cmd = CMD_IDLE;
       fc_tls_close(SOCKET_ID);

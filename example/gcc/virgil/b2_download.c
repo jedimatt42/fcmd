@@ -25,14 +25,10 @@ void FC_SAMS(2, gemini_download_begin()) {
     return;
   }
 
-  fc_tipi_log(fc_uint2hex(len));
-
   struct TiFiles* tifiles = (struct TiFiles*) data;
   if (len == 128 && isTiFiles(tifiles)) {
-    fc_tipi_log("treating as TIFILES");
     saveTiFiles(tifiles);
   } else {
-    fc_tipi_log("treating as DF128");
     saveDF128(data);
   }
 }
@@ -40,33 +36,31 @@ void FC_SAMS(2, gemini_download_begin()) {
 void FC_SAMS(2, gemini_download_continue()) {
   int len;
   char* data = readbytes_limit(&len, 256);
+  char msg[80];
   if (len == 0) {
     state.cmd = CMD_STOP;
-    char msg[80];
     fc_strcpy(msg, "download complete");
     set_error(msg, 0);
     return;
   }
-  fc_tipi_log("read block from socket");
   vdp_memcpy(vdp_io_buf, data, 256);
   struct AddInfo* addInfoPtr = (struct AddInfo*)0x8320;
   addInfoPtr->first_sector = sector_no++;
   int ferr = fc_lvl2_output(crubase, iocode, filename, 1, addInfoPtr);
   if (ferr) {
     state.cmd = CMD_STOP;
-    char msg[80];
     fc_strcpy(msg, "error saving file");
     set_error(msg, 0x7fff);
     return;
   }
-  
-  fc_tipi_log("wrote block");
+  fc_strcpy(msg, "wrote block ");
+  fc_strcpy(msg + 12, fc_uint2str(sector_no)); 
+  set_error(msg, 0x7fff);
 }
 
 void set_download_filename(char* filename) {
   int filepart = 1 + fc_lindexof(state.newurl, '/', fc_strlen(state.newurl));
   fc_strncpy(filename, state.newurl + filepart, 11);
-  fc_tipi_log(filename);
 }
 
 struct DeviceServiceRoutine* get_downloads_dir(char* pathname) {
