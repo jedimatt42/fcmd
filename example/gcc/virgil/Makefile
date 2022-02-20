@@ -7,11 +7,13 @@ FCSDK=$(abspath ../fcsdk)
 
 FNAME=VIRGIL99
 
+BUILD_DATE:=$(shell date +"%m-%d-%Y")
+
 LDFLAGS=\
   --script=linkfile
 
 CFLAGS=\
-  -std=gnu99 -nostdlib -ffreestanding -O2 -Werror --save-temps -I$(FCSDK)
+  -std=gnu99 -nostdlib -ffreestanding -O2 -Werror --save-temps -I$(FCSDK) -D_BUILD_DATE=\"$(BUILD_DATE)\"
 
 C_SRCS:=$(wildcard *.c)
 ASM_SRCS:=$(wildcard *.asm) 
