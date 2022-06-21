@@ -86,6 +86,11 @@ void checkBackspaceVar() {
 void cartmain()
 {
   MUTE_SOUND();
+
+  // stub so early var fetching will fail gently
+  system_dict.addr = 0;
+  system_dict.end = 0;
+
   vdp_type = bk_detect_vdp();
   bk_textcolor(15);
   bk_bgcolor(4);
@@ -96,6 +101,7 @@ void cartmain()
   pal = bk_isPal();
 
   bk_loadDriveDSRs();
+
   bk_dict_init(&system_dict, heap_end);
 
   bk_history_init();
