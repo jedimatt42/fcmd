@@ -111,6 +111,12 @@ $(FNAME).DSK: subdirs support
 $(FNAME).RPK: $(FNAME)C.bin $(FNAME)G.bin layout.xml
 	zip $@ $^
 
+$(FNAME)_ALT.RPK: $(FNAME)C.bin layout_alt.xml
+	cp $^ /tmp
+	mv /tmp/layout_alt.xml /tmp/layout.xml
+	cd /tmp && zip $@ layout.xml $(FNAME)C.bin
+	mv /tmp/$@ $@
+
 fcsdk:
 	rm -f ./fcsdk
 	cp -a example/gcc/fcsdk ./fcsdk
