@@ -21,6 +21,9 @@
 #define LVL2_PARAMADDR1 *((volatile unsigned int*)0x834E)
 #define LVL2_PARAMADDR2 *((volatile unsigned int*)0x8350)
 
+#define NCOMP *((volatile unsigned int*)0x8354)
+#define PPAB *((volatile unsigned int*)0x8356)
+
 #define UNITNO(x) (unsigned char)(x >> 8 & 0xFF)
 #define OPNAME(x,y) (unsigned char)((x & 0x00F0)|(y & 0x00F))
 
@@ -185,6 +188,11 @@ void __attribute__((noinline)) call_lvl2(int crubase, unsigned char operation) {
     if (entryname == searchname) {
       addr = entry->routine;
       link = (unsigned int) entry;
+      // Ensure the PAB name is in VDP
+      unsigned int vdp = VPAB + 9;
+      vdpmemcpy(vdp, entry->name, 2);
+      PPAB = VPAB + 9 + 2;
+      NCOMP = 1;
       break;
     }
     entry = entry->next;
