@@ -8,6 +8,7 @@
 #include <vdp.h>
 
 #define VDP_REDO_BUFFER 0x3500
+#define VDP_BUFFER_LEN 256
 
 void sams_hist_handler(char* buffer, int limit, int op);
 void sams_hist_indexed(char* buffer, int limit, int idx);
@@ -20,6 +21,7 @@ static void (*hist_handler)(char* buffer, int limit, int op);
 
 static int hist_page;
 
+
 void history_init() {
   if (sams_total_pages) {
     hist_page = bk_alloc_pages(2);
@@ -29,7 +31,7 @@ void history_init() {
     list_init(HISTORY, (char*)(SAMS_HIST_ADDR + 8), (char*)(SAMS_HIST_ADDR + 0x1FFF));
     hist_handler = sams_hist_handler;
   } else {
-    vdpmemset(VDP_REDO_BUFFER, 0, 256);
+    vdpmemset(VDP_REDO_BUFFER, 0, VDP_BUFFER_LEN);
     hist_handler = vdp_hist_handler;
   }
 }
@@ -75,8 +77,11 @@ void history_indexed(char* buffer, int limit, int idx) {
 }
 
 void vdp_hist_handler(char* buffer, int limit, int op) {
-  if (op == HIST_STORE && bk_strlen(buffer) > 0) {
-    vdpmemcpy(VDP_REDO_BUFFER, buffer, limit);
+  if (op == HIST_STORE) {
+    int len = bk_strlen(buffer);
+    if (len > 0) {
+      vdpmemcpy(VDP_REDO_BUFFER, buffer, VDP_BUFFER_LEN);
+    }
   } else if (op == HIST_GET) {
     strset(buffer, 0, limit);
     vdpmemread(VDP_REDO_BUFFER, buffer, limit);
