@@ -42,6 +42,11 @@ static int __attribute__((noinline)) isDrive(char* basicstr) {
     return 1;
   }
 
+  // include MEXP-1 RD
+  if (basicstr[0] == 2 && basicstr[1] == 'R' && basicstr[2] == 'D') {
+    return 1;
+  }
+
   if (basicstr[0] == 4) {
     if (basicstr[4] >= '0' && basicstr[4] <= '9') {
       return matchesPrefix(basicstr, "DSK") ||

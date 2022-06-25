@@ -62,6 +62,8 @@ int must_close_command(char* buffer) {
   if (MATCH(tok, str2ram("pwd"))) return 0;
   if (MATCH(tok, str2ram("readkey"))) return 0;
   if (MATCH(tok, str2ram("rename"))) return 0;
+  if (MATCH(tok, str2ram("rdpart"))) return 0;
+  if (MATCH(tok, str2ram("rdemdk"))) return 0;
   if (MATCH(tok, str2ram("rmdir"))) return 0;
   if (MATCH(tok, str2ram("sysinfo"))) return 0;
   if (MATCH(tok, str2ram("tipibeeps"))) return 0;
@@ -113,6 +115,8 @@ void handleCommand(char *buffer) {
   else COMMAND("pwd", bk_handlePwd)
   else COMMAND("readkey", bk_handleReadkey)
   else COMMAND("rename", bk_handleRename)
+  else COMMAND("rdpart", bk_handleRDPart)
+  else COMMAND("rdemdk", bk_handleRDEmdk)
   else COMMAND("rmdir", bk_handleRmdir)
   else COMMAND("sysinfo", bk_handleSysInfo)
   else COMMAND("tipibeeps", bk_handleTipiBeeps)
