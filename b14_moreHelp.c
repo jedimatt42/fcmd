@@ -97,6 +97,26 @@ void b14Help(char* tok) {
       "/r - reset to standard TMS9918A palette\n"
       "<rgb-0..15> - 16 12bit hex value that define the palette colors.\n"
     );
+  } else if (matchcmd(tok, "rdpart")) {
+    wraptext("==Myarc RD Partition==\n\n"
+      "rdpart <ram> <disk> <spool>\n\n"
+      "Configure Myarc EXP-1 Ramdisk memory allocations.\n"
+      "<ram> - 32 for use as 32K memory expansion, or 128 for 128KOS support.\n"
+      "<drive> - size of ramdisk allocation in kilobytes.\n"
+      "<spool> - size of print spool allocation in kilobytes.\n"
+    );
+  } else if (matchcmd(tok, "rdemdk")) {
+    wraptext("==Myarc RD Emulate DSK==\n\n"
+      "rdemdk <drive>\n\n"
+      "Configure Myarc EXP-1 Ramdisk drive number.\n"
+      "<drive> - number 1 - 5 to emulate DSK1 through DSK5\n"
+    );
+  } else if (matchcmd(tok, "rdvol")) {
+    wraptext("==Myarc RD Volume Name==\n\n"
+      "rdvol <name>\n\n"
+      "Configure Myarc EXP-1 Ramdisk volume name.\n"
+      "<name> - upto 10 character volume label.\n"
+    );
   } else {
     wraptext("no help for command: ");
     bk_tputs_ram(tok);
