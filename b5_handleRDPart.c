@@ -26,6 +26,7 @@
 #define BTOK_PARAM_SEP 0xB3
 #define BTOK_PARAM_END 0xB6
 #define BTOK_NUM_STR 0xC8
+#define BTOK_QUOTED_STR 0xC7
 
 static int encodeLiteralInt(char* buf, int value) {
     char* intstr = bk_uint2str(value);
@@ -35,6 +36,24 @@ static int encodeLiteralInt(char* buf, int value) {
     buf[i++] = (char) is_len;
     bk_strncpy(buf+i, intstr, 5);
     return is_len + 2;
+}
+
+static int encodeQuotedString(char* buf, char* str) {
+    int is_len = bk_strlen(str);
+    int i = 0;
+    buf[i++] = BTOK_QUOTED_STR;
+    buf[i++] = (char) is_len;
+    bk_strncpy(buf+i, str, 10);
+    return is_len + 2;
+}
+
+static int findCrubase() {
+    struct DeviceServiceRoutine* dsr = bk_findDsr(str2ram("RD"), 0);
+    if (!dsr) {
+        tputs_rom("RD device not found\n");
+        return 0;
+    }
+    return dsr->crubase;
 }
 
 static void call_part(int crubase, int ram, int disk, int spool) {
@@ -97,14 +116,44 @@ static void call_emdk(int crubase, int drive) {
     bk_call_basic_sub(crubase, str2ram("EMDK"));
 }
 
+static void call_vol(int crubase, char* name) {
+    // setup parameters -
+    // PADDR <- FBUF: (VDP) 04 "VOL" B7 C8 01 32 B6
+    //                               PL NS   '2' PE
+    // 0x834A <- "VOL"
+    // 0x8356 <- FBUF + 4
+    PADDR = FBUF;
+    PARAMS = FBUF+4;
+    bk_strncpy((char*)FACADDR, str2ram("VOL"), 3);
+
+    // build FBUF up
+    char command[30];
+    bk_strset(command, 0, 30);
+    int i = 0;
+    command[i++] = 3;
+    bk_strcpy(command+i, str2ram("VOL"));
+    i += 3;
+    command[i++] = BTOK_PARAM_LIST;
+    // encode the basic string parameter
+    // todoo...  
+    i += encodeQuotedString(&(command[i]), name);
+
+    command[i++] = BTOK_PARAM_END;
+
+    // copy command string to VDP as if tokenized in BASIC
+    vdpmemcpy(FBUF, command, 30);
+
+    // call basic routine
+    bk_call_basic_sub(crubase, str2ram("VOL"));
+}
+
 void handleRDPart() {
     //  RDPART
     //  RDPART <ram> <drive> <spool>
 
     // test for Myarc RD
-    struct DeviceServiceRoutine* dsr = bk_findDsr(str2ram("RD"), 0);
-    if (!dsr) {
-        tputs_rom("RD device not found\n");
+    int crubase = findCrubase();
+    if (!crubase) {
         return;
     }
 
@@ -132,7 +181,7 @@ void handleRDPart() {
         return;
     }
 
-    call_part(dsr->crubase, ram, disk, spool);
+    call_part(crubase, ram, disk, spool);
 }
 
 void handleRDEmdk() {
@@ -140,18 +189,29 @@ void handleRDEmdk() {
     //  RDEMDK <drive>
 
     // test for Myarc RD
-    struct DeviceServiceRoutine* dsr = bk_findDsr(str2ram("RD"), 0);
-    if (!dsr) {
-        tputs_rom("RD device not found\n");
-        return;
+    int crubase = findCrubase();
+    if (crubase) {
+        int drive = bk_atoi(bk_strtok(0, ' '));
+        if (drive < 0 && drive > 5) {
+            tputs_rom("drive must be 0 - 5\n");
+            return;
+        }
+        call_emdk(crubase, drive);
     }
-
-    int drive = bk_atoi(bk_strtok(0, ' '));
-    if (drive < 0 && drive > 5) {
-        tputs_rom("drive must be 0 - 5\n");
-        return;
-    }
-
-    call_emdk(dsr->crubase, drive);
 }
 
+void handleRDVol() {
+    //  RDVOL
+    //  RDVOL name
+
+    // test for Myarc RD
+    int crubase = findCrubase();
+    if (crubase) {
+        char* vol = bk_strtok(0, ' ');
+        if (!vol) {
+            tputs_rom("volume name required\n");
+            return;
+        }
+        call_vol(crubase, vol);
+    }
+}
