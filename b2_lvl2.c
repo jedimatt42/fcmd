@@ -18,6 +18,7 @@
 #define LVL2_STATUS *((volatile unsigned char *)0x8350)
 #define LVL2_UNIT *((volatile unsigned char*)0x834C)
 #define LVL2_PROTECT *((volatile unsigned char*)0x834D)
+#define LVL2_READWRITE *((volatile unsigned char*)0x834D)
 #define LVL2_PARAMADDR1 *((volatile unsigned int*)0x834E)
 #define LVL2_PARAMADDR2 *((volatile unsigned int*)0x8350)
 
@@ -130,6 +131,37 @@ unsigned char direct_io(int crubase, unsigned int iocode, char operation, char* 
 
   return LVL2_STATUS;
 }
+
+unsigned int lvl2_sector_read(int crubase, unsigned int iocode, unsigned int sector, char* bufaddr) {
+  LVL2_UNIT = UNITNO(iocode);
+  LVL2_READWRITE = 0xff;
+  LVL2_PARAMADDR1 = FBUF;
+  LVL2_PARAMADDR2 = sector;
+  
+  unsigned char opname = OPNAME(iocode, LVL2_OP_SECTOR);
+  call_lvl2(crubase, opname);
+
+  vdpmemread(FBUF, bufaddr, 256);
+
+  return LVL2_STATUS;
+}
+
+
+unsigned int lvl2_sector_write(int crubase, unsigned int iocode, unsigned int sector, char* bufaddr) {
+  LVL2_UNIT = UNITNO(iocode);
+  LVL2_READWRITE = 0x00;
+  LVL2_PARAMADDR1 = FBUF;
+  LVL2_PARAMADDR2 = sector;
+
+  vdpmemcpy(FBUF, bufaddr, 256);
+
+  unsigned char opname = OPNAME(iocode, LVL2_OP_SECTOR);
+  call_lvl2(crubase, opname);
+
+  return LVL2_STATUS;
+}
+
+
 
 // Setup parameters suitably for most lvl2 calls.
 unsigned char __attribute__((noinline)) base_lvl2(int crubase, unsigned int iocode, char operation, char* name1, char* name2, char param0) {

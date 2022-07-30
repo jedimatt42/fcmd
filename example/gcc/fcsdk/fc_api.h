@@ -391,6 +391,8 @@ extern void* memcpy(void* dest, const void* src, int count);
 #define FC_DSR_PRG_LOAD 0x5d
 #define FC_DSR_PRG_SAVE 0x5e
 #define FC_TIPI_LOG 0x5f
+#define FC_LVL2_SECTOR_READ 0x60
+#define FC_LVL2_SECTOR_WRITE 0x61
 
 // function: void fc_tputc(int c)
 DECL_FC_API_CALL(FC_TPUTC, fc_tputc, void, (int c), (c))
@@ -679,5 +681,11 @@ DECL_FC_API_CALL(FC_DSR_PRG_SAVE, fc_dsr_prg_save, unsigned int, (struct DeviceS
 
 // function: void fc_tipi_log(char* msg)
 DECL_FC_API_CALL(FC_TIPI_LOG, fc_tipi_log, void, (char* msg), (msg))
+
+// function: unsigned int fc_lvl2_sector_read(int crubase, unsigned int iocode, unsigned int sector, char* bufaddr)
+DECL_FC_API_CALL(FC_LVL2_SECTOR_READ, fc_lvl2_sector_read, unsigned int, (int crubase, unsigned int iocode, unsigned int sector, char* bufaddr), (crubase, iocode, sector, bufaddr))
+
+// function: unsigned int fc_lvl2_sector_write(int crubase, unsigned int iocode, unsigned int sector, char*bufaddr)
+DECL_FC_API_CALL(FC_LVL2_SECTOR_WRITE, fc_lvl2_sector_write, unsigned int, (int crubase, unsigned int iocode, unsigned int sector, char*bufaddr), (crubase, iocode, sector, bufaddr))
 
 #endif
