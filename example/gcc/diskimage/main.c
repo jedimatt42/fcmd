@@ -1,4 +1,5 @@
 #include "fc_api.h"
+#include "ioports.h"
 
 int usage() {
   fc_tputs("DISKIMAGE /r <device> <filename>\n\n");
@@ -62,7 +63,93 @@ int create_image(struct DeviceServiceRoutine* source_dsr, char* source, struct D
 }
 
 int create_disk(struct DeviceServiceRoutine* source_dsr, char* source, struct DeviceServiceRoutine* dest_dsr, char* dest) {
-  return 1;
+  char sector_buf[256];
+  
+  unsigned int iocode = fc_path2iocode(dest);
+  int ferr = fc_lvl2_sector_read(dest_dsr->crubase, iocode, 0, sector_buf);
+  if (ferr) {
+    fc_tputs("error reading destination disk\n");
+    return 1;
+  }
+
+  struct PAB pab;
+  ferr = fc_dsr_open(source_dsr, &pab, source, DSR_TYPE_INPUT, 128); // DIS/FIX 128
+  if (ferr) {
+    fc_tputs("error opening source file: ");
+    fc_tputs(source);
+    fc_tputs("\n");
+    return 1;
+  }
+
+  ferr = fc_dsr_read(source_dsr, &pab, 0);
+
+  char volume[11];
+  volume[10] = 0; // volume name in image will be space padded, 
+		  // need a null terminator to complete c string
+  vdp_memread(pab.VDPBuffer, volume, 10);
+  fc_tputs("volume: ");
+  fc_tputs(volume);
+
+  int total_sectors = 0;
+  vdp_memread(pab.VDPBuffer + 10, (char*) &total_sectors, 2);
+  fc_tputs("\ntotal sectors: ");
+  fc_tputs(fc_uint2str(total_sectors));
+  fc_tputs("\n");
+
+  if (total_sectors != 360 /*90k*/ 
+      && total_sectors != 720 /*180k*/ 
+      && total_sectors != 1440 /*360k*/ 
+      && total_sectors != 1600 /*400k*/) {
+    fc_tputs("\nunrecognized sector count, aborting.\n");
+    return 1;
+  }
+
+  fc_dsr_close(source_dsr, &pab);
+  // reset pab
+  pab.pName = 0;
+  pab.CharCount = 0;
+  pab.NameLength = 0;
+  pab.OpCode = 0;
+  pab.RecordLength = 0;
+  pab.RecordNumber = 0;
+  pab.ScreenOffset = 0;
+  pab.Status = 0;
+  pab.VDPBuffer = 0;
+  // reopen
+  fc_dsr_open(source_dsr, &pab, source, DSR_TYPE_INPUT, 128);
+
+  fc_tputs("\n");
+  int record = 0;
+  for(int sno = 0; sno < total_sectors; sno++) {
+    // read 2 records to get a sector... 
+    fc_dsr_read(source_dsr, &pab, record++);
+    if (ferr) {
+      fc_tputs("error reading record\n");
+      return 1;
+    }
+    vdp_memread(pab.VDPBuffer, sector_buf, 128);
+    // the second record into second half of sector buffer
+    fc_dsr_read(source_dsr, &pab, record++);
+    if (ferr) {
+      fc_tputs("error reading record\n");
+      return 1;
+    }
+    vdp_memread(pab.VDPBuffer, sector_buf + 128, 128);
+
+    ferr = fc_lvl2_sector_write(dest_dsr->crubase, iocode, sno, sector_buf);
+    if (ferr) {
+      fc_tputs("error writing sector\n");
+      return 1;
+    }
+    fc_tputs("\rsector: ");
+    fc_tputs(fc_uint2str(sno));
+
+  }
+  fc_tputs("\n");
+
+  fc_dsr_close(source_dsr, &pab);
+
+  return 0;
 }
 
 int fc_main(char* args) {
