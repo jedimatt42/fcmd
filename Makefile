@@ -13,7 +13,7 @@ BANKBINS:=$(shell seq -s ' ' -f "bank%1g.page" 0 15)
 VER:=$(shell grep "\#define APP_VER" b0_main.h | cut -d '"' -f2)
 
 MANIFEST=FCMDG.bin FCMDC.bin README.md
-SUPPORT=FC/LOAD FC/FCMD FC/FCMDXB FC/BIN/FCMENU FC/BIN/FTP FC/BIN/SAMPLE FC/BIN/SAY FC/BIN/TELNET FC/BIN/VIRGIL99 FC/BIN/FONT FC/MDOSANSI FC/MDOSFONT
+SUPPORT=FC/LOAD FC/FCMD FC/FCMDXB FC/BIN/DISKIMAGE FC/BIN/FCMENU FC/BIN/FTP FC/BIN/SAMPLE FC/BIN/SAY FC/BIN/TELNET FC/BIN/VIRGIL99 FC/BIN/FONT FC/MDOSANSI FC/MDOSFONT
 
 LDFLAGS=\
   --script=linkfile
@@ -97,7 +97,7 @@ api.asm: fc_api.lst makeapi.py fc_api_template
 b3_fcbanner.asm: fcbanner.ans ans2asm.py
 	python3 ./ans2asm.py
 
-SUBDIRS=hello samshello charset fcmenu ftp say telnet virgil font
+SUBDIRS=hello samshello charset diskimage fcmenu ftp say telnet virgil font
 
 subdirs: api.asm
 	for d in $(SUBDIRS); do $(MAKE) -C example/gcc/$$d; done
@@ -106,7 +106,7 @@ support: FC/reload_fcmd.asm FC/loadxb.bas
 	$(MAKE) -C FC
 
 $(FNAME).DSK: subdirs support
-	python3 $(XDM99) $(FNAME).DSK -X 360 -t -a FC/BIN/FCMENU FC/BIN/FTP FC/BIN/TELNET FC/BIN/SAY FC/BIN/SAMPLE FC/BIN/VIRGIL99 FC/BIN/FONT FC/MDOSANSI FC/MDOSFONT
+	python3 $(XDM99) $(FNAME).DSK -X 360 -t -a FC/BIN/DISKIMAGE FC/BIN/FCMENU FC/BIN/FTP FC/BIN/TELNET FC/BIN/SAY FC/BIN/SAMPLE FC/BIN/VIRGIL99 FC/BIN/FONT FC/MDOSANSI FC/MDOSFONT
 
 $(FNAME).RPK: $(FNAME)C.bin $(FNAME)G.bin layout.xml
 	zip $@ $^

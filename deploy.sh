@@ -14,6 +14,7 @@ if [ -z ${CLASSIC99_DSK1_DIR:-} ]; then
   echo "export CLASSIC99_DSK1_DIR to copy utlities for emulator use"
 else
   # Copy stuff to DSK1 for use with CLASSIC99 FIAD storage
+  cp example/gcc/diskimage/DISKIMAGE $CLASSIC99_DSK1_DIR
   cp example/gcc/fcmenu/FCMENU $CLASSIC99_DSK1_DIR
   cp example/gcc/ftp/FTP $CLASSIC99_DSK1_DIR
   cp example/gcc/font/FONT $CLASSIC99_DSK1_DIR
@@ -33,6 +34,7 @@ else
   scp FC/LOAD tipi@${TIPI_HOST_NAME}:/home/tipi/tipi_disk/FC/LOAD
   scp FC/FCMD tipi@${TIPI_HOST_NAME}:/home/tipi/tipi_disk/FC/FCMD
   scp FC/FCMDXB tipi@${TIPI_HOST_NAME}:/home/tipi/tipi_disk/FC/FCMDXB
+  scp example/gcc/diskimage/DISKIMAGE tipi@${TIPI_HOST_NAME}:/home/tipi/tipi_disk/FC/BIN/
   scp example/gcc/fcmenu/FCMENU tipi@${TIPI_HOST_NAME}:/home/tipi/tipi_disk/FC/BIN/
   scp example/gcc/ftp/FTP tipi@${TIPI_HOST_NAME}:/home/tipi/tipi_disk/FC/BIN/
   scp example/gcc/font/FONT tipi@${TIPI_HOST_NAME}:/home/tipi/tipi_disk/FC/BIN/
