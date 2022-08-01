@@ -44,7 +44,7 @@ int create_image(struct DeviceServiceRoutine* source_dsr, char* source, struct D
 
   fc_tputs("\n");
   for(int sno = 0; sno < total_sectors; sno++) {
-    ferr = fc_lvl2_sector_read(dest_dsr->crubase, iocode, sno, sector_buf);
+    ferr = fc_lvl2_sector_read(source_dsr->crubase, iocode, sno, sector_buf);
     if (ferr) {
       fc_tputs("error reading sector\n");
       return 1;
