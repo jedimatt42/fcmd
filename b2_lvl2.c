@@ -57,6 +57,11 @@ unsigned int path2iocode(const char *dirpath)
     // unit 0x07 operation set 0x10
     return 0x0710;
   }
+  // jasonACT pico cart
+  if (bk_str_equals(str2ram("DSK"), drive)) {
+    // unit 0x00 operation set 0x10
+    return 0x0010;
+  }
   l--;
   char offset = '0';
   unsigned char unit = (drive[l] - offset) & 0xFF;
