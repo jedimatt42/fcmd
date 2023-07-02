@@ -47,6 +47,11 @@ static int __attribute__((noinline)) isDrive(char* basicstr) {
     return 1;
   }
 
+  // include 'DSK', experimental as unit 0 for jasonACT's pico cart
+  if (basicstr[0] == 3 && matchesPrefix(basicstr, "DSK")) {
+    return 1;
+  }
+
   if (basicstr[0] == 4) {
     if (basicstr[4] >= '0' && basicstr[4] <= '9') {
       return matchesPrefix(basicstr, "DSK") ||

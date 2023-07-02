@@ -118,7 +118,7 @@ $(FNAME)_ALT.RPK: $(FNAME)C.bin layout_alt.xml
 	mv /tmp/$@ $@
 
 fcsdk:  subdirs
-	rm -f ./fcsdk
+	rm -fr ./fcsdk
 	cp -a example/gcc/fcsdk ./fcsdk
 	cp -a example/gcc/hello ./fcsdk/hello
 	cp -a example/gcc/samshello ./fcsdk/samshello

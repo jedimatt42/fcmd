@@ -56,7 +56,7 @@ void playtipi() {
 }
 
 void titleScreen() {
-  tputs_rom("Force Command v");
+  tputs_rom("Force Command (alpha)v");
   tputs_rom(APP_VER);
   bk_tputc(' ');
   tputs_rom(__DATE__);
