@@ -79,7 +79,7 @@ static void writeConfigItem(const char* key, const char* value) {
 
 void onLineShowMapping(char* linebuf, char* extra) {
   char* key = bk_strtok(linebuf, '=');
-  if (bk_strlen(key) > 3 && (bk_str_startswith(key, str2ram("DSK")) || bk_str_startswith(key, str2ram("URI")))) {
+  if (bk_str_startswith(key, str2ram("DSK")) || bk_str_startswith(key, str2ram("URI")) || bk_str_startswith(key, str2ram("CS1"))) {
     char* path = bk_strtok(0, ' ');
     if (path) {
       if (bk_str_startswith(key, str2ram("URI"))) {
@@ -132,10 +132,10 @@ void onLineIfUriShowMapping(char* linebuf, char* uriPrefix) {
 
 static void showDriveMapping(const char* drive) {
   char* drivePrefix = bk_strtok((char*) drive, '.');
-  if (bk_str_startswith(drivePrefix, str2ram("DSK"))) {
-    visitLines(onLineIfDriveShowMapping, drivePrefix);
-  } else {
+  if (bk_str_startswith(drivePrefix, str2ram("URI"))) {
     visitLines(onLineIfUriShowMapping, drivePrefix);
+  } else {
+    visitLines(onLineIfDriveShowMapping, drivePrefix);
   }
 }
 
@@ -144,6 +144,9 @@ static void clearDriveMapping(const char* drive) {
   if (bk_str_startswith(drive, str2ram("URI"))) {
     bk_strcpy(keybuf, drive);
     keybuf[4] = 0;
+  } else if (bk_str_startswith(drive, str2ram("CS1"))) {
+    bk_strcpy(keybuf, drive);
+    bk_strcpy(keybuf+3, str2ram("_FILE"));
   } else {
     bk_strcpy(keybuf, drive);
     bk_strcpy(keybuf+4, str2ram("_DIR"));
@@ -180,19 +183,21 @@ static void setAutoMap() {
   }
 }
 
-static int __attribute__((noinline)) validDrive(const unsigned char *keybuf, const unsigned char *prefix, char min, char max)
+static int __attribute__((noinline)) validDrive(const unsigned char *keybuf, const unsigned char *prefix, char min, char max, int pl)
 {
-  int l = bk_strlen(keybuf);
-  int form = (l == 5 && keybuf[4] == '.') || (l == 4);
+  int dl = bk_strlen(keybuf);
+  int form = (dl == (pl+2) && keybuf[dl-1] == '.') || (dl == (pl+1));
   return bk_str_startswith(keybuf, str2ram(prefix)) &&
-       keybuf[3] >= min &&
-       keybuf[3] <= max &&
+       keybuf[pl] >= min &&
+       keybuf[pl] <= max &&
        form;
 }
 
 static int __attribute__((noinline)) isMappable(const char *drive)
 {
-  return validDrive(drive, "DSK", '1', '4') || validDrive(drive, "URI", '1', '3');
+  return validDrive(drive, "DSK", '1', '9', 3) || 
+         validDrive(drive, "URI", '1', '3', 3) ||
+         validDrive(drive, "CS", '1', '1', 2);
 }
 
 static void setDriveMapping(const char* drive, const char* path) {
@@ -206,9 +211,12 @@ static void setDriveMapping(const char* drive, const char* path) {
     return;
   }
 
-  int diskmapping = 0;
+  int diskmapping = 0; // cassette or disk
   if (bk_str_startswith(keybuf, str2ram("DSK"))) {
     bk_strcpy(keybuf+4, str2ram("_DIR"));
+    diskmapping = 1;
+  } else if (bk_str_startswith(keybuf, str2ram("CS1"))) {
+    bk_strcpy(keybuf+3, str2ram("_FILE"));
     diskmapping = 1;
   } else if (bk_str_startswith(keybuf, str2ram("URI"))) {
     keybuf[4] = 0;
@@ -262,7 +270,7 @@ void handleTipimap() {
       } else {
         char* peek = bk_strtokpeek(0, ' ');
         if (peek) {
-          if (bk_str_startswith(drive, str2ram("DSK"))) {
+          if (bk_str_startswith(drive, str2ram("DSK")) || bk_str_startswith(drive, str2ram("CS1"))) {
             struct DeviceServiceRoutine *dsr;
             char path[256];
             bk_parsePathParam(0, &dsr, path, PR_OPTIONAL);

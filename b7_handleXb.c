@@ -1,5 +1,5 @@
 #include "banks.h"
-#define MYBANK BANK(6)
+#define MYBANK BANK(7)
 
 #include "commands.h"
 #include "b10_parsing.h"
@@ -116,12 +116,12 @@ void handleXb() {
     } else {
         // Force module name to all caps for final grom
         int up = 0;
-	while(xb_module[up] != 0) {
-	  if (xb_module[up] >= 'a' && xb_module[up] <= 'z') {
-	    xb_module[up] -= 'a' - 'A';
-	  }
-	  up++;
-	}
+   	    while(xb_module[up] != 0) {
+	          if (xb_module[up] >= 'a' && xb_module[up] <= 'z') {
+	              xb_module[up] -= 'a' - 'A';
+	          }
+	          up++;
+	      }
         bk_strcpy(fg99_msg+8, xb_module);
     }
 
