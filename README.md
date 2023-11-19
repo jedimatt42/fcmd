@@ -67,10 +67,13 @@ The FC directory goes on your TIPI as TIPI.FC. It contains LOAD and FCMD
 
 * Classic99 ini entries:
 
+Add a uniquely numbered `[UserCart` nnn `]` section.
+
 ```ini
+[UserCart0]
 name=Force Command
-rom0=8|00000|20000|../FCMDC.bin
-rom1=G|6000|2000|../FCMDG.bin
+rom0=8|00000|20000|<path-to-your-files>/FCMDC.bin
+rom1=G|6000|2000|<path-to-your-files>/FCMDG.bin
 ```
 
 * MAME & Js99er.net
