@@ -54,6 +54,18 @@ make
 
 This will compile all the binaries.
 
+### Visual Studio Code
+
+The clangd extension works well, but you need to use `bear` to generate info on how it compiles, what include dirs are 
+used, etc. 
+
+To produce the compile_commands.json:
+
+```
+make clean
+bear -- make
+```
+
 ## Installation on real hardware
 
 The FCMDG.bin and FCMDC.bin go on a FinalGROM99 - or if you know what you are doing, an UberGROM
