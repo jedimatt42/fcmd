@@ -393,6 +393,7 @@ extern void* memcpy(void* dest, const void* src, int count);
 #define FC_TIPI_LOG 0x5f
 #define FC_LVL2_SECTOR_READ 0x60
 #define FC_LVL2_SECTOR_WRITE 0x61
+#define FC_DSR_SCRATCH 0x62
 
 // function: void fc_tputc(int c)
 DECL_FC_API_CALL(FC_TPUTC, fc_tputc, void, (int c), (c))
@@ -687,5 +688,8 @@ DECL_FC_API_CALL(FC_LVL2_SECTOR_READ, fc_lvl2_sector_read, unsigned int, (int cr
 
 // function: unsigned int fc_lvl2_sector_write(int crubase, unsigned int iocode, unsigned int sector, char*bufaddr)
 DECL_FC_API_CALL(FC_LVL2_SECTOR_WRITE, fc_lvl2_sector_write, unsigned int, (int crubase, unsigned int iocode, unsigned int sector, char*bufaddr), (crubase, iocode, sector, bufaddr))
+
+// function: unsigned int fc_dsr_scratch(struct DeviceServiceRoutine* dsr, struct PAB* pab, int record)
+DECL_FC_API_CALL(FC_DSR_SCRATCH, fc_dsr_scratch, unsigned int, (struct DeviceServiceRoutine* dsr, struct PAB* pab, int record), (dsr, pab, record))
 
 #endif

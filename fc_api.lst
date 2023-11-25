@@ -116,3 +116,5 @@ tipi_log
 
 lvl2_sector_read
 lvl2_sector_write
+
+dsr_scratch

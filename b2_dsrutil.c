@@ -142,6 +142,12 @@ unsigned int dsr_reset(struct DeviceServiceRoutine* dsr, struct PAB* pab, int re
   return mds_lvl3_dsrlnk(dsr->crubase, pab, VPAB);
 }
 
+unsigned int dsr_scratch(struct DeviceServiceRoutine* dsr, struct PAB* pab, int record) {
+  pab->OpCode = DSR_SCRATCH;
+  pab->RecordNumber = record;
+  return mds_lvl3_dsrlnk(dsr->crubase, pab, VPAB);
+}
+
 // the data read is in FBUF, the length read in pab->CharCount
 // typically passing 0 in for record number will let the controller
 // auto-increment it.
