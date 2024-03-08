@@ -24,7 +24,7 @@ void mds_lvl3_dsrlnkraw(int crubase, unsigned int vdp) {
 	DSR_PAB_POINTER = vdp;
 
 	VDP_SET_ADDRESS(vdp);
-	__asm("NOP");
+	__asm__("NOP");
 	unsigned char size = VDPRD;
 
 	unsigned char cnt=0;
@@ -57,7 +57,7 @@ void mds_lvl3_dsrlnkraw(int crubase, unsigned int vdp) {
 	// needs to be wrapped with LWPI....
 	__asm__(
 	"	mov %1,@>83F8		; prepare GPLWS r12 with crubase\n"
-	"	mov %1,r12		; prepare terminate crubase to end loop (this is in C workspace)\n"
+	"	mov %1,r12		; prepare terminate crubase to end loop (this is in C workspace @>8318)\n"
 	"	ai r12,0x0200\n"
 	"	li r9,8			; store the list offset in a well known address >8312\n"
 	"	ai r10,-34		; make stack room to save workspace & zero word\n"
@@ -113,7 +113,7 @@ void mds_lvl3_dsrlnkraw(int crubase, unsigned int vdp) {
 	"	ai r10,34		; restore stack\n"
 		:
 		: "i" (buf), "r" (crubase-0x0100)
-		: "r12", "r9"
+		: "r12", "r9", "r1", "r0"
 	);
 
 }

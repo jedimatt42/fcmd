@@ -14,13 +14,17 @@ volatile int sams_map_shadow[6];
 void samsMapOn() {
     __asm__(
         "LI r12, >1E00\n\t"
-        "SBO 1\n\t");
+        "SBO 1\n\t"
+        : : : "r12"
+    );
 }
 
 void samsMapOff() {
     __asm__(
         "LI r12, >1E00\n\t"
-        "SBZ 1\n\t");
+        "SBZ 1\n\t"
+        : : : "r12"
+    );
 }
 
 void __attribute__((noinline)) map_page(int page, int location) {

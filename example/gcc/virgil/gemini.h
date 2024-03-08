@@ -41,7 +41,7 @@ FC_SAMS_VOIDBANKED(0, set_error, (char* msg, int ticks), (msg, ticks));
 
 inline int vdp_read_status() {
   int status;
-  __asm__( "movb @>8802,%0" : "=rm" (status) : : "r12" );
+  __asm__( "movb @>8802,%0" : "=rm" (status) );
   return status;
 }
 

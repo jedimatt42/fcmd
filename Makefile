@@ -19,7 +19,7 @@ LDFLAGS=\
   --script=linkfile
 
 CFLAGS=\
-  -std=gnu99 -nostdlib -ffreestanding -O2 -Werror --save-temps -I$(abspath .) -I$(abspath libti99)
+  -std=gnu99 -nostdlib -ffreestanding -O2 -Wno-int-to-pointer-cast -Wno-pointer-to-int-cast -Werror --save-temps -I$(abspath .) -I$(abspath libti99)
 
 SRCS:=$(sort $(wildcard *.c) $(wildcard *.asm))
 LIBTI99_SRCS=$(sort $(wildcard libti99/*.c))
@@ -118,7 +118,7 @@ $(FNAME)_ALT.RPK: $(FNAME)C.bin layout_alt.xml
 	mv /tmp/$@ $@
 
 fcsdk:  subdirs
-	rm -f ./fcsdk
+	rm -fr ./fcsdk
 	cp -a example/gcc/fcsdk ./fcsdk
 	cp -a example/gcc/hello ./fcsdk/hello
 	cp -a example/gcc/samshello ./fcsdk/samshello

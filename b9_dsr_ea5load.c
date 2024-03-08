@@ -19,7 +19,7 @@ extern int* GOEA5;
 
 inline static unsigned char ea5_vdpreadchar(int pAddr) {
   VDP_SET_ADDRESS(pAddr);
-  __asm("NOP");
+  __asm__("NOP");
   return VDPRD;
 }
 

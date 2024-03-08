@@ -26,6 +26,8 @@ void resetSams() {
         // turn off the mapper
         __asm__(
             "LI r12, >1E00\n\t"
-            "SBZ 1\n\t");
+            "SBZ 1\n\t"
+            : : : "r12"
+        );
     }
 }

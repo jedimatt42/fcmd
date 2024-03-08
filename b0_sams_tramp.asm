@@ -6,7 +6,8 @@
 TAR_BANK  EQU >0000
 RET_BANK  EQU >0002
 TAR_ADDR  EQU >0004
-STASH_R13 EQU >0006
+STASH_R12 EQU >0006
+STASH_R13 EQU >0008
 
 ; stack data offsets
 DATA_ADDR EQU >0004
@@ -24,8 +25,9 @@ stramp:
     ; - caller bank
     ; - target function
     ; caller cheats and didn't adjust stack
-    ai  r10, -8                         ; consume stack space
+    ai  r10, -10                        ; consume stack space
     mov r11, *r10                       ; stash caller return address
+    mov r12, @STASH_R12(r10)            ; stash r12 so we can use it.
     mov r13, @STASH_R13(r10)            ; stash r13 so we can use it.
     mov @trampdata,r13
     mov @RET_BANK(r13), @RET_BANK(r10)  ; stash caller bank
@@ -60,7 +62,8 @@ stramp:
     sbz 0
 
     mov @RET_ADDR(r10), r11             ; restore return address
+    mov @STASH_R12(r10), r12            ; restore r12
     mov @STASH_R13(r10), r13            ; restore r13
-    ai  r10, 8                          ; restore stack location
+    ai  r10, 10                         ; restore stack location
     b   *r11                            ; return to caller
 

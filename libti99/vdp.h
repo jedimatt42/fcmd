@@ -293,7 +293,7 @@ void vdpchar_default(int pAddr, int ch);
 inline unsigned char vdpreadchar(int pAddr)
 {
 	VDP_SET_ADDRESS(pAddr);
-	__asm("NOP");
+	__asm__("NOP");
 	return VDPRD;
 }
 

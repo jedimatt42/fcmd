@@ -23,7 +23,7 @@ inline void inl_map_page(int page, int location) {
     "SBZ 0\n\t"
     "SWPB %1\n\t"
     :
-  : "r"(location), "r"(page)
+    : "r"(location), "r"(page)
     : "r12");
 }
 

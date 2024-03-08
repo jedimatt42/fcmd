@@ -35,6 +35,10 @@ void handleDebug() {
                 case 'M':
                     cmdM(tok);
                     break;
+                // Add Memory poke
+                // Add Cru editing
+                // Add Grom read
+                // Add Grom poke 
                 case 'Q':
                     return;
                 default:
