@@ -181,7 +181,6 @@ void parsePathParam(char* str_in, struct DeviceServiceRoutine** dsr, char* buffe
       int ldot = bk_lindexof(currentPath, '.', bk_strlen(currentPath) - 2);
       if (ldot == -1) {
         *dsr = 0;
-        tputs_rom("No parent folder\n");
         return;
       }
       bk_strncpy(buffer, currentPath, ldot);
@@ -197,7 +196,6 @@ void parsePathParam(char* str_in, struct DeviceServiceRoutine** dsr, char* buffe
         *dsr = bk_findDsr(devicename, currentDsr->crubase);
         // if still not found, then give up.
         if (*dsr == 0) {
-          tputs_rom("device not found.\n");
           return;
         }
         // at this stage, buffer is set with result device name.
