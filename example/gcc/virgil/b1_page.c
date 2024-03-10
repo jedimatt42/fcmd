@@ -7,7 +7,7 @@
 
 #define LINES_PER_BANK 48
 
-struct __attribute__((__packed__)) Bank {
+struct Bank {
   struct Line lines[LINES_PER_BANK];
 };
 

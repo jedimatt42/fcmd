@@ -189,7 +189,7 @@ void pretty_time(struct DateTime* dt) {
 
 /* MBP & MBP II clock (no year) */
 
-struct __attribute__((__packed__)) MBP_Time {
+struct MBP_Time {
   unsigned char subsec_1_1000;
   unsigned char na1;
   unsigned char subsec_1_100;

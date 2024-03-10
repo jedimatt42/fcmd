@@ -80,7 +80,7 @@ int fc_main(char* args);
 /*
   Device Service Routine pre-loaded entry
 */
-struct __attribute__((__packed__)) DeviceServiceRoutine {
+struct DeviceServiceRoutine {
     char name[8];
     int crubase;
     unsigned int addr;
@@ -90,7 +90,7 @@ struct __attribute__((__packed__)) DeviceServiceRoutine {
 /*
   System information structure
 */
-struct __attribute__((__packed__)) SystemInformation {
+struct SystemInformation {
   struct DeviceServiceRoutine* dsrList; // points to array of 20 dsrs
   struct DeviceServiceRoutine* currentDsr;
   const char* currentPath;
@@ -124,7 +124,7 @@ struct __attribute__((__packed__)) SystemInformation {
 /*
   Display parameter structure
 */
-struct __attribute__((__packed__)) DisplayInformation {
+struct DisplayInformation {
   int isPal;
   int vdp_type;
   int displayWidth;
@@ -135,7 +135,7 @@ struct __attribute__((__packed__)) DisplayInformation {
   int spritePatternAddr;
 };
 
-struct __attribute__((__packed__)) SamsInformation {
+struct SamsInformation {
   int next_page;
   int total_pages;
 };
@@ -143,7 +143,7 @@ struct __attribute__((__packed__)) SamsInformation {
 /*
   Peripheral Access Block
 */
-struct __attribute__((__packed__)) PAB {
+struct PAB {
     unsigned char OpCode;		// see DSR_xxx list above
     unsigned char Status;		// file type and error code (DSR_ERR_xxx and DSR_TYPE_xxx)
     unsigned int  VDPBuffer;		// address of the data buffer in VDP memory
@@ -158,7 +158,7 @@ struct __attribute__((__packed__)) PAB {
 /*
   For direct input and direct file meta data is represented as AddInfo ( or additional information )
 */
-struct __attribute__((__packed__)) AddInfo {
+struct AddInfo {
   unsigned int buffer;
   unsigned int first_sector;
   unsigned char flags;
@@ -181,7 +181,7 @@ struct __attribute__((__packed__)) AddInfo {
 /*
   catalog call back functions
 */
-struct __attribute__((__packed__)) DirEntry {
+struct DirEntry {
   char name[11];
   int type;
   int sectors;
@@ -194,7 +194,7 @@ struct __attribute__((__packed__)) DirEntry {
   char ts_day;
 };
 
-struct __attribute__((__packed__)) VolInfo {
+struct VolInfo {
   char volname[11];
   int total;
   int available;
@@ -208,8 +208,7 @@ typedef void (*dir_entry_cb)(struct DirEntry*);
 /*
   clock DateTime structure
 */
-struct __attribute__((__packed__)) DateTime {
-  unsigned char dayOfWeek;
+struct DateTime {
   unsigned int year;
   unsigned char month;
   unsigned char day;
@@ -217,6 +216,7 @@ struct __attribute__((__packed__)) DateTime {
   unsigned char minutes;
   unsigned char seconds;
   unsigned char pm;
+  unsigned char dayOfWeek;
 };
 
 /*
@@ -236,7 +236,7 @@ typedef void (*identify_callback)(int flag);
 /*
   speech LPC code tracking cursor structure
  */
-struct __attribute__((__packed__)) LpcPlaybackCtx {
+struct LpcPlaybackCtx {
     char* addr;
     int remaining;
 };
@@ -244,7 +244,7 @@ struct __attribute__((__packed__)) LpcPlaybackCtx {
 /*
   TIPI Mouse return data and butten masks
  */
-struct __attribute__((__packed__)) MouseData {
+struct MouseData {
   char mx;
   char my;
   char buttons;
@@ -259,7 +259,7 @@ struct __attribute__((__packed__)) MouseData {
 /*
   State for reentrant bufferedio socket api
  */
-struct __attribute__((__packed__)) SocketBuffer {
+struct SocketBuffer {
   unsigned int socket_id;
   char buffer[256];
   int available;
@@ -275,13 +275,13 @@ struct __attribute__((__packed__)) SocketBuffer {
  Linked List stack that shoves oldest items off to make room if necessary.
  Use with fc_list_ functions.
  */
-struct __attribute__((__packed__)) List {
+struct List {
   char* addr;
   char* end;
   char* ceiling;
 };
   
-struct __attribute__((__packed__)) ListEntry {
+struct ListEntry {
   int length;
   char data[];
 };

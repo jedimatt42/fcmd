@@ -25,12 +25,12 @@
 #define KEY_BEGIN 147 
 #define KEY_SAVE 151
 
-struct __attribute__((__packed__)) Line {
+struct Line {
   int length;
   char data[80];
 };
 
-struct __attribute__((__packed__)) EditBuffer {
+struct EditBuffer {
   int justRendered;
   int screen_x;
   int screen_y;

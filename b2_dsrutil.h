@@ -10,18 +10,18 @@
 // reasoning about any code accessing the rom header and
 // lists.
 
-struct __attribute__((__packed__)) EntryLink {
+struct EntryLink {
   struct EntryLink* next;
   unsigned int* routine;
 };
 
-struct __attribute__((__packed__)) NameLink {
+struct NameLink {
   struct NameLink* next;
-  unsigned int routine;
+  unsigned int routine; // Should this be an int* also? it's really a function pointer
   char name[8]; // length byte + [upto] 7 characters.
 };
 
-struct __attribute__((__packed__)) DeviceRomHeader {
+struct DeviceRomHeader {
   unsigned char flag;
   unsigned char version;
   unsigned int reserved1;
@@ -34,7 +34,7 @@ struct __attribute__((__packed__)) DeviceRomHeader {
 };
 
 // fun with 'drives'
-struct __attribute__((__packed__)) DeviceServiceRoutine {
+struct DeviceServiceRoutine {
   char name[8];
   int crubase;
   unsigned int addr;
@@ -44,7 +44,7 @@ struct __attribute__((__packed__)) DeviceServiceRoutine {
 // A cache of dsr names and addresses.
 extern struct DeviceServiceRoutine* dsrList;
 
-struct __attribute__((__packed__)) DirEntry {
+struct DirEntry {
   char name[11];
   int type;
   int sectors;
@@ -57,7 +57,7 @@ struct __attribute__((__packed__)) DirEntry {
   char ts_day;
 };
 
-struct __attribute__((__packed__)) VolInfo {
+struct VolInfo {
   char volname[11];
   int total;
   int available;

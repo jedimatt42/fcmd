@@ -6,7 +6,7 @@
 #include "b1_strutil.h"
 #include "string.h"
 
-struct __attribute__((__packed__)) LabelEntry {
+struct LabelEntry {
   char name[12]; // room for 11 characters
   unsigned int lineno;
 };

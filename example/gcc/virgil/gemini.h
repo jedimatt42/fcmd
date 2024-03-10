@@ -3,7 +3,7 @@
 #include <fc_api.h>
 #include "about.h"
 
-struct __attribute__((__packed__)) State {
+struct State {
   volatile int history_id;
   volatile int bookmarks_id;
   volatile int base_id;

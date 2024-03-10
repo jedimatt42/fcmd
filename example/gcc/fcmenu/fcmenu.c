@@ -4,7 +4,7 @@
 
 struct DisplayInformation dinfo;
 
-struct __attribute__((__packed__)) MenuEntry {
+struct MenuEntry {
   char key;
   char title[20];
   char command[80];

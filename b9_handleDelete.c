@@ -23,7 +23,7 @@ static int filecount;
 static int matched;
 static int yes;
 
-struct __attribute__((__packed__)) MatchedName {
+struct MatchedName {
   char name[11];
 };
 

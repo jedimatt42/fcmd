@@ -202,7 +202,6 @@ void loadDriveDSRs() {
     if (dsrrom->flag == 0xAA) {
 
       struct NameLink* dsrlinks = dsrrom->dsrlnk;
-
       while(dsrlinks != 0) {
 
         if (isDrive(dsrlinks->name)) {

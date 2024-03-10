@@ -2,7 +2,7 @@
 
 #include <fc_api.h>
 
-struct __attribute__((__packed__)) TiFiles {
+struct TiFiles {
   unsigned char seven;
   unsigned char tifiles[7];
   unsigned int sectors;

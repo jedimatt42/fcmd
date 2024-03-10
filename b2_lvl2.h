@@ -15,7 +15,7 @@
 
 #define VDPFBUF (FBUF + 0x0100)
 
-struct __attribute__((__packed__)) AddInfo {
+struct AddInfo {
   unsigned int buffer;
   unsigned int first_sector;
   unsigned char flags;

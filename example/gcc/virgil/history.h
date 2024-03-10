@@ -3,7 +3,7 @@
 #include <fc_api.h>
 #include "page.h"
 
-struct __attribute__((__packed__)) Link {
+struct Link {
   char data[80];
 };
 

@@ -21,7 +21,7 @@ int sendFtpCommand(char* command, char* argstring);
 unsigned int sendFtpPasv();
 void drainChannel(struct SocketBuffer* socket_buf);
 
-struct __attribute__((__packed__)) TiFiles {
+struct TiFiles {
   unsigned char seven;
   unsigned char tifiles[7];
   unsigned int sectors;

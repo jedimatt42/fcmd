@@ -12,7 +12,7 @@
 #define LINE_TYPE_BULLET 7
 #define LINE_TYPE_LINK_CONT 8
 
-struct __attribute__((__packed__)) Line {
+struct Line {
   int type;
   int length;
   char data[80];

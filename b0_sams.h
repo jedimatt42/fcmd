@@ -38,7 +38,7 @@ int alloc_pages(int count);
 // returns new top page
 int free_pages(int count);
 
-struct __attribute__((__packed__)) SamsInformation {
+struct SamsInformation {
   int next_page;
   int total_pages;
 };

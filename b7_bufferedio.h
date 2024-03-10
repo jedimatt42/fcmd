@@ -3,7 +3,7 @@
 
 #include "banking.h"
 
-struct __attribute__((__packed__)) SocketBuffer {
+struct SocketBuffer {
     unsigned int socket_id;
     char buffer[256];
     int available;

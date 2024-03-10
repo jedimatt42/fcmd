@@ -22,3 +22,6 @@ build.sh
 .ycm_extra_conf.py
 compile_commands.json
 .cache
+.clangd
+.vscode
+copyToPc.sh

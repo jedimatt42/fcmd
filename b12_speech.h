@@ -22,7 +22,7 @@
 #endif
 
 
-struct __attribute__((__packed__)) LpcPlaybackCtx {
+struct LpcPlaybackCtx {
     char* addr;
     int remaining;
 };

@@ -1,6 +1,7 @@
 #include "banks.h"
 #define MYBANK BANK(0)
 
+#include "debugwait.h"
 #include "b0_main.h"
 
 #include <sound.h>

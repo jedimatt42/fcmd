@@ -3,8 +3,7 @@
 
 #include "banking.h"
 
-struct __attribute__((__packed__)) DateTime {
-  unsigned char dayOfWeek;
+struct DateTime {
   unsigned int year;
   unsigned char month;
   unsigned char day;
@@ -12,6 +11,7 @@ struct __attribute__((__packed__)) DateTime {
   unsigned char minutes;
   unsigned char seconds;
   unsigned char pm;
+  unsigned char dayOfWeek;
 };
 
 void detectClock();

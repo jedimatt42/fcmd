@@ -6,14 +6,14 @@
 #define DE_TYPE_VAR 1
 #define DE_TYPE_LABEL 2
 
-struct __attribute__((__packed__)) DictEntry {
+struct DictEntry {
     char type;
     char keylen;
     char vallen;
     char data[];
 };
 
-struct __attribute__((__packed__)) Dictionary {
+struct Dictionary {
     struct DictEntry* addr;
     struct DictEntry* end;
 };

@@ -3,13 +3,13 @@
 
 #include "banking.h"
 
-struct __attribute__((__packed__)) List {
+struct List {
     char* addr;
     char* end;
     char* ceiling;
 };
 
-struct __attribute__((__packed__)) ListEntry {
+struct ListEntry {
     int length;
     char data[];
 };

@@ -1,6 +1,6 @@
 #pragma once
 
-struct __attribute__((__packed__)) ProcInfo {
+struct ProcInfo {
   int base_page;
   struct ProcInfo* prev;
 };

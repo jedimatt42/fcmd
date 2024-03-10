@@ -5,7 +5,7 @@
 
 #include "b2_dsrutil.h"
 
-struct __attribute__((__packed__)) CopySpec {
+struct CopySpec {
   struct DeviceServiceRoutine* dsr;
   char* path;
   char* filename;

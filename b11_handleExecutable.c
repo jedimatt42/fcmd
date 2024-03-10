@@ -34,7 +34,7 @@ int loadPagedFormat(struct DeviceServiceRoutine* dsr, int iocode, char* filename
 #define FMT_EXE 1
 #define FMT_SAMS 2
 
-struct __attribute__((__packed__)) FCProgramHeader {
+struct FCProgramHeader {
   int fcfc;
   int sams;
   int safe;

@@ -3,7 +3,7 @@
 
 #include "banking.h"
 
-struct __attribute__((__packed__)) MouseData {
+struct MouseData {
   char mx;
   char my;
   char buttons;
