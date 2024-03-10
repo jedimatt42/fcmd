@@ -19,7 +19,7 @@ LDFLAGS=\
   --script=linkfile
 
 CFLAGS=\
-  -std=gnu99 -nostdlib -ffreestanding -O2 -Wno-int-to-pointer-cast -Wno-pointer-to-int-cast -Werror --save-temps -I$(abspath .) -I$(abspath libti99)
+  -std=gnu99 -nostdlib -ffreestanding -Os -Wno-int-to-pointer-cast -Wno-pointer-to-int-cast -Werror --save-temps -I$(abspath .) -I$(abspath libti99)
 
 SRCS:=$(sort $(wildcard *.c) $(wildcard *.asm))
 LIBTI99_SRCS=$(sort $(wildcard libti99/*.c))
