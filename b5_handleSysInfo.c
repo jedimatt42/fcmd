@@ -45,6 +45,16 @@ void handleSysInfo() {
   }
   tputs_rom("K\n");
 
+#ifdef __TMS9900_PATCH_MAJOR__
+  int gcc_major = __TMS9900_PATCH_MAJOR__;
+  int gcc_minor = __TMS9900_PATCH_MINOR__;
+  tputs_rom("GCC:     ");
+  bk_tputs_ram(bk_uint2str(gcc_major));
+  tputs_rom(".");
+  bk_tputs_ram(bk_uint2str(gcc_minor));
+  tputs_rom("\n");
+#endif
+
   // todo: add a few other options
   // add command line options, default to all, that control what line items to include
 }
