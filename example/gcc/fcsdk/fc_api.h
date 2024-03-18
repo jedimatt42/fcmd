@@ -14,7 +14,7 @@ int fc_main(char* args);
 #define DECL_FC_API_CALL(index, func, return_type, arg_sig, args)     \
     static inline return_type func arg_sig                            \
     {                                                                 \
-        __asm__("li r0,%0"                                            \
+        __asm__("li r0,%0 ; " #func                                   \
                 :                                                     \
                 : "i"(index));                                        \
         return_type(*tramp) arg_sig = (return_type(*) arg_sig)FC_SYS; \
