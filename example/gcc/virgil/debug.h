@@ -7,6 +7,3 @@ inline void debug(int a) {
   while(1) {
   }
 }
-
-void b1_waitfordebugger();
-
