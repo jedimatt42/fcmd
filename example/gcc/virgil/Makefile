@@ -13,7 +13,7 @@ LDFLAGS=\
   --script=linkfile
 
 CFLAGS=\
-  -std=gnu99 -nostdlib -ffreestanding -O2 -Werror --save-temps -I$(FCSDK) -D_BUILD_DATE=\"$(BUILD_DATE)\"
+  -std=gnu99 -nostdlib -ffreestanding -Os -Werror --save-temps -I$(FCSDK) -D_BUILD_DATE=\"$(BUILD_DATE)\"
 
 C_SRCS:=$(wildcard *.c)
 ASM_SRCS:=$(wildcard *.asm) 
