@@ -46,6 +46,9 @@ stramp:
     mov r13, @TOP_ADDR                  ; map page+1 into >B000
     sbz 0
 
+    ; todo - probably the bug... need to restore r12 and r13 before doing this!
+    mov @STASH_R12(r10), r12            ; restore r12
+    mov @STASH_R13(r10), r13            ; restore r13
     bl  *r11                            ; call target
     mov @RET_BANK(r10), r13             ; load the return bank
     mov @procInfoPtr, r12               ; get the page offset data
