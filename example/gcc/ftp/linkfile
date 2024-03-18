@@ -6,7 +6,7 @@ MEMORY
 /* memcpy will be called by the compiler in some implicit situations. */
 /*  use the well known address of this routine in the Force Command module */
 /*  it is at this address in every bank of the cartridge ROM */
-memcpy = 0x605a;
+memcpy = 0x6062;
 
 SECTIONS
 {
