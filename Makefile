@@ -80,7 +80,6 @@ clean:
 	for d in $(SUBDIRS); do $(MAKE) -C example/gcc/$$d clean; done
 	rm -fr fcsdk
 	rm -f fcsdk.linkfile
-	rm -f example/gcc/fcsdk/fc.ld
 
 objects/%.o: %.asm
 	mkdir -p objects; cd objects; $(GAS) $(abspath $<) -o $(notdir $@)
