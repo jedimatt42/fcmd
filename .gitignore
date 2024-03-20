@@ -15,9 +15,10 @@ api.banks
 *.DSK
 b3_fcbanner.asm
 /linkfile
+fcsdk.linkfile
 layout.xml
 FC/BIN
-fcsdk
+/fcsdk
 build.sh
 .ycm_extra_conf.py
 compile_commands.json

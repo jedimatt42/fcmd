@@ -10,7 +10,7 @@ FNAME=VIRGIL99
 BUILD_DATE:=$(shell date +"%m-%d-%Y")
 
 LDFLAGS=\
-  --script=linkfile
+  --script=$(FCSDK)/fc.ld --script=linkfile
 
 CFLAGS=\
   -std=gnu99 -nostdlib -ffreestanding -Os -Werror --save-temps -I$(FCSDK) -D_BUILD_DATE=\"$(BUILD_DATE)\"

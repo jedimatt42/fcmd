@@ -9,7 +9,7 @@ FCSDK=$(abspath ../fcsdk)
 FNAME=HELLO
 
 LDFLAGS=\
-  --script=linkfile
+  --script $(FCSDK)/fc.ld --script=linkfile
 
 CFLAGS=\
   -std=gnu99 -O2 -Werror --save-temps -I$(FCSDK)

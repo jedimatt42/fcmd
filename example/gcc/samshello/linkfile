@@ -4,11 +4,6 @@ MEMORY
   ram        (wx) : ORIGIN = 0xC000, LENGTH = 0x4000 /* 16k upper ram */
 }
 
-/* memcpy will be called by the compiler in some implicit situations. */
-/*  use the well known address of this routine in the Force Command module */
-/*  it is at this address in every bank of the cartridge ROM */
-memcpy = 0x6062;
-
 SECTIONS
 {
   OVERLAY : AT (0x10000)

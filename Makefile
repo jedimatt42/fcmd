@@ -79,6 +79,8 @@ clean:
 	$(MAKE) -C FC clean
 	for d in $(SUBDIRS); do $(MAKE) -C example/gcc/$$d clean; done
 	rm -fr fcsdk
+	rm -f fcsdk.linkfile
+	rm -f example/gcc/fcsdk/fc.ld
 
 objects/%.o: %.asm
 	mkdir -p objects; cd objects; $(GAS) $(abspath $<) -o $(notdir $@)
@@ -94,12 +96,16 @@ api.asm: fc_api.lst makeapi.py fc_api_template
 	grep DECLARE_BANKED libti99/*.h *.h >api.banks
 	python3 ./makeapi.py fc_api.lst api.asm api.banks example/gcc/fcsdk/fc_api.h
 
+fcsdk.linkfile: $(FNAME).elf
+	( echo -n "memcpy = 0x"; grep memcpy mapfile | egrep -v '\.' | sed 's/^\s*0x0*\([0-9a-f]*\) *memcpy/\1;/' ) > $@
+
 b3_fcbanner.asm: fcbanner.ans ans2asm.py
 	python3 ./ans2asm.py
 
 SUBDIRS=hello samshello charset diskimage fcmenu ftp say telnet virgil font
 
-subdirs: api.asm
+subdirs: api.asm fcsdk.linkfile
+	cp fcsdk.linkfile example/gcc/fcsdk/fc.ld
 	for d in $(SUBDIRS); do $(MAKE) -C example/gcc/$$d; done
 
 support: FC/reload_fcmd.asm FC/loadxb.bas

@@ -8,7 +8,7 @@ FCSDK=$(abspath ../fcsdk)
 FNAME=SAMSHELLO
 
 LDFLAGS=\
-  --script=linkfile
+  --script=$(FCSDK)/fc.ld --script=linkfile
 
 CFLAGS=\
   -std=gnu99 -nostdlib -ffreestanding -O2 -Werror --save-temps -I$(FCSDK)
