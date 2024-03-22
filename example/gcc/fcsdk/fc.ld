@@ -1,1 +1,5 @@
 memcpy = 0x2008;
+__adddf3 = 0x200c;
+__subdf3 = 0x2010;
+__muldf3 = 0x2014;
+__divdf3 = 0x2018;
