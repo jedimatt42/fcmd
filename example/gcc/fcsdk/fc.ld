@@ -1,1 +1,1 @@
-memcpy = 0x6062;
+memcpy = 0x2008;

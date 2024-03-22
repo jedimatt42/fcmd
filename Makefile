@@ -96,7 +96,7 @@ api.asm: fc_api.lst makeapi.py fc_api_template
 	python3 ./makeapi.py fc_api.lst api.asm api.banks example/gcc/fcsdk/fc_api.h
 
 fcsdk.linkfile: $(FNAME).elf
-	( echo -n "memcpy = 0x"; grep memcpy mapfile | egrep -v '\.' | sed 's/^\s*0x0*\([0-9a-f]*\) *memcpy/\1;/' ) > $@
+	( echo -n "memcpy = 0x"; grep gcc_memcpy mapfile | egrep -v '\.' | sed 's/^\s*0x0*\([0-9a-f]*\) *gcc_memcpy/\1;/' ) > $@
 
 b3_fcbanner.asm: fcbanner.ans ans2asm.py
 	python3 ./ans2asm.py
