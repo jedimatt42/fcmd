@@ -12,6 +12,8 @@ void __adddf3();
 void __subdf3();
 void __muldf3();
 void __divdf3();
+void d_compare();
+void __eqdf2();
 
 // address of fc_api routine
 int api_fc_api = (int)fc_api;
@@ -31,4 +33,6 @@ int gcc_adddf3[] = { BRANCH, (int)__adddf3 };
 int gcc_subdf3[] = { BRANCH, (int)__subdf3 };
 int gcc_muldf3[] = { BRANCH, (int)__muldf3 };
 int gcc_divdf3[] = { BRANCH, (int)__divdf3 };
+int gcc_d_compare[] = { BRANCH, (int)d_compare };
+int gcc_eqdf2[] = { BRANCH, (int)__eqdf2 };
 

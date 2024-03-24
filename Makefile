@@ -101,6 +101,12 @@ fcsdk.linkfile: $(FNAME).elf
 	( echo -n "__subdf3 = 0x"; grep gcc_subdf3 mapfile | egrep -v '\.' | sed 's/^\s*0x0*\([0-9a-f]*\) *gcc_subdf3/\1;/' ) >> $@
 	( echo -n "__muldf3 = 0x"; grep gcc_muldf3 mapfile | egrep -v '\.' | sed 's/^\s*0x0*\([0-9a-f]*\) *gcc_muldf3/\1;/' ) >> $@
 	( echo -n "__divdf3 = 0x"; grep gcc_divdf3 mapfile | egrep -v '\.' | sed 's/^\s*0x0*\([0-9a-f]*\) *gcc_divdf3/\1;/' ) >> $@
+	( echo -n "__ltdf2 = 0x"; grep gcc_d_compare mapfile | egrep -v '\.' | sed 's/^\s*0x0*\([0-9a-f]*\) *gcc_d_compare/\1;/' ) >> $@
+	( echo -n "__ledf2 = 0x"; grep gcc_d_compare mapfile | egrep -v '\.' | sed 's/^\s*0x0*\([0-9a-f]*\) *gcc_d_compare/\1;/' ) >> $@
+	( echo -n "__gtdf2 = 0x"; grep gcc_d_compare mapfile | egrep -v '\.' | sed 's/^\s*0x0*\([0-9a-f]*\) *gcc_d_compare/\1;/' ) >> $@
+	( echo -n "__gedf2 = 0x"; grep gcc_d_compare mapfile | egrep -v '\.' | sed 's/^\s*0x0*\([0-9a-f]*\) *gcc_d_compare/\1;/' ) >> $@
+	( echo -n "__eqdf2 = 0x"; grep gcc_eqdf2 mapfile | egrep -v '\.' | sed 's/^\s*0x0*\([0-9a-f]*\) *gcc_eqdf2/\1;/' ) >> $@
+	( echo -n "__nedf2 = 0x"; grep gcc_eqdf2 mapfile | egrep -v '\.' | sed 's/^\s*0x0*\([0-9a-f]*\) *gcc_eqdf2/\1;/' ) >> $@
 
 b3_fcbanner.asm: fcbanner.ans ans2asm.py
 	python3 ./ans2asm.py

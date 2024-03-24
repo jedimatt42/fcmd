@@ -12,7 +12,7 @@ LDFLAGS=\
   --script $(FCSDK)/fc.ld --script=linkfile
 
 CFLAGS=\
-  -std=gnu99 -O2 -Werror --save-temps -I$(FCSDK)
+  -std=gnu99 -Os -Werror --save-temps -I$(FCSDK)
 
 C_SRCS:=$(wildcard *.c)
 ASM_SRCS:=$(wildcard *.asm) 
