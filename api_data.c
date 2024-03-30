@@ -8,6 +8,7 @@ void stramp();
 
 // fake function declarations for gcc runtime routines to create a branch table to
 void memcpy();
+void memset();
 void __adddf3();
 void __subdf3();
 void __muldf3();
@@ -29,6 +30,7 @@ struct ProcInfo* procInfoPtr = (struct ProcInfo*) 0xffff;
 
 // Branch table to gcc runtime function always in bank 0
 int gcc_memcpy[] = { BRANCH, (int)memcpy };
+int gcc_memset[] = { BRANCH, (int)memset };
 int gcc_adddf3[] = { BRANCH, (int)__adddf3 };
 int gcc_subdf3[] = { BRANCH, (int)__subdf3 };
 int gcc_muldf3[] = { BRANCH, (int)__muldf3 };

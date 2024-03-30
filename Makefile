@@ -97,6 +97,7 @@ api.asm: fc_api.lst makeapi.py fc_api_template
 
 fcsdk.linkfile: $(FNAME).elf
 	( echo -n "memcpy = 0x"; grep gcc_memcpy mapfile | egrep -v '\.' | sed 's/^\s*0x0*\([0-9a-f]*\) *gcc_memcpy/\1;/' ) > $@
+	( echo -n "memset = 0x"; grep gcc_memset mapfile | egrep -v '\.' | sed 's/^\s*0x0*\([0-9a-f]*\) *gcc_memset/\1;/' ) >> $@
 	( echo -n "__adddf3 = 0x"; grep gcc_adddf3 mapfile | egrep -v '\.' | sed 's/^\s*0x0*\([0-9a-f]*\) *gcc_adddf3/\1;/' ) >> $@
 	( echo -n "__subdf3 = 0x"; grep gcc_subdf3 mapfile | egrep -v '\.' | sed 's/^\s*0x0*\([0-9a-f]*\) *gcc_subdf3/\1;/' ) >> $@
 	( echo -n "__muldf3 = 0x"; grep gcc_muldf3 mapfile | egrep -v '\.' | sed 's/^\s*0x0*\([0-9a-f]*\) *gcc_muldf3/\1;/' ) >> $@
