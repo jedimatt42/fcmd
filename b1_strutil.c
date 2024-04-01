@@ -200,7 +200,7 @@ char* strcat(char* dest, const char* add) {
 
 char* strncpy(char* dest, char* src, int limit) {
   int i = 0;
-  while(src[i] != 0 && i < (limit)) {
+  while(src[i] != 0 && i < limit) {
     dest[i] = src[i];
     i++;
   }

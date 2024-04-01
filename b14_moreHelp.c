@@ -117,6 +117,21 @@ void b14Help(char* tok) {
       "Configure Myarc EXP-1 Ramdisk volume name.\n"
       "<name> - upto 10 character volume label.\n"
     );
+  } else if (matchcmd(tok, "format")) {
+    wraptext("==Floppy Format==\n\n"
+      "format [/ss] [/ds] [/sd] [/dd] [/40] [/80] [/i <interleave>] [/v <volumename>] <drive>\n\n"
+      "Format a floppy disk\n"
+      "[/ss] - single sided (default)\n"
+      "[/ds] - double sided\n"
+      "[/sd] - single density (default)\n"
+      "[/dd] - double density\n"
+      "[/40] - 40 track (default)\n"
+      "[/80] - 80 track\n"
+      "[/i <interleave>] - for supportted controllers, set non-default interleave\n"
+      "[/v <volumename>] - disk volume name, 1-10 characters (default is empty)\n"
+      "<drive> - the disk device name to format. DSK1., 1100.DSK1.\n"
+      "The crubase is forced to 1100. as only floppy controllers are supported.\n"
+    );
   } else {
     wraptext("no help for command: ");
     bk_tputs_ram(tok);

@@ -22,6 +22,12 @@
 #define LVL2_PARAMADDR1 *((volatile unsigned int*)0x834E)
 #define LVL2_PARAMADDR2 *((volatile unsigned int*)0x8350)
 
+#define LVL2_SEC_PER_DISK *((volatile unsigned int*)0x834A)
+#define LVL2_TRACKS *((volatile unsigned char *)0x834D)
+#define LVL2_FORMAT_BUFFER *((volatile unsigned int*)0x834E)
+#define LVL2_DENSITY *((volatile unsigned char *)0x8350)
+#define LVL2_SIDES *((volatile unsigned char *)0x8351)
+
 #define NCOMP *((volatile unsigned int*)0x8354)
 #define PPAB *((volatile unsigned int*)0x8356)
 
@@ -161,7 +167,19 @@ unsigned int lvl2_sector_write(int crubase, unsigned int iocode, unsigned int se
   return LVL2_STATUS;
 }
 
+unsigned int lvl2_format(int crubase, unsigned int iocode, unsigned int tracks, unsigned int density, unsigned int sides, unsigned int interleave) {
+  LVL2_UNIT = UNITNO(iocode);
+  LVL2_TRACKS = (unsigned char) tracks;
+  // for HFDC the interleave can be 0, for default or specified, it fits into the density as the top 6 bits while density is limited to the bottom 2 bits.
+  LVL2_DENSITY = (unsigned char) ((0x03 & density) | (interleave << 2));
+  LVL2_SIDES = (unsigned char) sides;
+  LVL2_FORMAT_BUFFER = 0x2160;
+  
+  unsigned char opname = OPNAME(iocode, LVL2_OP_FORMAT);
+  call_lvl2(crubase, opname);
 
+  return LVL2_SEC_PER_DISK;
+}
 
 // Setup parameters suitably for most lvl2 calls.
 unsigned char __attribute__((noinline)) base_lvl2(int crubase, unsigned int iocode, char operation, char* name1, char* name2, char param0) {

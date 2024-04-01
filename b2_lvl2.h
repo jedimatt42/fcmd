@@ -4,6 +4,7 @@
 #include "b2_dsrutil.h"
 
 #define LVL2_OP_SECTOR 0x10
+#define LVL2_OP_FORMAT 0x11
 #define LVL2_OP_PROTECT 0x12
 #define LVL2_OP_RENAME 0x13
 #define LVL2_OP_INPUT 0x14
@@ -39,6 +40,7 @@ unsigned int lvl2_output(int crubase, unsigned int iocode, char *filename, unsig
 unsigned int lvl2_sector_read(int crubase, unsigned int iocode, unsigned int sector, char* bufaddr);
 unsigned int lvl2_sector_write(int crubase, unsigned int iocode, unsigned int sector, char* bufaddr);
 
+unsigned int lvl2_format(int crubase, unsigned int iocode, unsigned int tracks, unsigned int density, unsigned int sides, unsigned int interleave);
 
 unsigned char __attribute__((noinline)) base_lvl2(int crubase, unsigned int iocode, char operation, char* name1, char* name2, char param0);
 unsigned char __attribute__((noinline)) direct_io(int crubase, unsigned int iocode, char operation, char* filename, unsigned char blockcount, struct AddInfo* addInfoPtr);
@@ -60,6 +62,8 @@ DECLARE_BANKED(lvl2_output, BANK(2), unsigned int, bk_lvl2_output, (int crubase,
 
 DECLARE_BANKED(lvl2_sector_read, BANK(2), unsigned int, bk_lvl2_sector_read, (int crubase, unsigned int iocode, unsigned int sector, char* bufaddr), (crubase, iocode, sector, bufaddr))
 DECLARE_BANKED(lvl2_sector_write, BANK(2), unsigned int, bk_lvl2_sector_write, (int crubase, unsigned int iocode, unsigned int sector, char*bufaddr), (crubase, iocode, sector, bufaddr))
+
+DECLARE_BANKED(lvl2_format, BANK(2), unsigned int, bk_lvl2_format, (int crubase, unsigned int iocode, unsigned int tracks, unsigned int density, unsigned int sides, unsigned int interleave), (crubase, iocode, tracks, density, sides, interleave))
 
 DECLARE_BANKED_VOID(call_basic_sub, BANK(2), bk_call_basic_sub, (int crubase, char *subroutine), (crubase, subroutine))
 

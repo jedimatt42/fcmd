@@ -29,6 +29,7 @@ DEC_COMMAND(4, Checksum);
 DEC_COMMAND(4, Drives);
 DEC_COMMAND(4, Echo);
 DEC_COMMAND(4, Env);
+DEC_COMMAND(4, Format);
 DEC_COMMAND(4, Goto);
 DEC_COMMAND(4, If);
 DEC_COMMAND(4, Protect);
