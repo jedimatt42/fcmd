@@ -8,6 +8,13 @@
 #include "b8_terminal.h"
 
 void handleLvl2() {
+  int showAddresses = 0;
+  char* peek = bk_strtokpeek(0, ' ');
+  if (0 == bk_strcmpi(str2ram("/a"), peek)) {
+    showAddresses = 1;
+    bk_strtok(0, ' '); // consume the optional switch
+  }
+
   char* tok = bk_strtok(0, ' ');
   int crubase = bk_htoi(tok);
 
@@ -25,7 +32,14 @@ void handleLvl2() {
       tputs_rom(" >");
       register unsigned int opname = 0;
       opname = link->name[1];
-      bk_tputs_ram(bk_uint2hex(opname)+2);
+      if (showAddresses) {
+        bk_tputs_ram(bk_uint2hex(opname)+2);
+        tputs_rom(": ");
+        bk_tputs_ram(bk_uint2hex(link->routine));
+        tputs_rom("\n");
+      } else {
+        bk_tputs_ram(bk_uint2hex(opname)+2);
+      }
     }
     link = link->next;
   }

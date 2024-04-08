@@ -1,5 +1,5 @@
 #include "banks.h"
-#define MYBANK BANK(4)
+#define MYBANK BANK(7)
 
 #include <string.h>
 #include "commands.h"
@@ -32,7 +32,10 @@ void handleFormat() {
   char volumename[11];
   volumename[0] = 0;
 
-  // usage: format [/ss] [/ds] [/sd] [/dd] [/40] [/80] [/i <interleave>] [/v <volumename>] <drive>
+  int noinit = 0;
+  int quick = 0;
+
+  // usage: format [/ss] [/ds] [/sd] [/dd] [/40] [/80] [/i <interleave>] [/v <volumename>] [/n] [/q] <drive>
 
   int options = 1;
   while(options) {
@@ -55,6 +58,12 @@ void handleFormat() {
       options = 1;
     } else if (0 == bk_strcmpi(str2ram("/80"), peek)) {
       tracks = 80;
+      options = 1;
+    } else if (0 == bk_strcmpi(str2ram("/n"), peek)) {
+      noinit = 1;
+      options = 1;
+    } else if (0 == bk_strcmpi(str2ram("/q"), peek)) {
+      quick = 1;
       options = 1;
     } else if (0 == bk_strcmpi(str2ram("/i"), peek)) {
       bk_strtok(0, ' '); // consume the /i 
@@ -122,24 +131,56 @@ void handleFormat() {
     tputs_rom("\n  volumename: ");
     bk_tputs_ram(volumename);
   }
+  if (noinit) {
+    tputs_rom("\n  skipping low level intialization");
+  }
+  if (quick) {
+    tputs_rom("\n  quick filesystem creation");
+  }
   tputs_rom("\n");
 
   // we should be good to go.
   unsigned int iocode = bk_path2iocode(path);
 
-  unsigned int sectors = bk_lvl2_format(dsr->crubase, iocode, tracks, density, sides, interleave);
+  unsigned int sectors = 0;
+  unsigned int buffer[128];
+  struct VIB* vib = (struct VIB*) buffer;
+
+  if (noinit) {
+    int err = bk_lvl2_sector_read(dsr->crubase, iocode, 0, (char*) buffer);
+    if (err) {
+      tputs_rom("failed to read previous format\n");
+      return;
+    }
+    int old_sectors = vib->sectors_per_track * vib->tracks;
+    sectors = tracks * sides * (density * 9);
+    if (old_sectors > 360 && old_sectors != sectors) {
+      tputs_rom("warning: previous sector count mismatch\n");
+    }
+  } else {
+    tputs_rom("initializing ");
+    sectors = bk_lvl2_format(dsr->crubase, iocode, tracks, density, sides, interleave);
+    // Error codes are in 0x8350 - so we should have to rely on sector computation to detect errors
+  }
+
+  // sectors may be an error code instead... so check that the value is logical
+  if (sectors < 360) {
+    // not even a SSSD40 track worth of sectors...
+    tputs_rom("error: ");
+    bk_tputs_ram(bk_uint2hex(sectors));
+    tputs_rom("\n");
+    return;
+  }
 
   // all sectors are written full of 0xe5 (on a 4A controller). So this could be validated
 
-  tputs_rom("initializing ");
+  // Write the filesystem out.
+  tputs_rom("creating filesystem with ");
   bk_tputs_ram(bk_uint2str(sectors));
   tputs_rom(" sectors...\n");
-
-  unsigned int buffer[128];
+  // erase the buffer
   for(int i = 0; i < 128; i++) { buffer[i] = 0; }
-
   // Load up the Volume information block
-  struct VIB* vib = (struct VIB*) buffer;
   bk_strncpy(vib->volumename, str2ram(volumename), 10);
   // pad the volume name with spaces. 
   int vlen = bk_strlen(volumename);
@@ -160,15 +201,26 @@ void handleFormat() {
   for(int b = 0; b < 200; b++) {
     vib->bitmap[b] = 0xff;
   }
+  // adjust bitmap size for clustering
+  int total_aus = sectors;
+  if (sectors == 2880) {
+    total_aus = sectors / 2;
+  } else if (sectors == 5760) {
+    total_aus = sectors / 4;
+  }
   // next, free all the sectors not used.
   vib->bitmap[0] = 0x03;
-  for(int c = 1; c < (sectors / 8); c++) {
+  for(int c = 1; c < (total_aus / 8); c++) {
     vib->bitmap[c] = 0;
   }
 
   bk_lvl2_sector_write(dsr->crubase, iocode, 0, (char*) buffer);
 
-  // now clear all the sectors. 
+  // only write the second sector if in /q quick mode
+  if (quick) {
+    sectors = 2;
+  }
+  // now clear all the desired sectors. 
   for(int i = 0; i < 128; i++) { buffer[i] = 0; }
   for(int i=1; i < sectors; i++) {
     bk_lvl2_sector_write(dsr->crubase, iocode, i, (char*) buffer);
