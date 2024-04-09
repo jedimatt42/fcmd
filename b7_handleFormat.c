@@ -150,7 +150,6 @@ void handleFormat() {
     int err = bk_lvl2_sector_read(dsr->crubase, iocode, 0, (char*) buffer);
     if (err) {
       tputs_rom("failed to read previous format\n");
-      return;
     }
     int old_sectors = vib->sectors_per_track * vib->tracks;
     sectors = tracks * sides * (density * 9);
@@ -158,7 +157,7 @@ void handleFormat() {
       tputs_rom("warning: previous sector count mismatch\n");
     }
   } else {
-    tputs_rom("initializing ");
+    tputs_rom("initializing\n");
     sectors = bk_lvl2_format(dsr->crubase, iocode, tracks, density, sides, interleave);
     // Error codes are in 0x8350 - so we should have to rely on sector computation to detect errors
   }
