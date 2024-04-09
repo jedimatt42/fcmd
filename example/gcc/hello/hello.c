@@ -4,6 +4,26 @@ volatile float a = 0;
 volatile float b = 0;
 volatile float c = 0;
 
+volatile int ia = 0;
+volatile int ib = 0;
+volatile int ic = 0;
+
+void tireal_ftoa (float *d, char *p);
+
+double pow(double x, double y);
+
+double pow(double x, double y) {
+  if ( y == 0 ) {
+    return 1;
+  }
+  int result = x; // if y is 1, result is just x;
+  // if y is greater than 1, that multiply repeatedly
+  for (int i = 1; i < y; i++) {
+    result = result * x;
+  }
+  return result;
+}
+
 int fc_main(char* args) {
   fc_tputs("Hello\n");
   a = 1.3;
@@ -11,7 +31,7 @@ int fc_main(char* args) {
   c = 1.3;
 
   // <
-  if ( a < b ) { 
+  if ( a < b ) {
     fc_tputs("FAIL: A < B\n");
   }
   if ( b < a ) {
@@ -52,5 +72,23 @@ int fc_main(char* args) {
   if ( a != b ) {
     fc_tputs("a != b\n");
   }
+  c = -a;
+  if ( c == a ) {
+    fc_tputs("-a (c) == a\n");
+  }
+  char strbuf[30];
+  tireal_ftoa((float*)&c, strbuf);
+  fc_tputs(strbuf);
+  float d = 1.4567;
+  tireal_ftoa(&d, strbuf);
+  fc_tputs(strbuf);
+  fc_tputs("\n");
+
+  fc_tputs("---\n");
+  c = pow(3, 2);
+  tireal_ftoa((float*)&c, strbuf);
+  fc_tputs(strbuf);
+  fc_tputs("\n");
+
   return 0;
 }
