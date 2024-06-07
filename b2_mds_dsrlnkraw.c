@@ -60,13 +60,7 @@ void mds_lvl3_dsrlnkraw(int crubase, unsigned int vdp) {
 	"	mov %1,r12		; prepare terminate crubase to end loop (this is in C workspace @>8318)\n"
 	"	ai r12,0x0200\n"
 	"	li r9,8			; store the list offset in a well known address >8312\n"
-	"	ai r10,-34		; make stack room to save workspace & zero word\n"
 	"	lwpi 0x83e0		; get gplws\n"
-	"	li r0,0x8300		; source wp for backup\n"
-	"	mov @0x8314,r1		; get r10 for destination\n"
-	"bkupl1	mov *r0+,*r1+		; copy register\n"
-	"	ci r0,>8322		; test for end of copy\n"
-	"	jne bkupl1\n"
 	"	jmp begin\n"
 	"dsrdat data >aa00\n"
 	"begin  clr  r1			; r1=0\n"
@@ -74,7 +68,7 @@ void mds_lvl3_dsrlnkraw(int crubase, unsigned int vdp) {
 	"a2310  sbz  0			; card off\n"
 	"a2316  ai   r12,0x0100		; next card (>1000 for first)\n"
 	"       clr  @0x83d0		; clear cru tracking at >83d0\n"
-	"       c    r12,@>8318		; check if all cards are done\n"
+	"       c    r12,@>8318		; check if all cards are done, compare GPLWS r12 with C WS r12\n"
 	"       jeq  a2388		; if yes, we didn't find it, so error out\n"
 	"       mov  r12,@0x83d0	; save cru base\n"
 	"       sbo  0			; card on\n"
@@ -104,16 +98,10 @@ void mds_lvl3_dsrlnkraw(int crubase, unsigned int vdp) {
 	"       bl   *r9                ; link\n"
 	"       jmp  a233a              ; check next entry on the same card -- most dsrs will skip this \n"
 	"       sbz  0                  ; card off\n"
-	"	li r0,>8300		; load register for restore\n"
-	"	mov @0x8314,r1		; get r10 for source\n"
-	"rslp1	mov *r1+,*r0+		; copy register\n"
-	"	ci r0,>8322\n"
-	"	jne rslp1\n"
 	"a2388  lwpi 0x8300             ; restore workspace\n"
-	"	ai r10,34		; restore stack\n"
 		:
 		: "i" (buf), "r" (crubase-0x0100)
-		: "r12", "r9", "r1", "r0"
+		: "r12", "r9"
 	);
 
 }

@@ -435,8 +435,8 @@ DECL_FC_API_CALL(FC_VARS_SET, fc_vars_set, void, (char* name, char* value), (nam
 // function: int fc_exec(char* command)
 DECL_FC_API_CALL(FC_EXEC, fc_exec, int, (char* command), (command))
 
-// function: unsigned int fc_dsr_ea5load(struct DeviceServiceRoutine * dsr, const char *fname)
-DECL_FC_API_CALL(FC_DSR_EA5LOAD, fc_dsr_ea5load, unsigned int, (struct DeviceServiceRoutine * dsr, const char *fname), (dsr, fname))
+// function: void fc_dsr_ea5load(struct DeviceServiceRoutine * dsr, const char *fname)
+DECL_FC_API_CALL(FC_DSR_EA5LOAD, fc_dsr_ea5load, void, (struct DeviceServiceRoutine * dsr, const char *fname), (dsr, fname))
 
 // function: unsigned int fc_dsr_open(struct DeviceServiceRoutine* dsr, struct PAB* pab, const char* fname, int flags, int reclen)
 DECL_FC_API_CALL(FC_DSR_OPEN, fc_dsr_open, unsigned int, (struct DeviceServiceRoutine* dsr, struct PAB* pab, const char* fname, int flags, int reclen), (dsr, pab, fname, flags, reclen))
