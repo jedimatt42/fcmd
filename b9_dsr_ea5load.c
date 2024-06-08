@@ -1,13 +1,9 @@
 #include "banks.h"
 #define MYBANK BANK(9)
 
-#include "b0_globals.h"
 #include "b0_main.h"
 #include "b2_dsrutil.h"
 #include "b2_mds_dsrlnk.h"
-#include "b2_tifloat.h"
-#include "b1_strutil.h"
-#include "b0_sams.h"
 #include "b9_resetSams.h"
 #include <conio.h>
 #include <string.h>
@@ -29,12 +25,13 @@ inline static void ea5_vdpchar(int pAddr, int ch) {
 }
 
 // This overlaps the temporary PAB
+#define FADDR (*(volatile int *)0x8320)
 #define FLAG (*(volatile int *)0x8324)
 #define BSIZE (*(volatile int *)0x8326)
 #define ADDR (*(volatile int *)0x8328)
 
 
-__attribute__((noreturn, noinline)) static void ea5load(struct DeviceServiceRoutine* dsr, const char* fname) {
+void dsr_ea5load(struct DeviceServiceRoutine* dsr, const char* fname) {
   struct PAB* pab = (struct PAB*) 0x8320;
   bk_initPab(pab);
   int namelen = bk_strlen(fname);
@@ -59,7 +56,7 @@ __attribute__((noreturn, noinline)) static void ea5load(struct DeviceServiceRout
   int lastcharaddr = VDPPAB + namelen + 9;
   namelen--; // adjust so it is now the screen offset when printing name.
 
-  GPLWSR11 = 0;
+  FADDR = 0;
   FLAG = 0xFFFF;
 
      // Move the C stack into scratchpad
@@ -68,16 +65,17 @@ __attribute__((noreturn, noinline)) static void ea5load(struct DeviceServiceRout
   );
 
   while(FLAG) {
-    vdpmemread(0x1380, (char*) FLAG, 6); // FLAG, BSIZE, ADDR
+    vdpmemread(0x1380, (char*) 0x8324, 6); // FLAG, BSIZE, ADDR
     // For the first file, use the load address as the launch address
-    if (GPLWSR11 == 0) {
-      GPLWSR11 = ADDR;
+    if (FADDR == 0) {
+      FADDR = ADDR;
     }
     // after this point, expansion ram belongs to the target program
     vdpmemread(0x1386, (char*) ADDR, BSIZE); // copy image from vdp to target cpu ram
     if (FLAG == 0) {
       // If the header flag is 0, then this is the last file to place, so launch it.
       // We aren't comming back from this, so feel free to lie to gcc.
+      GPLWSR11 = FADDR;
       __asm__(
         "b @GOEA5"
       );
@@ -103,8 +101,3 @@ __attribute__((noreturn, noinline)) static void ea5load(struct DeviceServiceRout
   }
   while(1) { }
 }
-
-void dsr_ea5load(struct DeviceServiceRoutine* dsr, const char* fname) {
-  ea5load(dsr, fname);
-}
-
