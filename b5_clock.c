@@ -104,11 +104,10 @@ void ide_clock(struct DateTime* dt) {
   }
 
   char linebuf[30];
-  err = bk_dsr_read(dsr, &pab, 0);
+  err = bk_dsr_read_cpu(dsr, &pab, 0, linebuf);
   if (err) {
     return;
   }
-  vdpmemread(pab.VDPBuffer, linebuf, pab.CharCount);
 
   char numbuf[10];
   char* cursor = linebuf;
@@ -148,12 +147,11 @@ void corcomp_clock(struct DateTime* dt, char* clock) {
   }
 
   char linebuf[22];
-  err = bk_dsr_read(dsr, &pab, 0);
+  err = bk_dsr_read_cpu(dsr, &pab, 0, linebuf);
   if (err) {
     return;
   }
 
-  vdpmemread(pab.VDPBuffer, linebuf, pab.CharCount);
   linebuf[pab.CharCount] = 0;
 
   // linebuf should contain something like: 5,20/12/31,23:59:00

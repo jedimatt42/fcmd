@@ -3,9 +3,7 @@
 
 #include "b2_lvl2.h"
 #include "b2_dsrutil.h"
-#include "b2_mds_dsrlnk.h"
 #include "b1_strutil.h"
-#include "b8_terminal.h"
 
 #include <string.h>
 #include <vdp.h>
@@ -35,6 +33,7 @@
 #define OPNAME(x,y) (unsigned char)((x & 0x00F0)|(y & 0x00F))
 
 static void call_addr(int crubase, int addr, int link);
+static int supportsCpuBuffers(int crubase);
 
 // Returns lvl2 device management base code in LSB, and unit number in MSB
 // 	Floppy disk controllers:	DSK	>1x
@@ -85,18 +84,30 @@ unsigned int lvl2_protect(int crubase, unsigned int iocode, char* filename, int 
   return base_lvl2(crubase, iocode, LVL2_OP_PROTECT, filename, 0, protect ? 0xff : 0x00);
 }
 
+struct LenPlusChars {
+  char len;
+  char chars[40];
+};
+
 unsigned int lvl2_setdir(int crubase, unsigned int iocode, char* path) {
   int len = bk_strlen(path);
   if (len > 39) {
     return 0xFE;
   }
-  LVL2_PARAMADDR1 = FBUF;
-  VDP_SET_ADDRESS_WRITE(FBUF);
-  VDPWD = len;
-  vdpmemcpy(FBUF+1, path, len);
-
   LVL2_UNIT = UNITNO(iocode);
   LVL2_STATUS = 0;
+  int useCpuBuffer = supportsCpuBuffers(crubase);
+  struct LenPlusChars basicString;
+  if (useCpuBuffer) {
+    basicString.len = len;
+    bk_strncpy(basicString.chars, path, 40);
+    LVL2_PARAMADDR1 = (int) &basicString;
+  } else {
+    LVL2_PARAMADDR1 = FBUF;
+    VDP_SET_ADDRESS_WRITE(FBUF);
+    VDPWD = len;
+    vdpmemcpy(FBUF+1, path, len);
+  }
 
   call_lvl2(crubase, OPNAME(iocode, LVL2_OP_SETDIR));
 
@@ -186,6 +197,21 @@ unsigned int lvl2_format(int crubase, unsigned int iocode, unsigned int tracks, 
   return LVL2_SEC_PER_DISK;
 }
 
+// lookup CPU buffer support based on crubase
+static int supportsCpuBuffers(int crubase) {
+  int i = 0;
+
+  while(dsrList[i].name[0] != 0) {
+    // Assume cpuSup is same for all devices on a given card/crubase
+    if (dsrList[i].crubase == crubase) {
+      return dsrList[i].cpuSup;
+    }
+    i++;
+  }
+
+  return 0;
+}
+
 // Setup parameters suitably for most lvl2 calls.
 unsigned char __attribute__((noinline)) base_lvl2(int crubase, unsigned int iocode, char operation, char* name1, char* name2, char param0) {
   LVL2_UNIT = UNITNO(iocode);
@@ -193,14 +219,24 @@ unsigned char __attribute__((noinline)) base_lvl2(int crubase, unsigned int ioco
   LVL2_PARAMADDR1 = FBUF;
 
   bk_strpad(name1, 10, ' ');
-  vdpmemcpy(LVL2_PARAMADDR1, name1, 10);
+  int useCpuBuffer = supportsCpuBuffers(crubase);
+  if (useCpuBuffer) {
+    LVL2_UNIT = LVL2_UNIT | 0x80; // set cpu buffer bit in unit number
+    LVL2_PARAMADDR1 = (int) name1;
+  } else {
+    vdpmemcpy(LVL2_PARAMADDR1, name1, 10);
+  }
 
   if (name2 == 0) {
     LVL2_STATUS = 0;
   } else {
-    LVL2_PARAMADDR2 = FBUF + 10;
     bk_strpad(name2, 10, ' ');
-    vdpmemcpy(LVL2_PARAMADDR2, name2, 10);
+    if (useCpuBuffer) {
+      LVL2_PARAMADDR2 = (int) name2;
+    } else {
+      LVL2_PARAMADDR2 = FBUF + 10;
+      vdpmemcpy(LVL2_PARAMADDR2, name2, 10);
+    }
   }
 
   unsigned char opname = OPNAME(iocode, operation);

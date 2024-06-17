@@ -53,12 +53,10 @@ static int getVolume(int drive, char* volumeName) {
     int result = 0;
     unsigned int ferr = bk_dsr_open(dsr, &pab, path, DSR_TYPE_INPUT | DSR_TYPE_DISPLAY | DSR_TYPE_FIXED | DSR_TYPE_INTERNAL | DSR_TYPE_RELATIVE, 0);
     if (ferr == DSR_ERR_NONE) {
-        ferr = bk_dsr_read(dsr, &pab, 0);
+        // this is excessively large to avoid trouble when reading from unitialized volumes.
+        char cbuf[256];
+        ferr = bk_dsr_read_cpu(dsr, &pab, 0, cbuf);
         if (ferr == DSR_ERR_NONE) {
-            // this is excessively large to avoid trouble when reading from unitialized volumes.
-            unsigned char cbuf[256];
-
-            vdpmemread(FBUF, cbuf, pab.CharCount);
             int namlen = bk_basicToCstr(cbuf, volInfo.volname);
             int a = bk_ti_floatToInt(cbuf + 1 + namlen);
             int j = bk_ti_floatToInt(cbuf + 10 + namlen);

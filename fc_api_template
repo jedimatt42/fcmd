@@ -85,6 +85,7 @@ struct DeviceServiceRoutine {
     int crubase;
     unsigned int addr;
     char unit;
+    int cpuSup;
 };
 
 /*

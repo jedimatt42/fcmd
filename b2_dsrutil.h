@@ -39,6 +39,7 @@ struct DeviceServiceRoutine {
   int crubase;
   unsigned int addr;
   char unit;
+  int cpuSup;
 };
 
 // A cache of dsr names and addresses.
@@ -68,6 +69,8 @@ struct VolInfo {
 unsigned int dsr_open(struct DeviceServiceRoutine* dsr, struct PAB* pab, const char* fname, int flags, int reclen);
 unsigned int dsr_close(struct DeviceServiceRoutine* dsr, struct PAB* pab);
 unsigned int dsr_read(struct DeviceServiceRoutine* dsr, struct PAB* pab, int recordNumber);
+unsigned int dsr_read_cpu(struct DeviceServiceRoutine* dsr, struct PAB* pab, int recordNumber, char* recordBuf);
+
 unsigned int dsr_write(struct DeviceServiceRoutine* dsr, struct PAB* pab, char* record, int reclen);
 unsigned int dsr_status(struct DeviceServiceRoutine* dsr, struct PAB* pab);
 unsigned int dsr_delete(struct DeviceServiceRoutine* dsr, struct PAB* pab);
@@ -108,6 +111,7 @@ DECLARE_BANKED(dsr_delete, BANK(2), unsigned int, bk_dsr_delete, (struct DeviceS
 DECLARE_BANKED(dsr_open, BANK(2), unsigned int, bk_dsr_open, (struct DeviceServiceRoutine* dsr, struct PAB* pab, const char* fname, int flags, int reclen),(dsr, pab, fname, flags, reclen))
 DECLARE_BANKED(dsr_close, BANK(2), unsigned int, bk_dsr_close, (struct DeviceServiceRoutine* dsr, struct PAB* pab), (dsr, pab))
 DECLARE_BANKED(dsr_read, BANK(2), unsigned int, bk_dsr_read, (struct DeviceServiceRoutine* dsr, struct PAB* pab, int recordNumber), (dsr, pab, recordNumber))
+DECLARE_BANKED(dsr_read_cpu, BANK(2), unsigned int, bk_dsr_read_cpu, (struct DeviceServiceRoutine* dsr, struct PAB* pab, int recordNumber, char* recordBuf), (dsr, pab, recordNumber, recordBuf))
 DECLARE_BANKED(dsr_write, BANK(2), unsigned int, bk_dsr_write, (struct DeviceServiceRoutine* dsr, struct PAB* pab, char* record, int reclen), (dsr, pab, record, reclen))
 DECLARE_BANKED(dsr_reset, BANK(2), unsigned int, bk_dsr_reset, (struct DeviceServiceRoutine* dsr, struct PAB* pab, int record), (dsr, pab, record))
 DECLARE_BANKED(dsr_status, BANK(2), unsigned int, bk_dsr_status, (struct DeviceServiceRoutine* dsr, struct PAB* pab), (dsr, pab))

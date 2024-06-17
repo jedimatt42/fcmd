@@ -33,11 +33,10 @@ int ed_loadFile(struct DeviceServiceRoutine* dsr, char* path) {
   }
 
   while(!err) {
-    err = bk_dsr_read(dsr, &pab, 0);
+    struct Line* line = &(EDIT_BUFFER->lines[EDIT_BUFFER->lineCount]);
+    err = bk_dsr_read_cpu(dsr, &pab, 0, line->data);
     if (!err) {
-      struct Line* line = &(EDIT_BUFFER->lines[EDIT_BUFFER->lineCount]);
       line->length = pab.CharCount;
-      vdpmemread(pab.VDPBuffer, line->data, line->length);
       EDIT_BUFFER->lineCount++;
       if (EDIT_BUFFER->lineCount > 250) {
         tputs_rom("Error, file exceeds 250 lines\n");

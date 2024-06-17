@@ -49,11 +49,9 @@ void FC_SAMS(2,show_bookmarks()) {
   char nl[2] = "\n";
 
   while(!ferr) {
-    ferr = fc_dsr_read(dsr, &pab, 0);
-    // copy from vdp to cpu ram
     char uri[80];
     fc_strset(uri, 0, 80);
-    vdp_memread(pab.VDPBuffer, uri, pab.CharCount);
+    ferr = fc_dsr_read_cpu(dsr, &pab, 0, uri);
     // then add to bookmarks
     if (pab.CharCount > 0) { // skip empty lines
       page_from_buf(link, 3);

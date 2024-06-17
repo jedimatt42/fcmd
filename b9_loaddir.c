@@ -1,4 +1,5 @@
 #include "banks.h"
+#include "files.h"
 #define MYBANK BANK(9)
 
 #include "b0_globals.h"
@@ -31,11 +32,9 @@ unsigned int loadDir(struct DeviceServiceRoutine* dsr, const char* pathname, vol
   int recNo = 0;
   ferr = DSR_ERR_NONE;
   while(ferr == DSR_ERR_NONE && request_break == 0) {
-    unsigned char cbuf[150];
-    ferr = bk_dsr_read(dsr, &pab, recNo);
+    char cbuf[150];
+    ferr = bk_dsr_read_cpu(dsr, &pab, recNo, (char*) cbuf);
     if (ferr == DSR_ERR_NONE) {
-      // Now FBUF has the data...
-      vdpmemread(FBUF, cbuf, pab.CharCount);
       // process Record
       if (recNo == 0) {
         int namlen = bk_basicToCstr(cbuf, volInfo.volname);
@@ -91,8 +90,5 @@ unsigned int loadDir(struct DeviceServiceRoutine* dsr, const char* pathname, vol
     }
   }
 
-  ferr = bk_dsr_close(dsr, &pab);
-  if (ferr) {
-    return ferr;
-  }
+  return bk_dsr_close(dsr, &pab);
 }

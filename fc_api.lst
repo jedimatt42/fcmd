@@ -20,10 +20,14 @@ dsr_ea5load
 dsr_open
 dsr_close
 dsr_read
+dsr_read_cpu
 dsr_write
 dsr_status
 dsr_reset
 dsr_delete
+dsr_prg_load
+dsr_prg_save
+dsr_scratch
 loadDir dsr_catalog
 
 path2iocode
@@ -35,6 +39,9 @@ lvl2_setdir
 lvl2_mkdir
 lvl2_rmdir
 lvl2_rendir
+lvl2_sector_read
+lvl2_sector_write
+lvl2_format
 
 tcp_connect
 tcp_close
@@ -109,14 +116,4 @@ textcolor
 bgcolor
 bordercolor
 
-dsr_prg_load
-dsr_prg_save
-
 tipi_log
-
-lvl2_sector_read
-lvl2_sector_write
-
-dsr_scratch
-
-lvl2_format

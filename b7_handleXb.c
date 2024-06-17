@@ -42,11 +42,10 @@ void handleXb() {
     } else {
         int done = 0;
         while(!done) {
-            err = bk_dsr_read(dsr, &pab, 0);
+            char tmp[80];
+            bk_strset(tmp, 0, 80);
+            err = bk_dsr_read_cpu(dsr, &pab, 0, tmp);
             if (!err) {
-                char tmp[80];
-                bk_strset(tmp, 0, 80);
-                vdpmemread(pab.VDPBuffer, tmp, pab.CharCount);
                 int eqsign = bk_indexof(tmp, '=');
                 tmp[eqsign] = 0;
                 if (!bk_strcmp(str2ram("DSK1_DIR"), tmp)) {

@@ -49,11 +49,8 @@ void handleType() {
   while(!err && request_break == 0) {
     char linebuf[256];
 
-    err = bk_dsr_read(dsr, &pab, rec++);
+    err = bk_dsr_read_cpu(dsr, &pab, rec++, linebuf);
     if (!err) {
-      // print the line...
-      vdpmemread(pab.VDPBuffer, linebuf, pab.CharCount);
-
       int i = 0;
       while(i<pab.CharCount) {
         if (ansi) {

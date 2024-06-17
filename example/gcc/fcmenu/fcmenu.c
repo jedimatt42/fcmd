@@ -72,14 +72,13 @@ int fcmain(char* args) {
 
   int recordno = 0;
   while(!ferr) {
-    ferr = fc_dsr_read(dsr, &pab, recordno++);
+    char buffer[80];
+    for (int c=0; c<80; c++) {buffer[c] = 0;}
+
+    ferr = fc_dsr_read_cpu(dsr, &pab, recordno++, buffer);
     if (!ferr) {
       // records are a <key>|<title>|<command>
       if (pab.CharCount) {
-        char buffer[80];
-        for (int c=0; c<80; c++) {buffer[c] = 0;}
-
-        vdp_memread(pab.VDPBuffer, buffer, pab.CharCount);
         if (buffer[0] != '#') {
           // if not blank, and not starts with # comment, build an entry
           // (force uppercase)

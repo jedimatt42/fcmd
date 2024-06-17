@@ -32,14 +32,13 @@ int runScript(struct DeviceServiceRoutine* dsr, char* scriptName) {
       char commandbuf[256];
 
       bk_strset(commandbuf, 0, 255);
-      ferr = bk_dsr_read(dsr, &pab, 0);
-      char k = bk_kscan(5);
+      ferr = bk_dsr_read_cpu(dsr, &pab, 0, commandbuf);
+      unsigned char k = bk_kscan(5);
       if (k == 131 || k == 2) { // control-c or alt-4
         ferr = 1; // so abort script
       }
       if (!ferr) {
         lineno++;
-        vdpmemread(pab.VDPBuffer, commandbuf, pab.CharCount);
         int l = bk_strlen(commandbuf);
         // TI-Writer adds \r to lines, so erase those automatically if at end of line.
         if (commandbuf[l-1] == 13) {
@@ -59,7 +58,7 @@ int runScript(struct DeviceServiceRoutine* dsr, char* scriptName) {
           // advance to next line
           int newline = 0;
           while (!ferr && newline < lineno) {
-            ferr = bk_dsr_read(dsr, &pab, 0);
+            ferr = bk_dsr_read_cpu(dsr, &pab, 0, commandbuf);
             newline++;
           }
         }

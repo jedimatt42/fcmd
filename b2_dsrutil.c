@@ -2,12 +2,9 @@
 #define MYBANK BANK(2)
 
 #include "b0_globals.h"
-#include "b0_main.h"
 #include "b2_dsrutil.h"
 #include "b2_mds_dsrlnk.h"
-#include "b2_tifloat.h"
 #include "b1_strutil.h"
-#include "b8_terminal.h"
 #include "b0_heap.h"
 #include <vdp.h>
 #include <string.h>
@@ -169,10 +166,35 @@ unsigned int dsr_read(struct DeviceServiceRoutine* dsr, struct PAB* pab, int rec
   return result;
 }
 
+unsigned int dsr_read_cpu(struct DeviceServiceRoutine* dsr, struct PAB* pab, int recordNumber, char* recordBuf) {
+  pab->OpCode = DSR_READ;
+  pab->RecordNumber = recordNumber;
+  pab->CharCount = 0;
+  if (dsr->cpuSup) {
+    pab->VDPBuffer = (int) recordBuf;
+    pab->OpCode = pab->OpCode | 0x40;
+  }
+  unsigned char result = mds_lvl3_dsrlnk(dsr->crubase, pab, VPAB);
+  vdpmemread(VPAB + 5, (char*) (&pab->CharCount), 1);
+  if (! (pab->Status & DSR_TYPE_VARIABLE)) {
+    pab->CharCount = pab->RecordLength;
+    if (!dsr->cpuSup) {
+      // If cpu buffers are not supported by dsr, then copy from VDP to record buffer ourselves
+      vdpmemread(pab->VDPBuffer, recordBuf, pab->CharCount);
+    }
+  }
+  return result;
+}
+
 unsigned int dsr_write(struct DeviceServiceRoutine* dsr, struct PAB* pab, char* record, int reclen) {
   pab->OpCode = DSR_WRITE;
   pab->CharCount = reclen;
-  vdpmemcpy(pab->VDPBuffer, record, reclen);
+  if (dsr->cpuSup) {
+    pab->VDPBuffer = (int) record;
+    pab->OpCode = pab->OpCode | 0x40;
+  } else {
+    vdpmemcpy(pab->VDPBuffer, record, reclen);
+  }
 
   unsigned char result = mds_lvl3_dsrlnk(dsr->crubase, pab, VPAB);
   return result;
@@ -196,6 +218,19 @@ unsigned int dsr_delete(struct DeviceServiceRoutine* dsr, struct PAB* pab) {
   return result;
 }
 
+static int supportsCpuBuffers(struct DeviceRomHeader* dsrrom) {
+  // Examine attributes of the ROM header and determine if it a device known to
+  // support CPU buffers in PABs and LVL2 IO
+  if (dsrrom->version & 0x02) { // TIPI DSR version bit 2 indicates cpu buffer
+    char call_name[11];
+    bk_basicToCstr(dsrrom->basiclnk->name, call_name);
+    if (bk_strcmp(call_name, str2ram("TIPI")) == 0) {
+      return 1;
+    }
+  }
+  return 0;
+}
+
 void loadDriveDSRs() {
   dsrList = (struct DeviceServiceRoutine*) bk_alloc(sizeof(struct DeviceServiceRoutine));
   struct DeviceServiceRoutine* listHead = dsrList;
@@ -205,7 +240,7 @@ void loadDriveDSRs() {
     enableROM(cruscan);
     struct DeviceRomHeader* dsrrom = (struct DeviceRomHeader*) 0x4000;
     if (dsrrom->flag == 0xAA) {
-
+      int cpuBufferSupport = supportsCpuBuffers(dsrrom);
       struct NameLink* dsrlinks = dsrrom->dsrlnk;
       while(dsrlinks != 0) {
 
@@ -213,6 +248,7 @@ void loadDriveDSRs() {
           bk_basicToCstr(dsrlinks->name, listHead->name);
           listHead->crubase = cruscan;
           listHead->addr = dsrlinks->routine;
+          listHead->cpuSup = cpuBufferSupport;
           listHead = (struct DeviceServiceRoutine*) bk_alloc(sizeof(struct DeviceServiceRoutine));
         }
 

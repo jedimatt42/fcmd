@@ -85,6 +85,7 @@ struct DeviceServiceRoutine {
     int crubase;
     unsigned int addr;
     char unit;
+    int cpuSup;
 };
 
 /*
@@ -312,89 +313,90 @@ extern void* memcpy(void* dest, const void* src, int count);
 #define FC_DSR_OPEN 0xe
 #define FC_DSR_CLOSE 0xf
 #define FC_DSR_READ 0x10
-#define FC_DSR_WRITE 0x11
-#define FC_DSR_STATUS 0x12
-#define FC_DSR_RESET 0x13
-#define FC_DSR_DELETE 0x14
-#define FC_DSR_CATALOG 0x15
-#define FC_PATH2IOCODE 0x16
-#define FC_LVL2_INPUT 0x17
-#define FC_LVL2_OUTPUT 0x18
-#define FC_LVL2_PROTECT 0x19
-#define FC_LVL2_RENAME 0x1a
-#define FC_LVL2_SETDIR 0x1b
-#define FC_LVL2_MKDIR 0x1c
-#define FC_LVL2_RMDIR 0x1d
-#define FC_LVL2_RENDIR 0x1e
-#define FC_TCP_CONNECT 0x1f
-#define FC_TCP_CLOSE 0x20
-#define FC_TCP_READ_SOCKET 0x21
-#define FC_TCP_SEND_CHARS 0x22
-#define FC_TIPI_ON 0x23
-#define FC_TIPI_OFF 0x24
-#define FC_TIPI_SENDMSG 0x25
-#define FC_TIPI_RECVMSG 0x26
-#define FC_DATETIME 0x27
-#define FC_FIND_DSR 0x28
-#define FC_PARSE_PATH_PARAM 0x29
-#define FC_UINT2STR 0x2a
-#define FC_UINT2HEX 0x2b
-#define FC_ATOI 0x2c
-#define FC_HTOI 0x2d
-#define FC_STRCPY 0x2e
-#define FC_STRNCPY 0x2f
-#define FC_STRCAT 0x30
-#define FC_STRTOK 0x31
-#define FC_STRTOKPEEK 0x32
-#define FC_STRLEN 0x33
-#define FC_STRCMP 0x34
-#define FC_STRCMPI 0x35
-#define FC_INDEXOF 0x36
-#define FC_LINDEXOF 0x37
-#define FC_STR_STARTSWITH 0x38
-#define FC_STR_ENDSWITH 0x39
-#define FC_BASICTOCSTR 0x3a
-#define FC_STRSET 0x3b
-#define FC_NEXT_TOKEN 0x3c
-#define FC_BEEP 0x3d
-#define FC_HONK 0x3e
-#define FC_SET_IDENTIFY_HOOK 0x3f
-#define FC_VDP_SETCHAR 0x40
-#define FC_VDP_GET_CURSOR_ADDR 0x41
-#define FC_UI_DROP_DOWN 0x42
-#define FC_UI_GOTOXY 0x43
-#define FC_SPEECH_RESET 0x44
-#define FC_DETECT_SPEECH 0x45
-#define FC_SAY_VOCAB 0x46
-#define FC_SAY_DATA 0x47
-#define FC_SPEECH_START 0x48
-#define FC_SPEECH_CONTINUE 0x49
-#define FC_SPEECH_WAIT 0x4a
-#define FC_TIPI_MOUSE 0x4b
-#define FC_TIPI_MOUSE_MOVE 0x4c
-#define FC_TIPI_MOUSE_ENABLE 0x4d
-#define FC_TIPI_MOUSE_DISABLE 0x4e
-#define FC_TLS_CONNECT 0x4f
-#define FC_TLS_CLOSE 0x50
-#define FC_TLS_READ_SOCKET 0x51
-#define FC_TLS_SEND_CHARS 0x52
-#define FC_INIT_SOCKET_BUFFER 0x53
-#define FC_READLINE 0x54
-#define FC_READSTREAM 0x55
-#define FC_LIST_INIT 0x56
-#define FC_LIST_PUSH 0x57
-#define FC_LIST_POP 0x58
-#define FC_LIST_GET 0x59
-#define FC_TEXTCOLOR 0x5a
-#define FC_BGCOLOR 0x5b
-#define FC_BORDERCOLOR 0x5c
-#define FC_DSR_PRG_LOAD 0x5d
-#define FC_DSR_PRG_SAVE 0x5e
-#define FC_TIPI_LOG 0x5f
-#define FC_LVL2_SECTOR_READ 0x60
-#define FC_LVL2_SECTOR_WRITE 0x61
-#define FC_DSR_SCRATCH 0x62
-#define FC_LVL2_FORMAT 0x63
+#define FC_DSR_READ_CPU 0x11
+#define FC_DSR_WRITE 0x12
+#define FC_DSR_STATUS 0x13
+#define FC_DSR_RESET 0x14
+#define FC_DSR_DELETE 0x15
+#define FC_DSR_PRG_LOAD 0x16
+#define FC_DSR_PRG_SAVE 0x17
+#define FC_DSR_SCRATCH 0x18
+#define FC_DSR_CATALOG 0x19
+#define FC_PATH2IOCODE 0x1a
+#define FC_LVL2_INPUT 0x1b
+#define FC_LVL2_OUTPUT 0x1c
+#define FC_LVL2_PROTECT 0x1d
+#define FC_LVL2_RENAME 0x1e
+#define FC_LVL2_SETDIR 0x1f
+#define FC_LVL2_MKDIR 0x20
+#define FC_LVL2_RMDIR 0x21
+#define FC_LVL2_RENDIR 0x22
+#define FC_LVL2_SECTOR_READ 0x23
+#define FC_LVL2_SECTOR_WRITE 0x24
+#define FC_LVL2_FORMAT 0x25
+#define FC_TCP_CONNECT 0x26
+#define FC_TCP_CLOSE 0x27
+#define FC_TCP_READ_SOCKET 0x28
+#define FC_TCP_SEND_CHARS 0x29
+#define FC_TIPI_ON 0x2a
+#define FC_TIPI_OFF 0x2b
+#define FC_TIPI_SENDMSG 0x2c
+#define FC_TIPI_RECVMSG 0x2d
+#define FC_DATETIME 0x2e
+#define FC_FIND_DSR 0x2f
+#define FC_PARSE_PATH_PARAM 0x30
+#define FC_UINT2STR 0x31
+#define FC_UINT2HEX 0x32
+#define FC_ATOI 0x33
+#define FC_HTOI 0x34
+#define FC_STRCPY 0x35
+#define FC_STRNCPY 0x36
+#define FC_STRCAT 0x37
+#define FC_STRTOK 0x38
+#define FC_STRTOKPEEK 0x39
+#define FC_STRLEN 0x3a
+#define FC_STRCMP 0x3b
+#define FC_STRCMPI 0x3c
+#define FC_INDEXOF 0x3d
+#define FC_LINDEXOF 0x3e
+#define FC_STR_STARTSWITH 0x3f
+#define FC_STR_ENDSWITH 0x40
+#define FC_BASICTOCSTR 0x41
+#define FC_STRSET 0x42
+#define FC_NEXT_TOKEN 0x43
+#define FC_BEEP 0x44
+#define FC_HONK 0x45
+#define FC_SET_IDENTIFY_HOOK 0x46
+#define FC_VDP_SETCHAR 0x47
+#define FC_VDP_GET_CURSOR_ADDR 0x48
+#define FC_UI_DROP_DOWN 0x49
+#define FC_UI_GOTOXY 0x4a
+#define FC_SPEECH_RESET 0x4b
+#define FC_DETECT_SPEECH 0x4c
+#define FC_SAY_VOCAB 0x4d
+#define FC_SAY_DATA 0x4e
+#define FC_SPEECH_START 0x4f
+#define FC_SPEECH_CONTINUE 0x50
+#define FC_SPEECH_WAIT 0x51
+#define FC_TIPI_MOUSE 0x52
+#define FC_TIPI_MOUSE_MOVE 0x53
+#define FC_TIPI_MOUSE_ENABLE 0x54
+#define FC_TIPI_MOUSE_DISABLE 0x55
+#define FC_TLS_CONNECT 0x56
+#define FC_TLS_CLOSE 0x57
+#define FC_TLS_READ_SOCKET 0x58
+#define FC_TLS_SEND_CHARS 0x59
+#define FC_INIT_SOCKET_BUFFER 0x5a
+#define FC_READLINE 0x5b
+#define FC_READSTREAM 0x5c
+#define FC_LIST_INIT 0x5d
+#define FC_LIST_PUSH 0x5e
+#define FC_LIST_POP 0x5f
+#define FC_LIST_GET 0x60
+#define FC_TEXTCOLOR 0x61
+#define FC_BGCOLOR 0x62
+#define FC_BORDERCOLOR 0x63
+#define FC_TIPI_LOG 0x64
 
 // function: void fc_tputc(int c)
 DECL_FC_API_CALL(FC_TPUTC, fc_tputc, void, (int c), (c))
@@ -447,6 +449,9 @@ DECL_FC_API_CALL(FC_DSR_CLOSE, fc_dsr_close, unsigned int, (struct DeviceService
 // function: unsigned int fc_dsr_read(struct DeviceServiceRoutine* dsr, struct PAB* pab, int recordNumber)
 DECL_FC_API_CALL(FC_DSR_READ, fc_dsr_read, unsigned int, (struct DeviceServiceRoutine* dsr, struct PAB* pab, int recordNumber), (dsr, pab, recordNumber))
 
+// function: unsigned int fc_dsr_read_cpu(struct DeviceServiceRoutine* dsr, struct PAB* pab, int recordNumber, char* recordBuf)
+DECL_FC_API_CALL(FC_DSR_READ_CPU, fc_dsr_read_cpu, unsigned int, (struct DeviceServiceRoutine* dsr, struct PAB* pab, int recordNumber, char* recordBuf), (dsr, pab, recordNumber, recordBuf))
+
 // function: unsigned int fc_dsr_write(struct DeviceServiceRoutine* dsr, struct PAB* pab, char* record, int reclen)
 DECL_FC_API_CALL(FC_DSR_WRITE, fc_dsr_write, unsigned int, (struct DeviceServiceRoutine* dsr, struct PAB* pab, char* record, int reclen), (dsr, pab, record, reclen))
 
@@ -458,6 +463,15 @@ DECL_FC_API_CALL(FC_DSR_RESET, fc_dsr_reset, unsigned int, (struct DeviceService
 
 // function: unsigned int fc_dsr_delete(struct DeviceServiceRoutine* dsr, struct PAB* pab)
 DECL_FC_API_CALL(FC_DSR_DELETE, fc_dsr_delete, unsigned int, (struct DeviceServiceRoutine* dsr, struct PAB* pab), (dsr, pab))
+
+// function: unsigned int fc_dsr_prg_load(struct DeviceServiceRoutine* dsr, struct PAB* pab, const char* fname, int vdpaddr, int maxsize)
+DECL_FC_API_CALL(FC_DSR_PRG_LOAD, fc_dsr_prg_load, unsigned int, (struct DeviceServiceRoutine* dsr, struct PAB* pab, const char* fname, int vdpaddr, int maxsize), (dsr, pab, fname, vdpaddr, maxsize))
+
+// function: unsigned int fc_dsr_prg_save(struct DeviceServiceRoutine* dsr, struct PAB* pab, const char* fname, int vdpaddr, int count)
+DECL_FC_API_CALL(FC_DSR_PRG_SAVE, fc_dsr_prg_save, unsigned int, (struct DeviceServiceRoutine* dsr, struct PAB* pab, const char* fname, int vdpaddr, int count), (dsr, pab, fname, vdpaddr, count))
+
+// function: unsigned int fc_dsr_scratch(struct DeviceServiceRoutine* dsr, struct PAB* pab, int record)
+DECL_FC_API_CALL(FC_DSR_SCRATCH, fc_dsr_scratch, unsigned int, (struct DeviceServiceRoutine* dsr, struct PAB* pab, int record), (dsr, pab, record))
 
 // function: unsigned int fc_dsr_catalog(struct DeviceServiceRoutine* dsr, const char* pathname, vol_entry_cb vol_cb, dir_entry_cb dir_cb)
 DECL_FC_API_CALL(FC_DSR_CATALOG, fc_dsr_catalog, unsigned int, (struct DeviceServiceRoutine* dsr, const char* pathname, vol_entry_cb vol_cb, dir_entry_cb dir_cb), (dsr, pathname, vol_cb, dir_cb))
@@ -488,6 +502,15 @@ DECL_FC_API_CALL(FC_LVL2_RMDIR, fc_lvl2_rmdir, unsigned int, (int crubase, unsig
 
 // function: unsigned int fc_lvl2_rendir(int crubase, unsigned int iocode, char *oldname, char *newname)
 DECL_FC_API_CALL(FC_LVL2_RENDIR, fc_lvl2_rendir, unsigned int, (int crubase, unsigned int iocode, char *oldname, char *newname), (crubase, iocode, oldname, newname))
+
+// function: unsigned int fc_lvl2_sector_read(int crubase, unsigned int iocode, unsigned int sector, char* bufaddr)
+DECL_FC_API_CALL(FC_LVL2_SECTOR_READ, fc_lvl2_sector_read, unsigned int, (int crubase, unsigned int iocode, unsigned int sector, char* bufaddr), (crubase, iocode, sector, bufaddr))
+
+// function: unsigned int fc_lvl2_sector_write(int crubase, unsigned int iocode, unsigned int sector, char*bufaddr)
+DECL_FC_API_CALL(FC_LVL2_SECTOR_WRITE, fc_lvl2_sector_write, unsigned int, (int crubase, unsigned int iocode, unsigned int sector, char*bufaddr), (crubase, iocode, sector, bufaddr))
+
+// function: unsigned int fc_lvl2_format(int crubase, unsigned int iocode, unsigned int tracks, unsigned int density, unsigned int sides, unsigned int interleave)
+DECL_FC_API_CALL(FC_LVL2_FORMAT, fc_lvl2_format, unsigned int, (int crubase, unsigned int iocode, unsigned int tracks, unsigned int density, unsigned int sides, unsigned int interleave), (crubase, iocode, tracks, density, sides, interleave))
 
 // function: unsigned int fc_tcp_connect(unsigned int socketId, char* hostname, char* port)
 DECL_FC_API_CALL(FC_TCP_CONNECT, fc_tcp_connect, unsigned int, (unsigned int socketId, char* hostname, char* port), (socketId, hostname, port))
@@ -675,25 +698,7 @@ DECL_FC_API_CALL(FC_BGCOLOR, fc_bgcolor, unsigned int, (unsigned int color), (co
 // function: unsigned int fc_bordercolor(unsigned int x)
 DECL_FC_API_CALL(FC_BORDERCOLOR, fc_bordercolor, unsigned int, (unsigned int x), (x))
 
-// function: unsigned int fc_dsr_prg_load(struct DeviceServiceRoutine* dsr, struct PAB* pab, const char* fname, int vdpaddr, int maxsize)
-DECL_FC_API_CALL(FC_DSR_PRG_LOAD, fc_dsr_prg_load, unsigned int, (struct DeviceServiceRoutine* dsr, struct PAB* pab, const char* fname, int vdpaddr, int maxsize), (dsr, pab, fname, vdpaddr, maxsize))
-
-// function: unsigned int fc_dsr_prg_save(struct DeviceServiceRoutine* dsr, struct PAB* pab, const char* fname, int vdpaddr, int count)
-DECL_FC_API_CALL(FC_DSR_PRG_SAVE, fc_dsr_prg_save, unsigned int, (struct DeviceServiceRoutine* dsr, struct PAB* pab, const char* fname, int vdpaddr, int count), (dsr, pab, fname, vdpaddr, count))
-
 // function: void fc_tipi_log(char* msg)
 DECL_FC_API_CALL(FC_TIPI_LOG, fc_tipi_log, void, (char* msg), (msg))
-
-// function: unsigned int fc_lvl2_sector_read(int crubase, unsigned int iocode, unsigned int sector, char* bufaddr)
-DECL_FC_API_CALL(FC_LVL2_SECTOR_READ, fc_lvl2_sector_read, unsigned int, (int crubase, unsigned int iocode, unsigned int sector, char* bufaddr), (crubase, iocode, sector, bufaddr))
-
-// function: unsigned int fc_lvl2_sector_write(int crubase, unsigned int iocode, unsigned int sector, char*bufaddr)
-DECL_FC_API_CALL(FC_LVL2_SECTOR_WRITE, fc_lvl2_sector_write, unsigned int, (int crubase, unsigned int iocode, unsigned int sector, char*bufaddr), (crubase, iocode, sector, bufaddr))
-
-// function: unsigned int fc_dsr_scratch(struct DeviceServiceRoutine* dsr, struct PAB* pab, int record)
-DECL_FC_API_CALL(FC_DSR_SCRATCH, fc_dsr_scratch, unsigned int, (struct DeviceServiceRoutine* dsr, struct PAB* pab, int record), (dsr, pab, record))
-
-// function: unsigned int fc_lvl2_format(int crubase, unsigned int iocode, unsigned int tracks, unsigned int density, unsigned int sides, unsigned int interleave)
-DECL_FC_API_CALL(FC_LVL2_FORMAT, fc_lvl2_format, unsigned int, (int crubase, unsigned int iocode, unsigned int tracks, unsigned int density, unsigned int sides, unsigned int interleave), (crubase, iocode, tracks, density, sides, interleave))
 
 #endif
