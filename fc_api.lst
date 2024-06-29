@@ -32,7 +32,9 @@ loadDir dsr_catalog
 
 path2iocode
 lvl2_input
+lvl2_input_cpu
 lvl2_output
+lvl2_output_cpu
 lvl2_protect
 lvl2_rename
 lvl2_setdir
