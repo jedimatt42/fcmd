@@ -35,7 +35,9 @@ unsigned int lvl2_rendir(int crubase, unsigned int iocode, char* oldname, char* 
 unsigned int lvl2_rmdir(int crubase, unsigned int iocode, char *dirname);
 unsigned int lvl2_setdir(int crubase, unsigned int iocode, char *path);
 unsigned int lvl2_input(int crubase, unsigned int iocode, char *filename, unsigned int blockcount, struct AddInfo *addInfoPtr);
+unsigned int lvl2_input_cpu(int crubase, unsigned int iocode, char *filename, unsigned int blockcount, struct AddInfo *addInfoPtr);
 unsigned int lvl2_output(int crubase, unsigned int iocode, char *filename, unsigned int blockcount, struct AddInfo *addInfoPtr);
+unsigned int lvl2_output_cpu(int crubase, unsigned int iocode, char *filename, unsigned int blockcount, struct AddInfo *addInfoPtr);
 
 unsigned int lvl2_sector_read(int crubase, unsigned int iocode, unsigned int sector, char* bufaddr);
 unsigned int lvl2_sector_write(int crubase, unsigned int iocode, unsigned int sector, char* bufaddr);
@@ -44,6 +46,7 @@ unsigned int lvl2_format(int crubase, unsigned int iocode, unsigned int tracks, 
 
 unsigned char __attribute__((noinline)) base_lvl2(int crubase, unsigned int iocode, char operation, char* name1, char* name2, char param0);
 unsigned char __attribute__((noinline)) direct_io(int crubase, unsigned int iocode, char operation, char* filename, unsigned char blockcount, struct AddInfo* addInfoPtr);
+unsigned char __attribute__((noinline)) direct_io_cpu(int crubase, unsigned int iocode, char operation, char* filename, unsigned char blockcount, struct AddInfo* addInfoPtr);
 void __attribute__((noinline)) call_lvl2(int crubase, unsigned char operation);
 void call_basic_sub(int crubase, char* subroutine);
 
@@ -58,7 +61,9 @@ DECLARE_BANKED(lvl2_rename, BANK(2), unsigned int, bk_lvl2_rename, (int crubase,
 DECLARE_BANKED(lvl2_rendir, BANK(2), unsigned int, bk_lvl2_rendir, (int crubase, unsigned int iocode, char *oldname, char *newname), (crubase, iocode, oldname, newname))
 DECLARE_BANKED(lvl2_rmdir, BANK(2), unsigned int, bk_lvl2_rmdir, (int crubase, unsigned int iocode, char *dirname), (crubase, iocode, dirname))
 DECLARE_BANKED(lvl2_input, BANK(2), unsigned int, bk_lvl2_input, (int crubase, unsigned int iocode, char *filename, unsigned int blockcount, struct AddInfo *addInfoPtr), (crubase, iocode, filename, blockcount, addInfoPtr))
+DECLARE_BANKED(lvl2_input_cpu, BANK(2), unsigned int, bk_lvl2_input_cpu, (int crubase, unsigned int iocode, char *filename, unsigned int blockcount, struct AddInfo *addInfoPtr), (crubase, iocode, filename, blockcount, addInfoPtr))
 DECLARE_BANKED(lvl2_output, BANK(2), unsigned int, bk_lvl2_output, (int crubase, unsigned int iocode, char *filename, unsigned int blockcount, struct AddInfo *addInfoPtr), (crubase, iocode, filename, blockcount, addInfoPtr))
+DECLARE_BANKED(lvl2_output_cpu, BANK(2), unsigned int, bk_lvl2_output_cpu, (int crubase, unsigned int iocode, char *filename, unsigned int blockcount, struct AddInfo *addInfoPtr), (crubase, iocode, filename, blockcount, addInfoPtr))
 
 DECLARE_BANKED(lvl2_sector_read, BANK(2), unsigned int, bk_lvl2_sector_read, (int crubase, unsigned int iocode, unsigned int sector, char* bufaddr), (crubase, iocode, sector, bufaddr))
 DECLARE_BANKED(lvl2_sector_write, BANK(2), unsigned int, bk_lvl2_sector_write, (int crubase, unsigned int iocode, unsigned int sector, char*bufaddr), (crubase, iocode, sector, bufaddr))

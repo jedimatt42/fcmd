@@ -297,7 +297,7 @@ int prepareMemory() {
 
 int loadPagedFormat(struct DeviceServiceRoutine* dsr, int iocode, char* filename, struct AddInfo* addInfoPtr, int pages) {
   clearAddInfo(addInfoPtr);
-  bk_lvl2_input(dsr->crubase, iocode, filename, 0, addInfoPtr);
+  bk_lvl2_input_cpu(dsr->crubase, iocode, filename, 0, addInfoPtr);
 
   int totalBlocks = addInfoPtr->first_sector;
   if (sams_total_pages) {
@@ -317,15 +317,13 @@ int loadPagedFormat(struct DeviceServiceRoutine* dsr, int iocode, char* filename
   int blockId = 0;
   int page = 0;
   while(page < pages) {
+    // every other page goes into A000 or B000
     int loadAddr = 0xA000 + ((page & 1) << 12);
     bk_map_page(procInfoPtr->base_page + page, loadAddr);
     addInfoPtr->first_sector = blockId;
-    int err = bk_lvl2_input(dsr->crubase, iocode, filename, 16, addInfoPtr);
+    addInfoPtr->buffer = loadAddr;
+    int err = bk_lvl2_input_cpu(dsr->crubase, iocode, filename, 16, addInfoPtr);
     blockId += 16;
-	
-    // every other page goes into A000 or B000
-    vdpmemread(addInfoPtr->buffer, (char*)loadAddr, 4096);
-
     page++;
   }
   // expect the first 2 pages mapped in
@@ -340,10 +338,10 @@ int loadPagedFormat(struct DeviceServiceRoutine* dsr, int iocode, char* filename
   while(blockId < totalBlocks) {
     bk_map_page(procInfoPtr->base_page + page, cpuAddr);
     addInfoPtr->first_sector = blockId;
-    int err = bk_lvl2_input(dsr->crubase, iocode, filename, 16, addInfoPtr);
+    addInfoPtr->buffer = cpuAddr;
+    int err = bk_lvl2_input_cpu(dsr->crubase, iocode, filename, 16, addInfoPtr);
     blockId += 16;
     
-    vdpmemread(addInfoPtr->buffer, (char*)cpuAddr, 4096);
     if (cpuAddr != 0xF000) {
       cpuAddr += 0x1000;
     }
@@ -370,7 +368,7 @@ int loadFlatFormat(struct DeviceServiceRoutine *dsr, int iocode, char *filename,
 
   // need to repair ?addInfo? to state before reading the first block
   clearAddInfo(addInfoPtr);
-  bk_lvl2_input(dsr->crubase, iocode, filename, 0, addInfoPtr);
+  bk_lvl2_input_cpu(dsr->crubase, iocode, filename, 0, addInfoPtr);
 
   int totalBlocks = addInfoPtr->first_sector;
   // Allow the file to be larger, but only load the first 24K.
@@ -387,15 +385,14 @@ int loadFlatFormat(struct DeviceServiceRoutine *dsr, int iocode, char *filename,
     int load_size = blk_cnt << 8;
 
     addInfoPtr->first_sector = blockId;
-    int err = bk_lvl2_input(dsr->crubase, iocode, filename, blk_cnt, addInfoPtr);
+    addInfoPtr->buffer = (int) cpuAddr;
+    int err = bk_lvl2_input_cpu(dsr->crubase, iocode, filename, blk_cnt, addInfoPtr);
     if (err) {
       tputs_rom("error reading file: ");
       bk_tputs_ram(bk_uint2hex(err));
       bk_tputc('\n');
       return 1;
     }
-
-    vdpmemread(addInfoPtr->buffer, cpuAddr, load_size);
 
     cpuAddr += load_size;
     blockId += blk_cnt;

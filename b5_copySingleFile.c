@@ -1,10 +1,8 @@
 #include "banks.h"
 #define MYBANK BANK(5)
 
-#include "b0_globals.h"
 #include "b5_copySingleFile.h"
 #include "b2_dsrutil.h"
-#include "b1_strutil.h"
 #include "b8_terminal.h"
 #include "b2_lvl2.h"
 

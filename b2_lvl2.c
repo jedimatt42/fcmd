@@ -155,6 +155,54 @@ unsigned char direct_io(int crubase, unsigned int iocode, char operation, char* 
   return LVL2_STATUS;
 }
 
+unsigned int lvl2_input_cpu(int crubase, unsigned int iocode, char* filename, unsigned int blockcount, struct AddInfo* addInfoPtr) {
+  int status = direct_io_cpu(crubase, iocode, LVL2_OP_INPUT, filename, blockcount, addInfoPtr);
+  if (!status && !supportsCpuBuffers(crubase) && blockcount != 0) {
+    // device didn't support cpu buffers, so the data ended up in VDP, copy to the requested cpu buffer
+    vdpmemread(VDPFBUF, (char*) addInfoPtr->buffer, blockcount * 256);
+  }
+  return status;
+}
+
+unsigned int lvl2_output_cpu(int crubase, unsigned int iocode, char* filename, unsigned int blockcount, struct AddInfo* addInfoPtr) {
+  if (!supportsCpuBuffers(crubase) && blockcount != 0) {
+    // device doesn't support cpu buffers, so copy the call cpu buffer into VDP
+    vdpmemcpy(VDPFBUF, (char*) addInfoPtr->buffer, blockcount * 256);
+  }
+  return direct_io_cpu(crubase, iocode, LVL2_OP_OUTPUT, filename, blockcount, addInfoPtr);
+}
+
+unsigned char direct_io_cpu(int crubase, unsigned int iocode, char operation, char* filename, unsigned char blockcount, struct AddInfo* addInfoPtr) {
+  LVL2_UNIT = UNITNO(iocode);
+  LVL2_PROTECT = blockcount;
+  LVL2_STATUS = ((unsigned int) addInfoPtr) - 0x8300;
+
+  char param1buf[11];
+  bk_strncpy(param1buf, filename, 10);
+  bk_strpad(param1buf, 10, ' ');
+
+  char* cpuBuffer = (char*) addInfoPtr->buffer;
+
+  int useCpuBuffer = supportsCpuBuffers(crubase);
+  if (useCpuBuffer) {
+    LVL2_UNIT = LVL2_UNIT | 0x80; // set cpu buffer bit in unit number
+    LVL2_PARAMADDR1 = (int) param1buf;
+  } else {
+    LVL2_PARAMADDR1 = FBUF;
+    vdpmemcpy(FBUF, param1buf, 10);
+    addInfoPtr->buffer = VDPFBUF; // safe from file and path name overwrites.
+  }
+
+  unsigned char opname = OPNAME(iocode, operation);
+  call_lvl2(crubase, opname);
+
+  if (!useCpuBuffer) {
+    addInfoPtr->buffer = (int) cpuBuffer;
+  }
+
+  return LVL2_STATUS;
+}
+
 unsigned int lvl2_sector_read(int crubase, unsigned int iocode, unsigned int sector, char* bufaddr) {
   LVL2_UNIT = UNITNO(iocode);
   LVL2_READWRITE = 0xff;
