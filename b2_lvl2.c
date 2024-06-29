@@ -56,7 +56,7 @@ unsigned int path2iocode(const char *dirpath)
     // unit 0x07 operation set 0x10
     return 0x0710;
   }
-  // jasonACT pico cart
+  // jasonACT pico cart supports catalog of DSK.
   if (bk_str_equals(str2ram("DSK"), drive)) {
     // unit 0x00 operation set 0x10
     return 0x0010;
@@ -84,7 +84,7 @@ unsigned int lvl2_protect(int crubase, unsigned int iocode, char* filename, int 
   return base_lvl2(crubase, iocode, LVL2_OP_PROTECT, filename, 0, protect ? 0xff : 0x00);
 }
 
-struct LenPlusChars {
+struct PathString {
   char len;
   char chars[40];
 };
@@ -97,8 +97,9 @@ unsigned int lvl2_setdir(int crubase, unsigned int iocode, char* path) {
   LVL2_UNIT = UNITNO(iocode);
   LVL2_STATUS = 0;
   int useCpuBuffer = supportsCpuBuffers(crubase);
-  struct LenPlusChars basicString;
+  struct PathString basicString;
   if (useCpuBuffer) {
+    LVL2_UNIT = LVL2_UNIT | 0x80; // set cpu buffer bit in unit number
     basicString.len = len;
     bk_strncpy(basicString.chars, path, 40);
     LVL2_PARAMADDR1 = (int) &basicString;
