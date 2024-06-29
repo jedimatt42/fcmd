@@ -37,11 +37,10 @@ static void visitLines(line_cb onLine, char* filterArg1) {
     return;
   }
   while(!err) {
-    err = bk_dsr_read(dsr, &pab, 0);
+    char linebuf[256];
+    err = bk_dsr_read_cpu(dsr, &pab, 0, linebuf);
     if (!err) {
       // print the line...
-      char linebuf[256];
-      vdpmemread(pab.VDPBuffer, linebuf, pab.CharCount);
       linebuf[pab.CharCount] = 0;
 
       onLine(linebuf, filterArg1);
