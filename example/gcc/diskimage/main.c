@@ -22,7 +22,7 @@ int create_image(struct DeviceServiceRoutine* source_dsr, char* source, struct D
   fc_tputs("volume: ");
   fc_tputs(volume);
 
-  int total_sectors = (sector_buf[10] << 8) + sector_buf[11];
+  int total_sectors = *((int*)&(sector_buf[10]));
   fc_tputs("\ntotal sectors: ");
   fc_tputs(fc_uint2str(total_sectors));
   fc_tputs("\n");
@@ -122,19 +122,17 @@ int create_disk(struct DeviceServiceRoutine* source_dsr, char* source, struct De
   int record = 0;
   for(int sno = 0; sno < total_sectors; sno++) {
     // read 2 records to get a sector... 
-    fc_dsr_read(source_dsr, &pab, record++);
+    fc_dsr_read_cpu(source_dsr, &pab, record++, sector_buf);
     if (ferr) {
       fc_tputs("error reading record\n");
       return 1;
     }
-    vdp_memread(pab.VDPBuffer, sector_buf, 128);
     // the second record into second half of sector buffer
-    fc_dsr_read(source_dsr, &pab, record++);
+    fc_dsr_read_cpu(source_dsr, &pab, record++, sector_buf + 128);
     if (ferr) {
       fc_tputs("error reading record\n");
       return 1;
     }
-    vdp_memread(pab.VDPBuffer, sector_buf + 128, 128);
 
     ferr = fc_lvl2_sector_write(dest_dsr->crubase, iocode, sno, sector_buf);
     if (ferr) {

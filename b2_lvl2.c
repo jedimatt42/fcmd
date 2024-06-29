@@ -206,13 +206,22 @@ unsigned char direct_io_cpu(int crubase, unsigned int iocode, char operation, ch
 unsigned int lvl2_sector_read(int crubase, unsigned int iocode, unsigned int sector, char* bufaddr) {
   LVL2_UNIT = UNITNO(iocode);
   LVL2_READWRITE = 0xff;
-  LVL2_PARAMADDR1 = FBUF;
   LVL2_PARAMADDR2 = sector;
+
+  int useCpuBuffer = supportsCpuBuffers(crubase);
+  if (useCpuBuffer) {
+    LVL2_UNIT = LVL2_UNIT | 0x80; // set cpu buffer bit in unit number
+    LVL2_PARAMADDR1 = (int) bufaddr;
+  } else {
+    LVL2_PARAMADDR1 = FBUF;
+  }
   
   unsigned char opname = OPNAME(iocode, LVL2_OP_SECTOR);
   call_lvl2(crubase, opname);
 
-  vdpmemread(FBUF, bufaddr, 256);
+  if (!useCpuBuffer) {
+    vdpmemread(FBUF, bufaddr, 256);
+  }
 
   return LVL2_STATUS;
 }
@@ -221,10 +230,16 @@ unsigned int lvl2_sector_read(int crubase, unsigned int iocode, unsigned int sec
 unsigned int lvl2_sector_write(int crubase, unsigned int iocode, unsigned int sector, char* bufaddr) {
   LVL2_UNIT = UNITNO(iocode);
   LVL2_READWRITE = 0x00;
-  LVL2_PARAMADDR1 = FBUF;
   LVL2_PARAMADDR2 = sector;
 
-  vdpmemcpy(FBUF, bufaddr, 256);
+  int useCpuBuffer = supportsCpuBuffers(crubase);
+  if (useCpuBuffer) {
+    LVL2_UNIT = LVL2_UNIT | 0x80; // set cpu buffer bit in unit number
+    LVL2_PARAMADDR1 = (int) bufaddr;
+  } else {
+    LVL2_PARAMADDR1 = FBUF;
+    vdpmemcpy(FBUF, bufaddr, 256);
+  }
 
   unsigned char opname = OPNAME(iocode, LVL2_OP_SECTOR);
   call_lvl2(crubase, opname);
