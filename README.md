@@ -43,9 +43,9 @@ There is a built in help command, it will list the commands/topics, then `help <
 
 Prerequisites:
 
-* xdt99 suite
+* xdt99 suite - [xdt99 github repository](https://github.com/endlos99/xdt99)
 * python3.8+
-* tms9900-gcc
+* tms9900-gcc-1.31 - [tms9900-gcc github repository](https://github.com/mburkley/tms9900-gcc)
 
 ```bash
 make clean
