@@ -24,6 +24,7 @@ DEC_COMMAND(3, Rename);
 DEC_COMMAND(3, Rmdir);
 DEC_COMMAND(3, TipiHalt);
 DEC_COMMAND(3, TipiReboot);
+DEC_COMMAND(4, Alias);
 DEC_COMMAND(4, Cd);
 DEC_COMMAND(4, Checksum);
 DEC_COMMAND(4, Drives);

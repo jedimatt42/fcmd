@@ -39,6 +39,7 @@ int must_close_command(char* buffer) {
   }
 
   char* tok = bk_strtokpeek(buffer, ' ');
+  if (MATCH(tok, str2ram("alias"))) return 0;
   if (MATCH(tok, str2ram("bar"))) return 0;
   if (MATCH(tok, str2ram("cls"))) return 0;
   if (MATCH(tok, str2ram("cd"))) return 0;
@@ -89,7 +90,8 @@ void handleCommand(char *buffer) {
   char* procbuf = bk_preprocess(buffer);
 
   char* tok = bk_strtok(procbuf, ' ');
-  COMMAND("bar", bk_handleBar)
+  COMMAND("alias", bk_handleAlias)
+  else COMMAND("bar", bk_handleBar)
   else COMMAND("cls", bk_handleCls)
   else COMMAND("cd", bk_handleCd)
   else COMMAND("cfmount", bk_handleCFMount)

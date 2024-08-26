@@ -5,6 +5,7 @@
 
 #define DE_TYPE_VAR 1
 #define DE_TYPE_LABEL 2
+#define DE_TYPE_ALIAS 3
 
 struct DictEntry {
     char type;

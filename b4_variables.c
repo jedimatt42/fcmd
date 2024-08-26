@@ -5,7 +5,6 @@
 #include "b4_variables.h"
 #include "b4_dictionary.h"
 #include "b8_terminal.h"
-#include "b1_strutil.h"
 #include "string.h"
 
 void to_upper(char* name) {

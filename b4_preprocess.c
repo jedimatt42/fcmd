@@ -3,11 +3,14 @@
 
 #include "b4_preprocess.h"
 #include "b1_strutil.h"
-#include "b8_terminal.h"
 #include "string.h"
 #include "b4_variables.h"
+#include "b4_aliases.h"
 
 const char VARNAME_CLASS[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+char* sub_vars_and_escapes(char* buf);
+void replace_alias(char* command, char* resolved);
 
 // return 1 if c is in set, otherwise return 0
 static int charin(char c, char* set) {
@@ -23,8 +26,28 @@ static int charin(char c, char* set) {
 
 static char procbuf[256];
 
-// perform escaping and variable substitutions on command buffer
 char* preprocess(char* buf) {
+  char resolved[256];
+  replace_alias(buf, resolved);
+  return sub_vars_and_escapes(resolved);
+}
+
+void replace_alias(char* command, char* resolved) {
+  char* alias_name = bk_strtok(command, ' ');
+  char* alias_val = alias_get(alias_name);
+  if ((int)alias_val == -1) {
+    bk_strncpy(resolved, alias_name, 256);
+  } else {
+    bk_strncpy(resolved, alias_val, 256);
+  }
+  int len = bk_strlen(resolved);
+  char* cursor = resolved + len;
+  *cursor++ = ' ';
+  bk_strncpy(cursor, bk_strtok(0, 0), 256 - len - 1);
+}
+
+// perform escaping and variable substitutions on command buffer
+char* sub_vars_and_escapes(char* buf) {
   bk_strset(procbuf, 0, 256);
   int i = 0;
   int pi = 0;
