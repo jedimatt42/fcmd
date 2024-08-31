@@ -154,6 +154,7 @@ char* strtokpeek(char* str, int delim) {
   return peekbuf;
 }
 
+// searches for the first occurrence of a specified character in a string and returns a pointer to it, or NULL if the character is not found.
 char* strchr(char* str, int delim)
 {
   int x;
@@ -169,6 +170,7 @@ char* strchr(char* str, int delim)
   }
 }
 
+// calculates the length of the initial segment of string that consists entirely of characters not found in chars. 
 int strcspn(char* string, char* chars) {
   char c, *p, *s;
 
