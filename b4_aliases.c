@@ -1,7 +1,6 @@
 #include "banks.h"
 #define MYBANK BANK(4)
 
-#include "b0_globals.h"
 #include "b4_aliases.h"
 #include "b4_dictionary.h"
 #include "b8_terminal.h"
@@ -44,19 +43,4 @@ char* alias_get(char* name) {
     return val;
   }
   return (char*) -1;
-}
-
-int onAliasEntry(struct DictEntry* entry) {
-  if (entry->type == DE_TYPE_ALIAS && request_break == 0) {
-    bk_tputs_ram(entry->data);
-    bk_tputc('=');
-    bk_tputs_ram(entry->data + entry->keylen + 1);
-    bk_tputc('\n');
-  }
-  return 0;
-}
-
-void printAliases() {
-  dict_visit(&system_dict, onAliasEntry);
-  bk_tputc('\n');
 }
