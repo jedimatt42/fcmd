@@ -1,7 +1,6 @@
 #include "banks.h"
 #define MYBANK BANK(4)
 
-#include "string.h"
 #include "commands.h"
 #include "b1_strutil.h"
 #include "b4_aliases.h"
@@ -12,13 +11,11 @@
 int onAliasEntry(struct DictEntry* entry) {
   if (entry->type == DE_TYPE_ALIAS && request_break == 0) {
     bk_tputs_ram(entry->data);
-    bk_tputc(':');
+    tputs_rom(": ");
     bk_tputs_ram(entry->data + entry->keylen + 1);
     bk_tputc('\n');
   }
-  bk_tputc('-');
-  bk_tputs_ram(bk_uint2str((int) entry));
-  bk_tputc('\n');
+
   return 0;
 }
 

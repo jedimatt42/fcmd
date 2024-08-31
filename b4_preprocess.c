@@ -26,10 +26,10 @@ static int charin(char c, char* set) {
 
 static char procbuf[256];
 
-char* preprocess(char* buf) {
+char* alias_preprocess(char* buf) {
   char resolved[256];
   replace_alias(buf, resolved);
-  return sub_vars_and_escapes(resolved);
+  return preprocess(resolved);
 }
 
 void replace_alias(char* command, char* resolved) {
@@ -47,7 +47,7 @@ void replace_alias(char* command, char* resolved) {
 }
 
 // perform escaping and variable substitutions on command buffer
-char* sub_vars_and_escapes(char* buf) {
+char* preprocess(char* buf) {
   bk_strset(procbuf, 0, 256);
   int i = 0;
   int pi = 0;
