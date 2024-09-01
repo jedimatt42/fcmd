@@ -46,7 +46,18 @@ static void wraptext(char* str) {
 
 /* ##########|----.----1----.----2----.----3----.----4|######## */
 void b14Help(char* tok) {
-  if (matchcmd(tok, "xb")) {
+  if (matchcmd(tok, "alias")) {
+    wraptext("==Manage command aliases==\n\n"
+      "alias <alias-name> <alias-value>\n"
+      "alias <alias-name>\n"
+      "alias\n\n"
+      "Define an alias for a command. The value may contain arguments for a builtin command or executable. "
+      "When using the alias, additional arguments on the command line will be passed after the arguments in "
+      "the alias value.\n" 
+      "With only an alias-name specified, the alias will be removed.\n"
+      "With no arguments, all defined aliases will be listed.\n"
+      "\n");
+  } else if (matchcmd(tok, "xb")) {
     wraptext("==Run XB program==\n\n"
       "xb <program-path>\n\n"
       "Switch a FinalGROM99 to an Extended BASIC cartridge, configured to RUN the specified program.\n"
