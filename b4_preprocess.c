@@ -6,11 +6,17 @@
 #include "string.h"
 #include "b4_variables.h"
 #include "b4_aliases.h"
+#include "b8_terminal.h"
 
 const char VARNAME_CLASS[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-char* sub_vars_and_escapes(char* buf);
 void replace_alias(char* command, char* resolved);
+char* phase2_preprocess(char* buf);
+char* alias_preprocess(char* buf);
+
+char* preprocess(char* buf) {
+  return alias_preprocess(buf);
+}
 
 // return 1 if c is in set, otherwise return 0
 static int charin(char c, char* set) {
@@ -29,25 +35,35 @@ static char procbuf[256];
 char* alias_preprocess(char* buf) {
   char resolved[256];
   replace_alias(buf, resolved);
-  return preprocess(resolved);
+  return phase2_preprocess(resolved);
 }
 
 void replace_alias(char* command, char* resolved) {
+  int cmdlen = bk_strlen(command);
+
   char* alias_name = bk_strtok(command, ' ');
-  char* alias_val = alias_get(alias_name);
-  if ((int)alias_val == -1) {
-    bk_strncpy(resolved, alias_name, 256);
-  } else {
-    bk_strncpy(resolved, alias_val, 256);
+
+  int name_len = bk_strlen(alias_name);
+  char* alias_value = alias_get(alias_name);
+  // if the alias is not defined, use the name to rebuild the command
+  if ((int)alias_value == -1) {
+    alias_value = alias_name;
   }
-  int len = bk_strlen(resolved);
-  char* cursor = resolved + len;
-  *cursor++ = ' ';
-  bk_strncpy(cursor, bk_strtok(0, 0), 256 - len - 1);
+  int value_len = bk_strlen(alias_value);
+  
+  bk_strncpy(resolved, alias_value, 256);
+
+  if (cmdlen > name_len) {
+    // append the rest of the command (the tokenizer nulled out the leading space, so there is a
+    // +1 to get to the args.
+    // we also have to put the space back in between the alias value and the additional args
+    resolved[value_len] = ' ';
+    bk_strncpy(resolved + value_len + 1, command + name_len + 1, 256);
+  }
 }
 
 // perform escaping and variable substitutions on command buffer
-char* preprocess(char* buf) {
+char* phase2_preprocess(char* buf) {
   bk_strset(procbuf, 0, 256);
   int i = 0;
   int pi = 0;
