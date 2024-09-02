@@ -31,6 +31,9 @@ void handleDrives() {
       if (addresses) {
         bk_tputc(':');
         bk_tputs_ram(bk_uint2hex(dsrList[i].addr));
+        if (dsrList[i].cpuSup) {
+          tputs_rom(" {c}");
+        }
         bk_tputc('\n');
       }
       i++;

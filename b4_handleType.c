@@ -1,7 +1,6 @@
 #include "banks.h"
 #define MYBANK BANK(4)
 
-#include <string.h>
 #include "commands.h"
 #include "b0_globals.h"
 #include "b1_strutil.h"
@@ -46,9 +45,8 @@ void handleType() {
     return;
   }
   int rec = 0;
+  char linebuf[256];
   while(!err && request_break == 0) {
-    char linebuf[256];
-
     err = bk_dsr_read_cpu(dsr, &pab, rec++, linebuf);
     if (!err) {
       int i = 0;

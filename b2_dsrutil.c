@@ -154,35 +154,31 @@ unsigned int dsr_scratch(struct DeviceServiceRoutine* dsr, struct PAB* pab, int 
 // typically passing 0 in for record number will let the controller
 // auto-increment it.
 unsigned int dsr_read(struct DeviceServiceRoutine* dsr, struct PAB* pab, int recordNumber) {
-  pab->OpCode = DSR_READ;
-  pab->RecordNumber = recordNumber;
-  pab->CharCount = 0;
-
-  unsigned char result = mds_lvl3_dsrlnk(dsr->crubase, pab, VPAB);
-  vdpmemread(VPAB + 5, (char*) (&pab->CharCount), 1);
-  if (! (pab->Status & DSR_TYPE_VARIABLE)) {
-    pab->CharCount = pab->RecordLength;
-  }
-  return result;
+  return dsr_read_cpu(dsr, pab, recordNumber, 0);
 }
 
 unsigned int dsr_read_cpu(struct DeviceServiceRoutine* dsr, struct PAB* pab, int recordNumber, char* recordBuf) {
   pab->OpCode = DSR_READ;
   pab->RecordNumber = recordNumber;
   pab->CharCount = 0;
-  if (dsr->cpuSup) {
+  int useCpuBuffer = dsr->cpuSup && recordBuf != 0;
+  if (useCpuBuffer) {
     pab->VDPBuffer = (int) recordBuf;
     pab->OpCode = pab->OpCode | 0x40;
+  } else {
+    pab->VDPBuffer = FBUF;
   }
   unsigned char result = mds_lvl3_dsrlnk(dsr->crubase, pab, VPAB);
   vdpmemread(VPAB + 5, (char*) (&pab->CharCount), 1);
   if (! (pab->Status & DSR_TYPE_VARIABLE)) {
     pab->CharCount = pab->RecordLength;
-    if (!dsr->cpuSup) {
-      // If cpu buffers are not supported by dsr, then copy from VDP to record buffer ourselves
-      vdpmemread(pab->VDPBuffer, recordBuf, pab->CharCount);
-    }
   }
+
+  if (recordBuf != 0 && !dsr->cpuSup)  {
+    // If cpu buffers are not supported by dsr, then copy from VDP to record buffer ourselves
+    vdpmemread(pab->VDPBuffer, recordBuf, pab->CharCount);
+  }
+
   return result;
 }
 
@@ -193,6 +189,7 @@ unsigned int dsr_write(struct DeviceServiceRoutine* dsr, struct PAB* pab, char* 
     pab->VDPBuffer = (int) record;
     pab->OpCode = pab->OpCode | 0x40;
   } else {
+    pab->VDPBuffer = FBUF; // in case we read with cpu buffer previously.
     vdpmemcpy(pab->VDPBuffer, record, reclen);
   }
 
