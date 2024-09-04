@@ -215,17 +215,22 @@ unsigned int dsr_delete(struct DeviceServiceRoutine* dsr, struct PAB* pab) {
   return result;
 }
 
+static int isIDE(char* name) {
+  return name[0] == 4 && name[1] == 'I' && name[2] == 'D' && name[3] == 'E';
+}
+
+static int isSCSI(char* name) {
+  return name[0] == 4 && name[1] == 'S' && name[2] == 'C' && name[3] == 'S';
+}
+
+static int isHFDC(char* name) {
+  return name[0] == 4 && name[1] == 'W' && name[2] == 'D' && name[3] == 'S';
+}
+
 static int inKnownCpuBufferDeviceNames(char* name) {
   // name will be a device name BASIC String.
   // we are looking for IDE, SCS, WDS... 
-  if (name[0] == 4) {
-    if ((name[1] == 'I' && name[2] == 'D' && name[3] == 'E')
-      || (name[1] == 'S' && name[2] == 'C' && name[3] == 'S') 
-      || (name[1] == 'W' && name[2] == 'D' && name[3] == 'S')) {
-        return 1;
-      }
-  }
-  return 0;
+  return isSCSI(name) || isHFDC(name) || isIDE(name);
 }
 
 static int inKnownCpuBufferCallNames(char* name) {
@@ -239,29 +244,31 @@ static int supportsCpuBuffers(struct DeviceRomHeader* dsrrom) {
   if (dsrrom->flag != 0xAA) {
     return 0;
   }
-  if (dsrrom->version & 0x02) { // TIPI DSR version bit 2 indicates cpu buffer
+
+  // TIPI DSR version bit 2 indicates cpu buffer
+  if (dsrrom->version & 0x02 && dsrrom->basiclnk) { 
     char call_name[11];
     bk_basicToCstr(dsrrom->basiclnk->name, call_name);
     if (bk_strcmp(call_name, str2ram("TIPI")) == 0) {
       return 1;
     }
-  } else { 
-    // Other devices are just based on well known names in the DSR devices list
-    struct NameLink* nameLink = dsrrom->dsrlnk;
-    while(nameLink != 0) {
-      if (inKnownCpuBufferDeviceNames(nameLink->name)) {
-        return 1;
-      }
-      nameLink = nameLink->next;
+  } 
+
+  // Other devices are just based on well known names in the DSR devices list
+  struct NameLink* nameLink = dsrrom->dsrlnk;
+  while(nameLink != 0) {
+    if (inKnownCpuBufferDeviceNames(nameLink->name)) {
+      return 1;
     }
-    // or in the BASIC call list
-    nameLink = dsrrom->basiclnk;
-    while(nameLink != 0) {
-      if (inKnownCpuBufferCallNames(nameLink->name)) {
-        return 1;
-      }
-      nameLink = nameLink->next;
+    nameLink = nameLink->next;
+  }
+  // or in the BASIC call list
+  nameLink = dsrrom->basiclnk;
+  while(nameLink != 0) {
+    if (inKnownCpuBufferCallNames(nameLink->name)) {
+      return 1;
     }
+    nameLink = nameLink->next;
   }
   return 0;
 }
