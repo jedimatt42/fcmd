@@ -15,6 +15,8 @@ void __muldf3();
 void __divdf3();
 void d_compare();
 void __eqdf2();
+void __floatsidf();
+void __fixdfsi();
 
 // address of fc_api routine
 int api_fc_api = (int)fc_api;
@@ -37,4 +39,6 @@ int gcc_muldf3[] = { BRANCH, (int)__muldf3 };
 int gcc_divdf3[] = { BRANCH, (int)__divdf3 };
 int gcc_d_compare[] = { BRANCH, (int)d_compare };
 int gcc_eqdf2[] = { BRANCH, (int)__eqdf2 };
+int gcc_floatsidf[] = { BRANCH, (int)__floatsidf };
+int gcc_fixdfsi[] = { BRANCH, (int)__fixdfsi };
 

@@ -351,54 +351,55 @@ extern void* memcpy(void* dest, const void* src, int count);
 #define FC_UINT2HEX 0x34
 #define FC_ATOI 0x35
 #define FC_HTOI 0x36
-#define FC_STRCPY 0x37
-#define FC_STRNCPY 0x38
-#define FC_STRCAT 0x39
-#define FC_STRTOK 0x3a
-#define FC_STRTOKPEEK 0x3b
-#define FC_STRLEN 0x3c
-#define FC_STRCMP 0x3d
-#define FC_STRCMPI 0x3e
-#define FC_INDEXOF 0x3f
-#define FC_LINDEXOF 0x40
-#define FC_STR_STARTSWITH 0x41
-#define FC_STR_ENDSWITH 0x42
-#define FC_BASICTOCSTR 0x43
-#define FC_STRSET 0x44
-#define FC_NEXT_TOKEN 0x45
-#define FC_BEEP 0x46
-#define FC_HONK 0x47
-#define FC_SET_IDENTIFY_HOOK 0x48
-#define FC_VDP_SETCHAR 0x49
-#define FC_VDP_GET_CURSOR_ADDR 0x4a
-#define FC_UI_DROP_DOWN 0x4b
-#define FC_UI_GOTOXY 0x4c
-#define FC_SPEECH_RESET 0x4d
-#define FC_DETECT_SPEECH 0x4e
-#define FC_SAY_VOCAB 0x4f
-#define FC_SAY_DATA 0x50
-#define FC_SPEECH_START 0x51
-#define FC_SPEECH_CONTINUE 0x52
-#define FC_SPEECH_WAIT 0x53
-#define FC_TIPI_MOUSE 0x54
-#define FC_TIPI_MOUSE_MOVE 0x55
-#define FC_TIPI_MOUSE_ENABLE 0x56
-#define FC_TIPI_MOUSE_DISABLE 0x57
-#define FC_TLS_CONNECT 0x58
-#define FC_TLS_CLOSE 0x59
-#define FC_TLS_READ_SOCKET 0x5a
-#define FC_TLS_SEND_CHARS 0x5b
-#define FC_INIT_SOCKET_BUFFER 0x5c
-#define FC_READLINE 0x5d
-#define FC_READSTREAM 0x5e
-#define FC_LIST_INIT 0x5f
-#define FC_LIST_PUSH 0x60
-#define FC_LIST_POP 0x61
-#define FC_LIST_GET 0x62
-#define FC_TEXTCOLOR 0x63
-#define FC_BGCOLOR 0x64
-#define FC_BORDERCOLOR 0x65
-#define FC_TIPI_LOG 0x66
+#define FC_FTOA 0x37
+#define FC_STRCPY 0x38
+#define FC_STRNCPY 0x39
+#define FC_STRCAT 0x3a
+#define FC_STRTOK 0x3b
+#define FC_STRTOKPEEK 0x3c
+#define FC_STRLEN 0x3d
+#define FC_STRCMP 0x3e
+#define FC_STRCMPI 0x3f
+#define FC_INDEXOF 0x40
+#define FC_LINDEXOF 0x41
+#define FC_STR_STARTSWITH 0x42
+#define FC_STR_ENDSWITH 0x43
+#define FC_BASICTOCSTR 0x44
+#define FC_STRSET 0x45
+#define FC_NEXT_TOKEN 0x46
+#define FC_BEEP 0x47
+#define FC_HONK 0x48
+#define FC_SET_IDENTIFY_HOOK 0x49
+#define FC_VDP_SETCHAR 0x4a
+#define FC_VDP_GET_CURSOR_ADDR 0x4b
+#define FC_UI_DROP_DOWN 0x4c
+#define FC_UI_GOTOXY 0x4d
+#define FC_SPEECH_RESET 0x4e
+#define FC_DETECT_SPEECH 0x4f
+#define FC_SAY_VOCAB 0x50
+#define FC_SAY_DATA 0x51
+#define FC_SPEECH_START 0x52
+#define FC_SPEECH_CONTINUE 0x53
+#define FC_SPEECH_WAIT 0x54
+#define FC_TIPI_MOUSE 0x55
+#define FC_TIPI_MOUSE_MOVE 0x56
+#define FC_TIPI_MOUSE_ENABLE 0x57
+#define FC_TIPI_MOUSE_DISABLE 0x58
+#define FC_TLS_CONNECT 0x59
+#define FC_TLS_CLOSE 0x5a
+#define FC_TLS_READ_SOCKET 0x5b
+#define FC_TLS_SEND_CHARS 0x5c
+#define FC_INIT_SOCKET_BUFFER 0x5d
+#define FC_READLINE 0x5e
+#define FC_READSTREAM 0x5f
+#define FC_LIST_INIT 0x60
+#define FC_LIST_PUSH 0x61
+#define FC_LIST_POP 0x62
+#define FC_LIST_GET 0x63
+#define FC_TEXTCOLOR 0x64
+#define FC_BGCOLOR 0x65
+#define FC_BORDERCOLOR 0x66
+#define FC_TIPI_LOG 0x67
 
 // function: void fc_tputc(int c)
 DECL_FC_API_CALL(FC_TPUTC, fc_tputc, void, (int c), (c))
@@ -564,6 +565,9 @@ DECL_FC_API_CALL(FC_ATOI, fc_atoi, int, (char *s), (s))
 
 // function: int fc_htoi(char* s)
 DECL_FC_API_CALL(FC_HTOI, fc_htoi, int, (char* s), (s))
+
+// function: void fc_ftoa(char* dest, double a)
+DECL_FC_API_CALL(FC_FTOA, fc_ftoa, void, (char* dest, double a), (dest, a))
 
 // function: char * fc_strcpy(char *d, const char *s)
 DECL_FC_API_CALL(FC_STRCPY, fc_strcpy, char *, (char *d, const char *s), (d, s))

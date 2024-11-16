@@ -10,3 +10,5 @@ __gtdf2 = 0x2020;
 __gedf2 = 0x2020;
 __eqdf2 = 0x2024;
 __nedf2 = 0x2024;
+__floatsidf = 0x2028;
+__fixdfsi = 0x202c;

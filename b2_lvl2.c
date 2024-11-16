@@ -283,8 +283,8 @@ unsigned char __attribute__((noinline)) base_lvl2(int crubase, unsigned int ioco
 
   char param1buf[11];
   char param2buf[11];
+  bk_strpad(name1, 10, ' ');
   bk_strncpy(param1buf, name1, 10);
-  bk_strpad(param1buf, 10, ' ');
   int useCpuBuffer = supportsCpuBuffers(crubase);
   if (useCpuBuffer) {
     LVL2_UNIT = LVL2_UNIT | 0x80; // set cpu buffer bit in unit number
@@ -297,8 +297,8 @@ unsigned char __attribute__((noinline)) base_lvl2(int crubase, unsigned int ioco
   if (name2 == 0) {
     LVL2_STATUS = 0;
   } else {
+    bk_strpad(name2, 10, ' ');
     bk_strncpy(param2buf, name2, 10);
-    bk_strpad(param2buf, 10, ' ');
     if (useCpuBuffer) {
       LVL2_PARAMADDR2 = (int) param2buf;
     } else {

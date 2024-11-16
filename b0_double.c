@@ -28,7 +28,7 @@
 
 
 // double addition -- method normally included in GCC lib
-double __adddf3 (double a, double b) {
+double __adddf3(double a, double b) {
 
    // use the ti99's ROM method
 
@@ -46,7 +46,7 @@ double __adddf3 (double a, double b) {
 }
 
 // double subtraction -- method normally included in GCC lib
-double __subdf3 (double a, double b) {
+double __subdf3(double a, double b) {
 
    // use the ti99's ROM method
 
@@ -64,7 +64,7 @@ double __subdf3 (double a, double b) {
 }
 
 // double multiplication -- method normally included in GCC lib
-double __muldf3 (double a, double b) {
+double __muldf3(double a, double b) {
 
    // use the ti99's ROM method
 
@@ -82,7 +82,7 @@ double __muldf3 (double a, double b) {
 }
 
 // double division -- method normally included in GCC lib
-double __divdf3 (double a, double b) {
+double __divdf3(double a, double b) {
 
    // use the ti99's ROM method
 
@@ -97,4 +97,72 @@ double __divdf3 (double a, double b) {
   );
 
   return *FDIV_QUOTIENT;
+}
+
+typedef struct {
+    char exponent;   // 1 byte exponent
+    char mantissa[7]; // 7 bytes mantissa
+} Radix100Float;
+
+double __floatsidf(int a) {
+    Radix100Float r100;
+    int is_negative = 0;
+
+    // Handle zero case
+    if (a == 0) {
+        r100.exponent = 0x00;  // exponent = 0
+        for (int i = 0; i < 7; i++) {
+            r100.mantissa[i] = 0x00;  // mantissa = 0
+        }
+        return *(double*)&r100;  // Cast the structure to double and return
+    }
+
+    // Handle negative numbers
+    if (a < 0) {
+        is_negative = 1;
+        a = -a;  // Convert to positive for processing
+    }
+
+    // Step 1: Determine the exponent
+    int exponent = 0;
+    int temp = a;
+    while (temp >= 100) {
+        temp /= 100;
+        exponent++;
+    }
+
+    // Step 2: Adjust for bias
+    r100.exponent = 0x40 + exponent;  // Add bias of 64 (0x40)
+
+    // Step 3: Extract mantissa (radix-100 digits)
+    for (int i = exponent; i >= 0; i--) {
+        r100.mantissa[i] = a % 100;  // Get last two digits
+        a /= 100;
+    }
+    // zero out rest of mantissa
+    for (int i = exponent + 1; i < 7; i++) {
+      r100.mantissa[i] = 0;
+    }
+
+    // Step 4: Apply sign if negative
+    if (is_negative) {
+        r100.exponent = ~r100.exponent + 1;  // Two's complement of exponent
+        r100.mantissa[0] = ~r100.mantissa[0] + 1;  // Two's complement of first byte of mantissa
+    }
+
+    // Return the encoded radix-100 floating-point value by casting the structure to double
+    return *(double*)&r100;
+}
+
+int __fixdfsi(double a) {
+//     "bl @>12b8\n\t"
+  *FAC_PTR = a;
+
+  __asm__(
+    "lwpi >83E0\n\t"
+    "bl @>12b8\n\t"
+    "lwpi >8300\n\t"
+  );
+
+  return *(int*)FAC_PTR;
 }

@@ -31,7 +31,7 @@ void tireal_atof (const char *a, unsigned char *result) {
    // staging values for final double value
    int exp     = 0;                                            // base 100 exponent
    int neg_pos = 1;                                            // pos = 1, neg = -1
-   int v[14]   = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }; // represented as base 10 later to be compbined as base 100
+   int v[14]   = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }; // represented as base 10 later to be combined as base 100
    int pos     = 0;                                            // write pos in v[]
    int dp      = 0;                                            // decimal point position relative to v[]
 

@@ -5,7 +5,7 @@
 #include "b8_terminal.h"
 #include "string.h"
 
-//#define _USE_FAC 1
+#define _USE_FAC 1
 
 #ifndef _USE_FAC
 

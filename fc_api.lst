@@ -63,6 +63,7 @@ uint2str
 uint2hex
 atoi
 htoi
+ftoa
 strcpy
 strncpy
 strcat
