@@ -20,6 +20,7 @@
 #define CMD_ECHO 1
 #define CMD_TERMINAL_TYPE 24
 #define CMD_WINDOW_SIZE 31
+#define CMD_CHARSET 42
 #define SEND 1
 #define IS 0
 
@@ -33,6 +34,7 @@ unsigned char take_char_blocking();
 
 void send_termtype();
 void send_window_size();
+void send_charset();
 
 char ANSI_UP[3] = { 0x1b, 0x5b, 0x41 };
 char ANSI_DOWN[3] = { 0x1b, 0x5b, 0x42 };
@@ -80,6 +82,8 @@ void handle_do_cmd(unsigned char request) {
       send_cmd(WILL, CMD_WINDOW_SIZE);
       send_window_size();
       break;
+    case CMD_CHARSET:
+      send_cmd(WILL, CMD_CHARSET);
     default:
       send_cmd(WONT, request);
   }
@@ -115,6 +119,15 @@ void handle_sub_cmd(unsigned char request) {
     if (send == SEND && iac == CMD && se == SE) {
       send_termtype();
     }
+  } else if (request == CMD_CHARSET) {
+    unsigned char prev = 0;
+    unsigned char curr = 0;
+    do {
+      prev = curr;
+      curr = take_char_blocking();
+    } while (!(prev == CMD && curr == SE));
+    // always respond with CP437
+    send_charset();
   }
 }
 
@@ -150,6 +163,23 @@ void send_window_size() {
   fc_tcp_send_chars(SOCKET, (char*) window_size, 9);
 }
 
+void send_charset() {
+  // always respond with CP437
+  unsigned char charset[11];
+  charset[0] = CMD;
+  charset[1] = SUB;
+  charset[2] = CMD_CHARSET;
+  charset[3] = IS;
+  charset[4] = 'C';
+  charset[5] = 'P';
+  charset[6] = '4';
+  charset[7] = '3';
+  charset[8] = '7';
+  charset[9] = CMD;
+  charset[10] = SE;
+  fc_tcp_send_chars(SOCKET, (char*) charset, 11);
+}
+
 unsigned char take_char_blocking() {
   int status = 0;
   unsigned char result = 0;
@@ -161,6 +191,11 @@ unsigned char take_char_blocking() {
 
 void handle_iac() {
   unsigned char cmd = take_char_blocking();
+  if (cmd == CMD) {
+    // escaped 0xff byte
+    fc_tputc(CMD);
+    return;
+  }
   unsigned char request = take_char_blocking();
   switch(cmd) {
     case DO:
