@@ -6,6 +6,9 @@
 void fc_api();
 void stramp();
 void fc_cc_deref_handle();
+int fc_cc_malloc(int size, int* out);
+int fc_cc_free(int* ptr);
+int fc_cc_calloc(int count, int size, int* out);
 
 // fake function declarations for gcc runtime routines to create a branch table to
 void memcpy();
@@ -51,4 +54,8 @@ int gcc_fixdfsi[] = { BRANCH, (int)__fixdfsi };
 int fc_cc_ledger[3] = { 0xFCFC, 0xFCFC, 0xFCFC };
 // Address of the __deref_handle routine in cartridge ROM bank 0
 int fc_cc_deref_handle_addr = (int)fc_cc_deref_handle;
+// Addresses of fc-cc paged heap runtime routines
+int fc_cc_malloc_addr = (int)fc_cc_malloc;
+int fc_cc_free_addr = (int)fc_cc_free;
+int fc_cc_calloc_addr = (int)fc_cc_calloc;
 
