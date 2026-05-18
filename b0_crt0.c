@@ -15,6 +15,7 @@ extern int __DATA_START;
 extern int __DATA_END;
 extern int __BSS_START;
 extern int __BSS_END;
+extern int fc_cc_ledger[3];
 
 #ifdef __cplusplus
 extern "C"
@@ -76,6 +77,12 @@ void _start(void)
     // restore sams config
     sams_next_page = tmp_next_page;
     sams_total_pages = tmp_total_pages;
+
+    // Clear fc_cc_ledger — .data copy wrote 0xFCFC sentinel values;
+    // they must be 0 for a cold start so no false LRU hits (heap pages start at 2+)
+    fc_cc_ledger[0] = 0;
+    fc_cc_ledger[1] = 0;
+    fc_cc_ledger[2] = 0;
   }
 
   /* Start running C code */

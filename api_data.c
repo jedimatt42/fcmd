@@ -5,6 +5,7 @@
 
 void fc_api();
 void stramp();
+void fc_cc_deref_handle();
 
 // fake function declarations for gcc runtime routines to create a branch table to
 void memcpy();
@@ -41,4 +42,13 @@ int gcc_d_compare[] = { BRANCH, (int)d_compare };
 int gcc_eqdf2[] = { BRANCH, (int)__eqdf2 };
 int gcc_floatsidf[] = { BRANCH, (int)__floatsidf };
 int gcc_fixdfsi[] = { BRANCH, (int)__fixdfsi };
+
+// fc-cc runtime helpers — follows the GCC branch table at 0x2030+
+// 2-slot heap page ledger for __deref_handle: { last_used, slot0_page_id, slot1_page_id }
+// Layout: ledger at 0x2030-0x2034, funcptr at 0x2036 (declaration order, GCC places sequentially)
+// Pre-initialized to 0xFCFC to force .data placement (GCC would put zeros in .bss).
+// Zeroed by early startup before any fc-cc program runs.
+int fc_cc_ledger[3] = { 0xFCFC, 0xFCFC, 0xFCFC };
+// Address of the __deref_handle routine in cartridge ROM bank 0
+int fc_cc_deref_handle_addr = (int)fc_cc_deref_handle;
 
