@@ -88,7 +88,7 @@ int fc_cc_malloc(int size, int* out) {
                         ww(0xE000 + prev + 2, next);
                 }
 
-                out[0] = curr;
+                out[0] = curr + BLOCK_HEADER_SIZE;
                 out[1] = page_table[i].page_id;
                 return 0;
             }
@@ -124,16 +124,17 @@ int fc_cc_malloc(int size, int* out) {
     page_table[page_count].page_id = page_id;
     page_count++;
 
-    out[0] = 0;
+    out[0] = BLOCK_HEADER_SIZE;
     out[1] = page_id;
     return 0;
 }
 
 int fc_cc_free(int* ptr) {
-    int offset = ptr[0] & 0x0FFF;
+    int data_offset = ptr[0] & 0x0FFF;
+    int header_off = data_offset - BLOCK_HEADER_SIZE;
     int page_id = ptr[1];
 
-    if (offset >= PAGE_SIZE)
+    if (header_off >= PAGE_SIZE || header_off < 0)
         return -1;
 
     int pi = find_page(page_id);
@@ -142,33 +143,33 @@ int fc_cc_free(int* ptr) {
 
     map_page(page_id, 0xE000);
 
-    int header = rw(0xE000 + offset);
+    int header = rw(0xE000 + header_off);
     if (!(header & 0x8000))
         return -1;
 
     int block_size = header & 0x7FFF;
 
     // Clear the allocated flag
-    ww(0xE000 + offset, block_size);
+    ww(0xE000 + header_off, block_size);
 
     // Coalesce with next block if free
-    int next_off = offset + block_size;
+    int next_off = header_off + block_size;
     int merged_size = block_size;
     if (next_off < PAGE_SIZE) {
         int nh = rw(0xE000 + next_off);
         if (!(nh & 0x8000)) {
             merged_size += nh & 0x7FFF;
             int nn = rw(0xE000 + next_off + 2);
-            ww(0xE000 + offset, merged_size);
-            ww(0xE000 + offset + 2, nn);
+            ww(0xE000 + header_off, merged_size);
+            ww(0xE000 + header_off + 2, nn);
         } else {
-            ww(0xE000 + offset + 2, page_table[pi].free_head);
+            ww(0xE000 + header_off + 2, page_table[pi].free_head);
         }
     } else {
-        ww(0xE000 + offset + 2, page_table[pi].free_head);
+        ww(0xE000 + header_off + 2, page_table[pi].free_head);
     }
 
-    page_table[pi].free_head = offset;
+    page_table[pi].free_head = header_off;
 
     // Zero the caller's handle
     ptr[0] = 0;
@@ -182,17 +183,17 @@ int fc_cc_calloc(int count, int size, int* out) {
     if (fc_cc_malloc(total, out) != 0)
         return -1;
 
-    int offset = out[0] & 0x0FFF;
+    int data_offset = out[0] & 0x0FFF;
     int page_id = out[1];
 
     map_page(page_id, 0xE000);
-    int block_size = rw(0xE000 + offset) & 0x7FFF;
+    int block_size = rw(0xE000 + data_offset - BLOCK_HEADER_SIZE) & 0x7FFF;
     int data_size = block_size - BLOCK_HEADER_SIZE;
 
     for (int i = 0; i < data_size; i += 2)
-        ww(0xE000 + offset + BLOCK_HEADER_SIZE + i, 0);
+        ww(0xE000 + data_offset + i, 0);
     if (data_size & 1)
-        *(volatile char*)(0xE000 + offset + BLOCK_HEADER_SIZE + data_size - 1) = 0;
+        *(volatile char*)(0xE000 + data_offset + data_size - 1) = 0;
 
     return 0;
 }
