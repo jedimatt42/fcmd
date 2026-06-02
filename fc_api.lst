@@ -63,7 +63,7 @@ uint2str
 uint2hex
 atoi
 htoi
-ftoa
+float2str
 strcpy
 strncpy
 strcat

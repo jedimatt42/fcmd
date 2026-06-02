@@ -351,7 +351,7 @@ extern void* memcpy(void* dest, const void* src, int count);
 #define FC_UINT2HEX 0x34
 #define FC_ATOI 0x35
 #define FC_HTOI 0x36
-#define FC_FTOA 0x37
+#define FC_FLOAT2STR 0x37
 #define FC_STRCPY 0x38
 #define FC_STRNCPY 0x39
 #define FC_STRCAT 0x3a
@@ -566,8 +566,8 @@ DECL_FC_API_CALL(FC_ATOI, fc_atoi, int, (char *s), (s))
 // function: int fc_htoi(char* s)
 DECL_FC_API_CALL(FC_HTOI, fc_htoi, int, (char* s), (s))
 
-// function: void fc_ftoa(char* dest, double a)
-DECL_FC_API_CALL(FC_FTOA, fc_ftoa, void, (char* dest, double a), (dest, a))
+// function: char* fc_float2str(double a)
+DECL_FC_API_CALL(FC_FLOAT2STR, fc_float2str, char*, (double a), (a))
 
 // function: char * fc_strcpy(char *d, const char *s)
 DECL_FC_API_CALL(FC_STRCPY, fc_strcpy, char *, (char *d, const char *s), (d, s))
