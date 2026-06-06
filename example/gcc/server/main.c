@@ -5,13 +5,13 @@ volatile int vol_x = 0;
 int bind_server_port() {
   // bind server
   int tries = 500;
-  fc_tputs("binding port");
+  fc_term_puts("binding port");
   while(tries) {
     char bind_request[15];
     bind_request[0] = 0x22;
     bind_request[1] = 0x00;
     bind_request[2] = 0x05;
-    fc_strcpy(bind_request + 3, "0.0.0.0:9640");
+    fc_str_copy(bind_request + 3, "0.0.0.0:9640");
     unsigned int len = 15;
 
     fc_tipi_on();
@@ -22,10 +22,10 @@ int bind_server_port() {
     fc_tipi_off();
 
     if (bind_response == 0) {
-      fc_tputs(".");
+      fc_term_puts(".");
       tries--;
     } else {
-      fc_tputs(" - complete\n");
+      fc_term_puts(" - complete\n");
       return 0;
     }
     for(unsigned int w=0;w < 0xA000; w++) {
@@ -76,7 +76,7 @@ void remove_client(char* client_ids, int idx) {
 
 int handle_client(char client_id) {
   char line[80];
-  fc_strset(line, 0, 80);
+  fc_str_set(line, 0, 80);
 
   char read_request[5];
   read_request[0] = 0x22;
@@ -94,20 +94,20 @@ int handle_client(char client_id) {
 
   // send something client unique back
   if (len) {
-    fc_tputs("client ");
-    fc_tputs(fc_uint2hex(client_id));
-    fc_tputs(": ");
-    fc_tputs(line);
+    fc_term_puts("client ");
+    fc_term_puts(fc_hex_from_uint(client_id));
+    fc_term_puts(": ");
+    fc_term_puts(line);
 
     line[0] = 0x22;
     line[1] = client_id;
     line[2] = 0x03;
 
-    fc_strcpy(line + 3, "your id is ");
-    fc_strcpy(line + 14, fc_uint2hex(client_id));
+    fc_str_copy(line + 3, "your id is ");
+    fc_str_copy(line + 14, fc_hex_from_uint(client_id));
 
     fc_tipi_on();
-    fc_tipi_sendmsg(fc_strlen(line), line);
+    fc_tipi_sendmsg(fc_str_len(line), line);
     // we'll just re-use line here.. only 1 byte is returned.
     fc_tipi_recvmsg(&len, line);
     fc_tipi_off();
@@ -138,14 +138,14 @@ int fc_main(char* args) {
   int client_count = 0;
   char client_ids[10];
   // clear the list of active clients
-  fc_strset(client_ids, 0, 10); 
+  fc_str_set(client_ids, 0, 10); 
 
   while(1) {
     // see if there are clients waiting to connect
     if (client_count < 10) {
       int client_id = server_accept();
       if (client_id == 0xff) {
-        fc_tputs("server socket error\n");
+        fc_term_puts("server socket error\n");
         return 1;
       }    
       if (client_id != 0) {

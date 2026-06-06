@@ -56,7 +56,7 @@ void __attribute__((noinline)) load_sample(char* fname_buffer, struct DeviceServ
 
   int ferr = fc_dsr_open(dsr, &pab, fname_buffer, DSR_TYPE_INPUT | DSR_TYPE_VARIABLE, 0);
   if (ferr) {
-    fc_tputs("error opening file\n");
+    fc_term_puts("error opening file\n");
     return;
   }
 
@@ -73,7 +73,7 @@ void __attribute__((noinline)) load_sample(char* fname_buffer, struct DeviceServ
 void __attribute__((noinline)) play_sample() {
   if (sample_len > 0) {
     fc_speech_reset();
-    fc_say_data(sample, sample_len);
+    fc_speech_say_data(sample, sample_len);
     fc_speech_wait();
   }
 }
@@ -82,17 +82,17 @@ int fc_main(char* args) {
   // expect DV80 file of hex data
   struct DeviceServiceRoutine* dsr;
   char fname_buffer[30];
-  fc_parse_path_param(args, &dsr, fname_buffer, PR_REQUIRED);
+  fc_path_parse(args, &dsr, fname_buffer, PR_REQUIRED);
   if (dsr == 0) {
-    fc_tputs("error no speech file specified\n\n");
-    fc_tputs("SAY <file>\n");
+    fc_term_puts("error no speech file specified\n\n");
+    fc_term_puts("SAY <file>\n");
   } else {
     load_sample(fname_buffer, dsr);
     if (!sample_len) {
-      fc_tputs("Error: No speech data loaded\n");
+      fc_term_puts("Error: No speech data loaded\n");
     } else
-    if (!fc_detect_speech()) {
-      fc_tputs("Error: No speech synthesizer detected\n");
+    if (!fc_speech_detect()) {
+      fc_term_puts("Error: No speech synthesizer detected\n");
     } else {
       play_sample();
     }

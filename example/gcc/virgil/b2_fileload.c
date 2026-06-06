@@ -8,7 +8,7 @@
 int FC_SAMS(2, file_exists(char* args)) {
   char filename[256];
   struct DeviceServiceRoutine* dsr = 0;
-  fc_parse_path_param(args, &dsr, filename, PR_REQUIRED);
+  fc_path_parse(args, &dsr, filename, PR_REQUIRED);
 
   int isFile = 0;
   if (dsr) {
@@ -26,7 +26,7 @@ void FC_SAMS(2,file_load(char* args)) {
   char filename[256];
   struct DeviceServiceRoutine* dsr;
 
-  fc_parse_path_param(args, &dsr, filename, PR_REQUIRED);
+  fc_path_parse(args, &dsr, filename, PR_REQUIRED);
  
   struct PAB pab;
   int ferr = fc_dsr_open(dsr, &pab, filename, DSR_TYPE_VARIABLE | DSR_TYPE_INPUT, 80);
@@ -40,7 +40,7 @@ void FC_SAMS(2,file_load(char* args)) {
     ferr = fc_dsr_read(dsr, &pab, 0);
     // copy from vdp to cpu ram
     char line[80];
-    fc_strset(line, 0, 80);
+    fc_str_set(line, 0, 80);
     vdp_memread(pab.VDPBuffer, line, pab.CharCount);
     if (pab.CharCount > 0) {
       page_from_buf(line, pab.CharCount);

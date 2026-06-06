@@ -8,7 +8,7 @@ int isTiFiles(struct TiFiles* tifiles) {
   if (raw[0] != 7) {
     return 0;
   }
-  fc_basicToCstr(raw, buf);
-  return !fc_strcmp(buf, "TIFILES");
+  fc_str_from_basic(raw, buf);
+  return !fc_str_cmp(buf, "TIFILES");
 }
 

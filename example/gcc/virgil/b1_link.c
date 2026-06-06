@@ -6,7 +6,7 @@ static char buf[256];
 
 void FC_SAMS(1,link_set_url(char* dst, int line_id)) {
   // the 'normalize_url' code needs pretty clean buffer
-  fc_strset(dst, 0, 256);
+  fc_str_set(dst, 0, 256);
   // find first line of link
   int idx = line_id;
   struct Line* link_line = page_get_line(idx);
@@ -62,7 +62,7 @@ char* FC_SAMS(1,link_url_scheme(char* line, int* length)) {
     *length = b;
   } else {
     // default to gemini scheme
-    fc_strcpy(buf, "gemini");
+    fc_str_copy(buf, "gemini");
     *length = 6;
   }
   return buf;
@@ -111,24 +111,24 @@ void FC_SAMS(1,update_full_url(char* dst, char* url)) {
   char tmp[256];
   if (fc_str_startswith(url, "gemini://")) {
     // a little wasteful, but good enough.
-    fc_strcpy(tmp, url);
+    fc_str_copy(tmp, url);
   } else if (url[0] == '/' && url[1] == '/') {
     // implicit gemini: protocol
-    fc_strcpy(tmp, "gemini:");
-    fc_strcpy(tmp + 7, url);
+    fc_str_copy(tmp, "gemini:");
+    fc_str_copy(tmp + 7, url);
   } else if (url[0] == '/') {
     // same host and port, new path
     char hostname[80];
     char port[8];
     // assumes dst is also previous url
     set_hostname_and_port(dst, hostname, port);
-    fc_strcpy(tmp, "gemini://");
+    fc_str_copy(tmp, "gemini://");
     int len = 9;
-    fc_strcpy(tmp + len, hostname);
-    len += fc_strlen(hostname);
-    fc_strcpy(tmp + len, url);
+    fc_str_copy(tmp + len, hostname);
+    len += fc_str_len(hostname);
+    fc_str_copy(tmp + len, url);
   } else {
-    fc_strset(tmp, 0, 256);
+    fc_str_set(tmp, 0, 256);
     int l = 0;
     int slashes = 0;
     int lastSlash = 0;
@@ -147,9 +147,9 @@ void FC_SAMS(1,update_full_url(char* dst, char* url)) {
     } else {
       l = lastSlash + 1;
     }
-    fc_strncpy(tmp + l, url, 255 - l);
+    fc_str_ncopy(tmp + l, url, 255 - l);
   }
-  fc_strcpy(dst, tmp);
+  fc_str_copy(dst, tmp);
 }
 
 void FC_SAMS(1,normalize_url(char* url)) {
@@ -180,23 +180,23 @@ void FC_SAMS(1,normalize_url(char* url)) {
     }
   }
   dst[d] = 0;
-  fc_strncpy(url, dst, 256);
+  fc_str_ncopy(url, dst, 256);
 }
 
 void FC_SAMS(1,set_hostname_and_port(char* url, char* hostname, char* port)) {
   hostname[0] = 0;
-  fc_strcpy(port, "1965");
+  fc_str_copy(port, "1965");
   if (fc_str_startswith(url, "gemini://")) {
-    int h = fc_indexof(url + 9, '/');
-    int p = fc_indexof(url + 9, ':');
+    int h = fc_str_index_of(url + 9, '/');
+    int p = fc_str_index_of(url + 9, ':');
     if (h == -1) {
-      h = fc_strlen(url + 9);
+      h = fc_str_len(url + 9);
     }
     if (p != -1) {
-      fc_strncpy(port, url + 9 + 1 + p, h - p + 1);
+      fc_str_ncopy(port, url + 9 + 1 + p, h - p + 1);
       h -= h - p;
     }
-    fc_strncpy(hostname, url + 9, h);
+    fc_str_ncopy(hostname, url + 9, h);
   } else {
     // maybe a different schema - which we'll error on - or be relative to
     // our previous url

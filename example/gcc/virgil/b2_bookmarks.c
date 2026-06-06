@@ -7,12 +7,12 @@
 #include "debug.h"
 
 static struct DeviceServiceRoutine* get_bookmark_filename(char* filename) {
-  char* favs = fc_vars_get("VIRGIL_FAVS");
+  char* favs = fc_var_get("VIRGIL_FAVS");
   if (favs == 0 || favs[0] == 0) {
     favs = "TIPI.FC.VIRGIL.BOOKMARKS";
   }
   struct DeviceServiceRoutine* dsr;
-  fc_parse_path_param(favs, &dsr, filename, PR_REQUIRED);
+  fc_path_parse(favs, &dsr, filename, PR_REQUIRED);
   return dsr;
 }
 
@@ -25,15 +25,15 @@ int FC_SAMS(2,bookmarks_add_link(char* link)) {
   if (ferr) {
     return 1;
   }
-  fc_dsr_write(dsr, &pab, link, fc_strlen(link));
+  fc_dsr_write(dsr, &pab, link, fc_str_len(link));
   fc_dsr_close(dsr, &pab);
   return 0;
 }
 
 void FC_SAMS(2,show_bookmarks()) {
   char line[14];
-  fc_strset(line, 0, 14);
-  fc_strcpy(line, "# Bookmarks\n\n");
+  fc_str_set(line, 0, 14);
+  fc_str_copy(line, "# Bookmarks\n\n");
   page_from_buf(line, 13);
 
   char filename[30];
@@ -50,7 +50,7 @@ void FC_SAMS(2,show_bookmarks()) {
 
   while(!ferr) {
     char uri[80];
-    fc_strset(uri, 0, 80);
+    fc_str_set(uri, 0, 80);
     ferr = fc_dsr_read_cpu(dsr, &pab, 0, uri);
     // then add to bookmarks
     if (pab.CharCount > 0) { // skip empty lines

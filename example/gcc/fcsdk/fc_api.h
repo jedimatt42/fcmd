@@ -296,20 +296,20 @@ struct ListEntry {
 // memcpy is special, it is in all bank of the cartridge
 extern void* memcpy(void* dest, const void* src, int count);
 
-#define FC_TPUTC 0x0
-#define FC_TPUTS 0x1
-#define FC_GETSTR 0x2
-#define FC_KSCAN 0x3
+#define FC_TERM_PUTC 0x0
+#define FC_TERM_PUTS 0x1
+#define FC_TERM_GETS 0x2
+#define FC_TERM_KSCAN 0x3
 #define FC_SAMS_MAP_PAGE 0x4
 #define FC_SAMS_ALLOC_PAGES 0x5
 #define FC_SAMS_FREE_PAGES 0x6
 #define FC_SYS_INFO 0x7
-#define FC_DISPLAY_INFO 0x8
-#define FC_SAMS_INFO 0x9
-#define FC_VARS_GET 0xa
-#define FC_VARS_SET 0xb
-#define FC_EXEC 0xc
-#define FC_DSR_EA5LOAD 0xd
+#define FC_SYS_DISPLAY_INFO 0x8
+#define FC_SYS_SAMS_INFO 0x9
+#define FC_VAR_GET 0xa
+#define FC_VAR_SET 0xb
+#define FC_EXEC_CMD 0xc
+#define FC_DSR_EA5_LOAD 0xd
 #define FC_DSR_OPEN 0xe
 #define FC_DSR_CLOSE 0xf
 #define FC_DSR_READ 0x10
@@ -322,7 +322,7 @@ extern void* memcpy(void* dest, const void* src, int count);
 #define FC_DSR_PRG_SAVE 0x17
 #define FC_DSR_SCRATCH 0x18
 #define FC_DSR_CATALOG 0x19
-#define FC_PATH2IOCODE 0x1a
+#define FC_PATH_TO_IOCODE 0x1a
 #define FC_LVL2_INPUT 0x1b
 #define FC_LVL2_INPUT_CPU 0x1c
 #define FC_LVL2_OUTPUT 0x1d
@@ -344,74 +344,74 @@ extern void* memcpy(void* dest, const void* src, int count);
 #define FC_TIPI_OFF 0x2d
 #define FC_TIPI_SENDMSG 0x2e
 #define FC_TIPI_RECVMSG 0x2f
-#define FC_DATETIME 0x30
-#define FC_FIND_DSR 0x31
-#define FC_PARSE_PATH_PARAM 0x32
-#define FC_UINT2STR 0x33
-#define FC_UINT2HEX 0x34
-#define FC_ATOI 0x35
-#define FC_HTOI 0x36
-#define FC_FLOAT2STR 0x37
-#define FC_STRCPY 0x38
-#define FC_STRNCPY 0x39
-#define FC_STRCAT 0x3a
-#define FC_STRTOK 0x3b
-#define FC_STRTOKPEEK 0x3c
-#define FC_STRLEN 0x3d
-#define FC_STRCMP 0x3e
-#define FC_STRCMPI 0x3f
-#define FC_INDEXOF 0x40
-#define FC_LINDEXOF 0x41
+#define FC_TIME_GET 0x30
+#define FC_DSR_FIND 0x31
+#define FC_PATH_PARSE 0x32
+#define FC_STR_FROM_UINT 0x33
+#define FC_HEX_FROM_UINT 0x34
+#define FC_STR_TO_INT 0x35
+#define FC_HEX_TO_INT 0x36
+#define FC_STR_FROM_FLOAT 0x37
+#define FC_STR_COPY 0x38
+#define FC_STR_NCOPY 0x39
+#define FC_STR_CAT 0x3a
+#define FC_STR_TOKEN 0x3b
+#define FC_STR_TOKEN_PEEK 0x3c
+#define FC_STR_LEN 0x3d
+#define FC_STR_CMP 0x3e
+#define FC_STR_CMP_ICASE 0x3f
+#define FC_STR_INDEX_OF 0x40
+#define FC_STR_LAST_INDEX_OF 0x41
 #define FC_STR_STARTSWITH 0x42
 #define FC_STR_ENDSWITH 0x43
-#define FC_BASICTOCSTR 0x44
-#define FC_STRSET 0x45
-#define FC_NEXT_TOKEN 0x46
-#define FC_BEEP 0x47
-#define FC_HONK 0x48
-#define FC_SET_IDENTIFY_HOOK 0x49
+#define FC_STR_FROM_BASIC 0x44
+#define FC_STR_SET 0x45
+#define FC_STR_TOKEN_NEXT 0x46
+#define FC_AUDIO_BEEP 0x47
+#define FC_AUDIO_HONK 0x48
+#define FC_TERM_SET_IDENTIFY_HOOK 0x49
 #define FC_VDP_SETCHAR 0x4a
-#define FC_VDP_GET_CURSOR_ADDR 0x4b
+#define FC_VDP_CURSOR_ADDR 0x4b
 #define FC_UI_DROP_DOWN 0x4c
 #define FC_UI_GOTOXY 0x4d
 #define FC_SPEECH_RESET 0x4e
-#define FC_DETECT_SPEECH 0x4f
-#define FC_SAY_VOCAB 0x50
-#define FC_SAY_DATA 0x51
+#define FC_SPEECH_DETECT 0x4f
+#define FC_SPEECH_SAY_VOCAB 0x50
+#define FC_SPEECH_SAY_DATA 0x51
 #define FC_SPEECH_START 0x52
 #define FC_SPEECH_CONTINUE 0x53
 #define FC_SPEECH_WAIT 0x54
-#define FC_TIPI_MOUSE 0x55
-#define FC_TIPI_MOUSE_MOVE 0x56
-#define FC_TIPI_MOUSE_ENABLE 0x57
-#define FC_TIPI_MOUSE_DISABLE 0x58
+#define FC_MOUSE_READ 0x55
+#define FC_MOUSE_MOVE 0x56
+#define FC_MOUSE_SHOW 0x57
+#define FC_MOUSE_HIDE 0x58
 #define FC_TLS_CONNECT 0x59
 #define FC_TLS_CLOSE 0x5a
 #define FC_TLS_READ_SOCKET 0x5b
 #define FC_TLS_SEND_CHARS 0x5c
-#define FC_INIT_SOCKET_BUFFER 0x5d
-#define FC_READLINE 0x5e
-#define FC_READSTREAM 0x5f
+#define FC_SOCKBUF_INIT 0x5d
+#define FC_SOCKBUF_READLINE 0x5e
+#define FC_SOCKBUF_READSTREAM 0x5f
 #define FC_LIST_INIT 0x60
 #define FC_LIST_PUSH 0x61
 #define FC_LIST_POP 0x62
 #define FC_LIST_GET 0x63
-#define FC_TEXTCOLOR 0x64
-#define FC_BGCOLOR 0x65
-#define FC_BORDERCOLOR 0x66
+#define FC_COLOR_TEXT 0x64
+#define FC_COLOR_BG 0x65
+#define FC_COLOR_BORDER 0x66
 #define FC_TIPI_LOG 0x67
 
-// function: void fc_tputc(int c)
-DECL_FC_API_CALL(FC_TPUTC, fc_tputc, void, (int c), (c))
+// function: void fc_term_putc(int c)
+DECL_FC_API_CALL(FC_TERM_PUTC, fc_term_putc, void, (int c), (c))
 
-// function: void fc_tputs(const char* str)
-DECL_FC_API_CALL(FC_TPUTS, fc_tputs, void, (const char* str), (str))
+// function: void fc_term_puts(const char* str)
+DECL_FC_API_CALL(FC_TERM_PUTS, fc_term_puts, void, (const char* str), (str))
 
-// function: void fc_getstr(char* var, int limit, int backspace)
-DECL_FC_API_CALL(FC_GETSTR, fc_getstr, void, (char* var, int limit, int backspace), (var, limit, backspace))
+// function: void fc_term_gets(char* var, int limit, int backspace)
+DECL_FC_API_CALL(FC_TERM_GETS, fc_term_gets, void, (char* var, int limit, int backspace), (var, limit, backspace))
 
-// function: unsigned int fc_kscan(unsigned int mode)
-DECL_FC_API_CALL(FC_KSCAN, fc_kscan, unsigned int, (unsigned int mode), (mode))
+// function: unsigned int fc_term_kscan(unsigned int mode)
+DECL_FC_API_CALL(FC_TERM_KSCAN, fc_term_kscan, unsigned int, (unsigned int mode), (mode))
 
 // function: void fc_sams_map_page(int page, int addr)
 DECL_FC_API_CALL(FC_SAMS_MAP_PAGE, fc_sams_map_page, void, (int page, int addr), (page, addr))
@@ -425,23 +425,23 @@ DECL_FC_API_CALL(FC_SAMS_FREE_PAGES, fc_sams_free_pages, int, (int count), (coun
 // function: void fc_sys_info(struct SystemInformation* info)
 DECL_FC_API_CALL(FC_SYS_INFO, fc_sys_info, void, (struct SystemInformation* info), (info))
 
-// function: void fc_display_info(struct DisplayInformation * info)
-DECL_FC_API_CALL(FC_DISPLAY_INFO, fc_display_info, void, (struct DisplayInformation * info), (info))
+// function: void fc_sys_display_info(struct DisplayInformation * info)
+DECL_FC_API_CALL(FC_SYS_DISPLAY_INFO, fc_sys_display_info, void, (struct DisplayInformation * info), (info))
 
-// function: void fc_sams_info(struct SamsInformation* info)
-DECL_FC_API_CALL(FC_SAMS_INFO, fc_sams_info, void, (struct SamsInformation* info), (info))
+// function: void fc_sys_sams_info(struct SamsInformation* info)
+DECL_FC_API_CALL(FC_SYS_SAMS_INFO, fc_sys_sams_info, void, (struct SamsInformation* info), (info))
 
-// function: char* fc_vars_get(char* name)
-DECL_FC_API_CALL(FC_VARS_GET, fc_vars_get, char*, (char* name), (name))
+// function: char* fc_var_get(char* name)
+DECL_FC_API_CALL(FC_VAR_GET, fc_var_get, char*, (char* name), (name))
 
-// function: void fc_vars_set(char* name, char* value)
-DECL_FC_API_CALL(FC_VARS_SET, fc_vars_set, void, (char* name, char* value), (name, value))
+// function: void fc_var_set(char* name, char* value)
+DECL_FC_API_CALL(FC_VAR_SET, fc_var_set, void, (char* name, char* value), (name, value))
 
-// function: int fc_exec(char* command)
-DECL_FC_API_CALL(FC_EXEC, fc_exec, int, (char* command), (command))
+// function: int fc_exec_cmd(char* command)
+DECL_FC_API_CALL(FC_EXEC_CMD, fc_exec_cmd, int, (char* command), (command))
 
-// function: void fc_dsr_ea5load(struct DeviceServiceRoutine * dsr, const char *fname)
-DECL_FC_API_CALL(FC_DSR_EA5LOAD, fc_dsr_ea5load, void, (struct DeviceServiceRoutine * dsr, const char *fname), (dsr, fname))
+// function: void fc_dsr_ea5_load(struct DeviceServiceRoutine * dsr, const char *fname)
+DECL_FC_API_CALL(FC_DSR_EA5_LOAD, fc_dsr_ea5_load, void, (struct DeviceServiceRoutine * dsr, const char *fname), (dsr, fname))
 
 // function: unsigned int fc_dsr_open(struct DeviceServiceRoutine* dsr, struct PAB* pab, const char* fname, int flags, int reclen)
 DECL_FC_API_CALL(FC_DSR_OPEN, fc_dsr_open, unsigned int, (struct DeviceServiceRoutine* dsr, struct PAB* pab, const char* fname, int flags, int reclen), (dsr, pab, fname, flags, reclen))
@@ -479,8 +479,8 @@ DECL_FC_API_CALL(FC_DSR_SCRATCH, fc_dsr_scratch, unsigned int, (struct DeviceSer
 // function: unsigned int fc_dsr_catalog(struct DeviceServiceRoutine* dsr, const char* pathname, vol_entry_cb vol_cb, dir_entry_cb dir_cb)
 DECL_FC_API_CALL(FC_DSR_CATALOG, fc_dsr_catalog, unsigned int, (struct DeviceServiceRoutine* dsr, const char* pathname, vol_entry_cb vol_cb, dir_entry_cb dir_cb), (dsr, pathname, vol_cb, dir_cb))
 
-// function: unsigned int fc_path2iocode(const char* currentPath)
-DECL_FC_API_CALL(FC_PATH2IOCODE, fc_path2iocode, unsigned int, (const char* currentPath), (currentPath))
+// function: unsigned int fc_path_to_iocode(const char* currentPath)
+DECL_FC_API_CALL(FC_PATH_TO_IOCODE, fc_path_to_iocode, unsigned int, (const char* currentPath), (currentPath))
 
 // function: unsigned int fc_lvl2_input(int crubase, unsigned int iocode, char *filename, unsigned int blockcount, struct AddInfo *addInfoPtr)
 DECL_FC_API_CALL(FC_LVL2_INPUT, fc_lvl2_input, unsigned int, (int crubase, unsigned int iocode, char *filename, unsigned int blockcount, struct AddInfo *addInfoPtr), (crubase, iocode, filename, blockcount, addInfoPtr))
@@ -545,59 +545,59 @@ DECL_FC_API_CALL(FC_TIPI_SENDMSG, fc_tipi_sendmsg, void, (unsigned int len, cons
 // function: void fc_tipi_recvmsg(unsigned int* len, char* buf)
 DECL_FC_API_CALL(FC_TIPI_RECVMSG, fc_tipi_recvmsg, void, (unsigned int* len, char* buf), (len, buf))
 
-// function: void fc_datetime(struct DateTime* dt)
-DECL_FC_API_CALL(FC_DATETIME, fc_datetime, void, (struct DateTime* dt), (dt))
+// function: void fc_time_get(struct DateTime* dt)
+DECL_FC_API_CALL(FC_TIME_GET, fc_time_get, void, (struct DateTime* dt), (dt))
 
-// function: struct DeviceServiceRoutine* fc_find_dsr(char* devicename, int crubase)
-DECL_FC_API_CALL(FC_FIND_DSR, fc_find_dsr, struct DeviceServiceRoutine*, (char* devicename, int crubase), (devicename, crubase))
+// function: struct DeviceServiceRoutine* fc_dsr_find(char* devicename, int crubase)
+DECL_FC_API_CALL(FC_DSR_FIND, fc_dsr_find, struct DeviceServiceRoutine*, (char* devicename, int crubase), (devicename, crubase))
 
-// function: void fc_parse_path_param(char* str_in, struct DeviceServiceRoutine** dsr, char* buffer, int requirements)
-DECL_FC_API_CALL(FC_PARSE_PATH_PARAM, fc_parse_path_param, void, (char* str_in, struct DeviceServiceRoutine** dsr, char* buffer, int requirements), (str_in, dsr, buffer, requirements))
+// function: void fc_path_parse(char* str_in, struct DeviceServiceRoutine** dsr, char* buffer, int requirements)
+DECL_FC_API_CALL(FC_PATH_PARSE, fc_path_parse, void, (char* str_in, struct DeviceServiceRoutine** dsr, char* buffer, int requirements), (str_in, dsr, buffer, requirements))
 
-// function: char * fc_uint2str(unsigned int x)
-DECL_FC_API_CALL(FC_UINT2STR, fc_uint2str, char *, (unsigned int x), (x))
+// function: char * fc_str_from_uint(unsigned int x)
+DECL_FC_API_CALL(FC_STR_FROM_UINT, fc_str_from_uint, char *, (unsigned int x), (x))
 
-// function: char * fc_uint2hex(unsigned int x)
-DECL_FC_API_CALL(FC_UINT2HEX, fc_uint2hex, char *, (unsigned int x), (x))
+// function: char * fc_hex_from_uint(unsigned int x)
+DECL_FC_API_CALL(FC_HEX_FROM_UINT, fc_hex_from_uint, char *, (unsigned int x), (x))
 
-// function: int fc_atoi(char *s)
-DECL_FC_API_CALL(FC_ATOI, fc_atoi, int, (char *s), (s))
+// function: int fc_str_to_int(char *s)
+DECL_FC_API_CALL(FC_STR_TO_INT, fc_str_to_int, int, (char *s), (s))
 
-// function: int fc_htoi(char* s)
-DECL_FC_API_CALL(FC_HTOI, fc_htoi, int, (char* s), (s))
+// function: int fc_hex_to_int(char* s)
+DECL_FC_API_CALL(FC_HEX_TO_INT, fc_hex_to_int, int, (char* s), (s))
 
-// function: char* fc_float2str(double a)
-DECL_FC_API_CALL(FC_FLOAT2STR, fc_float2str, char*, (double a), (a))
+// function: char* fc_str_from_float(double a)
+DECL_FC_API_CALL(FC_STR_FROM_FLOAT, fc_str_from_float, char*, (double a), (a))
 
-// function: char * fc_strcpy(char *d, const char *s)
-DECL_FC_API_CALL(FC_STRCPY, fc_strcpy, char *, (char *d, const char *s), (d, s))
+// function: char * fc_str_copy(char *d, const char *s)
+DECL_FC_API_CALL(FC_STR_COPY, fc_str_copy, char *, (char *d, const char *s), (d, s))
 
-// function: char * fc_strncpy(char *dest, char *src, int limit)
-DECL_FC_API_CALL(FC_STRNCPY, fc_strncpy, char *, (char *dest, char *src, int limit), (dest, src, limit))
+// function: char * fc_str_ncopy(char *dest, char *src, int limit)
+DECL_FC_API_CALL(FC_STR_NCOPY, fc_str_ncopy, char *, (char *dest, char *src, int limit), (dest, src, limit))
 
-// function: char * fc_strcat(char *dst, const char *add)
-DECL_FC_API_CALL(FC_STRCAT, fc_strcat, char *, (char *dst, const char *add), (dst, add))
+// function: char * fc_str_cat(char *dst, const char *add)
+DECL_FC_API_CALL(FC_STR_CAT, fc_str_cat, char *, (char *dst, const char *add), (dst, add))
 
-// function: char * fc_strtok(char *str, int delim)
-DECL_FC_API_CALL(FC_STRTOK, fc_strtok, char *, (char *str, int delim), (str, delim))
+// function: char * fc_str_token(char *str, int delim)
+DECL_FC_API_CALL(FC_STR_TOKEN, fc_str_token, char *, (char *str, int delim), (str, delim))
 
-// function: char * fc_strtokpeek(char *str, int delim)
-DECL_FC_API_CALL(FC_STRTOKPEEK, fc_strtokpeek, char *, (char *str, int delim), (str, delim))
+// function: char * fc_str_token_peek(char *str, int delim)
+DECL_FC_API_CALL(FC_STR_TOKEN_PEEK, fc_str_token_peek, char *, (char *str, int delim), (str, delim))
 
-// function: int fc_strlen(const char *s)
-DECL_FC_API_CALL(FC_STRLEN, fc_strlen, int, (const char *s), (s))
+// function: int fc_str_len(const char *s)
+DECL_FC_API_CALL(FC_STR_LEN, fc_str_len, int, (const char *s), (s))
 
-// function: int fc_strcmp(const char *a, const char *b)
-DECL_FC_API_CALL(FC_STRCMP, fc_strcmp, int, (const char *a, const char *b), (a, b))
+// function: int fc_str_cmp(const char *a, const char *b)
+DECL_FC_API_CALL(FC_STR_CMP, fc_str_cmp, int, (const char *a, const char *b), (a, b))
 
-// function: int fc_strcmpi(const char *a, const char *b)
-DECL_FC_API_CALL(FC_STRCMPI, fc_strcmpi, int, (const char *a, const char *b), (a, b))
+// function: int fc_str_cmp_icase(const char *a, const char *b)
+DECL_FC_API_CALL(FC_STR_CMP_ICASE, fc_str_cmp_icase, int, (const char *a, const char *b), (a, b))
 
-// function: int fc_indexof(const char *str, int c)
-DECL_FC_API_CALL(FC_INDEXOF, fc_indexof, int, (const char *str, int c), (str, c))
+// function: int fc_str_index_of(const char *str, int c)
+DECL_FC_API_CALL(FC_STR_INDEX_OF, fc_str_index_of, int, (const char *str, int c), (str, c))
 
-// function: int fc_lindexof(const char *str, int c, int start)
-DECL_FC_API_CALL(FC_LINDEXOF, fc_lindexof, int, (const char *str, int c, int start), (str, c, start))
+// function: int fc_str_last_index_of(const char *str, int c, int start)
+DECL_FC_API_CALL(FC_STR_LAST_INDEX_OF, fc_str_last_index_of, int, (const char *str, int c, int start), (str, c, start))
 
 // function: int fc_str_startswith(const char *str, const char *prefix)
 DECL_FC_API_CALL(FC_STR_STARTSWITH, fc_str_startswith, int, (const char *str, const char *prefix), (str, prefix))
@@ -605,29 +605,29 @@ DECL_FC_API_CALL(FC_STR_STARTSWITH, fc_str_startswith, int, (const char *str, co
 // function: int fc_str_endswith(const char *str, const char *suffix)
 DECL_FC_API_CALL(FC_STR_ENDSWITH, fc_str_endswith, int, (const char *str, const char *suffix), (str, suffix))
 
-// function: int fc_basicToCstr(const char *str, char *buf)
-DECL_FC_API_CALL(FC_BASICTOCSTR, fc_basicToCstr, int, (const char *str, char *buf), (str, buf))
+// function: int fc_str_from_basic(const char *str, char *buf)
+DECL_FC_API_CALL(FC_STR_FROM_BASIC, fc_str_from_basic, int, (const char *str, char *buf), (str, buf))
 
-// function: void fc_strset(char *buffer, int value, int limit)
-DECL_FC_API_CALL(FC_STRSET, fc_strset, void, (char *buffer, int value, int limit), (buffer, value, limit))
+// function: void fc_str_set(char *buffer, int value, int limit)
+DECL_FC_API_CALL(FC_STR_SET, fc_str_set, void, (char *buffer, int value, int limit), (buffer, value, limit))
 
-// function: char* fc_next_token(char* dst, char* str, int delim)
-DECL_FC_API_CALL(FC_NEXT_TOKEN, fc_next_token, char*, (char* dst, char* str, int delim), (dst, str, delim))
+// function: char* fc_str_token_next(char* dst, char* str, int delim)
+DECL_FC_API_CALL(FC_STR_TOKEN_NEXT, fc_str_token_next, char*, (char* dst, char* str, int delim), (dst, str, delim))
 
-// function: void fc_beep()
-DECL_FC_API_CALL(FC_BEEP, fc_beep, void, (), ())
+// function: void fc_audio_beep()
+DECL_FC_API_CALL(FC_AUDIO_BEEP, fc_audio_beep, void, (), ())
 
-// function: void fc_honk()
-DECL_FC_API_CALL(FC_HONK, fc_honk, void, (), ())
+// function: void fc_audio_honk()
+DECL_FC_API_CALL(FC_AUDIO_HONK, fc_audio_honk, void, (), ())
 
-// function: void fc_set_identify_hook(identify_callback cb)
-DECL_FC_API_CALL(FC_SET_IDENTIFY_HOOK, fc_set_identify_hook, void, (identify_callback cb), (cb))
+// function: void fc_term_set_identify_hook(identify_callback cb)
+DECL_FC_API_CALL(FC_TERM_SET_IDENTIFY_HOOK, fc_term_set_identify_hook, void, (identify_callback cb), (cb))
 
 // function: void fc_vdp_setchar(int pAddr, int ch)
 DECL_FC_API_CALL(FC_VDP_SETCHAR, fc_vdp_setchar, void, (int pAddr, int ch), (pAddr, ch))
 
-// function: unsigned int fc_vdp_get_cursor_addr()
-DECL_FC_API_CALL(FC_VDP_GET_CURSOR_ADDR, fc_vdp_get_cursor_addr, unsigned int, (), ())
+// function: unsigned int fc_vdp_cursor_addr()
+DECL_FC_API_CALL(FC_VDP_CURSOR_ADDR, fc_vdp_cursor_addr, unsigned int, (), ())
 
 // function: void fc_ui_drop_down(int linecount)
 DECL_FC_API_CALL(FC_UI_DROP_DOWN, fc_ui_drop_down, void, (int linecount), (linecount))
@@ -638,14 +638,14 @@ DECL_FC_API_CALL(FC_UI_GOTOXY, fc_ui_gotoxy, void, (int x, int y), (x, y))
 // function: void fc_speech_reset()
 DECL_FC_API_CALL(FC_SPEECH_RESET, fc_speech_reset, void, (), ())
 
-// function: int fc_detect_speech()
-DECL_FC_API_CALL(FC_DETECT_SPEECH, fc_detect_speech, int, (), ())
+// function: int fc_speech_detect()
+DECL_FC_API_CALL(FC_SPEECH_DETECT, fc_speech_detect, int, (), ())
 
-// function: void fc_say_vocab(int phrase_addr)
-DECL_FC_API_CALL(FC_SAY_VOCAB, fc_say_vocab, void, (int phrase_addr), (phrase_addr))
+// function: void fc_speech_say_vocab(int phrase_addr)
+DECL_FC_API_CALL(FC_SPEECH_SAY_VOCAB, fc_speech_say_vocab, void, (int phrase_addr), (phrase_addr))
 
-// function: void fc_say_data(const char* addr, int len)
-DECL_FC_API_CALL(FC_SAY_DATA, fc_say_data, void, (const char* addr, int len), (addr, len))
+// function: void fc_speech_say_data(const char* addr, int len)
+DECL_FC_API_CALL(FC_SPEECH_SAY_DATA, fc_speech_say_data, void, (const char* addr, int len), (addr, len))
 
 // function: void fc_speech_start(struct LpcPlaybackCtx* ctx)
 DECL_FC_API_CALL(FC_SPEECH_START, fc_speech_start, void, (struct LpcPlaybackCtx* ctx), (ctx))
@@ -656,17 +656,17 @@ DECL_FC_API_CALL(FC_SPEECH_CONTINUE, fc_speech_continue, void, (struct LpcPlayba
 // function: void fc_speech_wait()
 DECL_FC_API_CALL(FC_SPEECH_WAIT, fc_speech_wait, void, (), ())
 
-// function: void fc_tipi_mouse(struct MouseData* mouseData)
-DECL_FC_API_CALL(FC_TIPI_MOUSE, fc_tipi_mouse, void, (struct MouseData* mouseData), (mouseData))
+// function: void fc_mouse_read(struct MouseData* mouseData)
+DECL_FC_API_CALL(FC_MOUSE_READ, fc_mouse_read, void, (struct MouseData* mouseData), (mouseData))
 
-// function: void fc_tipi_mouse_move(struct MouseData* mouseData)
-DECL_FC_API_CALL(FC_TIPI_MOUSE_MOVE, fc_tipi_mouse_move, void, (struct MouseData* mouseData), (mouseData))
+// function: void fc_mouse_move(struct MouseData* mouseData)
+DECL_FC_API_CALL(FC_MOUSE_MOVE, fc_mouse_move, void, (struct MouseData* mouseData), (mouseData))
 
-// function: void fc_tipi_mouse_enable(struct MouseData* mouseData)
-DECL_FC_API_CALL(FC_TIPI_MOUSE_ENABLE, fc_tipi_mouse_enable, void, (struct MouseData* mouseData), (mouseData))
+// function: void fc_mouse_show(struct MouseData* mouseData)
+DECL_FC_API_CALL(FC_MOUSE_SHOW, fc_mouse_show, void, (struct MouseData* mouseData), (mouseData))
 
-// function: void fc_tipi_mouse_disable()
-DECL_FC_API_CALL(FC_TIPI_MOUSE_DISABLE, fc_tipi_mouse_disable, void, (), ())
+// function: void fc_mouse_hide()
+DECL_FC_API_CALL(FC_MOUSE_HIDE, fc_mouse_hide, void, (), ())
 
 // function: unsigned int fc_tls_connect(unsigned int socketId, char* hostname, char* port)
 DECL_FC_API_CALL(FC_TLS_CONNECT, fc_tls_connect, unsigned int, (unsigned int socketId, char* hostname, char* port), (socketId, hostname, port))
@@ -680,14 +680,14 @@ DECL_FC_API_CALL(FC_TLS_READ_SOCKET, fc_tls_read_socket, int, (unsigned int sock
 // function: int fc_tls_send_chars(unsigned int socketId, char* buf, int size)
 DECL_FC_API_CALL(FC_TLS_SEND_CHARS, fc_tls_send_chars, int, (unsigned int socketId, char* buf, int size), (socketId, buf, size))
 
-// function: void fc_init_socket_buffer(struct SocketBuffer* socket_buf, int tls, unsigned int socketId)
-DECL_FC_API_CALL(FC_INIT_SOCKET_BUFFER, fc_init_socket_buffer, void, (struct SocketBuffer* socket_buf, int tls, unsigned int socketId), (socket_buf, tls, socketId))
+// function: void fc_sockbuf_init(struct SocketBuffer* socket_buf, int tls, unsigned int socketId)
+DECL_FC_API_CALL(FC_SOCKBUF_INIT, fc_sockbuf_init, void, (struct SocketBuffer* socket_buf, int tls, unsigned int socketId), (socket_buf, tls, socketId))
 
-// function: char* fc_readline(struct SocketBuffer* socket_buf)
-DECL_FC_API_CALL(FC_READLINE, fc_readline, char*, (struct SocketBuffer* socket_buf), (socket_buf))
+// function: char* fc_sockbuf_readline(struct SocketBuffer* socket_buf)
+DECL_FC_API_CALL(FC_SOCKBUF_READLINE, fc_sockbuf_readline, char*, (struct SocketBuffer* socket_buf), (socket_buf))
 
-// function: int fc_readstream(struct SocketBuffer* socket_buf, char* block, int limit)
-DECL_FC_API_CALL(FC_READSTREAM, fc_readstream, int, (struct SocketBuffer* socket_buf, char* block, int limit), (socket_buf, block, limit))
+// function: int fc_sockbuf_readstream(struct SocketBuffer* socket_buf, char* block, int limit)
+DECL_FC_API_CALL(FC_SOCKBUF_READSTREAM, fc_sockbuf_readstream, int, (struct SocketBuffer* socket_buf, char* block, int limit), (socket_buf, block, limit))
 
 // function: void fc_list_init(struct List* list, void* addr, void* ceiling)
 DECL_FC_API_CALL(FC_LIST_INIT, fc_list_init, void, (struct List* list, void* addr, void* ceiling), (list, addr, ceiling))
@@ -701,14 +701,14 @@ DECL_FC_API_CALL(FC_LIST_POP, fc_list_pop, void, (struct List* list, char* buffe
 // function: struct ListEntry* fc_list_get(struct List* list, int index)
 DECL_FC_API_CALL(FC_LIST_GET, fc_list_get, struct ListEntry*, (struct List* list, int index), (list, index))
 
-// function: unsigned int fc_textcolor(unsigned int color)
-DECL_FC_API_CALL(FC_TEXTCOLOR, fc_textcolor, unsigned int, (unsigned int color), (color))
+// function: unsigned int fc_color_text(unsigned int color)
+DECL_FC_API_CALL(FC_COLOR_TEXT, fc_color_text, unsigned int, (unsigned int color), (color))
 
-// function: unsigned int fc_bgcolor(unsigned int color)
-DECL_FC_API_CALL(FC_BGCOLOR, fc_bgcolor, unsigned int, (unsigned int color), (color))
+// function: unsigned int fc_color_bg(unsigned int color)
+DECL_FC_API_CALL(FC_COLOR_BG, fc_color_bg, unsigned int, (unsigned int color), (color))
 
-// function: unsigned int fc_bordercolor(unsigned int x)
-DECL_FC_API_CALL(FC_BORDERCOLOR, fc_bordercolor, unsigned int, (unsigned int x), (x))
+// function: unsigned int fc_color_border(unsigned int x)
+DECL_FC_API_CALL(FC_COLOR_BORDER, fc_color_border, unsigned int, (unsigned int x), (x))
 
 // function: void fc_tipi_log(char* msg)
 DECL_FC_API_CALL(FC_TIPI_LOG, fc_tipi_log, void, (char* msg), (msg))

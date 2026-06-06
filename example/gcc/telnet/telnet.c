@@ -69,9 +69,9 @@ int send_cmd(unsigned char req, unsigned char param) {
 }
 
 void handle_do_cmd(unsigned char request) {
-  // fc_tputs("received: DO ");
-  // fc_tputs(fc_uint2str(request));
-  // fc_tputc('\n');
+  // fc_term_puts("received: DO ");
+  // fc_term_puts(fc_str_from_uint(request));
+  // fc_term_putc('\n');
   switch(request) {
     case CMD_TERMINAL_TYPE:
       send_cmd(WILL, CMD_TERMINAL_TYPE);
@@ -86,28 +86,28 @@ void handle_do_cmd(unsigned char request) {
 }
 
 void handle_dont_cmd(unsigned char request) {
-  // fc_tputs("received: DONT ");
-  // fc_tputs(fc_uint2str(request));
-  // fc_tputc('\n');
+  // fc_term_puts("received: DONT ");
+  // fc_term_puts(fc_str_from_uint(request));
+  // fc_term_putc('\n');
   send_cmd(WONT, request);
 }
 
 void handle_will_cmd(unsigned char request) {
-  // fc_tputs("received: WILL ");
-  // fc_tputs(fc_uint2str(request));
-  // fc_tputc('\n');
+  // fc_term_puts("received: WILL ");
+  // fc_term_puts(fc_str_from_uint(request));
+  // fc_term_putc('\n');
 }
 
 void handle_wont_cmd(unsigned char request) {
-  // fc_tputs("received: WONT ");
-  // fc_tputs(fc_uint2str(request));
-  // fc_tputc('\n');
+  // fc_term_puts("received: WONT ");
+  // fc_term_puts(fc_str_from_uint(request));
+  // fc_term_putc('\n');
 }
 
 void handle_sub_cmd(unsigned char request) {
-  // fc_tputs("received: SUB ");
-  // fc_tputs(fc_uint2str(request));
-  // fc_tputc('\n');
+  // fc_term_puts("received: SUB ");
+  // fc_term_puts(fc_str_from_uint(request));
+  // fc_term_putc('\n');
   if (request == CMD_TERMINAL_TYPE) {
     unsigned char send = take_char_blocking();
     unsigned char iac = take_char_blocking(); // consume IAC
@@ -135,7 +135,7 @@ void send_termtype() {
 
 void send_window_size() {
   struct DisplayInformation d_info;
-  fc_display_info(&d_info);
+  fc_sys_display_info(&d_info);
 
   unsigned char window_size[9];
   window_size[0] = CMD;
@@ -189,7 +189,7 @@ void process() {
     if (current == CMD) {
       handle_iac();
     } else {
-      fc_tputc(current);
+      fc_term_putc(current);
     }
   }
 }
@@ -198,27 +198,27 @@ unsigned char connect(char* args) {
   char hostname[80];
   char port[80];
 
-  fc_strset(hostname, 0, 80);
-  fc_strset(port, 0, 80);
+  fc_str_set(hostname, 0, 80);
+  fc_str_set(port, 0, 80);
 
-  char* cursor = fc_next_token(hostname, args, ' ');
-  if (!fc_strlen(hostname)) {
-    fc_tputs("No hostname specified\n");
+  char* cursor = fc_str_token_next(hostname, args, ' ');
+  if (!fc_str_len(hostname)) {
+    fc_term_puts("No hostname specified\n");
     return 1;
   }
 
-  cursor = fc_next_token(port, cursor, ' ');
-  if (!fc_strcmpi("/P", port)) {
-    cursor = fc_next_token(port, cursor, ' ');
-    int nport = fc_atoi(port);
+  cursor = fc_str_token_next(port, cursor, ' ');
+  if (!fc_str_cmp_icase("/P", port)) {
+    cursor = fc_str_token_next(port, cursor, ' ');
+    int nport = fc_str_to_int(port);
     if (!nport) {
-      fc_tputs("Bad port value\n");
+      fc_term_puts("Bad port value\n");
       return 1;
     }
     // copy the number form back to the string to normalize.
-    fc_strcpy(port, fc_uint2str(nport));
+    fc_str_copy(port, fc_str_from_uint(nport));
   } else {
-    fc_strcpy(port, "23");
+    fc_str_copy(port, "23");
   }
 
   return fc_tcp_connect(SOCKET, hostname, port);
@@ -242,7 +242,7 @@ void term_identify(int flag) {
   if (flag == 1) {
     char buf[8];
     buf[0] = 27;
-    fc_strcpy(buf + 1, "[?1;0c");
+    fc_str_copy(buf + 1, "[?1;0c");
     fc_tcp_send_chars(SOCKET, buf, 7);
   } else if (flag == 52) {
     char buf[3];
@@ -257,16 +257,16 @@ void term_identify(int flag) {
     buf[0] = 27;
     buf[1] = '[';
     char* cursor = buf + 2;
-    fc_strcpy(cursor, fc_uint2str(y));
-    cursor = buf + fc_strlen(buf);
+    fc_str_copy(cursor, fc_str_from_uint(y));
+    cursor = buf + fc_str_len(buf);
     *cursor = ';';
     cursor++;
-    fc_strcpy(cursor, fc_uint2str(x));
-    cursor = buf + fc_strlen(buf);
+    fc_str_copy(cursor, fc_str_from_uint(x));
+    cursor = buf + fc_str_len(buf);
     *cursor = 'R';
     cursor++;
     *cursor = 0;
-    fc_tcp_send_chars(SOCKET, buf, fc_strlen(buf));
+    fc_tcp_send_chars(SOCKET, buf, fc_str_len(buf));
   }
 }
 
@@ -277,7 +277,7 @@ unsigned char cursor_char = 0;
 
 void unblink() {
   if (cursor_char != 0) {
-    fc_vdp_setchar(fc_vdp_get_cursor_addr(), cursor_char);
+    fc_vdp_setchar(fc_vdp_cursor_addr(), cursor_char);
     cursor_char = 0;
   }
 }
@@ -285,7 +285,7 @@ void unblink() {
 void blink() {
   if ((blinkenLights % 100) < 50) {
     if (cursor_char == 0) {
-      int here = fc_vdp_get_cursor_addr();
+      int here = fc_vdp_cursor_addr();
       VDP_SET_ADDRESS(here);
       __asm__("NOP");
       cursor_char = VDPRD;
@@ -299,23 +299,23 @@ void blink() {
 
 void disconnect() {
   fc_tcp_close(SOCKET);
-  fc_tputs("Disconnected.\n");
+  fc_term_puts("Disconnected.\n");
 }
 
 int fc_main(char* args) {
   unsigned char result = connect(args);
   if (result != 255) {
-    fc_tputs("Error connecting\n");
+    fc_term_puts("Error connecting\n");
     return 1;
   } else {
-    fc_tputs("Connected.\n");
+    fc_term_puts("Connected.\n");
   }
-  fc_set_identify_hook(term_identify);
+  fc_term_set_identify_hook(term_identify);
 
   while( 1 ) {
     blinkenLights++;
     blink();
-    int key = fc_kscan(5);
+    int key = fc_term_kscan(5);
 
     unblink();
     if (KSCAN_STATUS & KSCAN_MASK) {

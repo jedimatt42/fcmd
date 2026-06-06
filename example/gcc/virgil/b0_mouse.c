@@ -20,11 +20,11 @@ void on_menu();
 
 void FC_SAMS(0,init_mouse()) {
   struct DisplayInformation dinfo;
-  fc_display_info(&dinfo);
+  fc_sys_display_info(&dinfo);
   spritePatternAddr = dinfo.spritePatternAddr;
 
-  fc_strset((char*)&md, 0, sizeof(struct MouseData));
-  fc_tipi_mouse_enable(&md); // prep for reading
+  fc_str_set((char*)&md, 0, sizeof(struct MouseData));
+  fc_mouse_show(&md); // prep for reading
   pointer_type = 99;
   mouse_set_pointer(MP_NORMAL);
   mouse_active = 0;
@@ -41,7 +41,7 @@ static int mouse_column() {
 int FC_SAMS(0,update_mouse()) {
   md.buttons = 0;
   int oldy = md.pointery;
-  fc_tipi_mouse_move(&md);
+  fc_mouse_move(&md);
   if (oldy != md.pointery) {
     // mouse moved, so let's set the active flag
     // this can be a hint to other stages to allow
@@ -100,14 +100,14 @@ void FC_SAMS(0,handle_mouse_click()) {
 	} else {
           state.cmd = CMD_RELOAD;
 	  if (line == 3) {
-	    fc_strcpy(state.newurl, "bookmarks:");
+	    fc_str_copy(state.newurl, "bookmarks:");
 	  } else if (line == 4) {
 	    state.cmd = CMD_IDLE;
 	    bookmarks_add_link(state.lasturl);
 	  } else if (line == 5) {
-	    fc_strcpy(state.newurl, "history:");
+	    fc_str_copy(state.newurl, "history:");
 	  } else if (line == 6) {
-	    fc_strcpy(state.newurl, "about:");
+	    fc_str_copy(state.newurl, "about:");
 	  }
 	}
 	state.menu_open = 0;

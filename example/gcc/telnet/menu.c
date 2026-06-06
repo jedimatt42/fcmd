@@ -7,13 +7,13 @@ int show_menu() {
 
   // I want fc_gotoxy(x, y);
   fc_ui_gotoxy(3, 2);
-  fc_tputs("^Q - close terminal");
+  fc_term_puts("^Q - close terminal");
   fc_ui_gotoxy(3, 3);
-  fc_tputs("BACK - resume");
+  fc_term_puts("BACK - resume");
 
   int done = 0;
   while(!done) {
-    int key = fc_kscan(5);
+    int key = fc_term_kscan(5);
 
     if (KSCAN_STATUS & KSCAN_MASK) {
       switch(key) {

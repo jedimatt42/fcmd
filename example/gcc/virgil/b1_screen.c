@@ -27,11 +27,11 @@ int colorAddr;
 void FC_SAMS(1,init_screen()) {
   // use CLS after setting color to force border and all 
   // attributes.
-  fc_exec("COLOR 14 1");
-  fc_exec("CLS");
+  fc_exec_cmd("COLOR 14 1");
+  fc_exec_cmd("CLS");
 
   struct DisplayInformation dinfo;
-  fc_display_info(&dinfo);
+  fc_sys_display_info(&dinfo);
   imageAddr = dinfo.imageAddr;
   colorAddr = dinfo.colorAddr;
 	  
@@ -60,48 +60,48 @@ void __attribute__((noinline)) set_line_text(int offset, char* text) {
 
 void FC_SAMS(1,screen_title()) {
   struct SamsInformation sams_info;
-  fc_sams_info(&sams_info);
+  fc_sys_sams_info(&sams_info);
 
   fc_ui_gotoxy(1, 1);
   char tmp[80];
-  fc_strset(tmp, BS, 80);
+  fc_str_set(tmp, BS, 80);
   tmp[1] = BL;
   tmp[2] = ' ';
-  fc_strcpy(tmp + 3, VERSION);
-  int i = fc_strlen(tmp);
+  fc_str_copy(tmp + 3, VERSION);
+  int i = fc_str_len(tmp);
   tmp[i++] = ' ';
   tmp[i++] = BR;
   i+=2;
   tmp[i++] = BL;
-  fc_strcpy(tmp + i, fc_uint2str(sams_info.next_page * 4));
-  i += fc_strlen(tmp + i);
+  fc_str_copy(tmp + i, fc_str_from_uint(sams_info.next_page * 4));
+  i += fc_str_len(tmp + i);
   tmp[i++] = 'K';
   tmp[i++] = '/';
-  fc_strcpy(tmp + i, fc_uint2str(sams_info.total_pages * 4));
-  i += fc_strlen(tmp + i);
+  fc_str_copy(tmp + i, fc_str_from_uint(sams_info.total_pages * 4));
+  i += fc_str_len(tmp + i);
   tmp[i++] = 'K';
   tmp[i++] = BR;
 
   i = XMENU - 1;
   tmp[i++] = BL;
   tmp[i++] = 0x19; // down arrow
-  fc_strcpy(tmp + i, "MENU");
+  fc_str_copy(tmp + i, "MENU");
   i += 4;
   tmp[i++] = BR;
 
   i = XSTOP - 1;
   tmp[i++] = BL;
   if (state.cmd == CMD_READPAGE) {
-    fc_strcpy(tmp + i, "STOP");
+    fc_str_copy(tmp + i, "STOP");
   } else {
-    fc_strcpy(tmp + i, "BACK");
+    fc_str_copy(tmp + i, "BACK");
   }
   i += 4;
   tmp[i++] = BR;
 
   i = XQUIT - 1;
   tmp[i++] = BL;
-  fc_strcpy(tmp + i, "QUIT");
+  fc_str_copy(tmp + i, "QUIT");
   i += 4;
   tmp[i] = BR;
 
@@ -124,16 +124,16 @@ void FC_SAMS(1,screen_status()) {
   } else {
     offset += write_string(offset, "Line: ", 6);
     int lineno = state.line_offset + 1;
-    char* intstr = fc_uint2str(lineno);
+    char* intstr = fc_str_from_uint(lineno);
     offset += write_string(offset, intstr, 5);
     offset += write_string(offset, "-", 1);
     lineno += 27;
     if (lineno > state.line_count) { lineno = state.line_count; }
-    intstr = fc_uint2str(lineno);
+    intstr = fc_str_from_uint(lineno);
     offset += write_string(offset, intstr, 5);
     offset += write_string(offset, " of ", 4);
   }
-  char* intstr = fc_uint2str(state.line_count);
+  char* intstr = fc_str_from_uint(state.line_count);
   write_string(offset, intstr, 5);
 }
 
@@ -192,17 +192,17 @@ void FC_SAMS(1,screen_redraw()) {
 }
 
 void FC_SAMS(1,screen_prompt(char* dst, char* prompt)) {
-  fc_tipi_mouse_disable();
+  fc_mouse_hide();
   fc_ui_gotoxy(1, 2);
   vdp_memset(imageAddr + 80, ' ', 80 * 3);
   vdp_memset(colorAddr + 80, CBLACK_ON_GREEN, 80 * 3);
   write_string(80, prompt, 80);
   fc_ui_gotoxy(1,3);
-  fc_bgcolor(COLOR_MEDGREEN);
-  fc_textcolor(COLOR_BLACK);
-  fc_getstr(dst, 79, 1);
+  fc_color_bg(COLOR_MEDGREEN);
+  fc_color_text(COLOR_BLACK);
+  fc_term_gets(dst, 79, 1);
   screen_redraw();
-  fc_tipi_mouse_enable(&md);
+  fc_mouse_show(&md);
 }
 
 void FC_SAMS(1,screen_menu()) {

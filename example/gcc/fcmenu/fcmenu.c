@@ -46,7 +46,7 @@ int childWantsQuit();
 #define QUITVAR "FCM"
 
 int fcmain(char* args) {
-  fc_display_info(&dinfo);
+  fc_sys_display_info(&dinfo);
   disp_limit = dinfo.displayWidth == 40 ? 20 : 40;
 
   entry_idx = 0;
@@ -55,18 +55,18 @@ int fcmain(char* args) {
   char pathname[80];
   selection = 0;
 
-  fc_parse_path_param(args, &dsr, pathname, PR_REQUIRED);
+  fc_path_parse(args, &dsr, pathname, PR_REQUIRED);
   if (!dsr) {
-    fc_tputs("menu data file must be specified\n");
+    fc_term_puts("menu data file must be specified\n");
     return 1;
   }
 
   struct PAB pab;
   int ferr = fc_dsr_open(dsr, &pab, pathname, DSR_TYPE_INPUT | DSR_TYPE_VARIABLE, 80);
   if (ferr) {
-    fc_tputs("could not open ");
-    fc_tputs(pathname);
-    fc_tputc('\n');
+    fc_term_puts("could not open ");
+    fc_term_puts(pathname);
+    fc_term_putc('\n');
     return 1;
   }
 
@@ -87,16 +87,16 @@ int fcmain(char* args) {
           }
           entries[entry_max].key = buffer[0];
 
-          int first_delim = fc_indexof(buffer, '|');
-          int second_delim = first_delim + fc_indexof(buffer+first_delim+1, '|');
+          int first_delim = fc_str_index_of(buffer, '|');
+          int second_delim = first_delim + fc_str_index_of(buffer+first_delim+1, '|');
 
           int title_len = second_delim - first_delim;
           if (title_len > 17) {
             title_len = 17;
           }
-          fc_strncpy(entries[entry_max].title, buffer + first_delim + 1, title_len);
+          fc_str_ncopy(entries[entry_max].title, buffer + first_delim + 1, title_len);
 
-          fc_strncpy(entries[entry_max].command, buffer + first_delim + second_delim + 1, 80);
+          fc_str_ncopy(entries[entry_max].command, buffer + first_delim + second_delim + 1, 80);
           entry_max++;
         }
       }
@@ -106,7 +106,7 @@ int fcmain(char* args) {
   page_total = (entry_max / disp_limit) + 1;
 
   // slow clear once
-  fc_exec("CLS");
+  fc_exec_cmd("CLS");
   // then color free clearing...
   drawBackdrop();
   layoutMenu();
@@ -114,8 +114,8 @@ int fcmain(char* args) {
   mouseOn = 0;
   struct MouseData mouseData;
 
-  fc_tipi_mouse_enable(&mouseData);
-  fc_tipi_mouse_disable(); // hide the mouse for now
+  fc_mouse_show(&mouseData);
+  fc_mouse_hide(); // hide the mouse for now
 
   updateMouse(&mouseData); // clear any click queued by tipi
 
@@ -152,8 +152,8 @@ int fcmain(char* args) {
 }
 
 int childWantsQuit() {
-  char* value = fc_vars_get(QUITVAR);
-  return !fc_strcmp("QUIT", value);
+  char* value = fc_var_get(QUITVAR);
+  return !fc_str_cmp("QUIT", value);
 }
 
 void handleKey(int key) {
@@ -217,9 +217,9 @@ void handleClick(int x, int y) {
 }
 
 void cleanupBeforeExit() {
-  fc_tipi_mouse_disable();
-  fc_exec("CLS");
-  fc_vars_set(QUITVAR, "");
+  fc_mouse_hide();
+  fc_exec_cmd("CLS");
+  fc_var_set(QUITVAR, "");
 }
 
 void selectionUp() {
@@ -304,8 +304,8 @@ void skipSeparatorPrev() {
 
 void selectionRun(struct MenuEntry* entry) {
   mouseOn = 0;
-  fc_tipi_mouse_disable();
-  fc_exec(entry->command);
+  fc_mouse_hide();
+  fc_exec_cmd(entry->command);
   drawBackdrop();
   layoutMenu();
 }
@@ -316,29 +316,29 @@ void drawBackdrop() {
   vdp_memset(0, 0xB0, dinfo.displayWidth);
   vdp_memset((dinfo.displayHeight - 1) * dinfo.displayWidth, 0xB0, dinfo.displayWidth);
   fc_ui_gotoxy((dinfo.displayWidth / 2) - 7,0);
-  fc_tputs(" FCMenu v1.2 ");
+  fc_term_puts(" FCMenu v1.2 ");
   cycles = 0; // since we erased the clock, allow it to redraw on next attempt
 }
 
 void drawClock() {
   struct DateTime dt;
-  fc_datetime(&dt);
+  fc_time_get(&dt);
   if (dt.hours != 0 && dt.minutes != 0) {
     fc_ui_gotoxy(dinfo.displayWidth - 9, 0);
-    fc_tputc(' ');
-    fc_tputs(fc_uint2str(dt.hours));
-    fc_tputc(':');
+    fc_term_putc(' ');
+    fc_term_puts(fc_str_from_uint(dt.hours));
+    fc_term_putc(':');
     if (dt.minutes < 10) {
-      fc_tputc('0');
+      fc_term_putc('0');
     }
-    fc_tputs(fc_uint2str(dt.minutes));
+    fc_term_puts(fc_str_from_uint(dt.minutes));
     if (dt.pm) {
-      fc_tputc('p');
+      fc_term_putc('p');
     }
     else {
-      fc_tputc('a');
+      fc_term_putc('a');
     }
-    fc_tputs("m ");
+    fc_term_puts("m ");
   }
 }
 
@@ -354,7 +354,7 @@ void clearSelection() {
   int y;
   selection_x_y(&x, &y);
   fc_ui_gotoxy(x, y);
-  fc_tputc(' ');
+  fc_term_putc(' ');
 }
 
 void drawSelection() {
@@ -362,7 +362,7 @@ void drawSelection() {
   int y;
   selection_x_y(&x, &y);
   fc_ui_gotoxy(x, y);
-  fc_tputc(0x1A);
+  fc_term_putc(0x1A);
 }
 
 void layoutMenu() {
@@ -388,15 +388,15 @@ void layoutMenu() {
     fc_ui_gotoxy(column, y);
     if (entries[i].key == '-') {
       // draw a separation
-      int vaddr = fc_vdp_get_cursor_addr();
+      int vaddr = fc_vdp_cursor_addr();
       vdp_memset(vaddr, 0xC4, 18);
     } else {
-      fc_tputc(entries[i].key);
+      fc_term_putc(entries[i].key);
       fc_ui_gotoxy(column + 2, y);
-      fc_tputs(entries[i].title);
+      fc_term_puts(entries[i].title);
       if (selection == i) {
         fc_ui_gotoxy(column - 1, y);
-        fc_tputc(0x1A);
+        fc_term_putc(0x1A);
       }
     }
     y += 2;
@@ -408,16 +408,16 @@ void layoutMenu() {
 
   // draw a page indicator
   fc_ui_gotoxy(dinfo.displayWidth - 8, dinfo.displayHeight - 1);
-  fc_tputs("Page ");
-  fc_tputs(fc_uint2str(page));
-  fc_tputc('/');
-  fc_tputs(fc_uint2str(page_total));
+  fc_term_puts("Page ");
+  fc_term_puts(fc_str_from_uint(page));
+  fc_term_putc('/');
+  fc_term_puts(fc_str_from_uint(page_total));
 
   fc_ui_gotoxy(0, dinfo.displayHeight - 1);
 }
 
 int readKeyboard() {
-  unsigned int key = fc_kscan(5);
+  unsigned int key = fc_term_kscan(5);
   if (KSCAN_STATUS & KSCAN_MASK) {
     return key;
   } else {
@@ -426,10 +426,10 @@ int readKeyboard() {
 }
 
 int updateMouse(struct MouseData* mouseData) {
-  fc_tipi_mouse_move(mouseData);
+  fc_mouse_move(mouseData);
   if (!mouseOn && (mouseData->mx != 0 || mouseData->my != 0)) {
     mouseOn = 1;
-    fc_tipi_mouse_enable(mouseData);
+    fc_mouse_show(mouseData);
   }
   return mouseData->buttons;
 }

@@ -3,26 +3,26 @@
 int fc_main(char* args) {
   struct DisplayInformation info;
 
-  fc_display_info(&info);
+  fc_sys_display_info(&info);
 
-  fc_tputs("Display: ");
+  fc_term_puts("Display: ");
   if (info.displayWidth == 40) {
-    fc_tputs("40x");
+    fc_term_puts("40x");
   }
   if (info.displayWidth == 80) {
-    fc_tputs("80x");
+    fc_term_puts("80x");
   }
   if (info.displayHeight == 30) {
-    fc_tputs("30, ");
+    fc_term_puts("30, ");
   }
   if (info.displayHeight == 24) {
-    fc_tputs("24, ");
+    fc_term_puts("24, ");
   }
 
   if (info.isPal) {
-    fc_tputs("PAL\n");
+    fc_term_puts("PAL\n");
   } else {
-    fc_tputs("NTSC\n");
+    fc_term_puts("NTSC\n");
   }
 
 

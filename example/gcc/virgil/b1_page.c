@@ -22,7 +22,7 @@ static int add_bank();
 
 void FC_SAMS(1,init_page()) {
   struct SamsInformation samsInfo;
-  fc_sams_info(&samsInfo);
+  fc_sys_sams_info(&samsInfo);
   state.page_count = 0;
   state.max_page = samsInfo.total_pages;
   state.base_id = add_bank();
@@ -47,7 +47,7 @@ static int add_bank() {
   state.page_count++;
   fc_sams_map_page(bank_id, SAMS_ADDR);
   state.line_limit += LINES_PER_BANK;
-  fc_strset((char*)SAMS_ADDR, 0, 4096);
+  fc_str_set((char*)SAMS_ADDR, 0, 4096);
   return bank_id;
 }
 
