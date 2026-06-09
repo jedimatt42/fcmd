@@ -71,9 +71,9 @@ void handleExecutable(char *ext)
   int samsSnapshot[6];
   snapshotSAMS(samsSnapshot);
 
-  int err = loadExecutable(ext, &cmd_type);
+  exec_result = loadExecutable(ext, &cmd_type);
 
-  if (err) {
+  if (exec_result) {
     tputs_rom("unknown command: ");
     bk_tputs_ram(ext);
     bk_tputc('\n');
@@ -92,7 +92,7 @@ void handleExecutable(char *ext)
       bk_setupScreen(displayWidth);
     }
     // Go to bank 0 to actually launch so API tables are visible.
-    err = bk_runExecutable(ext);
+    exec_result = bk_runExecutable(ext);
 
     bk_set_identify_hook(old_hook);
     if (restoreDisplay != 0xFCFC) {
@@ -101,9 +101,9 @@ void handleExecutable(char *ext)
       bk_setupScreen(displayWidth);
     }
 
-    if (err) {
+    if (exec_result) {
       tputs_rom("error result: ");
-      bk_tputs_ram(bk_uint2str(err));
+      bk_tputs_ram(bk_uint2str(exec_result));
       bk_tputc('\n');
     }
 

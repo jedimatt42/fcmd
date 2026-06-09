@@ -16,5 +16,6 @@ extern int pal;
 extern int api_exec;
 extern int request_break;
 extern int* goto_line_ref;
+extern int exec_result;
 
 #endif

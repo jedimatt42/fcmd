@@ -24,5 +24,5 @@ int exec(char* command) {
     bk_handleCommand(command);
   }
   api_exec = 0;
-  return 0; // maybe pass codes back someday
+  return exec_result;
 }

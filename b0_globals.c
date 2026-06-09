@@ -16,5 +16,6 @@ struct PAB* scriptPab;
 int pal = 0;
 int api_exec = 0;
 int request_break;
+int exec_result = 0;
 
 
