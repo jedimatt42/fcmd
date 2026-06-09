@@ -9,7 +9,7 @@
 #include "b4_preprocess.h"
 
 
-void handleEcho() {
+int handleEcho() {
   char* peek = bk_strtokpeek(0, ' ');
   int newline = (0 != bk_strcmpi(str2ram("/n"), peek));
 
@@ -25,4 +25,5 @@ void handleEcho() {
   if (newline) {
     bk_tputc('\n');
   }
+  return 0;
 }

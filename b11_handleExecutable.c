@@ -59,9 +59,10 @@ void popProcInfo() {
     procInfoPtr = procInfoPtr->prev;    
 }
 
-void handleExecutable(char *ext)
+int handleExecutable(char *ext)
 {
   int cmd_type = 0;
+  int err = 0;
 
   struct ProcInfo procInfo;
   procInfo.prev = procInfoPtr;
@@ -71,14 +72,14 @@ void handleExecutable(char *ext)
   int samsSnapshot[6];
   snapshotSAMS(samsSnapshot);
 
-  exec_result = loadExecutable(ext, &cmd_type);
+  err = loadExecutable(ext, &cmd_type);
 
-  if (exec_result) {
+  if (err) {
     tputs_rom("unknown command: ");
     bk_tputs_ram(ext);
     bk_tputc('\n');
     popProcInfo();
-    return;
+    return err;
   }
 
   if (cmd_type == BIN) {
@@ -92,7 +93,7 @@ void handleExecutable(char *ext)
       bk_setupScreen(displayWidth);
     }
     // Go to bank 0 to actually launch so API tables are visible.
-    exec_result = bk_runExecutable(ext);
+    err = bk_runExecutable(ext);
 
     bk_set_identify_hook(old_hook);
     if (restoreDisplay != 0xFCFC) {
@@ -101,9 +102,9 @@ void handleExecutable(char *ext)
       bk_setupScreen(displayWidth);
     }
 
-    if (exec_result) {
+    if (err) {
       tputs_rom("error result: ");
-      bk_tputs_ram(bk_uint2str(exec_result));
+      bk_tputs_ram(bk_uint2str(err));
       bk_tputc('\n');
     }
 
@@ -115,6 +116,7 @@ void handleExecutable(char *ext)
     }
   }
   popProcInfo();
+  return err;
 }
 
 char* token_cursor(char* dst, char* str, int delim) {

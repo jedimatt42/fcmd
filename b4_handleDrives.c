@@ -8,7 +8,7 @@
 #include <string.h>
 #include "b1_strutil.h"
 
-void handleDrives() {
+int handleDrives() {
   int addresses = 0;
   char* peek = bk_strtokpeek(0, ' ');
   if (0 == bk_strcmpi(str2ram("/a"), peek)) {
@@ -40,6 +40,7 @@ void handleDrives() {
     }
     bk_tputc('\n');
   }
+  return 0;
 }
 
 

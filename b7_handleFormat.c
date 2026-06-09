@@ -23,7 +23,7 @@ struct VIB {
   unsigned char bitmap[200];
 };
 
-void handleFormat() {
+int handleFormat() {
   unsigned char tracks = 40;
   unsigned char sides = 1;
   unsigned char density = 1;
@@ -73,7 +73,7 @@ void handleFormat() {
       char* volarg = bk_strtokpeek(0, ' ');
       if (bk_strlen(volarg) > 10) {
         tputs_rom("volume name must be 10 characters or less\n");
-        return;
+  return 0;
       }
       bk_strncpy(volumename, volarg, 10);
       options = 1;
@@ -101,7 +101,7 @@ void handleFormat() {
   if (dsr == 0)
   {
     tputs_rom("no supported disk device name specified\n");
-    return;
+  return 0;
   }
 
   unsigned int unitno = 0;
@@ -112,7 +112,7 @@ void handleFormat() {
   }
   if (unitno == 0) {
     tputs_rom("unsupported device specified\n");
-    return;
+  return 0;
   }
 
   // Report configured options
@@ -167,7 +167,7 @@ void handleFormat() {
     tputs_rom("error: ");
     bk_tputs_ram(bk_uint2hex(sectors));
     tputs_rom("\n");
-    return;
+  return 0;
   }
 
   // all sectors are written full of 0xe5 (on a 4A controller). So this could be validated
@@ -227,4 +227,5 @@ void handleFormat() {
   }
   tputs_rom("\rcompleted\n");
   tputs_rom("\n");
+  return 0;
 }

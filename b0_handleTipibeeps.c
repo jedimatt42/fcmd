@@ -4,6 +4,7 @@
 #include "commands.h"
 #include "b0_main.h"
 
-void handleTipiBeeps() {
+int handleTipiBeeps() {
     playtipi();
+  return 0;
 }

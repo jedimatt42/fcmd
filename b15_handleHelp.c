@@ -19,6 +19,7 @@ static int matchcmd(char* input, char* exp) {
   }
   stackstr[len] = 0;
   return 0 == bk_strcmpi(input, stackstr);
+  return 0;
 }
 
 static int wordlen(char* str) {
@@ -27,9 +28,10 @@ static int wordlen(char* str) {
     r++;
   }
   return r;
+  return 0;
 }
 
-static void wraptext(char* str) {
+static int wraptext(char* str) {
   int i=0;
   while(str[i] != 0) {
     if (str[i] == ' ') {
@@ -43,10 +45,11 @@ static void wraptext(char* str) {
     }
     i++;
   }
+  return 0;
 }
 
 /* ##########|----.----1----.----2----.----3----.----4|######## */
-void handleHelp() {
+int handleHelp() {
   char* tok = bk_strtok(0, ' ');
   if (tok == 0) {
     wraptext("==Help==\n\n"
@@ -59,7 +62,7 @@ void handleHelp() {
     "rdemdk rdpart rdvol "
     "rmdir sysinfo tipibeeps tipihalt tipimap "
     "tipireboot type unprotect ver width xb\n");
-    return;
+  return 0;
   }
 
   if (matchcmd(tok,"autocmd")) {
@@ -258,4 +261,5 @@ void handleHelp() {
     bk_b14Help(tok);
   }
   bk_tputc('\n');
+  return 0;
 }

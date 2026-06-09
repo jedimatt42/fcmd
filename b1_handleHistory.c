@@ -8,7 +8,7 @@
 #include "b8_terminal.h"
 #include "b0_globals.h"
 
-void handleHistory() {
+int handleHistory() {
   char buffer[256];
   if (sams_total_pages) {
     HIST_IDX = 0;
@@ -32,4 +32,5 @@ void handleHistory() {
     bk_tputs_ram(buffer);
     bk_tputc('\n');
   }
+  return 0;
 }

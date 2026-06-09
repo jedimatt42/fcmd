@@ -11,17 +11,17 @@
 #include "b9_resetSams.h"
 #include <system.h>
 
-void handleFg99() {
+int handleFg99() {
   char* cart = bk_strtok(0, ' ');
 
   if (cart == 0) {
     tputs_rom("error, no cartridge image name specified\n");
-    return;
+  return 0;
   }
 
   if (bk_strlen(cart) > 8) {
     tputs_rom("error, name too long\n");
-    return;
+  return 0;
   }
 
   // force cart image name to all caps for Final Grom
@@ -47,4 +47,5 @@ void handleFg99() {
   bk_setupScreen(0);
   bk_resetSams();
   bk_fg99(fg99_msg, 0x0000);
+  return 0;
 }

@@ -5,8 +5,9 @@
 #include "commands.h"
 #include "b8_terminal.h"
 
-void handleCls() {
+int handleCls() {
   char cls[] = { 27, '[', '2', 'J', 0 };
   tputs_rom(cls);
+  return 0;
 }
 

@@ -15,14 +15,14 @@
 #include <vdp.h>
 #include <conio.h>
 
-void handleLoad() {
+int handleLoad() {
   struct DeviceServiceRoutine* dsr = 0;
 
   char path[256];
   bk_parsePathParam(0, &dsr, path, PR_REQUIRED);
   if (dsr == 0) {
     tputs_rom("no file specified\n");
-    return;
+  return 0;
   }
 
   // don't require exists if a PI.HTTP URL...
@@ -31,7 +31,7 @@ void handleLoad() {
       tputs_rom("error, file not found: ");
       bk_tputs_ram(path);
       bk_tputc('\n');
-      return;
+  return 0;
     }
   }
 
@@ -40,4 +40,5 @@ void handleLoad() {
   // TODO load ea-utils into >2000
 
   bk_dsr_ea5load(dsr, path);
+  return 0;
 }

@@ -13,22 +13,24 @@
 
 int can80Column() {
   return vdp_type != VDP_9918;
+  return 0;
 }
 
-void handleWidth() {
+int handleWidth() {
   char* tok = bk_strtok(0, ' ');
   int width = bk_atoi(tok);
 
   if (width == 80 && can80Column()) {
     bk_setupScreen(80);
-    return;
+  return 0;
   }
 
   if (width == 40) {
     bk_setupScreen(40);
-    return;
+  return 0;
   }
 
   tputs_rom("no supported width specified\n");
+  return 0;
 }
 

@@ -26,7 +26,7 @@ static int col = 0;
    dir F*
    dir TIPI.GAMES.P*
 */
-void handleDir() {
+int handleDir() {
   struct DeviceServiceRoutine* dsr = 0;
 
   char* peek = bk_strtokpeek(0, ' ');
@@ -39,7 +39,7 @@ void handleDir() {
   bk_parsePathParam(0, &dsr, path, PR_OPTIONAL | PR_WILDCARD);
   if (dsr == 0) {
     tputs_rom("error, no device found.\n");
-    return;
+  return 0;
   }
   if (path[bk_strlen(path)-1] != '.') {
     bk_strcat(path, str2ram("."));
@@ -50,7 +50,7 @@ void handleDir() {
     tputs_rom("error, device/folder not found: ");
     bk_tputs_ram(path);
     bk_tputc('\n');
-    return;
+  return 0;
   }
 
   if (wideFormat) {
@@ -61,6 +61,7 @@ void handleDir() {
     loadDir(dsr, path, onLongVolInfo, onLongDirEntry);
   }
   bk_tputc('\n');
+  return 0;
 }
 
 static int timestamps;
@@ -145,7 +146,7 @@ static char* zeropad(int padding, int value) {
 
 void onLongDirEntry(struct DirEntry* dirEntry) {
   if (!bk_globMatches(dirEntry->name)) {
-    return;
+  return;
   }
   bk_tputs_ram(dirEntry->name);
   cputpad(11, dirEntry->name);
@@ -165,7 +166,7 @@ void onLongDirEntry(struct DirEntry* dirEntry) {
   }
   bk_tputc(' ');
 
-  if (de_type >= 4) { // is program or dir? skip record details.
+  if (de_type >= 4) {
     cputpad(7, "");
   } else {
     char* sizestr = bk_uint2str(dirEntry->reclen);
@@ -201,7 +202,7 @@ void onWideVolInfo(struct VolInfo* volInfo) {
 
 void onWideDirEntry(struct DirEntry* dirEntry) {
   if (!bk_globMatches(dirEntry->name)) {
-    return;
+  return;
   }
   int collimit = displayWidth / 11;
   bk_tputs_ram(dirEntry->name);

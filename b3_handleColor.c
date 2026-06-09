@@ -9,7 +9,7 @@
 #include <conio.h>
 #include <string.h>
 
-void handleColor() {
+int handleColor() {
   char* fore = bk_strtok(0, ' ');
   char* back = bk_strtok(0, ' ');
   int fc = bk_atoi(fore);
@@ -20,7 +20,7 @@ void handleColor() {
     foreground = fc;
   } else {
     tputs_rom("must specify a foreground color 0-15\n");
-    return;
+  return 0;
   }
   if (back) {
     int bg = bk_atoi(back);
@@ -29,7 +29,7 @@ void handleColor() {
     } else {
       tputs_rom("background must be between 0-15 if specified\n");
       foreground = oldfc;
-      return;
+  return 0;
     }
   }
 
@@ -40,4 +40,5 @@ void handleColor() {
   } else {
     VDP_SET_REGISTER(VDP_REG_COL, foreground << 4 | background);
   }
+  return 0;
 }

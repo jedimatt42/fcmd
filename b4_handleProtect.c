@@ -9,24 +9,26 @@
 #include "b2_lvl2.h"
 #include "b8_terminal.h"
 
-static void doProtect(char mode);
+static int doProtect(char mode);
 
-void handleProtect() {
+int handleProtect() {
   doProtect(1);
+  return 0;
 }
 
-void handleUnprotect() {
+int handleUnprotect() {
   doProtect(0);
+  return 0;
 }
 
-static void doProtect(char mode) {
+static int doProtect(char mode) {
   struct DeviceServiceRoutine *dsr;
   char path[256];
   bk_parsePathParam(0, &dsr, path, PR_REQUIRED);
   if (dsr == 0)
   {
     tputs_rom("no file path name specified\n");
-    return;
+  return 0;
   }
 
   unsigned int iocode = bk_path2iocode(path);
@@ -45,4 +47,5 @@ static void doProtect(char mode) {
     bk_tputs_ram(filename);
     bk_tputc('\n');
   }
+  return 0;
 }

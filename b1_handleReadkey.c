@@ -11,7 +11,7 @@
 #include "b0_globals.h"
 #include <string.h>
 
-void handleReadkey() {
+int handleReadkey() {
   char* peek = bk_strtokpeek(0, ' ');
   int cursor = bk_strcmpi(str2ram("/n"), peek) == 0 ? 0 : CUR_INSERT;
   if (!cursor) {
@@ -21,7 +21,7 @@ void handleReadkey() {
   char* name = bk_strtok(0, ' ');
   if (!name) {
     tputs_rom("Error, variable name must be given\n");
-    return;
+  return 0;
   }
 
   char value[2];
@@ -30,4 +30,5 @@ void handleReadkey() {
   if (!request_break) {
     bk_vars_set(name, value);
   }
+  return 0;
 }

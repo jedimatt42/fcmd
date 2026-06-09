@@ -10,7 +10,7 @@
 
 static int getTruth(int operator, char* left, char* right, int negate);
 
-void handleIf() {
+int handleIf() {
   /* syntax:
      IF [NOT] <left> == <right> THEN <command>
      // if has already been consumed
@@ -29,14 +29,14 @@ void handleIf() {
 
   if (!tok) {
     tputs_rom("Error, missing left-hand value\n");
-    return;
+  return 0;
   }
 
   if (bk_strlen(tok) < 30) {
     bk_strcpy(left, tok);
   } else {
     tputs_rom("Error, left of expression too long, must be less than 30\n");
-    return;
+  return 0;
   }
 
   tok = bk_strtok(0, ' ');
@@ -45,39 +45,40 @@ void handleIf() {
     operator = EQ;
   } else {
     tputs_rom("Error, unsupported operator\n");
-    return;
+  return 0;
   }
 
   tok = bk_strtok(0, ' ');
 
   if (!tok) {
     tputs_rom("Error, missing right-hand value\n");
-    return;
+  return 0;
   }
 
   if (bk_strlen(tok) < 30) {
     bk_strcpy(right, tok);
   } else {
     tputs_rom("Error, right of expression too long, must be less than 30\n");
-    return;
+  return 0;
   }
 
   tok = bk_strtok(0, ' ');
   if (bk_strcmpi(str2ram("then"), tok)) {
     tputs_rom("Error, missing \'then\' in statement\n");
-    return;
+  return 0;
   }
 
   tok = bk_strtok(0, 0); // to end of line
   if (!tok) {
     tputs_rom("Error, missing <command> in statement\n");
-    return;
+  return 0;
   }
   bk_strcpy(command, tok);
 
   if (getTruth(operator, left, right, negate)) {
-    bk_handleCommand(command);
+    return bk_handleCommand(command);
   }
+  return 0;
 }
 
 static int getTruth(int operator, char* left, char* right, int negate) {

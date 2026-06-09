@@ -17,9 +17,10 @@ int onAliasEntry(struct DictEntry* entry) {
   }
 
   return 0;
+  return 0;
 }
 
-void handleAlias() {
+int handleAlias() {
   char* name = bk_strtokpeek(0, ' ');
   if (name) {
     // consume name
@@ -32,4 +33,5 @@ void handleAlias() {
     dict_visit(&system_dict, onAliasEntry);
     bk_tputc('\n');
   }
+  return 0;
 }

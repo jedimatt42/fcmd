@@ -10,15 +10,16 @@
 #include "b0_globals.h"
 #include "b5_clock.h"
 
-static void error() {
+static int error() {
   tputs_rom("error, on or off argument missing.\n");
+  return 0;
 }
 
-void handleBar() {
+int handleBar() {
   char* tok = bk_strtok(0, ' ');
   if (!tok) {
     error();
-    return;
+  return 0;
   }
 
   if (0 == bk_strcmpi(tok, str2ram("on"))) {
@@ -27,7 +28,7 @@ void handleBar() {
     nTitleLine = 0;
   } else {
     error();
-    return;
+  return 0;
   }
 
   bk_setupScreen(displayWidth);
@@ -35,4 +36,5 @@ void handleBar() {
     bk_drawBar();
     gotoxy(0, 1);
   }
+  return 0;
 }

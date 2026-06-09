@@ -14,15 +14,16 @@ int exec(char* command) {
   // 0. set a flag, so we know we are coming in from an API - executable loader may need to fail
   api_exec = 1;
 
+  int result = 0;
   // If SAMS:
   // 1. command should be copied onto the stack if it is not already, so that upper memory expansion can be paged out.
   if (sams_next_page < sams_total_pages) {
     char stack_command[256];
     bk_strncpy(stack_command, command, 255);
-    bk_handleCommand(stack_command);
+    result = bk_handleCommand(stack_command);
   } else {
-    bk_handleCommand(command);
+    result = bk_handleCommand(command);
   }
   api_exec = 0;
-  return exec_result;
+  return result;
 }

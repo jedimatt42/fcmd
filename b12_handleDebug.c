@@ -11,15 +11,16 @@
 #include "b8_getstr.h"
 #include <string.h>
 
-void dumpMem(unsigned int addr, int len);
+int dumpMem(unsigned int addr, int len);
 
-void cmdM(char* tok) {
+int cmdM(char* tok) {
     int limit = bk_atoi(bk_strtok(0, ' '));
     dumpMem(bk_htoi(tok + 1), limit == 0 ? 8 : limit);
+  return 0;
 }
 
 
-void handleDebug() {
+int handleDebug() {
     char cmdline[40];
     while (1) {
         for(int i=0; i<40; i++) {cmdline[i] = 0;}
@@ -40,15 +41,16 @@ void handleDebug() {
                 // Add Grom read
                 // Add Grom poke 
                 case 'Q':
-                    return;
+  return 0;
                 default:
                     tputs_rom("unkown command\n");
             }
         }
     }
+  return 0;
 }
 
-void dumpMem(unsigned int addr, int len) {
+int dumpMem(unsigned int addr, int len) {
     unsigned int* memory = (unsigned int*)addr;
     unsigned int* limit = memory + len;
     while(memory < limit && request_break == 0) {
@@ -61,4 +63,5 @@ void dumpMem(unsigned int addr, int len) {
         }
         bk_tputc('\n');
     }
+  return 0;
 }

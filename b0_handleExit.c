@@ -7,9 +7,10 @@
 #include "b8_setupScreen.h"
 #include "b9_resetSams.h"
 
-void handleExit() {
+int handleExit() {
   bk_setupScreen(0);
   bk_resetSams();
   reboot();
+  return 0;
 }
 

@@ -11,16 +11,16 @@
 
 typedef void (*line_cb)(char*, char*);
 
-void handleTipimap();
-static void listDrives();
-static void visitLines(line_cb onLine, char* filterArg1);
-static void showDriveMapping(const char* drive);
-static void clearDriveMapping(const char* drive);
-static void setAutoMap();
-static void setDriveMapping(const char* drive, const char* path);
-static void writeConfigItem(const char* key, const char* value);
+int handleTipimap();
+static int listDrives();
+static int visitLines(line_cb onLine, char* filterArg1);
+static int showDriveMapping(const char* drive);
+static int clearDriveMapping(const char* drive);
+static int setAutoMap();
+static int setDriveMapping(const char* drive, const char* path);
+static int writeConfigItem(const char* key, const char* value);
 
-static void visitLines(line_cb onLine, char* filterArg1) {
+static int visitLines(line_cb onLine, char* filterArg1) {
   char namebuf[14];
   bk_strcpy(namebuf, str2ram("PI"));
 
@@ -34,7 +34,7 @@ static void visitLines(line_cb onLine, char* filterArg1) {
 
   if (err) {
     tputs_rom("could no open PI.CONFIG\n");
-    return;
+  return err;
   }
   while(!err) {
     char linebuf[256];
@@ -47,9 +47,10 @@ static void visitLines(line_cb onLine, char* filterArg1) {
     }
   }
   bk_dsr_close(dsr, &pab);
+  return 0;
 }
 
-static void writeConfigItem(const char* key, const char* value) {
+static int writeConfigItem(const char* key, const char* value) {
   char namebuf[14];
   bk_strcpy(namebuf, str2ram("PI"));
 
@@ -63,7 +64,7 @@ static void writeConfigItem(const char* key, const char* value) {
 
   if (err) {
     tputs_rom("could no open PI.CONFIG\n");
-    return;
+  return err;
   }
   bk_initPab(&pab);
 
@@ -74,6 +75,7 @@ static void writeConfigItem(const char* key, const char* value) {
   err = bk_dsr_write(dsr, &pab, linebuf, bk_strlen(linebuf));
 
   bk_dsr_close(dsr, &pab);
+  return 0;
 }
 
 void onLineShowMapping(char* linebuf, char* extra) {
@@ -97,8 +99,8 @@ void onLineShowMapping(char* linebuf, char* extra) {
   }
 }
 
-static void listDrives() {
-  visitLines(onLineShowMapping, 0);
+static int listDrives() {
+  return visitLines(onLineShowMapping, 0);
 }
 
 void onLineIfDriveShowMapping(char* linebuf, char* drivePrefix) {
@@ -129,16 +131,15 @@ void onLineIfUriShowMapping(char* linebuf, char* uriPrefix) {
   }
 }
 
-static void showDriveMapping(const char* drive) {
+static int showDriveMapping(const char* drive) {
   char* drivePrefix = bk_strtok((char*) drive, '.');
   if (bk_str_startswith(drivePrefix, str2ram("URI"))) {
-    visitLines(onLineIfUriShowMapping, drivePrefix);
-  } else {
-    visitLines(onLineIfDriveShowMapping, drivePrefix);
+    return visitLines(onLineIfUriShowMapping, drivePrefix);
   }
+  return visitLines(onLineIfDriveShowMapping, drivePrefix);
 }
 
-static void clearDriveMapping(const char* drive) {
+static int clearDriveMapping(const char* drive) {
   char keybuf[10];
   if (bk_str_startswith(drive, str2ram("URI"))) {
     bk_strcpy(keybuf, drive);
@@ -154,7 +155,7 @@ static void clearDriveMapping(const char* drive) {
   char empty[1];
   empty[0] = 0;
 
-  writeConfigItem(keybuf, empty);
+  return writeConfigItem(keybuf, empty);
 }
 
 void onLineAuto(char* linebuf, char* extra) {
@@ -167,7 +168,7 @@ void onLineAuto(char* linebuf, char* extra) {
   }
 }
 
-static void setAutoMap() {
+static int setAutoMap() {
   char* onoff = bk_strtok(0, ' ');
   if (onoff) {
     if (!bk_strcmpi(str2ram("on"), onoff)) {
@@ -178,8 +179,9 @@ static void setAutoMap() {
       tputs_rom("error, value must be one of: on, off\n");
     }
   } else {
-    visitLines(onLineAuto, 0);
+    return visitLines(onLineAuto, 0);
   }
+  return 0;
 }
 
 static int __attribute__((noinline)) validDrive(const unsigned char *keybuf, const unsigned char *prefix, char min, char max, int pl)
@@ -199,7 +201,7 @@ static int __attribute__((noinline)) isMappable(const char *drive)
          validDrive(drive, "CS", '1', '1', 2);
 }
 
-static void setDriveMapping(const char* drive, const char* path) {
+static int setDriveMapping(const char* drive, const char* path) {
   unsigned char keybuf[10];
   int dlen = bk_strlen(drive);
   bk_strncpy(keybuf, (char*) drive, dlen < 9 ? dlen : 9);
@@ -207,7 +209,7 @@ static void setDriveMapping(const char* drive, const char* path) {
   if (!isMappable(keybuf))
   {
     tputs_rom("error, bad drive specification\n");
-    return;
+  return 0;
   }
 
   int diskmapping = 0; // cassette or disk
@@ -237,14 +239,14 @@ static void setDriveMapping(const char* drive, const char* path) {
   } else {
     if (!bk_str_startswith(path, str2ram("HTTP"))) {
       tputs_rom("error path must be a URL prefix\n");
-      return;
+  return 0;
     }
     bk_strcpy(namebuf, path);
   }
-  writeConfigItem(keybuf, namebuf);
+  return writeConfigItem(keybuf, namebuf);
 }
 
-void handleTipimap() {
+int handleTipimap() {
   //  [/c] [drive] [path]
   char* peek = bk_strtokpeek(0, ' ');
   int clear = 0 == bk_strcmpi(str2ram("/c"), peek);
@@ -292,4 +294,5 @@ void handleTipimap() {
     }
   }
   bk_tputc('\n');
+  return 0;
 }

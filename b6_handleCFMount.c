@@ -24,7 +24,7 @@
 // https://atariage.com/forums/topic/290966-force-command-ver-0k-kinda-like-commandcom-from-1985/?do=findComment&comment=4557648
 //  ^--- Lee provides details on calling the basic MOUNT subroutine
 
-static void tmp_mount(int drive, int volume);
+static int tmp_mount(int drive, int volume);
 
 // Warning: hardcoded crubase for physical... classic99 uses >1000
 #define CFNANO_CRUBASE 0x1100
@@ -73,7 +73,7 @@ static int getVolume(int drive, char* volumeName) {
     return result;
 }
 
-static void listAllVolumes(int begin, int end) {
+static int listAllVolumes(int begin, int end) {
     // backup mappings
     int mapping[3];
     vdpmemread(0x3FFA, (unsigned char *)mapping, 6);
@@ -98,9 +98,10 @@ static void listAllVolumes(int begin, int end) {
 
     // restore original mappings...
     vdpmemcpy(0x3FFA, (const unsigned char *)mapping, 6);
+  return 0;
 }
 
-static void listCurrentVolumes() {
+static int listCurrentVolumes() {
     int mapping[3];
     vdpmemread(0x3FFA, (unsigned char*)mapping, 6);
     for (int i=0; i<3; i++) {
@@ -117,13 +118,14 @@ static void listCurrentVolumes() {
             break;
         }
     }
+  return 0;
 }
 
 #define PADDR *((volatile int*)0x832C)
 #define FACADDR *((volatile int*)0x834A)
 #define PARAMS *((volatile int*)0x8356)
 
-static void call_mount(int drive, int volume) {
+static int call_mount(int drive, int volume) {
     // setup parameters -
     // PADDR <- FBUF: (VDP) 05 "MOUNT" B7 C8 01 <drive> B3 C8 <vlen> <volstr> B6
     // 0x834A <- "MOUNT"
@@ -151,18 +153,20 @@ static void call_mount(int drive, int volume) {
 
     // call persistent mount routine
     bk_call_basic_sub(CFNANO_CRUBASE, str2ram("MOUNT"));
+  return 0;
 }
 
-static void tmp_mount(int drive, int volume) {
+static int tmp_mount(int drive, int volume) {
     int base_addr = 0x3FF8;
     base_addr += (2*drive);
     VDP_SET_ADDRESS_WRITE(base_addr);
     VDPWD = volume >> 8;
     VDPWD = volume & 0x00FF;
+  return 0;
 }
 
 
-void handleCFMount() {
+int handleCFMount() {
     //  CFMOUNT
     //  CFMOUNT [/v] [begin] [end]
     //  CFMOUNT [/p] 1-3 vol
@@ -183,12 +187,11 @@ void handleCFMount() {
 
     if (cf_nano_flag != 0xAA03) {
         tputs_rom("no CF7 or Nanopeb found\n");
-        return;
+  return 0;
     }
 
     if (list) {
-        listCurrentVolumes();
-        return;
+        return listCurrentVolumes();
     }
 
     if (volumes) {
@@ -202,24 +205,24 @@ void handleCFMount() {
             end = bk_atoi(peek);
             if (end < begin || begin == 0 || end == 0) {
                 tputs_rom("illegal range specified\n");
-                return;
+  return 0;
             }
         }
 
         listAllVolumes(begin, end);
-        return;
+  return 0;
     }
 
     int drive = bk_atoi(bk_strtok(0, ' '));
     if (drive < 1 || drive > 3) {
         tputs_rom("drive number must be 1, 2 or 3\n");
-        return;
+  return 0;
     }
 
     int volume = bk_atoi(bk_strtok(0, ' '));
     if (volume == 0) {
         tputs_rom("volume number must be > 0\n");
-        return;
+  return 0;
     }
 
     if (persist) {
@@ -227,4 +230,5 @@ void handleCFMount() {
     } else {
         tmp_mount(drive, volume);
     }
+  return 0;
 }

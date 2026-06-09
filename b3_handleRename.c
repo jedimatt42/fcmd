@@ -9,16 +9,16 @@
 #include <string.h>
 
 
-void handleRename() {
+int handleRename() {
   char* filename = bk_strtok(0, ' ');
   if (filename == 0) {
     tputs_rom("error, must specify source file name\n");
-    return;
+  return 0;
   }
   char* newname = bk_strtok(0, ' ');
   if (newname == 0) {
     tputs_rom("error, must specify new file name\n");
-    return;
+  return 0;
   }
 
   unsigned int iocode = bk_path2iocode(currentPath);
@@ -44,4 +44,5 @@ void handleRename() {
     bk_tputs_ram(filename);
     bk_tputc('\n');
   }
+  return 0;
 }

@@ -4,8 +4,8 @@
 #include "banking.h"
 
 #define DEC_COMMAND(b, x) \
-  void handle##x();    \
-  DECLARE_BANKED_VOID(handle##x, BANK(b), bk_handle##x, (), ())
+  int handle##x();    \
+  DECLARE_BANKED(handle##x, BANK(b), int, bk_handle##x, (), ())
 
 DEC_COMMAND(0, Cls);
 DEC_COMMAND(0, Exit);

@@ -4,6 +4,7 @@
 #include "commands.h"
 #include "b0_main.h"
 
-void handleVer() {
+int handleVer() {
     titleScreen();
+  return 0;
 }

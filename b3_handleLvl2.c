@@ -7,7 +7,7 @@
 #include <string.h>
 #include "b8_terminal.h"
 
-void handleLvl2() {
+int handleLvl2() {
   int showAddresses = 0;
   char* peek = bk_strtokpeek(0, ' ');
   if (0 == bk_strcmpi(str2ram("/a"), peek)) {
@@ -20,7 +20,7 @@ void handleLvl2() {
 
   if (crubase == 0) {
     tputs_rom("no crubase specified\n");
-    return;
+  return 0;
   }
 
   bk_enableROM(crubase);
@@ -46,5 +46,6 @@ void handleLvl2() {
   bk_tputc('\n');
 
   bk_disableROM(crubase);
+  return 0;
 }
 

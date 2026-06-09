@@ -9,7 +9,7 @@
 #include "b0_globals.h"
 #include "b0_sams.h"
 
-void handleSysInfo() {
+int handleSysInfo() {
   struct DisplayInformation di;
   bk_display_info(&di);
 
@@ -57,4 +57,5 @@ void handleSysInfo() {
 
   // todo: add a few other options
   // add command line options, default to all, that control what line items to include
+  return 0;
 }

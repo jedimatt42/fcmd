@@ -9,14 +9,14 @@
 #include "b2_lvl2.h"
 #include <string.h>
 
-void handleRmdir() {
+int handleRmdir() {
   struct DeviceServiceRoutine *dsr;
   char path[256];
   bk_parsePathParam(0, &dsr, path, PR_REQUIRED);
   if (dsr == 0)
   {
     tputs_rom("no directory path name specified\n");
-    return;
+  return 0;
   }
 
   unsigned int iocode = bk_path2iocode(path);
@@ -35,4 +35,5 @@ void handleRmdir() {
     bk_tputs_ram(dirname);
     bk_tputc('\n');
   }
+  return 0;
 }

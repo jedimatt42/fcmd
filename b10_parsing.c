@@ -16,7 +16,8 @@
 
 #define MATCH(x,y) (!(bk_strcmpi(x,y)))
 
-#define COMMAND(x, y) if (MATCH(tok, str2ram(x))) y();
+static int result;
+#define COMMAND(x, y) if (MATCH(tok, str2ram(x))) { result = y(); }
 
 static int isAssignment(char* str) {
   int i = 0;
@@ -80,9 +81,10 @@ int must_close_command(char* buffer) {
 
 // NOTE command handle functions in bank 0 do not need bk_ banking stub
 
-void handleCommand(char *buffer) {
+int handleCommand(char *buffer) {
+  result = 0;
   if (buffer[0] == 0) {
-    return;
+    return 0;
   }
   request_break = 0;
 
@@ -148,9 +150,10 @@ void handleCommand(char *buffer) {
     bk_vars_set(name, value);
   } else {
     if (tok) {
-      bk_handleExecutable(tok);
+      result = bk_handleExecutable(tok);
     }
   }
+  return result;
 }
 
 int parsePath(char* path, char* devicename) {

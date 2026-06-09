@@ -13,13 +13,13 @@
 #include <vdp.h>
 #include <string.h>
 
-void handleXb() {
+int handleXb() {
     struct DeviceServiceRoutine *xbdsr;
     char path[256];
     bk_parsePathParam(0, &xbdsr, path, PR_REQUIRED);
     if (xbdsr == 0) {
         tputs_rom("no XB program specified\n");
-        return;
+  return 0;
     }
 
     // MAP DSK1 to TIPI.FC
@@ -38,7 +38,7 @@ void handleXb() {
     int err = bk_dsr_open(dsr, &pab, namebuf, DSR_TYPE_INPUT | DSR_TYPE_VARIABLE, 0);
     if (err) {
         tputs_rom("TIPI required\n");
-        return;
+  return 0;
     } else {
         int done = 0;
         while(!done) {
@@ -62,7 +62,7 @@ void handleXb() {
 
     if (err) {
         tputs_rom("could no open PI.CONFIG\n");
-        return;
+  return 0;
     } else {
         unsigned char mapstring[12];
         bk_strcpy(mapstring, str2ram("DSK1_DIR=FC"));
@@ -79,7 +79,7 @@ void handleXb() {
     err = bk_dsr_open(dsr, &pab, namebuf, DSR_TYPE_OUTPUT | DSR_TYPE_VARIABLE, 80);
     if (err) {
         tputs_rom("failed to configure XB\n");
-        return;
+  return 0;
     } else {
         unsigned char line[81];
         bk_strcpy(line, str2ram("10 OPEN #1:\"PI.CONFIG\""));
@@ -137,4 +137,5 @@ void handleXb() {
 
     bk_setupScreen(0);
     bk_fg99(fg99_msg, fg99_addr);
+  return 0;
 }

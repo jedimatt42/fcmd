@@ -14,6 +14,9 @@
 static void onIgnoreVolInfo(struct VolInfo *volInfo);
 static void onCopyDirEntry(struct DirEntry *dirEntry);
 
+static int copyMultipleFiles();
+static int copyOneFile();
+
 static struct DeviceServiceRoutine *srcdsr;
 static char* srcpath;
 
@@ -23,10 +26,9 @@ static char* dstpath;
 static int copycount;
 static int matched;
 
-static void copyMultipleFiles();
-static void copyOneFile();
 
-void handleCopy() {
+
+int handleCopy() {
   copycount = 0;
   matched = 0;
   srcdsr = 0;
@@ -51,7 +53,7 @@ void handleCopy() {
   if (dstdsr == 0)
   {
     tputs_rom("no path: drive or folder specified\n");
-    return;
+  return 0;
   }
 
   // parse source and set glob pattern
@@ -60,7 +62,7 @@ void handleCopy() {
   if (srcdsr == 0)
   {
     tputs_rom("error, no device found.\n");
-    return;
+  return 0;
   }
 
   // ensure devices are a device path
@@ -75,9 +77,10 @@ void handleCopy() {
   } else {
     copyMultipleFiles();
   }
+  return 0;
 }
 
-static void copyOneFile() {
+static int copyOneFile() {
   struct CopySpec src;
   src.dsr = srcdsr;
   src.path = srcpath;
@@ -93,7 +96,7 @@ static void copyOneFile() {
       tputs_rom("error, device/folder not found: ");
       bk_tputs_ram(dstpath);
       bk_tputc('\n');
-      return;
+  return 0;
     }
   } else {
     bk_strcat(dstpath, str2ram("."));
@@ -110,9 +113,10 @@ static void copyOneFile() {
     }
   }
   bk_copySingleFile(&src, &dst);
+  return 0;
 }
 
-static void copyMultipleFiles() {
+static int copyMultipleFiles() {
   if (dstpath[bk_strlen(dstpath) - 1] != '.') {
     bk_strcat(dstpath, str2ram("."));
   }
@@ -122,7 +126,7 @@ static void copyMultipleFiles() {
     tputs_rom("error, device/folder not found: ");
     bk_tputs_ram(dstpath);
     bk_tputc('\n');
-    return;
+  return 0;
   }
 
   loadDir(srcdsr, srcpath, onIgnoreVolInfo, onCopyDirEntry);
@@ -133,15 +137,15 @@ static void copyMultipleFiles() {
     bk_tputs_ram(bk_uint2str(copycount));
     tputs_rom(" files.\n");
   }
+  return 0;
 }
 
 static void onIgnoreVolInfo(struct VolInfo *volInfo) {
-  return;
 }
 
 static void onCopyDirEntry(struct DirEntry *dirEntry) {
   if (!bk_globMatches(dirEntry->name)) {
-    return;
+  return;
   }
   matched = 1;
 

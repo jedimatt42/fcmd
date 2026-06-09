@@ -56,7 +56,7 @@ static int findCrubase() {
     return dsr->crubase;
 }
 
-static void call_part(int crubase, int ram, int disk, int spool) {
+static int call_part(int crubase, int ram, int disk, int spool) {
     // setup parameters -
     // PADDR <- FBUF: (VDP) 04 "PART" B7 C8 02 33 32 B3 C8 03 34 30 30 B3 C8 02 38 30 B6
     //                                PL NS   '3''2' PS NS   '4''0''0' PS NS   '8''0' PE
@@ -86,9 +86,10 @@ static void call_part(int crubase, int ram, int disk, int spool) {
 
     // call basic routine
     bk_call_basic_sub(crubase, str2ram("PART"));
+  return 0;
 }
 
-static void call_emdk(int crubase, int drive) {
+static int call_emdk(int crubase, int drive) {
     // setup parameters -
     // PADDR <- FBUF: (VDP) 04 "EMDK" B7 C8 01 32 B6
     //                                PL NS   '2' PE
@@ -114,9 +115,10 @@ static void call_emdk(int crubase, int drive) {
 
     // call basic routine
     bk_call_basic_sub(crubase, str2ram("EMDK"));
+  return 0;
 }
 
-static void call_vol(int crubase, char* name) {
+static int call_vol(int crubase, char* name) {
     // setup parameters -
     // PADDR <- FBUF: (VDP) 04 "VOL" B7 C8 01 32 B6
     //                               PL NS   '2' PE
@@ -145,46 +147,48 @@ static void call_vol(int crubase, char* name) {
 
     // call basic routine
     bk_call_basic_sub(crubase, str2ram("VOL"));
+  return 0;
 }
 
-void handleRDPart() {
+int handleRDPart() {
     //  RDPART
     //  RDPART <ram> <drive> <spool>
 
     // test for Myarc RD
     int crubase = findCrubase();
     if (!crubase) {
-        return;
+  return 0;
     }
 
     int ram = bk_atoi(bk_strtok(0, ' '));
     if (ram != 32 && ram != 128) {
         tputs_rom("ram allocation must be 32 or 128\n");
-        return;
+  return 0;
     }
 
     int disk = bk_atoi(bk_strtok(0, ' '));
     if (disk < 0) {
         tputs_rom("disk allocation must be >= 0\n");
-        return;
+  return 0;
     }
 
     int spool = bk_atoi(bk_strtok(0, ' '));
     if (spool < 0) {
         tputs_rom("spool allocation must be >= 0\n");
-        return;
+  return 0;
     }
 
     int sum = ram + disk + spool;
     if (sum != 128 && sum != 512) {
         tputs_rom("total allocation must match card size\n");
-        return;
+  return 0;
     }
 
     call_part(crubase, ram, disk, spool);
+  return 0;
 }
 
-void handleRDEmdk() {
+int handleRDEmdk() {
     //  RDEMDK
     //  RDEMDK <drive>
 
@@ -194,13 +198,14 @@ void handleRDEmdk() {
         int drive = bk_atoi(bk_strtok(0, ' '));
         if (drive < 0 && drive > 5) {
             tputs_rom("drive must be 0 - 5\n");
-            return;
+  return 0;
         }
         call_emdk(crubase, drive);
     }
+  return 0;
 }
 
-void handleRDVol() {
+int handleRDVol() {
     //  RDVOL
     //  RDVOL name
 
@@ -210,8 +215,9 @@ void handleRDVol() {
         char* vol = bk_strtok(0, ' ');
         if (!vol) {
             tputs_rom("volume name required\n");
-            return;
+  return 0;
         }
         call_vol(crubase, vol);
     }
+  return 0;
 }

@@ -8,7 +8,7 @@
 #include <conio.h>
 #include <string.h>
 
-void handleTipiHalt() {
+int handleTipiHalt() {
     char namebuf[14];
     bk_strcpy(namebuf, str2ram("PI"));
 
@@ -23,9 +23,10 @@ void handleTipiHalt() {
     if (err)
     {
         tputs_rom("could no open PI.SHUTDOWN\n");
-        return;
+  return 0;
     }
     bk_dsr_close(dsr, &pab);
 
     tputs_rom("PI shutdown initiated, you must wait a bit before powering off.\n");
+  return 0;
 }

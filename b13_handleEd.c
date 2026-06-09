@@ -51,14 +51,14 @@ int commandLineEd(char* cmdline, int limit) {
   return 0; // cmdline is left empty on ctrl-c|break
 }
 
-void handleEd() {
+int handleEd() {
   struct DeviceServiceRoutine* dsr = 0;
   char devpath[80];
   char* path = devpath + 5;
   bk_parsePathParam(0, &dsr, path, PR_REQUIRED);
   if (dsr == 0) {
     tputs_rom("no file specified\n");
-    return;
+  return 0;
   }
 
   if (sams_total_pages) {
@@ -113,5 +113,6 @@ void handleEd() {
   if (sams_total_pages) {
     bk_free_pages(6);
   }
+  return 0;
 }
 

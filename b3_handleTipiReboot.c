@@ -8,7 +8,7 @@
 #include <conio.h>
 #include <string.h>
 
-void handleTipiReboot() {
+int handleTipiReboot() {
     char namebuf[14];
     bk_strcpy(namebuf, str2ram("PI"));
 
@@ -23,9 +23,10 @@ void handleTipiReboot() {
     if (err)
     {
         tputs_rom("could no open PI.REBOOT\n");
-        return;
+  return 0;
     }
     bk_dsr_close(dsr, &pab);
 
     tputs_rom("PI reboot initiated.\n");
+  return 0;
 }

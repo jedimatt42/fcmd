@@ -5,6 +5,7 @@
 #include "commands.h"
 #include "b4_variables.h"
 
-void handleEnv() {
+int handleEnv() {
   printVars();
+  return 0;
 }

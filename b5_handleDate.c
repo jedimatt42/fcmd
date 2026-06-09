@@ -6,7 +6,7 @@
 #include "b8_terminal.h"
 #include "b1_strutil.h"
 
-void handleDate() {
+int handleDate() {
     struct DateTime dt;
     bk_datetime(&dt);
 
@@ -20,4 +20,5 @@ void handleDate() {
     pretty_time(&dt);
 
     bk_tputc('\n');
+  return 0;
 }

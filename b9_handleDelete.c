@@ -14,7 +14,7 @@
 
 static void onIgnoreVolInfo(struct VolInfo *volInfo);
 static void onDeleteDirEntry(struct DirEntry *dirEntry);
-static void deleteQueue(char* filename);
+static int deleteQueue(char* filename);
 
 static struct DeviceServiceRoutine *srcdsr;
 static char* srcpath;
@@ -29,7 +29,7 @@ struct MatchedName {
 
 static struct MatchedName* names;
 
-void handleDelete() {
+int handleDelete() {
   filecount = 0;
   matched = 0;
   srcdsr = 0;
@@ -54,7 +54,7 @@ void handleDelete() {
   if (srcdsr == 0)
   {
     tputs_rom("error, no device found.\n");
-    return;
+  return 0;
   }
 
   // ensure devices are a device path
@@ -78,6 +78,7 @@ void handleDelete() {
     bk_tputs_ram(bk_uint2str(filecount));
     tputs_rom(" files.\n");
   }
+  return 0;
 }
 
 int keyYesNo() {
@@ -90,12 +91,11 @@ int keyYesNo() {
 }
 
 static void onIgnoreVolInfo(struct VolInfo *volInfo) {
-  return;
 }
 
 static void onDeleteDirEntry(struct DirEntry *dirEntry) {
   if (!bk_globMatches(dirEntry->name)) {
-    return;
+  return;
   }
 
   struct MatchedName* nameMatch = (struct MatchedName*) bk_alloc(sizeof(struct MatchedName));
@@ -103,7 +103,7 @@ static void onDeleteDirEntry(struct DirEntry *dirEntry) {
     bk_tputs_ram("out of heap, skipping ");
     bk_tputs_ram(dirEntry->name);
     bk_tputc('\n');
-    return;
+  return;
   }
   if (names == 0) {
     names = nameMatch;
@@ -113,7 +113,7 @@ static void onDeleteDirEntry(struct DirEntry *dirEntry) {
   matched++;
 }
 
-static void deleteQueue(char* filename) {
+static int deleteQueue(char* filename) {
   char path[256];
   bk_strcpy(path, srcpath);
   bk_strcat(path, filename);
@@ -129,7 +129,7 @@ static void deleteQueue(char* filename) {
     tputs_rom("? (y/n) ");
     int yn = keyYesNo();
     if (!yn) {
-      return;
+  return 0;
     }
   }
 
@@ -146,4 +146,5 @@ static void deleteQueue(char* filename) {
   } else {
     filecount++;
   }
+  return 0;
 }

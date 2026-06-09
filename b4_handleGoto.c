@@ -10,17 +10,17 @@
 #include <vdp.h>
 #include <string.h>
 
-void handleGoto() {
+int handleGoto() {
   if (!scripton) {
     tputs_rom("Error, 'goto' only valid in a script\n");
-    return;
+  return 0;
   }
 
   char* label = bk_strtok(0, ' ');
 
   if (!label) {
     tputs_rom("Error, label required\n");
-    return;
+  return 0;
   }
 
   int gotoline = labels_get(label);
@@ -64,4 +64,5 @@ void handleGoto() {
     // number 0 auto advances
     bk_dsr_read(scriptDsr, scriptPab, 0);
   }
+  return 0;
 }

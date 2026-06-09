@@ -10,17 +10,17 @@
 #include <string.h>
 
 
-void handlePalette() {
+int handlePalette() {
   if (vdp_type != VDP_F18A) {
       tputs_rom("only supported on F18A VDP\n");
-      return;
+  return 0;
   }
 
   char* tok = bk_strtokpeek(0, ' ');
   if (!bk_strcmpi(str2ram("/r"), tok)) {
       bk_strtok(0, ' '); // consume optional token
       set_palette(0, 0);
-      return;
+  return 0;
   }
 
   // otherwise, parse integers from command line from hex
@@ -37,7 +37,8 @@ void handlePalette() {
   }
   if (idx < 16) {
       tputs_rom("error: 16 palette entries required\n");
-      return;
+  return 0;
   }
   set_palette(0, (char*) user_pal);
+  return 0;
 }

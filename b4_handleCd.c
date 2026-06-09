@@ -8,13 +8,13 @@
 #include "b8_terminal.h"
 #include <string.h>
 
-void handleCd() {
+int handleCd() {
   struct DeviceServiceRoutine* dsr = 0;
   char path[256];
   bk_parsePathParam(0, &dsr, path, PR_REQUIRED);
   if (dsr == 0) {
     tputs_rom("no path: drive or folder specified\n");
-    return;
+  return 0;
   }
   if (path[bk_strlen(path)-1] != '.') {
     bk_strcat(path, str2ram("."));
@@ -24,10 +24,11 @@ void handleCd() {
     tputs_rom("error, device/folder not found: ");
     bk_tputs_ram(path);
     bk_tputc('\n');
-    return;
+  return 0;
   }
 
   currentDsr = dsr;
   bk_strcpy(currentPath, path);
+  return 0;
 }
 

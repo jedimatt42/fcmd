@@ -12,7 +12,7 @@
 
 #define CTRLZ 0x001A
 
-void handleType() {
+int handleType() {
   int ansi = 0;
 
   char* tok = bk_strtokpeek(0, ' ');
@@ -26,7 +26,7 @@ void handleType() {
   bk_parsePathParam(0, &dsr, namebuf, PR_REQUIRED);
   if (dsr == 0) {
     tputs_rom("error, no file specified\n");
-    return;
+  return 0;
   }
 
   struct PAB pab;
@@ -42,7 +42,7 @@ void handleType() {
     tputs_rom("could not open ");
     bk_tputs_ram(namebuf);
     bk_tputc('\n');
-    return;
+  return 0;
   }
   int rec = 0;
   char linebuf[256];
@@ -69,4 +69,5 @@ void handleType() {
     }
   }
   bk_dsr_close(dsr, &pab);
+  return 0;
 }
