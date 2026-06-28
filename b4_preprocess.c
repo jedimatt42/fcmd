@@ -112,7 +112,7 @@ char* phase2_preprocess(char* buf) {
           vn++;
         }
       }
-      char* val = vars_get(varname);
+      char* val = var_get(varname);
       if ((int) val != -1) {
         bk_strcpy(&procbuf[pi], val);
         i = ve - 1;

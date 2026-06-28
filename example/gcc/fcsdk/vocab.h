@@ -4,7 +4,7 @@
 
 /*
  * The following defines addresses for words and phrases in the resident
- * speech synthesizer vocabulary, for use with the say_vocab function.
+ * speech synthesizer vocabulary, for use with the speech_say_vocab function.
  */
 #define VOCAB_0 0x13C3
 #define VOCAB_1 0x1409

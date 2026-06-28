@@ -1,22 +1,22 @@
-tputc term_putc
-tputs_ram term_puts
-getstr term_gets
-kscan term_kscan
+term_putc
+term_puts
+term_gets
+term_kscan
 
-map_page sams_map_page
-alloc_pages sams_alloc_pages
-free_pages sams_free_pages
+sams_map_page
+sams_alloc_pages
+sams_free_pages
 
 sys_info
-display_info sys_display_info
-sams_info sys_sams_info
+sys_display_info
+sys_sams_info
 
-vars_get var_get
-vars_set var_set
+var_get
+var_set
 
-exec exec_cmd
+exec_cmd
 
-dsr_ea5load dsr_ea5_load
+dsr_ea5_load
 dsr_open
 dsr_close
 dsr_read
@@ -28,9 +28,9 @@ dsr_delete
 dsr_prg_load
 dsr_prg_save
 dsr_scratch
-loadDir dsr_catalog
+dsr_catalog
 
-path2iocode path_to_iocode
+path_to_iocode
 lvl2_input
 lvl2_input_cpu
 lvl2_output
@@ -55,68 +55,68 @@ tipi_off
 tipi_sendmsg
 tipi_recvmsg
 
-datetime time_get
-findDsr dsr_find
-parsePathParam path_parse
+time_get
+dsr_find
+path_parse
 
-uint2str str_from_uint
-uint2hex hex_from_uint
-atoi str_to_int
-htoi hex_to_int
-float2str str_from_float
-strcpy str_copy
-strncpy str_ncopy
-strcat str_cat
-strtok str_token
-strtokpeek str_token_peek
-strlen str_len
-strcmp str_cmp
-strcmpi str_cmp_icase
-indexof str_index_of
-lindexof str_last_index_of
+str_from_uint
+hex_from_uint
+str_to_int
+hex_to_int
+str_from_float
+str_copy
+str_ncopy
+str_cat
+str_token
+str_token_peek
+str_len
+str_cmp
+str_cmp_icase
+str_index_of
+str_last_index_of
 str_startswith
 str_endswith
-basicToCstr str_from_basic
-strset str_set
-token_cursor str_token_next
+str_from_basic
+str_set
+str_token_next
 
-beep audio_beep
-honk audio_honk
-set_identify_hook term_set_identify_hook
+audio_beep
+audio_honk
+term_set_identify_hook
 vdp_setchar
-conio_getvram vdp_cursor_addr
-dropDown ui_drop_down
-cursorGoto ui_gotoxy
+vdp_cursor_addr
+ui_drop_down
+ui_gotoxy
 
 speech_reset
-detect_speech speech_detect
-say_vocab speech_say_vocab
-say_data speech_say_data
+speech_detect
+speech_say_vocab
+speech_say_data
 speech_start
 speech_continue
 speech_wait
 
-tipi_mouse mouse_read
-updatePointer mouse_move
-enablePointer mouse_show
-disablePointer mouse_hide
+mouse_read
+mouse_move
+mouse_show
+mouse_hide
 
 tls_connect
 tls_close
 tls_read_socket
 tls_send_chars
 
-init_socket_buffer sockbuf_init
-readline sockbuf_readline
-readstream sockbuf_readstream
+sockbuf_init
+sockbuf_readline
+sockbuf_readstream
 
 list_init
 list_push
 list_pop
 list_get
 
-textcolor color_text
-bgcolor color_bg
-bordercolor color_border
+color_text
+color_bg
+color_border
 
 tipi_log

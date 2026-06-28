@@ -58,7 +58,7 @@ int fc_cc_malloc(int size, int* out) {
         if (free_head == -1)
             continue;
 
-        map_page(page_table[i].page_id, 0xE000);
+        sams_map_page(page_table[i].page_id, 0xE000);
 
         int prev = -1;
         int curr = free_head;
@@ -103,12 +103,12 @@ int fc_cc_malloc(int size, int* out) {
     if (free_page_count > 0) {
         page_id = free_page_pool[--free_page_count];
     } else {
-        page_id = alloc_pages(1);
+        page_id = sams_alloc_pages(1);
         if (page_id < 0)
             return -1;
     }
 
-    map_page(page_id, 0xE000);
+    sams_map_page(page_id, 0xE000);
 
     int remaining = PAGE_SIZE - block_size;
     ww(0xE000, (1 << 15) | block_size);
@@ -141,7 +141,7 @@ int fc_cc_free(int* ptr) {
     if (pi < 0)
         return -1;
 
-    map_page(page_id, 0xE000);
+    sams_map_page(page_id, 0xE000);
 
     int header = rw(0xE000 + header_off);
     if (!(header & 0x8000))
@@ -186,7 +186,7 @@ int fc_cc_calloc(int count, int size, int* out) {
     int data_offset = out[0] & 0x0FFF;
     int page_id = out[1];
 
-    map_page(page_id, 0xE000);
+    sams_map_page(page_id, 0xE000);
     int block_size = rw(0xE000 + data_offset - BLOCK_HEADER_SIZE) & 0x7FFF;
     int data_size = block_size - BLOCK_HEADER_SIZE;
 

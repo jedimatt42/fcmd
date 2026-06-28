@@ -75,8 +75,8 @@ void setupScreen(int width) {
   int foreground = FOREGROUND;
   int background = BACKGROUND;
   if (displayWidth == 80 && vdp_type == VDP_F18A) {
-    bgcolor(background);
-    textcolor(foreground);
+    color_bg(background);
+    color_text(foreground);
     VDP_SET_REGISTER(VDP_REG_COL, background);
   } else {
     VDP_SET_REGISTER(VDP_REG_COL, foreground << 4 | background);

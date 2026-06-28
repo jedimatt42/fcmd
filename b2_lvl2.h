@@ -26,7 +26,7 @@ struct AddInfo {
   unsigned int records; // swizzled
 };
 
-unsigned int path2iocode(const char* currentPath);
+unsigned int path_to_iocode(const char* currentPath);
 
 unsigned int lvl2_mkdir(int crubase, unsigned int iocode, char* dirname);
 unsigned int lvl2_protect(int crubase, unsigned int iocode, char* filename, int protect);
@@ -52,7 +52,7 @@ void call_basic_sub(int crubase, char* subroutine);
 
 #include "banking.h"
 
-DECLARE_BANKED(path2iocode, BANK(2), unsigned int, bk_path2iocode, (const char* currentPath), (currentPath))
+DECLARE_BANKED(path_to_iocode, BANK(2), unsigned int, bk_path2iocode, (const char* currentPath), (currentPath))
 
 DECLARE_BANKED(lvl2_mkdir, BANK(2), unsigned int, bk_lvl2_mkdir, (int crubase, unsigned int iocode, char *dirname), (crubase, iocode, dirname))
 DECLARE_BANKED(lvl2_setdir, BANK(2), unsigned int, bk_lvl2_setdir, (int crubase, unsigned int iocode, char* path), (crubase, iocode, path))

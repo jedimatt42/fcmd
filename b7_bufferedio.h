@@ -16,12 +16,12 @@ struct SocketBuffer {
 #define TCP 0
 
 
-void init_socket_buffer(struct SocketBuffer* socket_buf, int tls, unsigned int socketId);
-char* readline(struct SocketBuffer* socket_buf);
-int readstream(struct SocketBuffer* socket_buf, char* block, int limit);
+void sockbuf_init(struct SocketBuffer* socket_buf, int tls, unsigned int socketId);
+char* sockbuf_readline(struct SocketBuffer* socket_buf);
+int sockbuf_readstream(struct SocketBuffer* socket_buf, char* block, int limit);
 
-DECLARE_BANKED_VOID(init_socket_buffer, BANK(7), bk_init_socket_buffer, (struct SocketBuffer* socket_buf, int tls, unsigned int socketId), (socket_buf, tls, socketId));
-DECLARE_BANKED(readline, BANK(7), char*, bk_readline, (struct SocketBuffer* socket_buf), (socket_buf));
-DECLARE_BANKED(readstream, BANK(7), int, bk_readstream, (struct SocketBuffer* socket_buf, char* block, int limit), (socket_buf, block, limit));
+DECLARE_BANKED_VOID(sockbuf_init, BANK(7), bk_init_socket_buffer, (struct SocketBuffer* socket_buf, int tls, unsigned int socketId), (socket_buf, tls, socketId));
+DECLARE_BANKED(sockbuf_readline, BANK(7), char*, bk_readline, (struct SocketBuffer* socket_buf), (socket_buf));
+DECLARE_BANKED(sockbuf_readstream, BANK(7), int, bk_readstream, (struct SocketBuffer* socket_buf, char* block, int limit), (socket_buf, block, limit));
 
 #endif

@@ -31,7 +31,7 @@ inline static void ea5_vdpchar(int pAddr, int ch) {
 #define ADDR (*(volatile int *)0x8328)
 
 
-void dsr_ea5load(struct DeviceServiceRoutine* dsr, const char* fname) {
+void dsr_ea5_load(struct DeviceServiceRoutine* dsr, const char* fname) {
   struct PAB* pab = (struct PAB*) 0x8320;
   bk_initPab(pab);
   int namelen = bk_strlen(fname);

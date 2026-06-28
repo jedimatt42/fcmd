@@ -43,7 +43,7 @@ void print_prompt(char* pattern) {
         case 't':
           {
             struct DateTime dt;
-            datetime(&dt);
+            time_get(&dt);
             pretty_time(&dt);
           }
           break;

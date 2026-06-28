@@ -14,7 +14,7 @@ void clrscr() {
   if (displayHeight == 26) {
     limit += displayWidth;
   }
-  vdpmemset(conio_getvram(), ' ', limit);
+  vdpmemset(vdp_cursor_addr(), ' ', limit);
   if (nTextFlags & TEXT_FLAG_HAS_ATTRIBUTES) {
     vdpmemset(gColor, conio_scrnCol, limit);
   }

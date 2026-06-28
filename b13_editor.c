@@ -95,7 +95,7 @@ void ed_right() {
 // BUG::: things go wrong when joining the last line in the editor
 void ed_joinLines(int lineone, int linetwo) {
   if (linetwo == 0 || linetwo >= EDIT_BUFFER->lineCount ) {
-    honk();
+    audio_honk();
     return;
   }
 
@@ -119,7 +119,7 @@ void ed_joinLines(int lineone, int linetwo) {
     EDIT_BUFFER->justRendered = 0;
     ed_renderLines();
   } else {
-    honk();
+    audio_honk();
   }
 }
 
@@ -142,7 +142,7 @@ void ed_overwrite(int k) {
   struct Line* line = &(EDIT_BUFFER->lines[EDIT_BUFFER->offset_y + (conio_y - EDIT_BUFFER->screen_y)]);
   line->data[line_idx] = k;
   if ((conio_x - EDIT_BUFFER->screen_x) + EDIT_BUFFER->offset_x == 79) {
-    honk();
+    audio_honk();
   } else {
     if (line->length < 80) {
       if (line_idx == line->length) {
@@ -170,7 +170,7 @@ void ed_insert(int k) {
     ed_right();
     ed_renderLines();
   } else {
-    honk();
+    audio_honk();
   }
 }
 
@@ -201,7 +201,7 @@ void ed_deleteChar() {
   struct Line* line = &(EDIT_BUFFER->lines[EDIT_BUFFER->offset_y + (conio_y - EDIT_BUFFER->screen_y)]);
   int x = (conio_x - EDIT_BUFFER->screen_x) + EDIT_BUFFER->offset_x;
   if (x == line->length) {
-    honk();
+    audio_honk();
     return;
   }
 
@@ -334,9 +334,9 @@ void ed_eraseLine() {
 void ed_breakLine() {
   // text to the right of the cursor is moved to a new line inserted after the current line.
 
-  // if there is no more room, honk...
+  // if there is no more room, audio_honk...
   if (EDIT_BUFFER->lineCount == EDIT_BUFFER->max_lines) {
-    honk();
+    audio_honk();
     return;
   }
   // start by inserting a line...
@@ -387,7 +387,7 @@ void ed_save(char* devpath) {
   int o_x = conio_x;
   int o_y = conio_y;
 
-  dropDown(4);
+  ui_drop_down(4);
   conio_x = 2;
   conio_y = 1;
   tputs_rom("Write File: ");
@@ -427,7 +427,7 @@ void ed_showHelp() {
   int o_x = conio_x;
   int o_y = conio_y;
 
-  dropDown(12);
+  ui_drop_down(12);
 
   conio_x = 2;
   conio_y = 1;

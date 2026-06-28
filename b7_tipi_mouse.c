@@ -14,7 +14,7 @@
 extern char gfx_point0[32];
 extern char gfx_point1[32];
 
-void tipi_mouse(struct MouseData* mouseData) {
+void mouse_read(struct MouseData* mouseData) {
   char mousecode = 0x20;
   unsigned int readcount = 0;
   if (tipi_on()) {
@@ -25,7 +25,7 @@ void tipi_mouse(struct MouseData* mouseData) {
   }
 }
 
-void enablePointer(struct MouseData* mouseData) {
+void mouse_show(struct MouseData* mouseData) {
   if (SUPPORT_MOUSE) {
     mouseData->pointerx = 256/2;
     mouseData->pointery = 192/2;
@@ -39,15 +39,15 @@ void enablePointer(struct MouseData* mouseData) {
   }
 }
 
-void disablePointer() {
+void mouse_hide() {
   if (SUPPORT_MOUSE) {
     VDP_SET_REGISTER(0x33, 0);
   }
 }
 
-void updatePointer(struct MouseData* mouseData) {
+void mouse_move(struct MouseData* mouseData) {
   if (SUPPORT_MOUSE) {
-    tipi_mouse(mouseData);
+    mouse_read(mouseData);
     mouseData->pointerx += mouseData->mx;
     mouseData->pointery += mouseData->my;
     if (mouseData->pointerx < 8) {

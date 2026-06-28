@@ -47,7 +47,7 @@ void detectClock() {
   }
 }
 
-void datetime(struct DateTime* dt) {
+void time_get(struct DateTime* dt) {
   dt->day = 0;
   dt->dayOfWeek = 0;
   dt->hours = 0;

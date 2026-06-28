@@ -27,10 +27,10 @@ struct DisplayInformation {
 };
 
 void sys_info(struct SystemInformation* info);
-void display_info(struct DisplayInformation* info);
+void sys_display_info(struct DisplayInformation* info);
 
 DECLARE_BANKED_VOID(sys_info, BANK(10), bk_sys_info, (struct SystemInformation* info), (info))
-DECLARE_BANKED_VOID(display_info, BANK(10), bk_display_info, (struct DisplayInformation * info), (info))
+DECLARE_BANKED_VOID(sys_display_info, BANK(10), bk_display_info, (struct DisplayInformation * info), (info))
 
 
 #endif

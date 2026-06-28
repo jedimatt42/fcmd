@@ -6,19 +6,19 @@
 
 #include <banking.h>
 
-// strlen - returns the length of a zero terminated string
-int strlen(const char *s);
+// str_len - returns the length of a zero terminated string
+int str_len(const char *s);
 
 // converts a string to an integer. No overflow detection, ignores
 // leading whitespace, and converts to the first non-digit character.
-int atoi(char *s);
+int str_to_int(char *s);
 
 // copy a zero-terminated string from s to d, returns d
-char *strcpy(char *d, const char *s);
+char *str_copy(char *d, const char *s);
 
 // compare two zero-terminated strings, return >0 if s1 is greater,
 // <0 if s2 is greater, or 0 if the strings are equal
-int strcmp(const char *s1, const char *s2);
+int str_cmp(const char *s1, const char *s2);
 
 // compare two memory blocks, return >0 if s1 is greater,
 // <0 if s2 is greater, or 0 if the blocks are equal
@@ -32,7 +32,7 @@ void *memset(void *dest, int src, int cnt);
 
 // returns a pointer to a static string, a number converted as unsigned
 // Not thread safe, don't use from interrupt handlers.
-char *uint2str(unsigned int x);
+char *str_from_uint(unsigned int x);
 
 // returns a pointer to a static string, a number converted as signed
 // Not thread safe, don't use from interrupt handlers.
@@ -40,7 +40,7 @@ char *int2str(int x);
 
 // returns a pointer to a static hex string, a number converted as unsigned
 // Not thread safe, don't use from interrupt handlers.
-char* uint2hex(unsigned int x);
+char* hex_from_uint(unsigned int x);
 
 // reads a string from the keyboard - pulls in KSCAN. Uses keyboard mode 5.
 // Displays a solid cursor. The only edit key supported is Fctn-S. Stops
@@ -48,10 +48,10 @@ char* uint2hex(unsigned int x);
 void gets(char *buf, int maxlen);
 
 // bank switchable routines
-DECLARE_BANKED(strlen, BANK(1), int, bk_strlen, (const char *s), (s))
-DECLARE_BANKED(atoi, BANK(1), int, bk_atoi, (char *s), (s))
-DECLARE_BANKED(strcpy, BANK(1), char *, bk_strcpy, (char *d, const char *s), (d, s))
-DECLARE_BANKED(uint2str, BANK(1), char *, bk_uint2str, (unsigned int x), (x))
-DECLARE_BANKED(uint2hex, BANK(1), char *, bk_uint2hex, (unsigned int x), (x))
+DECLARE_BANKED(str_len, BANK(1), int, bk_strlen, (const char *s), (s))
+DECLARE_BANKED(str_to_int, BANK(1), int, bk_atoi, (char *s), (s))
+DECLARE_BANKED(str_copy, BANK(1), char *, bk_strcpy, (char *d, const char *s), (d, s))
+DECLARE_BANKED(str_from_uint, BANK(1), char *, bk_uint2str, (unsigned int x), (x))
+DECLARE_BANKED(hex_from_uint, BANK(1), char *, bk_uint2hex, (unsigned int x), (x))
 
 #endif /* STRING_H */

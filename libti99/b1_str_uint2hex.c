@@ -1,5 +1,5 @@
 // unsigned int to hex string
-char* uint2hex(unsigned int x) {
+char* hex_from_uint(unsigned int x) {
   static char strbuf[5];
 
   // we just populate and return strbuf

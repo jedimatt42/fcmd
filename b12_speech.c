@@ -66,13 +66,13 @@ void load_speech_addr(int phrase_addr) {
   delay_asm_42(); // I have observed on real hardware, without the delay the speech chip goes a little crazy.
 }
 
-void say_vocab(int phrase_addr) {
+void speech_say_vocab(int phrase_addr) {
   load_speech_addr(phrase_addr);
   SPCHWT = SPCH_CMD_VOCAB; // say the phrase
   delay_asm_12();
 }
 
-void say_data(const char* addr, int len) {
+void speech_say_data(const char* addr, int len) {
   struct LpcPlaybackCtx ctx;
   ctx.addr = (char*) addr;
   ctx.remaining = len;
@@ -123,7 +123,7 @@ void speech_reset() {
   READ_WITH_DELAY(); // EA manual says this is necessary
 }
 
-int detect_speech() {
+int speech_detect() {
   speech_reset();
   load_speech_addr(0);
   SPCHWT = 0x10;

@@ -2,7 +2,7 @@
 // You can copy this file and use it at will ;)
 
 // string to integer
-int atoi(char *s) {
+int str_to_int(char *s) {
   int old;
   int out = 0;
   int neg = 0;

@@ -17,18 +17,18 @@
 
 // get a VRAM address based on the screen mode we're in
 extern int conio_x,conio_y;
-unsigned int conio_getvram();
+unsigned int vdp_cursor_addr();
 
-// bgcolor - sets the character background color in attribute-based text modes
+// color_bg - sets the character background color in attribute-based text modes
 extern unsigned int conio_scrnCol;
 
 #define FOREGROUND (conio_scrnCol >> 4)
 #define BACKGROUND (conio_scrnCol & 0x0f)
 
-unsigned int bgcolor(unsigned int color);
+unsigned int color_bg(unsigned int color);
 
-// bordercolor - set the background color on the TI
-unsigned int bordercolor(unsigned int x);
+// color_border - set the background color on the TI
+unsigned int color_border(unsigned int x);
 
 // cclear - write spaces
 void cclear(unsigned int length);
@@ -89,7 +89,7 @@ void screensize(unsigned char *x, unsigned char *y);
 
 // changes the color of the text - works in TEXT mode only and changes ALL text on the screen
 // unless in text80color mode, or text64 mode, which allow separate color per character.
-unsigned int textcolor(unsigned int color);
+unsigned int color_text(unsigned int color);
 
 // printf with a format list
 int vcprintf(const char *fmt, va_list argp);

@@ -7,7 +7,7 @@
 
 char str2ram_buf[128]; // for the inlined str2ram function
 
-int strcmp(const char* a, const char* b) {
+int str_cmp(const char* a, const char* b) {
   int i=0;
   do {
     if (a[i] == '\0') {
@@ -19,8 +19,8 @@ int strcmp(const char* a, const char* b) {
 }
 
 int str_equals(char* a, char* b) {
-  int l = strlen(a);
-  if (strlen(b) != l) {
+  int l = str_len(a);
+  if (str_len(b) != l) {
     return 0;
   }
   for(int i=0; i<l; i++) {
@@ -39,7 +39,7 @@ char lowerchar(unsigned char c) {
 }
 
 int str_startswith(const char* str, const char* prefix) {
-  if (str == 0 || strlen(str) < strlen(prefix)) {
+  if (str == 0 || str_len(str) < str_len(prefix)) {
     return 0;
   }
   while(*prefix != 0) {
@@ -53,8 +53,8 @@ int str_startswith(const char* str, const char* prefix) {
 }
 
 int str_endswith(const char* str, const char* suffix) {
-  int istr = strlen(str);
-  int isuf = strlen(suffix);
+  int istr = str_len(str);
+  int isuf = str_len(suffix);
   if (str == 0 || istr < isuf) {
     return 0;
   }
@@ -68,7 +68,7 @@ int str_endswith(const char* str, const char* suffix) {
   return 1;
 }
 
-int strcmpi(const char *a, const char *b) {
+int str_cmp_icase(const char *a, const char *b) {
   while(*a) { // a is not 0 termination character
     if (lowerchar(*a) != lowerchar(*b)) {
       break;
@@ -79,7 +79,7 @@ int strcmpi(const char *a, const char *b) {
   return lowerchar(*(const unsigned char*)a) - lowerchar(*(const unsigned char*)b);
 }
 
-int indexof(const char* str, int c) {
+int str_index_of(const char* str, int c) {
   int i=0;
   while(str[i] != 0) {
     if (str[i] == c) {
@@ -90,7 +90,7 @@ int indexof(const char* str, int c) {
   return -1;
 }
 
-int lindexof(const char* str, int c, int start) {
+int str_last_index_of(const char* str, int c, int start) {
   int i = start;
   while(i != -1) {
     if (str[i] == c) {
@@ -101,7 +101,7 @@ int lindexof(const char* str, int c, int start) {
   return -1;
 }
 
-int basicToCstr(const char* str, char* buf) {
+int str_from_basic(const char* str, char* buf) {
   int len = (int) str[0];
   for(int i=0; i<len; i++) {
     buf[i] = str[i+1];
@@ -114,7 +114,7 @@ char *lasts;
 int strcspn(char *string, char *chars);
 char *strchr(char *str, int delim);
 
-char* strtok(char* str, int delim) {
+char* str_token(char* str, int delim) {
   int ch;
   char delim_str[2];
   delim_str[0] = delim;
@@ -135,7 +135,7 @@ char* strtok(char* str, int delim) {
 
 char peekbuf[256];
 
-char* strtokpeek(char* str, int delim) {
+char* str_token_peek(char* str, int delim) {
   int ch;
   char delim_str[2];
   delim_str[0] = delim;
@@ -150,7 +150,7 @@ char* strtokpeek(char* str, int delim) {
   --str;
   char* plasts = str + strcspn(str, delim_str);
 
-  strncpy(peekbuf, str, plasts - str);
+  str_ncopy(peekbuf, str, plasts - str);
   return peekbuf;
 }
 
@@ -184,14 +184,14 @@ int strcspn(char* string, char* chars) {
   return s-string;
 }
 
-void strset(char* buffer, int value, int limit) {
+void str_set(char* buffer, int value, int limit) {
   for(int i=0; i<limit; i++) {
     buffer[i] = value;
   }
 }
 
-char* strcat(char* dest, const char* add) {
-  int x = strlen(dest);
+char* str_cat(char* dest, const char* add) {
+  int x = str_len(dest);
   char* s = dest + x;
   while(*add != 0) {
     *s++ = *add++;
@@ -200,7 +200,7 @@ char* strcat(char* dest, const char* add) {
   return dest;
 }
 
-char* strncpy(char* dest, char* src, int limit) {
+char* str_ncopy(char* dest, char* src, int limit) {
   int i = 0;
   while(src[i] != 0 && i < limit) {
     dest[i] = src[i];
@@ -210,7 +210,7 @@ char* strncpy(char* dest, char* src, int limit) {
   return dest;
 }
 
-int htoi(char* s) {
+int hex_to_int(char* s) {
   unsigned int old;
   unsigned int out = 0;
   int neg = 0;

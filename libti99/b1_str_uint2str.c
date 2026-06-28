@@ -2,7 +2,7 @@
 // You can copy this file and use it at will ;)
 
 // unsigned int
-char *uint2str(unsigned int x) {
+char *str_from_uint(unsigned int x) {
   static char strbuf[8];
 
   // we just populate and return strbuf

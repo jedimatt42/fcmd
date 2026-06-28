@@ -119,7 +119,7 @@ int handleExecutable(char *ext)
   return err;
 }
 
-char* token_cursor(char* dst, char* str, int delim) {
+char* str_token_next(char* dst, char* str, int delim) {
   // return the pointer to the character after the delim following token in original string:str
   // copies token into dst.
   // returns 0 if no following string
@@ -156,7 +156,7 @@ int loadExecutable(const char* ext, int* cmd_type) {
   char* path = bk_vars_get(str2ram("PATH"));
   if (path != (char*)-1) {
     char entry[64];
-    char *cursor = token_cursor(entry, path, ';');
+    char *cursor = str_token_next(entry, path, ';');
     // ensure '.' at end of path entry
     if (!bk_str_endswith(entry, str2ram("."))) {
       bk_strcat(entry, str2ram("."));
@@ -166,7 +166,7 @@ int loadExecutable(const char* ext, int* cmd_type) {
       if (!loadFromPath(ext, entry, cmd_type)) {
 	  return 0;
       }
-      cursor = token_cursor(entry, cursor, ';');
+      cursor = str_token_next(entry, cursor, ';');
     }
     return 1;
   }

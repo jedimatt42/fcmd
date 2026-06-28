@@ -21,13 +21,13 @@ const char pl_beep[] = {
     0x01, 0x9f, 0x00
 };
 
-void honk() {
+void audio_honk() {
     char* pSrc = (char*)pl_honk;
     unsigned int cnt = sizeof(pl_honk);
     play(pSrc, cnt);
 }
 
-void beep() {
+void audio_beep() {
     char* pSrc = (char*)pl_beep;
     unsigned int cnt = sizeof(pl_beep);
     play(pSrc, cnt);

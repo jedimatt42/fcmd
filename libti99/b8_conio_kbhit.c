@@ -11,7 +11,7 @@ unsigned char kbhit() {
         return 1;
     }
 
-    unsigned char k = kscan(5);
+    unsigned char k = term_kscan(5);
     if ((k != 255)&&(KSCAN_STATUS&KSCAN_MASK)) {
         // new keypress active
         last_conio_key = k;

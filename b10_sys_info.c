@@ -14,7 +14,7 @@ void sys_info(struct SystemInformation* info) {
   info->vdp_io_buf = VDPFBUF;
 }
 
-void display_info(struct DisplayInformation* info) {
+void sys_display_info(struct DisplayInformation* info) {
   info->displayWidth = displayWidth;
   info->displayHeight = displayHeight;
   info->isPal = pal;

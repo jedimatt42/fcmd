@@ -24,7 +24,7 @@
 //  FCTN-D RIGHT - move forward, inserting spaces if necessary.
 //  FCTN-S LEFT  - if backspace is set, then delete a character to the left.
 //                 else, move cursor to the left.
-void getstr(char* var, int limit, int backspace) {
+void term_gets(char* var, int limit, int backspace) {
   int insertMode = 1;
   unsigned int cursor = CUR_INSERT;
 
@@ -122,7 +122,7 @@ unsigned int cgetc(unsigned int cursor) {
     unsigned char k = -1;
 
     unsigned int blinkCounter = BLINK_DELAY;
-    unsigned int vdpaddr = conio_getvram();
+    unsigned int vdpaddr = vdp_cursor_addr();
     unsigned char screenChar = vdpreadchar(vdpaddr);
 
     if (last_conio_key != 255) {
@@ -134,7 +134,7 @@ unsigned int cgetc(unsigned int cursor) {
     int repeating = 1;
     int repeatDelay = delayMode ? 40 : 500;
     do {
-        k = kscan(5);
+        k = term_kscan(5);
 
         blinkCounter--;
         if (blinkCounter == 0) {

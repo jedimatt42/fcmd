@@ -10,14 +10,14 @@
 int handleCommand(char * buffer);
 int must_close_command(char* buffer);
 
-void parsePathParam(char* str_in, struct DeviceServiceRoutine** dsr, char* buffer, int requirements);
+void path_parse(char* str_in, struct DeviceServiceRoutine** dsr, char* buffer, int requirements);
 int globMatches(char* filename);
 
 #include "banking.h"
 
 DECLARE_BANKED(handleCommand, BANK(10), int, bk_handleCommand, (char* buffer), (buffer))
 DECLARE_BANKED(must_close_command, BANK(10), int, bk_must_close_command, (char* buffer), (buffer))
-DECLARE_BANKED_VOID(parsePathParam, BANK(10), bk_parsePathParam, (char* str_in, struct DeviceServiceRoutine** dsr, char* buffer, int requirements), (str_in, dsr, buffer, requirements))
+DECLARE_BANKED_VOID(path_parse, BANK(10), bk_parsePathParam, (char* str_in, struct DeviceServiceRoutine** dsr, char* buffer, int requirements), (str_in, dsr, buffer, requirements))
 DECLARE_BANKED(globMatches, BANK(10), int, bk_globMatches, (char* filename), (filename))
 
 #endif

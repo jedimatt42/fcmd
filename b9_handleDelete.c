@@ -62,7 +62,7 @@ int handleDelete() {
     bk_strcat(srcpath, str2ram("."));
   }
 
-  loadDir(srcdsr, srcpath, onIgnoreVolInfo, onDeleteDirEntry);
+  dsr_catalog(srcdsr, srcpath, onIgnoreVolInfo, onDeleteDirEntry);
   if (matched == 0) {
     tputs_rom("error, no matching file found.\n");
   } else {

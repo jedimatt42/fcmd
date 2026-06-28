@@ -55,10 +55,10 @@ int handleDir() {
 
   if (wideFormat) {
     col = 0;
-    loadDir(dsr, path, onWideVolInfo, onWideDirEntry);
+    dsr_catalog(dsr, path, onWideVolInfo, onWideDirEntry);
     bk_tputc('\n');
   } else {
-    loadDir(dsr, path, onLongVolInfo, onLongDirEntry);
+    dsr_catalog(dsr, path, onLongVolInfo, onLongDirEntry);
   }
   bk_tputc('\n');
   return 0;

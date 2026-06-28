@@ -83,10 +83,10 @@ void vdp_hist_handler(char* buffer, int limit, int op) {
       vdpmemcpy(VDP_REDO_BUFFER, buffer, VDP_BUFFER_LEN);
     }
   } else if (op == HIST_GET) {
-    strset(buffer, 0, limit);
+    str_set(buffer, 0, limit);
     vdpmemread(VDP_REDO_BUFFER, buffer, limit);
   } else if (op == HIST_GET_DEC) {
-    strset(buffer, 0, limit);
+    str_set(buffer, 0, limit);
   }
 }
 

@@ -3,8 +3,8 @@
 
 #include "banking.h"
 
-int exec(char* command);
+int exec_cmd(char* command);
 
-DECLARE_BANKED(exec, BANK(0), int, bk_exec, (char* command), (command))
+DECLARE_BANKED(exec_cmd, BANK(0), int, bk_exec, (char* command), (command))
 
 #endif

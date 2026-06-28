@@ -7,7 +7,7 @@
 #include "b1_strutil.h"
 
 
-void init_socket_buffer(struct SocketBuffer* socket_buf, int tls, unsigned int socketId) {
+void sockbuf_init(struct SocketBuffer* socket_buf, int tls, unsigned int socketId) {
     bk_strset(socket_buf->lastline, 0, 256);
     bk_strset(socket_buf->buffer, 0, 256);
     socket_buf->available = 0;
@@ -28,18 +28,18 @@ static int socket_read(struct SocketBuffer* socket_buf) {
 /*
     Reads a line from an open socket, upto 256 characters long
 */
-char* readline(struct SocketBuffer* socket_buf) {
+char* sockbuf_readline(struct SocketBuffer* socket_buf) {
     // clear the line buffer.
     bk_strset(socket_buf->lastline, 0, 256);
 
     // read one char into lastline at a time
     char* onebyte = socket_buf->lastline;
     int space = 256;
-    while((space > 0) && readstream(socket_buf, onebyte, 1)) {
+    while((space > 0) && sockbuf_readstream(socket_buf, onebyte, 1)) {
         space--;
         if (*onebyte == 13) {
 	    // peek to see if next is a linefeed
-            int res = readstream(socket_buf, onebyte + 1, 1);
+            int res = sockbuf_readstream(socket_buf, onebyte + 1, 1);
 	    if (res) {
 	      space--;
 	    }
@@ -60,10 +60,10 @@ char* readline(struct SocketBuffer* socket_buf) {
 
     socketBuffer->buffer = data taken from socket
     socketBuffer->available = bytes in buffer
-    socketBuffer->lastline - not used, see readline
+    socketBuffer->lastline - not used, see sockbuf_readline
     socketbuffer->loaded = offset into buffer for next byte
 */
-int readstream(struct SocketBuffer* socket_buf, char* block, int limit) {
+int sockbuf_readstream(struct SocketBuffer* socket_buf, char* block, int limit) {
     int blockload = 0;
     int retries = 0;
     int maxtries = 5;

@@ -36,7 +36,7 @@ void cursorUp(int lines);
 void cursorDown(int lines);
 void cursorRight(int cols);
 void cursorLeft(int cols);
-void cursorGoto(int x, int y);
+void ui_gotoxy(int x, int y);
 void eraseDisplay(int opt);
 void eraseLine(int opt);
 void scrollUp(int lc);
@@ -62,7 +62,7 @@ unsigned char cursor_store_y;
 
 identify_callback identify_cb = 0;
 
-void set_identify_hook(identify_callback cb) {
+void term_set_identify_hook(identify_callback cb) {
   identify_cb = cb;
 }
 
@@ -158,7 +158,7 @@ void cursorLeft(int cols) {
   gotox(x);
 }
 
-void cursorGoto(int x, int y) {
+void ui_gotoxy(int x, int y) {
   unsigned char scx;
   unsigned char scy;
   screensize(&scx, &scy);
@@ -231,8 +231,8 @@ void scrollUp(int lc) {
 }
 
 void setColors(int fore, int back) {
-  bgcolor(back);
-  textcolor(fore);
+  color_bg(back);
+  color_text(fore);
 }
 
 void doSGRCommand() {
@@ -344,13 +344,13 @@ void doCsiCommand(unsigned char c) {
       gotox(0);
       break;
     case 'G': // set cursor column, 1 param, default 1
-      cursorGoto(getParamA(1),twherey() + 1);
+      ui_gotoxy(getParamA(1),twherey() + 1);
       break;
     case 'H': // set position, 2 param, defaults 1, 1
-      cursorGoto(getParamB(1), getParamA(1));
+      ui_gotoxy(getParamB(1), getParamA(1));
       break;
     case 'f': // synonym
-      cursorGoto(getParamB(1), getParamA(1));
+      ui_gotoxy(getParamB(1), getParamA(1));
       break;
     case 'J': // erase in display, 1 param, default 0
       eraseDisplay(getParamA(0));
@@ -428,7 +428,7 @@ int doEscCommand(unsigned char c) {
       case '\r':
       case '\t':
       case '\v':
-        vdpchar(conio_getvram(), c);
+        vdpchar(vdp_cursor_addr(), c);
         ++conio_x;
         if (conio_x > nTextEnd - nTextRow) {
           conio_x = 0;
@@ -473,7 +473,7 @@ void charout(unsigned char ch) {
   }
 }
 
-void tputc(int c) {
+void term_putc(int c) {
   if (stage == STAGE_OPEN) {
     if (c == 27) {
       stage = STAGE_ESC;
@@ -514,9 +514,9 @@ void tputc(int c) {
   }
 }
 
-void tputs_ram(const char* str) {
+void term_puts(const char* str) {
   while(*str) {
-    tputc(*str++);
+    term_putc(*str++);
   }
 }
 

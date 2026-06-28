@@ -15,15 +15,15 @@ struct MouseData {
 #define MB_RIGHT 0x02
 #define MB_MID 0x04
 
-void tipi_mouse(struct MouseData* mouseData);
-void updatePointer(struct MouseData* mouseData);
-void enablePointer(struct MouseData* mouseData);
-void disablePointer();
+void mouse_read(struct MouseData* mouseData);
+void mouse_move(struct MouseData* mouseData);
+void mouse_show(struct MouseData* mouseData);
+void mouse_hide();
 
-DECLARE_BANKED_VOID(tipi_mouse, BANK(7), bk_tipi_mouse, (struct MouseData* mouseData), (mouseData))
-DECLARE_BANKED_VOID(updatePointer, BANK(7), bk_updatePointer, (struct MouseData* mouseData), (mouseData))
-DECLARE_BANKED_VOID(enablePointer, BANK(7), bk_enablePointer, (struct MouseData* mouseData), (mouseData))
-DECLARE_BANKED_VOID(disablePointer, BANK(7), bk_disablePointer, (), ())
+DECLARE_BANKED_VOID(mouse_read, BANK(7), bk_tipi_mouse, (struct MouseData* mouseData), (mouseData))
+DECLARE_BANKED_VOID(mouse_move, BANK(7), bk_updatePointer, (struct MouseData* mouseData), (mouseData))
+DECLARE_BANKED_VOID(mouse_show, BANK(7), bk_enablePointer, (struct MouseData* mouseData), (mouseData))
+DECLARE_BANKED_VOID(mouse_hide, BANK(7), bk_disablePointer, (), ())
 
 #endif
 

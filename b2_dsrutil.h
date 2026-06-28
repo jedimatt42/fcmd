@@ -74,7 +74,7 @@ unsigned int dsr_read_cpu(struct DeviceServiceRoutine* dsr, struct PAB* pab, int
 unsigned int dsr_write(struct DeviceServiceRoutine* dsr, struct PAB* pab, char* record, int reclen);
 unsigned int dsr_status(struct DeviceServiceRoutine* dsr, struct PAB* pab);
 unsigned int dsr_delete(struct DeviceServiceRoutine* dsr, struct PAB* pab);
-void dsr_ea5load(struct DeviceServiceRoutine* dsr, const char* fname);
+void dsr_ea5_load(struct DeviceServiceRoutine* dsr, const char* fname);
 unsigned int dsr_reset(struct DeviceServiceRoutine* dsr, struct PAB* pab, int record);
 unsigned int dsr_scratch(struct DeviceServiceRoutine* dsr, struct PAB* pab, int recordNumber);
 
@@ -84,7 +84,7 @@ unsigned int dsr_prg_save(struct DeviceServiceRoutine* dsr, struct PAB* pab, con
 typedef void (*vol_entry_cb)(struct VolInfo*);
 typedef void (*dir_entry_cb)(struct DirEntry*);
 
-unsigned int loadDir(struct DeviceServiceRoutine* dsr, const char* pathname, vol_entry_cb vol_cb, dir_entry_cb dir_cb);
+unsigned int dsr_catalog(struct DeviceServiceRoutine* dsr, const char* pathname, vol_entry_cb vol_cb, dir_entry_cb dir_cb);
 unsigned int existsDir(struct DeviceServiceRoutine* dsr, const char* pathname);
 unsigned int existsFile(struct DeviceServiceRoutine* dsr, const char* pathname);
 
@@ -93,7 +93,7 @@ void loadDriveDSRs();
 void enableROM(int crubase);
 void disableROM(int crubase);
 
-struct DeviceServiceRoutine* findDsr(char* devicename, int crubase);
+struct DeviceServiceRoutine* dsr_find(char* devicename, int crubase);
 
 void initPab(struct PAB* pab);
 
@@ -104,7 +104,7 @@ DECLARE_BANKED_VOID(initPab, BANK(2), bk_initPab, (struct PAB* pab), (pab))
 DECLARE_BANKED_VOID(enableROM, BANK(2), bk_enableROM, (int crubase), (crubase))
 DECLARE_BANKED_VOID(disableROM, BANK(2), bk_disableROM, (int crubase), (crubase))
 
-DECLARE_BANKED(findDsr, BANK(2), struct DeviceServiceRoutine*, bk_findDsr, (char* devicename, int crubase), (devicename, crubase))
+DECLARE_BANKED(dsr_find, BANK(2), struct DeviceServiceRoutine*, bk_findDsr, (char* devicename, int crubase), (devicename, crubase))
 DECLARE_BANKED(existsDir, BANK(2), unsigned int, bk_existsDir, (struct DeviceServiceRoutine* dsr, const char* pathname), (dsr, pathname))
 DECLARE_BANKED(existsFile, BANK(2), unsigned int, bk_existsFile, (struct DeviceServiceRoutine* dsr, const char* pathname), (dsr, pathname))
 DECLARE_BANKED(dsr_delete, BANK(2), unsigned int, bk_dsr_delete, (struct DeviceServiceRoutine* dsr, struct PAB* pab), (dsr, pab))
@@ -117,8 +117,8 @@ DECLARE_BANKED(dsr_reset, BANK(2), unsigned int, bk_dsr_reset, (struct DeviceSer
 DECLARE_BANKED(dsr_status, BANK(2), unsigned int, bk_dsr_status, (struct DeviceServiceRoutine* dsr, struct PAB* pab), (dsr, pab))
 DECLARE_BANKED(dsr_scratch, BANK(2), unsigned int, bk_dsr_scratch, (struct DeviceServiceRoutine* dsr, struct PAB* pab, int record), (dsr, pab, record))
 
-DECLARE_BANKED_VOID(dsr_ea5load, BANK(9), bk_dsr_ea5load, (struct DeviceServiceRoutine * dsr, const char *fname), (dsr, fname))
-DECLARE_BANKED(loadDir, BANK(9), unsigned int, bk_loadDir, (struct DeviceServiceRoutine* dsr, const char* pathname, vol_entry_cb vol_cb, dir_entry_cb dir_cb), (dsr, pathname, vol_cb, dir_cb))
+DECLARE_BANKED_VOID(dsr_ea5_load, BANK(9), bk_dsr_ea5load, (struct DeviceServiceRoutine * dsr, const char *fname), (dsr, fname))
+DECLARE_BANKED(dsr_catalog, BANK(9), unsigned int, bk_loadDir, (struct DeviceServiceRoutine* dsr, const char* pathname, vol_entry_cb vol_cb, dir_entry_cb dir_cb), (dsr, pathname, vol_cb, dir_cb))
 
 DECLARE_BANKED(dsr_prg_load, BANK(2), unsigned int, bk_dsr_prg_load, (struct DeviceServiceRoutine* dsr, struct PAB* pab, const char* fname, int vdpaddr, int maxsize), (dsr, pab, fname, vdpaddr, maxsize))
 

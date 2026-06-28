@@ -5,10 +5,10 @@
 
 int handleExecutable(char* ext);
 
-char* token_cursor(char* dst, char* str, int delim);
+char* str_token_next(char* dst, char* str, int delim);
 
 
 DECLARE_BANKED(handleExecutable, BANK(11), int, bk_handleExecutable, (char *ext), (ext))
-DECLARE_BANKED(token_cursor, BANK(11), char*, bk_token_cursor, (char* dst, char* str, int delim), (dst, str, delim))
+DECLARE_BANKED(str_token_next, BANK(11), char*, bk_token_cursor, (char* dst, char* str, int delim), (dst, str, delim))
 
 #endif

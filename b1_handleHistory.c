@@ -16,7 +16,7 @@ int handleHistory() {
     history_redo(buffer, 256, HIST_GET);
     bk_tputc('\n');
     while(bk_strlen(buffer) && request_break == 0) {
-      bk_tputs_ram(uint2str(cnt));
+      bk_tputs_ram(str_from_uint(cnt));
       bk_tputc(':');
       bk_tputc(' ');
       bk_tputs_ram(buffer);

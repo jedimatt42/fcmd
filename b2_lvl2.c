@@ -41,7 +41,7 @@ static int supportsCpuBuffers(int crubase);
 //	Scuzzy controller		SCS	>2x
 //	IDE controller:			IDE	>8x
 //	Ti to PC serial connection:	HDX	>9x
-unsigned int path2iocode(const char *dirpath)
+unsigned int path_to_iocode(const char *dirpath)
 {
   unsigned int operationSet = 0x0010;
   char drive[9];

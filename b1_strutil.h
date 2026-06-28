@@ -4,21 +4,21 @@
 #include <string.h>
 #include "banking.h"
 
-int strcmp(const char* a, const char* b);
-int strcmpi(const char* a, const char* b);
+int str_cmp(const char* a, const char* b);
+int str_cmp_icase(const char* a, const char* b);
 int str_equals(char* a, char* b);
-int indexof(const char* str, int c);
-int lindexof(const char* str, int c, int start);
+int str_index_of(const char* str, int c);
+int str_last_index_of(const char* str, int c, int start);
 int str_startswith(const char* str, const char* prefix);
 int str_endswith(const char* str, const char* suffix);
-int basicToCstr(const char* str, char* buf);
-char* strtok(char *str, int delim);
-char* strtokpeek(char* str, int delim);
-void strset(char* buffer, int value, int limit);
-char* strcat(char* dst, const char* add);
-char* strncpy(char* dest, char* src, int limit);
+int str_from_basic(const char* str, char* buf);
+char* str_token(char *str, int delim);
+char* str_token_peek(char* str, int delim);
+void str_set(char* buffer, int value, int limit);
+char* str_cat(char* dst, const char* add);
+char* str_ncopy(char* dest, char* src, int limit);
 void strpad(char* dest, int limit, int pad);
-int htoi(char* s);
+int hex_to_int(char* s);
 
 extern char *lasts;
 
@@ -35,21 +35,21 @@ static inline char* str2ram(const char* str) {
     return str2ram_buf;
 }
 
-DECLARE_BANKED(strcmp, BANK(1), int, bk_strcmp, (const char *a, const char *b), (a, b))
-DECLARE_BANKED(strcmpi, BANK(1), int, bk_strcmpi, (const char *a, const char *b), (a, b))
+DECLARE_BANKED(str_cmp, BANK(1), int, bk_strcmp, (const char *a, const char *b), (a, b))
+DECLARE_BANKED(str_cmp_icase, BANK(1), int, bk_strcmpi, (const char *a, const char *b), (a, b))
 DECLARE_BANKED(str_equals, BANK(1), int, bk_str_equals, (const char *a, const char *b), (a, b))
-DECLARE_BANKED(indexof, BANK(1), int, bk_indexof, (const char *str, int c), (str, c))
-DECLARE_BANKED(lindexof, BANK(1), int, bk_lindexof, (const char *str, int c, int start), (str, c, start))
+DECLARE_BANKED(str_index_of, BANK(1), int, bk_indexof, (const char *str, int c), (str, c))
+DECLARE_BANKED(str_last_index_of, BANK(1), int, bk_lindexof, (const char *str, int c, int start), (str, c, start))
 DECLARE_BANKED(str_startswith, BANK(1), int, bk_str_startswith, (const char *str, const char *prefix), (str, prefix))
 DECLARE_BANKED(str_endswith, BANK(1), int, bk_str_endswith, (const char *str, const char *suffix), (str, suffix))
-DECLARE_BANKED(basicToCstr, BANK(1), int, bk_basicToCstr, (const char *str, char *buf), (str, buf))
-DECLARE_BANKED(strtok, BANK(1), char *, bk_strtok, (char *str, int delim), (str, delim))
-DECLARE_BANKED(strtokpeek, BANK(1), char *, bk_strtokpeek, (char *str, int delim), (str, delim))
-DECLARE_BANKED_VOID(strset, BANK(1), bk_strset, (char *buffer, int value, int limit), (buffer, value, limit))
-DECLARE_BANKED(strcat, BANK(1), char *, bk_strcat, (char *dst, const char *add), (dst, add))
-DECLARE_BANKED(strncpy, BANK(1), char *, bk_strncpy, (char *dest, char *src, int limit), (dest, src, limit))
+DECLARE_BANKED(str_from_basic, BANK(1), int, bk_basicToCstr, (const char *str, char *buf), (str, buf))
+DECLARE_BANKED(str_token, BANK(1), char *, bk_strtok, (char *str, int delim), (str, delim))
+DECLARE_BANKED(str_token_peek, BANK(1), char *, bk_strtokpeek, (char *str, int delim), (str, delim))
+DECLARE_BANKED_VOID(str_set, BANK(1), bk_strset, (char *buffer, int value, int limit), (buffer, value, limit))
+DECLARE_BANKED(str_cat, BANK(1), char *, bk_strcat, (char *dst, const char *add), (dst, add))
+DECLARE_BANKED(str_ncopy, BANK(1), char *, bk_strncpy, (char *dest, char *src, int limit), (dest, src, limit))
 DECLARE_BANKED_VOID(strpad, BANK(1), bk_strpad, (char *dest, int limit, int pad), (dest, limit, pad))
-DECLARE_BANKED(htoi, BANK(1), int, bk_htoi, (char* s), (s))
+DECLARE_BANKED(hex_to_int, BANK(1), int, bk_htoi, (char* s), (s))
 
 
 #endif

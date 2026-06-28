@@ -30,7 +30,7 @@ struct LpcPlaybackCtx {
 
 /*
  * Issue the reset command to the speech synthesizer.
- * (this is automatically included in a detect_speech call)
+ * (this is automatically included in a speech_detect call)
  */
 void speech_reset();
 
@@ -38,18 +38,18 @@ void speech_reset();
  * Return 1 if speech synthesizer is attached to the 4A.
  * It sends the reset cmd, then a read of PHROM address 0x0000.
  */
-int detect_speech();
+int speech_detect();
 
 /*
  * Say the vocabulary phrase in the speech ROM (PHROM) at the specified address.
  * See EA manual for addresses of each built in phrase.
  */
-void say_vocab(int phrase_addr);
+void speech_say_vocab(int phrase_addr);
 
 /*
- * With an LPC code loaded into CPU RAM at addr, say_data sends the say_external command and transmits the entire LCP into the synthesizer's FIFO.
+ * With an LPC code loaded into CPU RAM at addr, speech_say_data sends the say_external command and transmits the entire LCP into the synthesizer's FIFO.
  */
-void say_data(const char* addr, int len);
+void speech_say_data(const char* addr, int len);
 
 /*
  * Given a LpcPlaybackCtx with a pointer to the LPC data, and the remaining bytes to send, sends the command code and upto the first 16 bytes of the
@@ -69,9 +69,9 @@ void speech_wait();
 
 
 DECLARE_BANKED_VOID(speech_reset, BANK(12), bk_speech_reset, (), ())
-DECLARE_BANKED(detect_speech, BANK(12), int, bk_detect_speech, (), ())
-DECLARE_BANKED_VOID(say_vocab, BANK(12), bk_say_vocab, (int phrase_addr), (phrase_addr))
-DECLARE_BANKED_VOID(say_data, BANK(12), bk_say_data, (const char* addr, int len), (addr, len))
+DECLARE_BANKED(speech_detect, BANK(12), int, bk_detect_speech, (), ())
+DECLARE_BANKED_VOID(speech_say_vocab, BANK(12), bk_say_vocab, (int phrase_addr), (phrase_addr))
+DECLARE_BANKED_VOID(speech_say_data, BANK(12), bk_say_data, (const char* addr, int len), (addr, len))
 DECLARE_BANKED_VOID(speech_start, BANK(12), bk_speech_start, (struct LpcPlaybackCtx* ctx), (ctx))
 DECLARE_BANKED_VOID(speech_continue, BANK(12), bk_speech_continue, (struct LpcPlaybackCtx* ctx), (ctx))
 DECLARE_BANKED_VOID(speech_wait, BANK(12), bk_speech_wait, (), ())
@@ -79,7 +79,7 @@ DECLARE_BANKED_VOID(speech_wait, BANK(12), bk_speech_wait, (), ())
 
 /*
  * The following defines addresses for words and phrases in the resident
- * speech synthesizer vocabulary, for use with the say_vocab function.
+ * speech synthesizer vocabulary, for use with the speech_say_vocab function.
  */
 #define VOCAB_0 0x13C3
 #define VOCAB_1 0x1409

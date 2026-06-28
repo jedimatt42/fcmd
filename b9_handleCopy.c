@@ -129,7 +129,7 @@ static int copyMultipleFiles() {
   return 0;
   }
 
-  loadDir(srcdsr, srcpath, onIgnoreVolInfo, onCopyDirEntry);
+  dsr_catalog(srcdsr, srcpath, onIgnoreVolInfo, onCopyDirEntry);
   if (matched == 0) {
     tputs_rom("error, no matching file found.\n");
   } else {

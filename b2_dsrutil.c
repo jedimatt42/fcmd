@@ -315,7 +315,7 @@ void disableROM(int crubase) {
   __asm__("mov %0,r12\n\tsbz 0" : : "r"(crubase) : "r12");
 }
 
-struct DeviceServiceRoutine* findDsr(char* devicename, int crubase) {
+struct DeviceServiceRoutine* dsr_find(char* devicename, int crubase) {
   int i = 0;
 
   while(dsrList[i].name[0] != 0) {

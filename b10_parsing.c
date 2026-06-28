@@ -171,7 +171,7 @@ int parsePath(char* path, char* devicename) {
   return crubase;
 }
 
-void parsePathParam(char* str_in, struct DeviceServiceRoutine** dsr, char* buffer, int requirements) {
+void path_parse(char* str_in, struct DeviceServiceRoutine** dsr, char* buffer, int requirements) {
   filterglob[0] = 0;
   buffer[0] = 0; // null terminate so later we can tell if it is prepared or not.
   char *path = bk_strtok(str_in, ' ');

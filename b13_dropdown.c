@@ -28,7 +28,7 @@ void dropDownSpace(int y) {
   ED_VDPCHAR(0xb3);
 }
 
-void dropDown(int linecount) {
+void ui_drop_down(int linecount) {
   for(int i=0; i<linecount; i++) {
     dropDownSpace(i);
   }

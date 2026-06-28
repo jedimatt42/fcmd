@@ -34,7 +34,7 @@ void drawBar() {
         bk_tputc(HZ);
     }
     struct DateTime dt;
-    datetime(&dt);
+    time_get(&dt);
     if (dt.hours < 10) {
         bk_tputc(HZ);
     }

@@ -9,7 +9,7 @@ void inc_row() {
   int y = displayHeight - 1;
 
   // scan for a break key ctrl-c/Fctn-4
-  unsigned int k = kscan(5);
+  unsigned int k = term_kscan(5);
   if (k == 2 || k == 131) {
     request_break = 1;
   }
@@ -17,9 +17,9 @@ void inc_row() {
   if (conio_y >= y) {
     scrn_scroll();
     conio_y = y;
-    k = kscan(5);
+    k = term_kscan(5);
     while(147 == k) {
-      k = kscan(5);
+      k = term_kscan(5);
     }
   } else {
     ++conio_y;
@@ -27,7 +27,7 @@ void inc_row() {
 }
 
 void raw_cputc(int ch) {
-  // vdpchar(conio_getvram(), ch);
+  // vdpchar(vdp_cursor_addr(), ch);
 }
 
 void cputc(int ch) {
@@ -67,7 +67,7 @@ void cputc(int ch) {
       inc_row();
       break;
     default:
-      vdpchar(conio_getvram(), ch);
+      vdpchar(vdp_cursor_addr(), ch);
       ++conio_x;
       if (conio_x > nTextEnd - nTextRow) {
         conio_x = 0;

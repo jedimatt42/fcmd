@@ -18,7 +18,7 @@ void to_upper(char* name) {
   }
 }
 
-void vars_set(char* name, char* value) {
+void var_set(char* name, char* value) {
   if (bk_strlen(name) > MAX_VAR_NAME) {
     tputs_rom("Error, variable name too long, limit is ");
     bk_tputs_ram(bk_uint2str(MAX_VAR_NAME));
@@ -43,7 +43,7 @@ void vars_set(char* name, char* value) {
   dict_put(&system_dict, DE_TYPE_VAR, name, value);
 }
 
-char* vars_get(char* name) {
+char* var_get(char* name) {
   to_upper(name);
 
   char* val = (char*) dict_get(&system_dict, DE_TYPE_VAR, name) ;

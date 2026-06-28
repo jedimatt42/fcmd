@@ -3,8 +3,8 @@
 
 #include "banking.h"
 
-char* float2str(double a);
+char* str_from_float(double a);
 
-DECLARE_BANKED(float2str, BANK(1), char*, bk_float2str, (double a), (a))
+DECLARE_BANKED(str_from_float, BANK(1), char*, bk_float2str, (double a), (a))
 
 #endif

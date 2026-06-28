@@ -27,7 +27,7 @@ void samsMapOff() {
     );
 }
 
-void __attribute__((noinline)) map_page(int page, int location) {
+void __attribute__((noinline)) sams_map_page(int page, int location) {
     unsigned int shadow_idx = ((unsigned int)location);
     if (shadow_idx >= 0xA000) {
        shadow_idx = (shadow_idx - 0xA000) >> 12; 
@@ -48,7 +48,7 @@ void __attribute__((noinline)) map_page(int page, int location) {
         : "r12");
 }
 
-void sams_info(struct SamsInformation* info) {
+void sys_sams_info(struct SamsInformation* info) {
     info->next_page = sams_next_page;
     info->total_pages = sams_total_pages;
 }
@@ -56,11 +56,11 @@ void sams_info(struct SamsInformation* info) {
 int hasSams() {
     volatile int *lower_exp = (volatile int *)0x2000;
     samsMapOn();
-    map_page(0, 0x2000);
+    sams_map_page(0, 0x2000);
     *lower_exp = 0x1234;
-    map_page(1, 0x2000);
+    sams_map_page(1, 0x2000);
     *lower_exp = 0;
-    map_page(0, 0x2000);
+    sams_map_page(0, 0x2000);
     int detected = (*lower_exp == 0x1234);
     samsMapOff();
     return detected;
@@ -73,17 +73,17 @@ int samsPageCount() {
     // set initial state of all pages
     for (int i = 0x20; i < 0x4000; i <<= 1)
     {
-        map_page(i, 0x2000);
+        sams_map_page(i, 0x2000);
         *lower_exp = 0x1234;
     }
     // now mark pages and stop when they repeat
     int pages = 0x20;
-    map_page(pages, 0x2000);
+    sams_map_page(pages, 0x2000);
     while (pages < 0x4000 && *lower_exp != 0xFFFF)
     {
         *lower_exp = 0xFFFF;
         pages <<= 1;
-        map_page(pages, 0x2000);
+        sams_map_page(pages, 0x2000);
     }
     samsMapOff();
     return pages >> 1;
@@ -111,8 +111,8 @@ int init_sams() {
     if (hasSams()) {
         int total_pages = samsPageCount();
         samsMapOn(); // and leave it on.
-        map_page(0, 0x2000);
-        map_page(1, 0x3000);
+        sams_map_page(0, 0x2000);
+        sams_map_page(1, 0x3000);
         sams_next_page = 2;
         sams_total_pages = total_pages;
         return sams_total_pages;
@@ -121,13 +121,13 @@ int init_sams() {
     }
 }
 
-int alloc_pages(int count) {
+int sams_alloc_pages(int count) {
     int start = sams_next_page;
     sams_next_page += count;
     return start;
 }
 
-int free_pages(int count) {
+int sams_free_pages(int count) {
     sams_next_page -= count;
     return sams_next_page;
 }
