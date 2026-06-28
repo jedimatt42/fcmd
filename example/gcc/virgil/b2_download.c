@@ -39,38 +39,38 @@ void FC_SAMS(2, gemini_download_continue()) {
   char msg[80];
   if (len == 0) {
     state.cmd = CMD_STOP;
-    fc_str_copy(msg, "download complete");
+    str_copy(msg, "download complete");
     set_error(msg, 0);
     return;
   }
   vdp_memcpy(vdp_io_buf, data, 256);
   struct AddInfo* addInfoPtr = (struct AddInfo*)0x8320;
   addInfoPtr->first_sector = sector_no++;
-  int ferr = fc_lvl2_output(crubase, iocode, filename, 1, addInfoPtr);
+  int ferr = lvl2_output(crubase, iocode, filename, 1, addInfoPtr);
   if (ferr) {
     state.cmd = CMD_STOP;
-    fc_str_copy(msg, "error saving file");
+    str_copy(msg, "error saving file");
     set_error(msg, 0x7fff);
     return;
   }
-  fc_str_copy(msg, "wrote block ");
-  fc_str_copy(msg + 12, fc_str_from_uint(sector_no)); 
+  str_copy(msg, "wrote block ");
+  str_copy(msg + 12, str_from_uint(sector_no)); 
   set_error(msg, 0x7fff);
 }
 
 void set_download_filename(char* filename) {
-  int filepart = 1 + fc_str_last_index_of(state.newurl, '/', fc_str_len(state.newurl));
-  fc_str_ncopy(filename, state.newurl + filepart, 11);
+  int filepart = 1 + str_last_index_of(state.newurl, '/', str_len(state.newurl));
+  str_ncopy(filename, state.newurl + filepart, 11);
 }
 
 struct DeviceServiceRoutine* get_downloads_dir(char* pathname) {
-  char* dls = fc_var_get("DOWNLOADS");
+  char* dls = var_get("DOWNLOADS");
   if (dls == 0 || dls[0] == 0) {
     dls = "TIPI.DOWNLOADS.";
   }
   struct DeviceServiceRoutine* dsr;
-  fc_path_parse(dls, &dsr, pathname, PR_REQUIRED);
-  int plen = fc_str_len(pathname);
+  path_parse(dls, &dsr, pathname, PR_REQUIRED);
+  int plen = str_len(pathname);
   if (pathname[plen - 1] != '.') {
     pathname[plen] = '.';
     pathname[plen+1] = 0;
@@ -85,18 +85,18 @@ void saveTiFiles(struct TiFiles* tifiles) {
   crubase = dsr->crubase;
  
   struct SystemInformation sys_info;
-  fc_sys_info(&sys_info); 
+  sys_info(&sys_info); 
   vdp_io_buf = sys_info.vdp_io_buf;
 
   // addinfo must be in scratchpad
   struct AddInfo* addInfoPtr = (struct AddInfo*)0x8320;
   memcpy(&(addInfoPtr->first_sector), &(tifiles->sectors), 8);
   
-  iocode = fc_path_to_iocode(pathname);
+  iocode = path_to_iocode(pathname);
   char msg[80];
-  int ferr = fc_lvl2_setdir(crubase, iocode, pathname);
+  int ferr = lvl2_setdir(crubase, iocode, pathname);
   if (ferr) {
-    fc_str_copy(msg, "download directory does not exist");
+    str_copy(msg, "download directory does not exist");
     set_error(msg, 0);
     state.cmd = CMD_STOP;
     return;
@@ -104,9 +104,9 @@ void saveTiFiles(struct TiFiles* tifiles) {
 
   set_download_filename(filename);
 
-  ferr = fc_lvl2_output(crubase, iocode, filename, 0, addInfoPtr);
+  ferr = lvl2_output(crubase, iocode, filename, 0, addInfoPtr);
   if (ferr) {
-    fc_str_copy(msg, "error saving file");
+    str_copy(msg, "error saving file");
     set_error(msg, 0);
     state.cmd = CMD_STOP;
   }
@@ -117,7 +117,7 @@ void saveTiFiles(struct TiFiles* tifiles) {
 
 void saveDF128(char* data) {
   char msg[80];
-  fc_str_copy(msg, "not a TIFILES format file");
+  str_copy(msg, "not a TIFILES format file");
   set_error(msg, 0x7fff);
   state.cmd = CMD_STOP;
 }

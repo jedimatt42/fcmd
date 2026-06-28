@@ -96,12 +96,13 @@ with open(sys.argv[4], 'w') as client_api_h:
     for name in names:
         # For each function write something like:
         #
-        # // declare function: void fc_tputc(int value);
-        # DECL_FC_API_CALL(FC_TPUTC, fc_tputc, void, (int value), (value))
+        # // declare function: void term_putc(int value);
+        # DECL_FC_API_CALL(FC_TERM_PUTC, term_putc, void, (int value), (value))
         sig = signatures[name]
-        fc_name = f'fc_{aliases[name]}'
-        client_api_h.write(f'\n// function: {sig[0]} {fc_name}{sig[1]}\n')
-        client_api_h.write(f'DECL_FC_API_CALL({fc_name.upper()}, {fc_name}, {sig[0]}, {sig[1]}, {sig[2]})\n')
+        func_name = aliases[name]
+        def_name = f'fc_{func_name}'.upper()
+        client_api_h.write(f'\n// function: {sig[0]} {func_name}{sig[1]}\n')
+        client_api_h.write(f'DECL_FC_API_CALL({def_name}, {func_name}, {sig[0]}, {sig[1]}, {sig[2]})\n')
 
     # end the include file ifndef
     client_api_h.write('\n#endif\n')

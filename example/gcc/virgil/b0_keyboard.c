@@ -8,7 +8,7 @@
 #include "link.h"
 
 int FC_SAMS(0,read_keyboard()) {
-  unsigned int key = fc_term_kscan(5);
+  unsigned int key = term_kscan(5);
   
   // return key;
   if (KSCAN_STATUS & KSCAN_MASK) {
@@ -69,32 +69,32 @@ void FC_SAMS(0,on_back()) {
   char tmp[256];
   if (state.builtin) {
     history_pop(tmp);
-    // fc_str_copy(tmp, state.lasturl);
+    // str_copy(tmp, state.lasturl);
   } else {
     // have to read twice...
     history_pop(tmp);
     history_pop(tmp);
   }
-  fc_str_copy(state.newurl, tmp);
+  str_copy(state.newurl, tmp);
   state.cmd = CMD_RELOAD;
 }
 
 void FC_SAMS(0,on_address()) {
   char tmp[256];
-  fc_str_set(tmp, 0, 256);
-  fc_str_copy(tmp, state.newurl);
+  str_set(tmp, 0, 256);
+  str_copy(tmp, state.newurl);
   char ramstr[10] = "Address:";
   screen_prompt(tmp, ramstr);
   if (tmp[0] != 0) {
-    if (0 != fc_str_cmp(tmp, state.lasturl)) {
-      fc_str_copy(state.newurl, tmp);
+    if (0 != str_cmp(tmp, state.lasturl)) {
+      str_copy(state.newurl, tmp);
       state.cmd = CMD_RELOAD;
     }
   }
 }
 
 void internalUri(char* url) {
-  fc_str_copy(state.newurl, url);
+  str_copy(state.newurl, url);
   state.cmd = CMD_RELOAD;
 }
 

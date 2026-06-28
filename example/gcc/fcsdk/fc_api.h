@@ -7,7 +7,7 @@
  *   This may trigger additional environment restoration upon return.
  * command line parameters are passed as a single un-parsed buffer.
  */
-int fc_main(char* args);
+int main(char* args);
 
 #define FC_SYS *(int *)0x2000
 
@@ -401,316 +401,316 @@ extern void* memcpy(void* dest, const void* src, int count);
 #define FC_COLOR_BORDER 0x66
 #define FC_TIPI_LOG 0x67
 
-// function: void fc_term_putc(int c)
-DECL_FC_API_CALL(FC_TERM_PUTC, fc_term_putc, void, (int c), (c))
+// function: void term_putc(int c)
+DECL_FC_API_CALL(FC_TERM_PUTC, term_putc, void, (int c), (c))
 
-// function: void fc_term_puts(const char* str)
-DECL_FC_API_CALL(FC_TERM_PUTS, fc_term_puts, void, (const char* str), (str))
+// function: void term_puts(const char* str)
+DECL_FC_API_CALL(FC_TERM_PUTS, term_puts, void, (const char* str), (str))
 
-// function: void fc_term_gets(char* var, int limit, int backspace)
-DECL_FC_API_CALL(FC_TERM_GETS, fc_term_gets, void, (char* var, int limit, int backspace), (var, limit, backspace))
+// function: void term_gets(char* var, int limit, int backspace)
+DECL_FC_API_CALL(FC_TERM_GETS, term_gets, void, (char* var, int limit, int backspace), (var, limit, backspace))
 
-// function: unsigned int fc_term_kscan(unsigned int mode)
-DECL_FC_API_CALL(FC_TERM_KSCAN, fc_term_kscan, unsigned int, (unsigned int mode), (mode))
+// function: unsigned int term_kscan(unsigned int mode)
+DECL_FC_API_CALL(FC_TERM_KSCAN, term_kscan, unsigned int, (unsigned int mode), (mode))
 
-// function: void fc_sams_map_page(int page, int addr)
-DECL_FC_API_CALL(FC_SAMS_MAP_PAGE, fc_sams_map_page, void, (int page, int addr), (page, addr))
+// function: void sams_map_page(int page, int addr)
+DECL_FC_API_CALL(FC_SAMS_MAP_PAGE, sams_map_page, void, (int page, int addr), (page, addr))
 
-// function: int fc_sams_alloc_pages(int count)
-DECL_FC_API_CALL(FC_SAMS_ALLOC_PAGES, fc_sams_alloc_pages, int, (int count), (count))
+// function: int sams_alloc_pages(int count)
+DECL_FC_API_CALL(FC_SAMS_ALLOC_PAGES, sams_alloc_pages, int, (int count), (count))
 
-// function: int fc_sams_free_pages(int count)
-DECL_FC_API_CALL(FC_SAMS_FREE_PAGES, fc_sams_free_pages, int, (int count), (count))
+// function: int sams_free_pages(int count)
+DECL_FC_API_CALL(FC_SAMS_FREE_PAGES, sams_free_pages, int, (int count), (count))
 
-// function: void fc_sys_info(struct SystemInformation* info)
-DECL_FC_API_CALL(FC_SYS_INFO, fc_sys_info, void, (struct SystemInformation* info), (info))
+// function: void sys_info(struct SystemInformation* info)
+DECL_FC_API_CALL(FC_SYS_INFO, sys_info, void, (struct SystemInformation* info), (info))
 
-// function: void fc_sys_display_info(struct DisplayInformation * info)
-DECL_FC_API_CALL(FC_SYS_DISPLAY_INFO, fc_sys_display_info, void, (struct DisplayInformation * info), (info))
+// function: void sys_display_info(struct DisplayInformation * info)
+DECL_FC_API_CALL(FC_SYS_DISPLAY_INFO, sys_display_info, void, (struct DisplayInformation * info), (info))
 
-// function: void fc_sys_sams_info(struct SamsInformation* info)
-DECL_FC_API_CALL(FC_SYS_SAMS_INFO, fc_sys_sams_info, void, (struct SamsInformation* info), (info))
+// function: void sys_sams_info(struct SamsInformation* info)
+DECL_FC_API_CALL(FC_SYS_SAMS_INFO, sys_sams_info, void, (struct SamsInformation* info), (info))
 
-// function: char* fc_var_get(char* name)
-DECL_FC_API_CALL(FC_VAR_GET, fc_var_get, char*, (char* name), (name))
+// function: char* var_get(char* name)
+DECL_FC_API_CALL(FC_VAR_GET, var_get, char*, (char* name), (name))
 
-// function: void fc_var_set(char* name, char* value)
-DECL_FC_API_CALL(FC_VAR_SET, fc_var_set, void, (char* name, char* value), (name, value))
+// function: void var_set(char* name, char* value)
+DECL_FC_API_CALL(FC_VAR_SET, var_set, void, (char* name, char* value), (name, value))
 
-// function: int fc_exec_cmd(char* command)
-DECL_FC_API_CALL(FC_EXEC_CMD, fc_exec_cmd, int, (char* command), (command))
+// function: int exec_cmd(char* command)
+DECL_FC_API_CALL(FC_EXEC_CMD, exec_cmd, int, (char* command), (command))
 
-// function: void fc_dsr_ea5_load(struct DeviceServiceRoutine * dsr, const char *fname)
-DECL_FC_API_CALL(FC_DSR_EA5_LOAD, fc_dsr_ea5_load, void, (struct DeviceServiceRoutine * dsr, const char *fname), (dsr, fname))
+// function: void dsr_ea5_load(struct DeviceServiceRoutine * dsr, const char *fname)
+DECL_FC_API_CALL(FC_DSR_EA5_LOAD, dsr_ea5_load, void, (struct DeviceServiceRoutine * dsr, const char *fname), (dsr, fname))
 
-// function: unsigned int fc_dsr_open(struct DeviceServiceRoutine* dsr, struct PAB* pab, const char* fname, int flags, int reclen)
-DECL_FC_API_CALL(FC_DSR_OPEN, fc_dsr_open, unsigned int, (struct DeviceServiceRoutine* dsr, struct PAB* pab, const char* fname, int flags, int reclen), (dsr, pab, fname, flags, reclen))
+// function: unsigned int dsr_open(struct DeviceServiceRoutine* dsr, struct PAB* pab, const char* fname, int flags, int reclen)
+DECL_FC_API_CALL(FC_DSR_OPEN, dsr_open, unsigned int, (struct DeviceServiceRoutine* dsr, struct PAB* pab, const char* fname, int flags, int reclen), (dsr, pab, fname, flags, reclen))
 
-// function: unsigned int fc_dsr_close(struct DeviceServiceRoutine* dsr, struct PAB* pab)
-DECL_FC_API_CALL(FC_DSR_CLOSE, fc_dsr_close, unsigned int, (struct DeviceServiceRoutine* dsr, struct PAB* pab), (dsr, pab))
+// function: unsigned int dsr_close(struct DeviceServiceRoutine* dsr, struct PAB* pab)
+DECL_FC_API_CALL(FC_DSR_CLOSE, dsr_close, unsigned int, (struct DeviceServiceRoutine* dsr, struct PAB* pab), (dsr, pab))
 
-// function: unsigned int fc_dsr_read(struct DeviceServiceRoutine* dsr, struct PAB* pab, int recordNumber)
-DECL_FC_API_CALL(FC_DSR_READ, fc_dsr_read, unsigned int, (struct DeviceServiceRoutine* dsr, struct PAB* pab, int recordNumber), (dsr, pab, recordNumber))
+// function: unsigned int dsr_read(struct DeviceServiceRoutine* dsr, struct PAB* pab, int recordNumber)
+DECL_FC_API_CALL(FC_DSR_READ, dsr_read, unsigned int, (struct DeviceServiceRoutine* dsr, struct PAB* pab, int recordNumber), (dsr, pab, recordNumber))
 
-// function: unsigned int fc_dsr_read_cpu(struct DeviceServiceRoutine* dsr, struct PAB* pab, int recordNumber, char* recordBuf)
-DECL_FC_API_CALL(FC_DSR_READ_CPU, fc_dsr_read_cpu, unsigned int, (struct DeviceServiceRoutine* dsr, struct PAB* pab, int recordNumber, char* recordBuf), (dsr, pab, recordNumber, recordBuf))
+// function: unsigned int dsr_read_cpu(struct DeviceServiceRoutine* dsr, struct PAB* pab, int recordNumber, char* recordBuf)
+DECL_FC_API_CALL(FC_DSR_READ_CPU, dsr_read_cpu, unsigned int, (struct DeviceServiceRoutine* dsr, struct PAB* pab, int recordNumber, char* recordBuf), (dsr, pab, recordNumber, recordBuf))
 
-// function: unsigned int fc_dsr_write(struct DeviceServiceRoutine* dsr, struct PAB* pab, char* record, int reclen)
-DECL_FC_API_CALL(FC_DSR_WRITE, fc_dsr_write, unsigned int, (struct DeviceServiceRoutine* dsr, struct PAB* pab, char* record, int reclen), (dsr, pab, record, reclen))
+// function: unsigned int dsr_write(struct DeviceServiceRoutine* dsr, struct PAB* pab, char* record, int reclen)
+DECL_FC_API_CALL(FC_DSR_WRITE, dsr_write, unsigned int, (struct DeviceServiceRoutine* dsr, struct PAB* pab, char* record, int reclen), (dsr, pab, record, reclen))
 
-// function: unsigned int fc_dsr_status(struct DeviceServiceRoutine* dsr, struct PAB* pab)
-DECL_FC_API_CALL(FC_DSR_STATUS, fc_dsr_status, unsigned int, (struct DeviceServiceRoutine* dsr, struct PAB* pab), (dsr, pab))
+// function: unsigned int dsr_status(struct DeviceServiceRoutine* dsr, struct PAB* pab)
+DECL_FC_API_CALL(FC_DSR_STATUS, dsr_status, unsigned int, (struct DeviceServiceRoutine* dsr, struct PAB* pab), (dsr, pab))
 
-// function: unsigned int fc_dsr_reset(struct DeviceServiceRoutine* dsr, struct PAB* pab, int record)
-DECL_FC_API_CALL(FC_DSR_RESET, fc_dsr_reset, unsigned int, (struct DeviceServiceRoutine* dsr, struct PAB* pab, int record), (dsr, pab, record))
+// function: unsigned int dsr_reset(struct DeviceServiceRoutine* dsr, struct PAB* pab, int record)
+DECL_FC_API_CALL(FC_DSR_RESET, dsr_reset, unsigned int, (struct DeviceServiceRoutine* dsr, struct PAB* pab, int record), (dsr, pab, record))
 
-// function: unsigned int fc_dsr_delete(struct DeviceServiceRoutine* dsr, struct PAB* pab)
-DECL_FC_API_CALL(FC_DSR_DELETE, fc_dsr_delete, unsigned int, (struct DeviceServiceRoutine* dsr, struct PAB* pab), (dsr, pab))
+// function: unsigned int dsr_delete(struct DeviceServiceRoutine* dsr, struct PAB* pab)
+DECL_FC_API_CALL(FC_DSR_DELETE, dsr_delete, unsigned int, (struct DeviceServiceRoutine* dsr, struct PAB* pab), (dsr, pab))
 
-// function: unsigned int fc_dsr_prg_load(struct DeviceServiceRoutine* dsr, struct PAB* pab, const char* fname, int vdpaddr, int maxsize)
-DECL_FC_API_CALL(FC_DSR_PRG_LOAD, fc_dsr_prg_load, unsigned int, (struct DeviceServiceRoutine* dsr, struct PAB* pab, const char* fname, int vdpaddr, int maxsize), (dsr, pab, fname, vdpaddr, maxsize))
+// function: unsigned int dsr_prg_load(struct DeviceServiceRoutine* dsr, struct PAB* pab, const char* fname, int vdpaddr, int maxsize)
+DECL_FC_API_CALL(FC_DSR_PRG_LOAD, dsr_prg_load, unsigned int, (struct DeviceServiceRoutine* dsr, struct PAB* pab, const char* fname, int vdpaddr, int maxsize), (dsr, pab, fname, vdpaddr, maxsize))
 
-// function: unsigned int fc_dsr_prg_save(struct DeviceServiceRoutine* dsr, struct PAB* pab, const char* fname, int vdpaddr, int count)
-DECL_FC_API_CALL(FC_DSR_PRG_SAVE, fc_dsr_prg_save, unsigned int, (struct DeviceServiceRoutine* dsr, struct PAB* pab, const char* fname, int vdpaddr, int count), (dsr, pab, fname, vdpaddr, count))
+// function: unsigned int dsr_prg_save(struct DeviceServiceRoutine* dsr, struct PAB* pab, const char* fname, int vdpaddr, int count)
+DECL_FC_API_CALL(FC_DSR_PRG_SAVE, dsr_prg_save, unsigned int, (struct DeviceServiceRoutine* dsr, struct PAB* pab, const char* fname, int vdpaddr, int count), (dsr, pab, fname, vdpaddr, count))
 
-// function: unsigned int fc_dsr_scratch(struct DeviceServiceRoutine* dsr, struct PAB* pab, int record)
-DECL_FC_API_CALL(FC_DSR_SCRATCH, fc_dsr_scratch, unsigned int, (struct DeviceServiceRoutine* dsr, struct PAB* pab, int record), (dsr, pab, record))
+// function: unsigned int dsr_scratch(struct DeviceServiceRoutine* dsr, struct PAB* pab, int record)
+DECL_FC_API_CALL(FC_DSR_SCRATCH, dsr_scratch, unsigned int, (struct DeviceServiceRoutine* dsr, struct PAB* pab, int record), (dsr, pab, record))
 
-// function: unsigned int fc_dsr_catalog(struct DeviceServiceRoutine* dsr, const char* pathname, vol_entry_cb vol_cb, dir_entry_cb dir_cb)
-DECL_FC_API_CALL(FC_DSR_CATALOG, fc_dsr_catalog, unsigned int, (struct DeviceServiceRoutine* dsr, const char* pathname, vol_entry_cb vol_cb, dir_entry_cb dir_cb), (dsr, pathname, vol_cb, dir_cb))
+// function: unsigned int dsr_catalog(struct DeviceServiceRoutine* dsr, const char* pathname, vol_entry_cb vol_cb, dir_entry_cb dir_cb)
+DECL_FC_API_CALL(FC_DSR_CATALOG, dsr_catalog, unsigned int, (struct DeviceServiceRoutine* dsr, const char* pathname, vol_entry_cb vol_cb, dir_entry_cb dir_cb), (dsr, pathname, vol_cb, dir_cb))
 
-// function: unsigned int fc_path_to_iocode(const char* currentPath)
-DECL_FC_API_CALL(FC_PATH_TO_IOCODE, fc_path_to_iocode, unsigned int, (const char* currentPath), (currentPath))
+// function: unsigned int path_to_iocode(const char* currentPath)
+DECL_FC_API_CALL(FC_PATH_TO_IOCODE, path_to_iocode, unsigned int, (const char* currentPath), (currentPath))
 
-// function: unsigned int fc_lvl2_input(int crubase, unsigned int iocode, char *filename, unsigned int blockcount, struct AddInfo *addInfoPtr)
-DECL_FC_API_CALL(FC_LVL2_INPUT, fc_lvl2_input, unsigned int, (int crubase, unsigned int iocode, char *filename, unsigned int blockcount, struct AddInfo *addInfoPtr), (crubase, iocode, filename, blockcount, addInfoPtr))
+// function: unsigned int lvl2_input(int crubase, unsigned int iocode, char *filename, unsigned int blockcount, struct AddInfo *addInfoPtr)
+DECL_FC_API_CALL(FC_LVL2_INPUT, lvl2_input, unsigned int, (int crubase, unsigned int iocode, char *filename, unsigned int blockcount, struct AddInfo *addInfoPtr), (crubase, iocode, filename, blockcount, addInfoPtr))
 
-// function: unsigned int fc_lvl2_input_cpu(int crubase, unsigned int iocode, char *filename, unsigned int blockcount, struct AddInfo *addInfoPtr)
-DECL_FC_API_CALL(FC_LVL2_INPUT_CPU, fc_lvl2_input_cpu, unsigned int, (int crubase, unsigned int iocode, char *filename, unsigned int blockcount, struct AddInfo *addInfoPtr), (crubase, iocode, filename, blockcount, addInfoPtr))
+// function: unsigned int lvl2_input_cpu(int crubase, unsigned int iocode, char *filename, unsigned int blockcount, struct AddInfo *addInfoPtr)
+DECL_FC_API_CALL(FC_LVL2_INPUT_CPU, lvl2_input_cpu, unsigned int, (int crubase, unsigned int iocode, char *filename, unsigned int blockcount, struct AddInfo *addInfoPtr), (crubase, iocode, filename, blockcount, addInfoPtr))
 
-// function: unsigned int fc_lvl2_output(int crubase, unsigned int iocode, char *filename, unsigned int blockcount, struct AddInfo *addInfoPtr)
-DECL_FC_API_CALL(FC_LVL2_OUTPUT, fc_lvl2_output, unsigned int, (int crubase, unsigned int iocode, char *filename, unsigned int blockcount, struct AddInfo *addInfoPtr), (crubase, iocode, filename, blockcount, addInfoPtr))
+// function: unsigned int lvl2_output(int crubase, unsigned int iocode, char *filename, unsigned int blockcount, struct AddInfo *addInfoPtr)
+DECL_FC_API_CALL(FC_LVL2_OUTPUT, lvl2_output, unsigned int, (int crubase, unsigned int iocode, char *filename, unsigned int blockcount, struct AddInfo *addInfoPtr), (crubase, iocode, filename, blockcount, addInfoPtr))
 
-// function: unsigned int fc_lvl2_output_cpu(int crubase, unsigned int iocode, char *filename, unsigned int blockcount, struct AddInfo *addInfoPtr)
-DECL_FC_API_CALL(FC_LVL2_OUTPUT_CPU, fc_lvl2_output_cpu, unsigned int, (int crubase, unsigned int iocode, char *filename, unsigned int blockcount, struct AddInfo *addInfoPtr), (crubase, iocode, filename, blockcount, addInfoPtr))
+// function: unsigned int lvl2_output_cpu(int crubase, unsigned int iocode, char *filename, unsigned int blockcount, struct AddInfo *addInfoPtr)
+DECL_FC_API_CALL(FC_LVL2_OUTPUT_CPU, lvl2_output_cpu, unsigned int, (int crubase, unsigned int iocode, char *filename, unsigned int blockcount, struct AddInfo *addInfoPtr), (crubase, iocode, filename, blockcount, addInfoPtr))
 
-// function: unsigned int fc_lvl2_protect(int crubase, unsigned int iocode, char *filename, int protect)
-DECL_FC_API_CALL(FC_LVL2_PROTECT, fc_lvl2_protect, unsigned int, (int crubase, unsigned int iocode, char *filename, int protect), (crubase, iocode, filename, protect))
+// function: unsigned int lvl2_protect(int crubase, unsigned int iocode, char *filename, int protect)
+DECL_FC_API_CALL(FC_LVL2_PROTECT, lvl2_protect, unsigned int, (int crubase, unsigned int iocode, char *filename, int protect), (crubase, iocode, filename, protect))
 
-// function: unsigned int fc_lvl2_rename(int crubase, unsigned int iocode, char *oldname, char *newname)
-DECL_FC_API_CALL(FC_LVL2_RENAME, fc_lvl2_rename, unsigned int, (int crubase, unsigned int iocode, char *oldname, char *newname), (crubase, iocode, oldname, newname))
+// function: unsigned int lvl2_rename(int crubase, unsigned int iocode, char *oldname, char *newname)
+DECL_FC_API_CALL(FC_LVL2_RENAME, lvl2_rename, unsigned int, (int crubase, unsigned int iocode, char *oldname, char *newname), (crubase, iocode, oldname, newname))
 
-// function: unsigned int fc_lvl2_setdir(int crubase, unsigned int iocode, char* path)
-DECL_FC_API_CALL(FC_LVL2_SETDIR, fc_lvl2_setdir, unsigned int, (int crubase, unsigned int iocode, char* path), (crubase, iocode, path))
+// function: unsigned int lvl2_setdir(int crubase, unsigned int iocode, char* path)
+DECL_FC_API_CALL(FC_LVL2_SETDIR, lvl2_setdir, unsigned int, (int crubase, unsigned int iocode, char* path), (crubase, iocode, path))
 
-// function: unsigned int fc_lvl2_mkdir(int crubase, unsigned int iocode, char *dirname)
-DECL_FC_API_CALL(FC_LVL2_MKDIR, fc_lvl2_mkdir, unsigned int, (int crubase, unsigned int iocode, char *dirname), (crubase, iocode, dirname))
+// function: unsigned int lvl2_mkdir(int crubase, unsigned int iocode, char *dirname)
+DECL_FC_API_CALL(FC_LVL2_MKDIR, lvl2_mkdir, unsigned int, (int crubase, unsigned int iocode, char *dirname), (crubase, iocode, dirname))
 
-// function: unsigned int fc_lvl2_rmdir(int crubase, unsigned int iocode, char *dirname)
-DECL_FC_API_CALL(FC_LVL2_RMDIR, fc_lvl2_rmdir, unsigned int, (int crubase, unsigned int iocode, char *dirname), (crubase, iocode, dirname))
+// function: unsigned int lvl2_rmdir(int crubase, unsigned int iocode, char *dirname)
+DECL_FC_API_CALL(FC_LVL2_RMDIR, lvl2_rmdir, unsigned int, (int crubase, unsigned int iocode, char *dirname), (crubase, iocode, dirname))
 
-// function: unsigned int fc_lvl2_rendir(int crubase, unsigned int iocode, char *oldname, char *newname)
-DECL_FC_API_CALL(FC_LVL2_RENDIR, fc_lvl2_rendir, unsigned int, (int crubase, unsigned int iocode, char *oldname, char *newname), (crubase, iocode, oldname, newname))
+// function: unsigned int lvl2_rendir(int crubase, unsigned int iocode, char *oldname, char *newname)
+DECL_FC_API_CALL(FC_LVL2_RENDIR, lvl2_rendir, unsigned int, (int crubase, unsigned int iocode, char *oldname, char *newname), (crubase, iocode, oldname, newname))
 
-// function: unsigned int fc_lvl2_sector_read(int crubase, unsigned int iocode, unsigned int sector, char* bufaddr)
-DECL_FC_API_CALL(FC_LVL2_SECTOR_READ, fc_lvl2_sector_read, unsigned int, (int crubase, unsigned int iocode, unsigned int sector, char* bufaddr), (crubase, iocode, sector, bufaddr))
+// function: unsigned int lvl2_sector_read(int crubase, unsigned int iocode, unsigned int sector, char* bufaddr)
+DECL_FC_API_CALL(FC_LVL2_SECTOR_READ, lvl2_sector_read, unsigned int, (int crubase, unsigned int iocode, unsigned int sector, char* bufaddr), (crubase, iocode, sector, bufaddr))
 
-// function: unsigned int fc_lvl2_sector_write(int crubase, unsigned int iocode, unsigned int sector, char*bufaddr)
-DECL_FC_API_CALL(FC_LVL2_SECTOR_WRITE, fc_lvl2_sector_write, unsigned int, (int crubase, unsigned int iocode, unsigned int sector, char*bufaddr), (crubase, iocode, sector, bufaddr))
+// function: unsigned int lvl2_sector_write(int crubase, unsigned int iocode, unsigned int sector, char*bufaddr)
+DECL_FC_API_CALL(FC_LVL2_SECTOR_WRITE, lvl2_sector_write, unsigned int, (int crubase, unsigned int iocode, unsigned int sector, char*bufaddr), (crubase, iocode, sector, bufaddr))
 
-// function: unsigned int fc_lvl2_format(int crubase, unsigned int iocode, unsigned int tracks, unsigned int density, unsigned int sides, unsigned int interleave)
-DECL_FC_API_CALL(FC_LVL2_FORMAT, fc_lvl2_format, unsigned int, (int crubase, unsigned int iocode, unsigned int tracks, unsigned int density, unsigned int sides, unsigned int interleave), (crubase, iocode, tracks, density, sides, interleave))
+// function: unsigned int lvl2_format(int crubase, unsigned int iocode, unsigned int tracks, unsigned int density, unsigned int sides, unsigned int interleave)
+DECL_FC_API_CALL(FC_LVL2_FORMAT, lvl2_format, unsigned int, (int crubase, unsigned int iocode, unsigned int tracks, unsigned int density, unsigned int sides, unsigned int interleave), (crubase, iocode, tracks, density, sides, interleave))
 
-// function: unsigned int fc_tcp_connect(unsigned int socketId, char* hostname, char* port)
-DECL_FC_API_CALL(FC_TCP_CONNECT, fc_tcp_connect, unsigned int, (unsigned int socketId, char* hostname, char* port), (socketId, hostname, port))
+// function: unsigned int tcp_connect(unsigned int socketId, char* hostname, char* port)
+DECL_FC_API_CALL(FC_TCP_CONNECT, tcp_connect, unsigned int, (unsigned int socketId, char* hostname, char* port), (socketId, hostname, port))
 
-// function: unsigned int fc_tcp_close(unsigned int socketId)
-DECL_FC_API_CALL(FC_TCP_CLOSE, fc_tcp_close, unsigned int, (unsigned int socketId), (socketId))
+// function: unsigned int tcp_close(unsigned int socketId)
+DECL_FC_API_CALL(FC_TCP_CLOSE, tcp_close, unsigned int, (unsigned int socketId), (socketId))
 
-// function: int fc_tcp_read_socket(unsigned int socketId, char* buf, int bufsize)
-DECL_FC_API_CALL(FC_TCP_READ_SOCKET, fc_tcp_read_socket, int, (unsigned int socketId, char* buf, int bufsize), (socketId, buf, bufsize))
+// function: int tcp_read_socket(unsigned int socketId, char* buf, int bufsize)
+DECL_FC_API_CALL(FC_TCP_READ_SOCKET, tcp_read_socket, int, (unsigned int socketId, char* buf, int bufsize), (socketId, buf, bufsize))
 
-// function: int fc_tcp_send_chars(unsigned int socketId, char* buf, int size)
-DECL_FC_API_CALL(FC_TCP_SEND_CHARS, fc_tcp_send_chars, int, (unsigned int socketId, char* buf, int size), (socketId, buf, size))
+// function: int tcp_send_chars(unsigned int socketId, char* buf, int size)
+DECL_FC_API_CALL(FC_TCP_SEND_CHARS, tcp_send_chars, int, (unsigned int socketId, char* buf, int size), (socketId, buf, size))
 
-// function: int fc_tipi_on()
-DECL_FC_API_CALL(FC_TIPI_ON, fc_tipi_on, int, (), ())
+// function: int tipi_on()
+DECL_FC_API_CALL(FC_TIPI_ON, tipi_on, int, (), ())
 
-// function: void fc_tipi_off()
-DECL_FC_API_CALL(FC_TIPI_OFF, fc_tipi_off, void, (), ())
+// function: void tipi_off()
+DECL_FC_API_CALL(FC_TIPI_OFF, tipi_off, void, (), ())
 
-// function: void fc_tipi_sendmsg(unsigned int len, const char* buf)
-DECL_FC_API_CALL(FC_TIPI_SENDMSG, fc_tipi_sendmsg, void, (unsigned int len, const char* buf), (len, buf))
+// function: void tipi_sendmsg(unsigned int len, const char* buf)
+DECL_FC_API_CALL(FC_TIPI_SENDMSG, tipi_sendmsg, void, (unsigned int len, const char* buf), (len, buf))
 
-// function: void fc_tipi_recvmsg(unsigned int* len, char* buf)
-DECL_FC_API_CALL(FC_TIPI_RECVMSG, fc_tipi_recvmsg, void, (unsigned int* len, char* buf), (len, buf))
+// function: void tipi_recvmsg(unsigned int* len, char* buf)
+DECL_FC_API_CALL(FC_TIPI_RECVMSG, tipi_recvmsg, void, (unsigned int* len, char* buf), (len, buf))
 
-// function: void fc_time_get(struct DateTime* dt)
-DECL_FC_API_CALL(FC_TIME_GET, fc_time_get, void, (struct DateTime* dt), (dt))
+// function: void time_get(struct DateTime* dt)
+DECL_FC_API_CALL(FC_TIME_GET, time_get, void, (struct DateTime* dt), (dt))
 
-// function: struct DeviceServiceRoutine* fc_dsr_find(char* devicename, int crubase)
-DECL_FC_API_CALL(FC_DSR_FIND, fc_dsr_find, struct DeviceServiceRoutine*, (char* devicename, int crubase), (devicename, crubase))
+// function: struct DeviceServiceRoutine* dsr_find(char* devicename, int crubase)
+DECL_FC_API_CALL(FC_DSR_FIND, dsr_find, struct DeviceServiceRoutine*, (char* devicename, int crubase), (devicename, crubase))
 
-// function: void fc_path_parse(char* str_in, struct DeviceServiceRoutine** dsr, char* buffer, int requirements)
-DECL_FC_API_CALL(FC_PATH_PARSE, fc_path_parse, void, (char* str_in, struct DeviceServiceRoutine** dsr, char* buffer, int requirements), (str_in, dsr, buffer, requirements))
+// function: void path_parse(char* str_in, struct DeviceServiceRoutine** dsr, char* buffer, int requirements)
+DECL_FC_API_CALL(FC_PATH_PARSE, path_parse, void, (char* str_in, struct DeviceServiceRoutine** dsr, char* buffer, int requirements), (str_in, dsr, buffer, requirements))
 
-// function: char * fc_str_from_uint(unsigned int x)
-DECL_FC_API_CALL(FC_STR_FROM_UINT, fc_str_from_uint, char *, (unsigned int x), (x))
+// function: char * str_from_uint(unsigned int x)
+DECL_FC_API_CALL(FC_STR_FROM_UINT, str_from_uint, char *, (unsigned int x), (x))
 
-// function: char * fc_hex_from_uint(unsigned int x)
-DECL_FC_API_CALL(FC_HEX_FROM_UINT, fc_hex_from_uint, char *, (unsigned int x), (x))
+// function: char * hex_from_uint(unsigned int x)
+DECL_FC_API_CALL(FC_HEX_FROM_UINT, hex_from_uint, char *, (unsigned int x), (x))
 
-// function: int fc_str_to_int(char *s)
-DECL_FC_API_CALL(FC_STR_TO_INT, fc_str_to_int, int, (char *s), (s))
+// function: int str_to_int(char *s)
+DECL_FC_API_CALL(FC_STR_TO_INT, str_to_int, int, (char *s), (s))
 
-// function: int fc_hex_to_int(char* s)
-DECL_FC_API_CALL(FC_HEX_TO_INT, fc_hex_to_int, int, (char* s), (s))
+// function: int hex_to_int(char* s)
+DECL_FC_API_CALL(FC_HEX_TO_INT, hex_to_int, int, (char* s), (s))
 
-// function: char* fc_str_from_float(double a)
-DECL_FC_API_CALL(FC_STR_FROM_FLOAT, fc_str_from_float, char*, (double a), (a))
+// function: char* str_from_float(double a)
+DECL_FC_API_CALL(FC_STR_FROM_FLOAT, str_from_float, char*, (double a), (a))
 
-// function: char * fc_str_copy(char *d, const char *s)
-DECL_FC_API_CALL(FC_STR_COPY, fc_str_copy, char *, (char *d, const char *s), (d, s))
+// function: char * str_copy(char *d, const char *s)
+DECL_FC_API_CALL(FC_STR_COPY, str_copy, char *, (char *d, const char *s), (d, s))
 
-// function: char * fc_str_ncopy(char *dest, char *src, int limit)
-DECL_FC_API_CALL(FC_STR_NCOPY, fc_str_ncopy, char *, (char *dest, char *src, int limit), (dest, src, limit))
+// function: char * str_ncopy(char *dest, char *src, int limit)
+DECL_FC_API_CALL(FC_STR_NCOPY, str_ncopy, char *, (char *dest, char *src, int limit), (dest, src, limit))
 
-// function: char * fc_str_cat(char *dst, const char *add)
-DECL_FC_API_CALL(FC_STR_CAT, fc_str_cat, char *, (char *dst, const char *add), (dst, add))
+// function: char * str_cat(char *dst, const char *add)
+DECL_FC_API_CALL(FC_STR_CAT, str_cat, char *, (char *dst, const char *add), (dst, add))
 
-// function: char * fc_str_token(char *str, int delim)
-DECL_FC_API_CALL(FC_STR_TOKEN, fc_str_token, char *, (char *str, int delim), (str, delim))
+// function: char * str_token(char *str, int delim)
+DECL_FC_API_CALL(FC_STR_TOKEN, str_token, char *, (char *str, int delim), (str, delim))
 
-// function: char * fc_str_token_peek(char *str, int delim)
-DECL_FC_API_CALL(FC_STR_TOKEN_PEEK, fc_str_token_peek, char *, (char *str, int delim), (str, delim))
+// function: char * str_token_peek(char *str, int delim)
+DECL_FC_API_CALL(FC_STR_TOKEN_PEEK, str_token_peek, char *, (char *str, int delim), (str, delim))
 
-// function: int fc_str_len(const char *s)
-DECL_FC_API_CALL(FC_STR_LEN, fc_str_len, int, (const char *s), (s))
+// function: int str_len(const char *s)
+DECL_FC_API_CALL(FC_STR_LEN, str_len, int, (const char *s), (s))
 
-// function: int fc_str_cmp(const char *a, const char *b)
-DECL_FC_API_CALL(FC_STR_CMP, fc_str_cmp, int, (const char *a, const char *b), (a, b))
+// function: int str_cmp(const char *a, const char *b)
+DECL_FC_API_CALL(FC_STR_CMP, str_cmp, int, (const char *a, const char *b), (a, b))
 
-// function: int fc_str_cmp_icase(const char *a, const char *b)
-DECL_FC_API_CALL(FC_STR_CMP_ICASE, fc_str_cmp_icase, int, (const char *a, const char *b), (a, b))
+// function: int str_cmp_icase(const char *a, const char *b)
+DECL_FC_API_CALL(FC_STR_CMP_ICASE, str_cmp_icase, int, (const char *a, const char *b), (a, b))
 
-// function: int fc_str_index_of(const char *str, int c)
-DECL_FC_API_CALL(FC_STR_INDEX_OF, fc_str_index_of, int, (const char *str, int c), (str, c))
+// function: int str_index_of(const char *str, int c)
+DECL_FC_API_CALL(FC_STR_INDEX_OF, str_index_of, int, (const char *str, int c), (str, c))
 
-// function: int fc_str_last_index_of(const char *str, int c, int start)
-DECL_FC_API_CALL(FC_STR_LAST_INDEX_OF, fc_str_last_index_of, int, (const char *str, int c, int start), (str, c, start))
+// function: int str_last_index_of(const char *str, int c, int start)
+DECL_FC_API_CALL(FC_STR_LAST_INDEX_OF, str_last_index_of, int, (const char *str, int c, int start), (str, c, start))
 
-// function: int fc_str_startswith(const char *str, const char *prefix)
-DECL_FC_API_CALL(FC_STR_STARTSWITH, fc_str_startswith, int, (const char *str, const char *prefix), (str, prefix))
+// function: int str_startswith(const char *str, const char *prefix)
+DECL_FC_API_CALL(FC_STR_STARTSWITH, str_startswith, int, (const char *str, const char *prefix), (str, prefix))
 
-// function: int fc_str_endswith(const char *str, const char *suffix)
-DECL_FC_API_CALL(FC_STR_ENDSWITH, fc_str_endswith, int, (const char *str, const char *suffix), (str, suffix))
+// function: int str_endswith(const char *str, const char *suffix)
+DECL_FC_API_CALL(FC_STR_ENDSWITH, str_endswith, int, (const char *str, const char *suffix), (str, suffix))
 
-// function: int fc_str_from_basic(const char *str, char *buf)
-DECL_FC_API_CALL(FC_STR_FROM_BASIC, fc_str_from_basic, int, (const char *str, char *buf), (str, buf))
+// function: int str_from_basic(const char *str, char *buf)
+DECL_FC_API_CALL(FC_STR_FROM_BASIC, str_from_basic, int, (const char *str, char *buf), (str, buf))
 
-// function: void fc_str_set(char *buffer, int value, int limit)
-DECL_FC_API_CALL(FC_STR_SET, fc_str_set, void, (char *buffer, int value, int limit), (buffer, value, limit))
+// function: void str_set(char *buffer, int value, int limit)
+DECL_FC_API_CALL(FC_STR_SET, str_set, void, (char *buffer, int value, int limit), (buffer, value, limit))
 
-// function: char* fc_str_token_next(char* dst, char* str, int delim)
-DECL_FC_API_CALL(FC_STR_TOKEN_NEXT, fc_str_token_next, char*, (char* dst, char* str, int delim), (dst, str, delim))
+// function: char* str_token_next(char* dst, char* str, int delim)
+DECL_FC_API_CALL(FC_STR_TOKEN_NEXT, str_token_next, char*, (char* dst, char* str, int delim), (dst, str, delim))
 
-// function: void fc_audio_beep()
-DECL_FC_API_CALL(FC_AUDIO_BEEP, fc_audio_beep, void, (), ())
+// function: void audio_beep()
+DECL_FC_API_CALL(FC_AUDIO_BEEP, audio_beep, void, (), ())
 
-// function: void fc_audio_honk()
-DECL_FC_API_CALL(FC_AUDIO_HONK, fc_audio_honk, void, (), ())
+// function: void audio_honk()
+DECL_FC_API_CALL(FC_AUDIO_HONK, audio_honk, void, (), ())
 
-// function: void fc_term_set_identify_hook(identify_callback cb)
-DECL_FC_API_CALL(FC_TERM_SET_IDENTIFY_HOOK, fc_term_set_identify_hook, void, (identify_callback cb), (cb))
+// function: void term_set_identify_hook(identify_callback cb)
+DECL_FC_API_CALL(FC_TERM_SET_IDENTIFY_HOOK, term_set_identify_hook, void, (identify_callback cb), (cb))
 
-// function: void fc_vdp_setchar(int pAddr, int ch)
-DECL_FC_API_CALL(FC_VDP_SETCHAR, fc_vdp_setchar, void, (int pAddr, int ch), (pAddr, ch))
+// function: void vdp_setchar(int pAddr, int ch)
+DECL_FC_API_CALL(FC_VDP_SETCHAR, vdp_setchar, void, (int pAddr, int ch), (pAddr, ch))
 
-// function: unsigned int fc_vdp_cursor_addr()
-DECL_FC_API_CALL(FC_VDP_CURSOR_ADDR, fc_vdp_cursor_addr, unsigned int, (), ())
+// function: unsigned int vdp_cursor_addr()
+DECL_FC_API_CALL(FC_VDP_CURSOR_ADDR, vdp_cursor_addr, unsigned int, (), ())
 
-// function: void fc_ui_drop_down(int linecount)
-DECL_FC_API_CALL(FC_UI_DROP_DOWN, fc_ui_drop_down, void, (int linecount), (linecount))
+// function: void ui_drop_down(int linecount)
+DECL_FC_API_CALL(FC_UI_DROP_DOWN, ui_drop_down, void, (int linecount), (linecount))
 
-// function: void fc_ui_gotoxy(int x, int y)
-DECL_FC_API_CALL(FC_UI_GOTOXY, fc_ui_gotoxy, void, (int x, int y), (x, y))
+// function: void ui_gotoxy(int x, int y)
+DECL_FC_API_CALL(FC_UI_GOTOXY, ui_gotoxy, void, (int x, int y), (x, y))
 
-// function: void fc_speech_reset()
-DECL_FC_API_CALL(FC_SPEECH_RESET, fc_speech_reset, void, (), ())
+// function: void speech_reset()
+DECL_FC_API_CALL(FC_SPEECH_RESET, speech_reset, void, (), ())
 
-// function: int fc_speech_detect()
-DECL_FC_API_CALL(FC_SPEECH_DETECT, fc_speech_detect, int, (), ())
+// function: int speech_detect()
+DECL_FC_API_CALL(FC_SPEECH_DETECT, speech_detect, int, (), ())
 
-// function: void fc_speech_say_vocab(int phrase_addr)
-DECL_FC_API_CALL(FC_SPEECH_SAY_VOCAB, fc_speech_say_vocab, void, (int phrase_addr), (phrase_addr))
+// function: void speech_say_vocab(int phrase_addr)
+DECL_FC_API_CALL(FC_SPEECH_SAY_VOCAB, speech_say_vocab, void, (int phrase_addr), (phrase_addr))
 
-// function: void fc_speech_say_data(const char* addr, int len)
-DECL_FC_API_CALL(FC_SPEECH_SAY_DATA, fc_speech_say_data, void, (const char* addr, int len), (addr, len))
+// function: void speech_say_data(const char* addr, int len)
+DECL_FC_API_CALL(FC_SPEECH_SAY_DATA, speech_say_data, void, (const char* addr, int len), (addr, len))
 
-// function: void fc_speech_start(struct LpcPlaybackCtx* ctx)
-DECL_FC_API_CALL(FC_SPEECH_START, fc_speech_start, void, (struct LpcPlaybackCtx* ctx), (ctx))
+// function: void speech_start(struct LpcPlaybackCtx* ctx)
+DECL_FC_API_CALL(FC_SPEECH_START, speech_start, void, (struct LpcPlaybackCtx* ctx), (ctx))
 
-// function: void fc_speech_continue(struct LpcPlaybackCtx* ctx)
-DECL_FC_API_CALL(FC_SPEECH_CONTINUE, fc_speech_continue, void, (struct LpcPlaybackCtx* ctx), (ctx))
+// function: void speech_continue(struct LpcPlaybackCtx* ctx)
+DECL_FC_API_CALL(FC_SPEECH_CONTINUE, speech_continue, void, (struct LpcPlaybackCtx* ctx), (ctx))
 
-// function: void fc_speech_wait()
-DECL_FC_API_CALL(FC_SPEECH_WAIT, fc_speech_wait, void, (), ())
+// function: void speech_wait()
+DECL_FC_API_CALL(FC_SPEECH_WAIT, speech_wait, void, (), ())
 
-// function: void fc_mouse_read(struct MouseData* mouseData)
-DECL_FC_API_CALL(FC_MOUSE_READ, fc_mouse_read, void, (struct MouseData* mouseData), (mouseData))
+// function: void mouse_read(struct MouseData* mouseData)
+DECL_FC_API_CALL(FC_MOUSE_READ, mouse_read, void, (struct MouseData* mouseData), (mouseData))
 
-// function: void fc_mouse_move(struct MouseData* mouseData)
-DECL_FC_API_CALL(FC_MOUSE_MOVE, fc_mouse_move, void, (struct MouseData* mouseData), (mouseData))
+// function: void mouse_move(struct MouseData* mouseData)
+DECL_FC_API_CALL(FC_MOUSE_MOVE, mouse_move, void, (struct MouseData* mouseData), (mouseData))
 
-// function: void fc_mouse_show(struct MouseData* mouseData)
-DECL_FC_API_CALL(FC_MOUSE_SHOW, fc_mouse_show, void, (struct MouseData* mouseData), (mouseData))
+// function: void mouse_show(struct MouseData* mouseData)
+DECL_FC_API_CALL(FC_MOUSE_SHOW, mouse_show, void, (struct MouseData* mouseData), (mouseData))
 
-// function: void fc_mouse_hide()
-DECL_FC_API_CALL(FC_MOUSE_HIDE, fc_mouse_hide, void, (), ())
+// function: void mouse_hide()
+DECL_FC_API_CALL(FC_MOUSE_HIDE, mouse_hide, void, (), ())
 
-// function: unsigned int fc_tls_connect(unsigned int socketId, char* hostname, char* port)
-DECL_FC_API_CALL(FC_TLS_CONNECT, fc_tls_connect, unsigned int, (unsigned int socketId, char* hostname, char* port), (socketId, hostname, port))
+// function: unsigned int tls_connect(unsigned int socketId, char* hostname, char* port)
+DECL_FC_API_CALL(FC_TLS_CONNECT, tls_connect, unsigned int, (unsigned int socketId, char* hostname, char* port), (socketId, hostname, port))
 
-// function: unsigned int fc_tls_close(unsigned int socketId)
-DECL_FC_API_CALL(FC_TLS_CLOSE, fc_tls_close, unsigned int, (unsigned int socketId), (socketId))
+// function: unsigned int tls_close(unsigned int socketId)
+DECL_FC_API_CALL(FC_TLS_CLOSE, tls_close, unsigned int, (unsigned int socketId), (socketId))
 
-// function: int fc_tls_read_socket(unsigned int socketId, char* buf, int bufsize)
-DECL_FC_API_CALL(FC_TLS_READ_SOCKET, fc_tls_read_socket, int, (unsigned int socketId, char* buf, int bufsize), (socketId, buf, bufsize))
+// function: int tls_read_socket(unsigned int socketId, char* buf, int bufsize)
+DECL_FC_API_CALL(FC_TLS_READ_SOCKET, tls_read_socket, int, (unsigned int socketId, char* buf, int bufsize), (socketId, buf, bufsize))
 
-// function: int fc_tls_send_chars(unsigned int socketId, char* buf, int size)
-DECL_FC_API_CALL(FC_TLS_SEND_CHARS, fc_tls_send_chars, int, (unsigned int socketId, char* buf, int size), (socketId, buf, size))
+// function: int tls_send_chars(unsigned int socketId, char* buf, int size)
+DECL_FC_API_CALL(FC_TLS_SEND_CHARS, tls_send_chars, int, (unsigned int socketId, char* buf, int size), (socketId, buf, size))
 
-// function: void fc_sockbuf_init(struct SocketBuffer* socket_buf, int tls, unsigned int socketId)
-DECL_FC_API_CALL(FC_SOCKBUF_INIT, fc_sockbuf_init, void, (struct SocketBuffer* socket_buf, int tls, unsigned int socketId), (socket_buf, tls, socketId))
+// function: void sockbuf_init(struct SocketBuffer* socket_buf, int tls, unsigned int socketId)
+DECL_FC_API_CALL(FC_SOCKBUF_INIT, sockbuf_init, void, (struct SocketBuffer* socket_buf, int tls, unsigned int socketId), (socket_buf, tls, socketId))
 
-// function: char* fc_sockbuf_readline(struct SocketBuffer* socket_buf)
-DECL_FC_API_CALL(FC_SOCKBUF_READLINE, fc_sockbuf_readline, char*, (struct SocketBuffer* socket_buf), (socket_buf))
+// function: char* sockbuf_readline(struct SocketBuffer* socket_buf)
+DECL_FC_API_CALL(FC_SOCKBUF_READLINE, sockbuf_readline, char*, (struct SocketBuffer* socket_buf), (socket_buf))
 
-// function: int fc_sockbuf_readstream(struct SocketBuffer* socket_buf, char* block, int limit)
-DECL_FC_API_CALL(FC_SOCKBUF_READSTREAM, fc_sockbuf_readstream, int, (struct SocketBuffer* socket_buf, char* block, int limit), (socket_buf, block, limit))
+// function: int sockbuf_readstream(struct SocketBuffer* socket_buf, char* block, int limit)
+DECL_FC_API_CALL(FC_SOCKBUF_READSTREAM, sockbuf_readstream, int, (struct SocketBuffer* socket_buf, char* block, int limit), (socket_buf, block, limit))
 
-// function: void fc_list_init(struct List* list, void* addr, void* ceiling)
-DECL_FC_API_CALL(FC_LIST_INIT, fc_list_init, void, (struct List* list, void* addr, void* ceiling), (list, addr, ceiling))
+// function: void list_init(struct List* list, void* addr, void* ceiling)
+DECL_FC_API_CALL(FC_LIST_INIT, list_init, void, (struct List* list, void* addr, void* ceiling), (list, addr, ceiling))
 
-// function: void fc_list_push(struct List* list, char* buffer, int length)
-DECL_FC_API_CALL(FC_LIST_PUSH, fc_list_push, void, (struct List* list, char* buffer, int length), (list, buffer, length))
+// function: void list_push(struct List* list, char* buffer, int length)
+DECL_FC_API_CALL(FC_LIST_PUSH, list_push, void, (struct List* list, char* buffer, int length), (list, buffer, length))
 
-// function: void fc_list_pop(struct List* list, char* buffer, int limit)
-DECL_FC_API_CALL(FC_LIST_POP, fc_list_pop, void, (struct List* list, char* buffer, int limit), (list, buffer, limit))
+// function: void list_pop(struct List* list, char* buffer, int limit)
+DECL_FC_API_CALL(FC_LIST_POP, list_pop, void, (struct List* list, char* buffer, int limit), (list, buffer, limit))
 
-// function: struct ListEntry* fc_list_get(struct List* list, int index)
-DECL_FC_API_CALL(FC_LIST_GET, fc_list_get, struct ListEntry*, (struct List* list, int index), (list, index))
+// function: struct ListEntry* list_get(struct List* list, int index)
+DECL_FC_API_CALL(FC_LIST_GET, list_get, struct ListEntry*, (struct List* list, int index), (list, index))
 
-// function: unsigned int fc_color_text(unsigned int color)
-DECL_FC_API_CALL(FC_COLOR_TEXT, fc_color_text, unsigned int, (unsigned int color), (color))
+// function: unsigned int color_text(unsigned int color)
+DECL_FC_API_CALL(FC_COLOR_TEXT, color_text, unsigned int, (unsigned int color), (color))
 
-// function: unsigned int fc_color_bg(unsigned int color)
-DECL_FC_API_CALL(FC_COLOR_BG, fc_color_bg, unsigned int, (unsigned int color), (color))
+// function: unsigned int color_bg(unsigned int color)
+DECL_FC_API_CALL(FC_COLOR_BG, color_bg, unsigned int, (unsigned int color), (color))
 
-// function: unsigned int fc_color_border(unsigned int x)
-DECL_FC_API_CALL(FC_COLOR_BORDER, fc_color_border, unsigned int, (unsigned int x), (x))
+// function: unsigned int color_border(unsigned int x)
+DECL_FC_API_CALL(FC_COLOR_BORDER, color_border, unsigned int, (unsigned int x), (x))
 
-// function: void fc_tipi_log(char* msg)
-DECL_FC_API_CALL(FC_TIPI_LOG, fc_tipi_log, void, (char* msg), (msg))
+// function: void tipi_log(char* msg)
+DECL_FC_API_CALL(FC_TIPI_LOG, tipi_log, void, (char* msg), (msg))
 
 #endif

@@ -7,7 +7,7 @@
  *   This may trigger additional environment restoration upon return.
  * command line parameters are passed as a single un-parsed buffer.
  */
-int fc_main(char* args);
+int main(char* args);
 
 #define FC_SYS *(int *)0x2000
 

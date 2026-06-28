@@ -22,7 +22,7 @@ static int add_bank();
 
 void FC_SAMS(1,init_page()) {
   struct SamsInformation samsInfo;
-  fc_sys_sams_info(&samsInfo);
+  sys_sams_info(&samsInfo);
   state.page_count = 0;
   state.max_page = samsInfo.total_pages;
   state.base_id = add_bank();
@@ -31,7 +31,7 @@ void FC_SAMS(1,init_page()) {
 }
 
 void FC_SAMS(1,page_clear_lines()) {
-  state.base_id = fc_sams_free_pages(state.page_count);
+  state.base_id = sams_free_pages(state.page_count);
   state.page_count = 0;
   state.line_limit = 0;
   state.line_count = 1;
@@ -43,11 +43,11 @@ void FC_SAMS(1,page_clear_lines()) {
 }
 
 static int add_bank() {
-  int bank_id = fc_sams_alloc_pages(1);
+  int bank_id = sams_alloc_pages(1);
   state.page_count++;
-  fc_sams_map_page(bank_id, SAMS_ADDR);
+  sams_map_page(bank_id, SAMS_ADDR);
   state.line_limit += LINES_PER_BANK;
-  fc_str_set((char*)SAMS_ADDR, 0, 4096);
+  str_set((char*)SAMS_ADDR, 0, 4096);
   return bank_id;
 }
 
@@ -65,7 +65,7 @@ struct Line* FC_SAMS(1,page_get_line(int idx)) {
   int page_offset = idx / LINES_PER_BANK;
   int line_offset = idx - (page_offset * LINES_PER_BANK);
   int page_id = page_offset + state.base_id;
-  fc_sams_map_page(page_id, SAMS_ADDR);
+  sams_map_page(page_id, SAMS_ADDR);
   return &(PAGE->lines[line_offset]);
 }
 

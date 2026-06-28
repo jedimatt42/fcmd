@@ -32,13 +32,13 @@ void halt() {
   while(1) { }
 }
 
-int fc_main(char* args) {
+int main(char* args) {
   if (check_requirements()) {
     return 1;
   }
 
-  fc_str_set((char*)&state, 0, sizeof(struct State));
-  fc_str_ncopy(state.newurl, args, 256);
+  str_set((char*)&state, 0, sizeof(struct State));
+  str_ncopy(state.newurl, args, 256);
 
   init_history();
   init_page();
@@ -47,7 +47,7 @@ int fc_main(char* args) {
 
   state.cmd = CMD_IDLE;
   if (state.newurl[0] == 0) {
-    fc_str_copy(state.newurl, "about:");
+    str_copy(state.newurl, "about:");
     state.cmd = CMD_RELOAD;
   } else {
     state.cmd = CMD_RELOAD;
@@ -67,7 +67,7 @@ int fc_main(char* args) {
       screen_status();
     } else if (state.cmd == CMD_STOP) {
       state.cmd = CMD_IDLE;
-      fc_tls_close(SOCKET_ID);
+      tls_close(SOCKET_ID);
       screen_redraw();
     } else if (state.cmd == CMD_READPAGE) {
       if (mouse_active) {
@@ -119,14 +119,14 @@ void FC_SAMS(0, process_input()) {
 }
 
 void on_exit() {
-  fc_mouse_hide();
-  fc_sams_free_pages(state.page_count + 1 /* 1 for history */);
+  mouse_hide();
+  sams_free_pages(state.page_count + 1 /* 1 for history */);
 }
 
 void prepare_for_builtin_url(char* url) {
     page_clear_lines();
     state.cmd = CMD_IDLE;
-    fc_str_copy(state.newurl, url);
+    str_copy(state.newurl, url);
     state.builtin = 1;
 }
 
@@ -136,24 +136,24 @@ void FC_SAMS(0, open_url(char* url)) {
   char hostname[80];
   char port[10];
 
-  if (fc_str_startswith(url, "http:") || fc_str_startswith(url, "https:") || fc_str_startswith(url, "gopher:")) {
+  if (str_startswith(url, "http:") || str_startswith(url, "https:") || str_startswith(url, "gopher:")) {
     set_error("unsupported protocol", 0);
     return;
   }
 
-  if (!fc_str_cmp(url, "about:")) {
+  if (!str_cmp(url, "about:")) {
     prepare_for_builtin_url(url);
     about();
     return;
   }
 
-  if (!fc_str_cmp(url, "history:")) {
+  if (!str_cmp(url, "history:")) {
     prepare_for_builtin_url(url);
     show_history();
     return;
   }
 
-  if (!fc_str_cmp(url, "bookmarks:")) {
+  if (!str_cmp(url, "bookmarks:")) {
     prepare_for_builtin_url(url);
     show_bookmarks();
     return;
@@ -161,7 +161,7 @@ void FC_SAMS(0, open_url(char* url)) {
 
   if (file_exists(url)) {
     page_clear_lines();
-    fc_str_copy(state.lasturl, url);
+    str_copy(state.lasturl, url);
     history_push(state.lasturl);
     file_load(url);
     return;
@@ -176,18 +176,18 @@ void FC_SAMS(0, open_url(char* url)) {
   set_error("connecting...", 0x7fff);
   screen_status();
 
-  if(fc_tls_connect(SOCKET_ID, hostname, port)) {
+  if(tls_connect(SOCKET_ID, hostname, port)) {
     state.error[0] = 0;
     init_readline(SOCKET_ID);
     send_request(state.lasturl);
 
     char* line = readline();
     // strip any newline off
-    int i = fc_str_index_of(line, 13);
+    int i = str_index_of(line, 13);
     if (i != -1) {
       line[i] = 0;
     }
-    i = fc_str_index_of(line, 10);
+    i = str_index_of(line, 10);
     if (i != -1) {
       line[i] = 0;
     }
@@ -202,18 +202,18 @@ void FC_SAMS(0, open_url(char* url)) {
       case '1':
 	{
 	  char query[80];
-	  fc_str_set(query, 0, 80);
+	  str_set(query, 0, 80);
 	  screen_prompt(query, line + 3);
-	  int l = fc_str_len(state.lasturl);
-	  fc_str_ncopy(state.newurl, state.lasturl, 256);
+	  int l = str_len(state.lasturl);
+	  str_ncopy(state.newurl, state.lasturl, 256);
 	  state.newurl[l++] = '?';
-	  fc_str_ncopy(state.newurl + l, query, 256 - l);
+	  str_ncopy(state.newurl + l, query, 256 - l);
 	  state.cmd = CMD_RELOAD;
 	}
 	break;
       case '3':
 	{
-	  fc_str_ncopy(state.newurl, line + 3, 256);
+	  str_ncopy(state.newurl, line + 3, 256);
 	  state.cmd = CMD_RELOAD;
 	}
 	break;
@@ -234,7 +234,7 @@ void FC_SAMS(0, open_url(char* url)) {
     restore_url();
   }
   if (state.cmd != CMD_READPAGE && state.cmd != CMD_DOWNLOAD) {
-    fc_tls_close(SOCKET_ID);
+    tls_close(SOCKET_ID);
   }
 }
 
@@ -246,29 +246,29 @@ void restore_url() {
 
 void send_request(char* request) {
   char tmp[256];
-  fc_str_copy(tmp, request);
-  fc_str_cat(tmp, CRLF);
-  fc_tls_send_chars(SOCKET_ID, tmp, fc_str_len(tmp));
+  str_copy(tmp, request);
+  str_cat(tmp, CRLF);
+  tls_send_chars(SOCKET_ID, tmp, str_len(tmp));
 }
 
 void handle_success(char* line) {
   // gobbles the status code, we already know it is a '2x'
-  char* tok = fc_str_token(line, ' ');
+  char* tok = str_token(line, ' ');
 
-  tok = fc_str_token(0, ';');
-  if (fc_str_startswith(tok, "text/gemini")) {
+  tok = str_token(0, ';');
+  if (str_startswith(tok, "text/gemini")) {
     state.cmd = CMD_READPAGE;
-  } else if (fc_str_startswith(tok, "text/plain")) {
+  } else if (str_startswith(tok, "text/plain")) {
     state.cmd = CMD_READPAGE;
-  } else if (fc_str_startswith(tok, "application/octet-stream")) {
+  } else if (str_startswith(tok, "application/octet-stream")) {
     restore_url();
     restore_url(); // twice to be at page currently on the screen
     history_push(state.lasturl); // make top of history stack correct
     gemini_download_begin();
   } else {
     char msg[80];
-    fc_str_copy(msg, "uknown mime-type: ");
-    fc_str_ncopy(msg + 18, tok, 80-18);
+    str_copy(msg, "uknown mime-type: ");
+    str_ncopy(msg + 18, tok, 80-18);
     set_error(msg, 0);
   }
   if (state.cmd == CMD_READPAGE) {
@@ -279,7 +279,7 @@ void handle_success(char* line) {
 }
 
 void any_key() {
-  fc_term_puts("press any key to continue.");
+  term_puts("press any key to continue.");
   while(!read_keyboard()) {
     // spin
   }
@@ -287,16 +287,16 @@ void any_key() {
 
 int check_requirements() {
   struct DisplayInformation dinfo;
-  fc_sys_display_info(&dinfo);
+  sys_display_info(&dinfo);
   int res = 0;
   if (dinfo.vdp_type != VDP_F18A) {
-    fc_term_puts("F18A required\n");
+    term_puts("F18A required\n");
     res = 1;
   }
   struct SamsInformation sinfo;
-  fc_sys_sams_info(&sinfo);
+  sys_sams_info(&sinfo);
   if (sinfo.total_pages == 0) {
-    fc_term_puts("SAMS required\n");
+    term_puts("SAMS required\n");
     res = 1;
   }
   if (res) {
@@ -306,7 +306,7 @@ int check_requirements() {
 }
 
 void FC_SAMS(0, set_error(char* msg, int ticks)) {
-  fc_str_ncopy(state.error, msg, 80);
+  str_ncopy(state.error, msg, 80);
   if (ticks == 0) {
     ticks = 15*60; // 60 ticks a second
   }

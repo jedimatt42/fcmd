@@ -2,8 +2,8 @@
 
 #include "alt.h"
 
-int fc_main(char* args) {
-  fc_term_puts("Hello\n");
+int main(char* args) {
+  term_puts("Hello\n");
   alt();
   return 0;
 }

@@ -3,17 +3,17 @@
 #include "menu.h"
 
 int show_menu() {
-  fc_ui_drop_down(4);
+  ui_drop_down(4);
 
   // I want fc_gotoxy(x, y);
-  fc_ui_gotoxy(3, 2);
-  fc_term_puts("^Q - close terminal");
-  fc_ui_gotoxy(3, 3);
-  fc_term_puts("BACK - resume");
+  ui_gotoxy(3, 2);
+  term_puts("^Q - close terminal");
+  ui_gotoxy(3, 3);
+  term_puts("BACK - resume");
 
   int done = 0;
   while(!done) {
-    int key = fc_term_kscan(5);
+    int key = term_kscan(5);
 
     if (KSCAN_STATUS & KSCAN_MASK) {
       switch(key) {

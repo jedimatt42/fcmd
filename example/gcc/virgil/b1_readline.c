@@ -9,7 +9,7 @@ struct SocketBuffer socket_buf;
 
 
 void FC_SAMS(1,init_readline(int socket_id)) {
-    fc_sockbuf_init(&socket_buf, TLS, socket_id);
+    sockbuf_init(&socket_buf, TLS, socket_id);
 }
 
 char* FC_SAMS(1,readline()) {
@@ -18,11 +18,11 @@ char* FC_SAMS(1,readline()) {
 
     // read one char into lastline at a time
     char* onebyte = LASTLINE;
-    while((space > 0) && fc_sockbuf_readstream(&socket_buf, onebyte, 1)) {
+    while((space > 0) && sockbuf_readstream(&socket_buf, onebyte, 1)) {
         space--;
         if (*onebyte == 13) {
 	    // peek to see if next is a linefeed
-            int res = fc_sockbuf_readstream(&socket_buf, onebyte + 1, 1);
+            int res = sockbuf_readstream(&socket_buf, onebyte + 1, 1);
 	    if (res) {
 	      space--;
 	    }
@@ -47,12 +47,12 @@ char* FC_SAMS(1,readline()) {
 }
 
 char* FC_SAMS(1,readbytes(int* len)) {
-    *len = fc_sockbuf_readstream(&socket_buf, LASTLINE, 512);
+    *len = sockbuf_readstream(&socket_buf, LASTLINE, 512);
     return LASTLINE;
 }
 
 char* FC_SAMS(1,readbytes_limit(int* len, int limit)) {
-    *len = fc_sockbuf_readstream(&socket_buf, LASTLINE, limit);
+    *len = sockbuf_readstream(&socket_buf, LASTLINE, limit);
     return LASTLINE;
 }
 

@@ -46,7 +46,7 @@ int childWantsQuit();
 #define QUITVAR "FCM"
 
 int fcmain(char* args) {
-  fc_sys_display_info(&dinfo);
+  sys_display_info(&dinfo);
   disp_limit = dinfo.displayWidth == 40 ? 20 : 40;
 
   entry_idx = 0;
@@ -55,18 +55,18 @@ int fcmain(char* args) {
   char pathname[80];
   selection = 0;
 
-  fc_path_parse(args, &dsr, pathname, PR_REQUIRED);
+  path_parse(args, &dsr, pathname, PR_REQUIRED);
   if (!dsr) {
-    fc_term_puts("menu data file must be specified\n");
+    term_puts("menu data file must be specified\n");
     return 1;
   }
 
   struct PAB pab;
-  int ferr = fc_dsr_open(dsr, &pab, pathname, DSR_TYPE_INPUT | DSR_TYPE_VARIABLE, 80);
+  int ferr = dsr_open(dsr, &pab, pathname, DSR_TYPE_INPUT | DSR_TYPE_VARIABLE, 80);
   if (ferr) {
-    fc_term_puts("could not open ");
-    fc_term_puts(pathname);
-    fc_term_putc('\n');
+    term_puts("could not open ");
+    term_puts(pathname);
+    term_putc('\n');
     return 1;
   }
 
@@ -75,7 +75,7 @@ int fcmain(char* args) {
     char buffer[80];
     for (int c=0; c<80; c++) {buffer[c] = 0;}
 
-    ferr = fc_dsr_read_cpu(dsr, &pab, recordno++, buffer);
+    ferr = dsr_read_cpu(dsr, &pab, recordno++, buffer);
     if (!ferr) {
       // records are a <key>|<title>|<command>
       if (pab.CharCount) {
@@ -87,26 +87,26 @@ int fcmain(char* args) {
           }
           entries[entry_max].key = buffer[0];
 
-          int first_delim = fc_str_index_of(buffer, '|');
-          int second_delim = first_delim + fc_str_index_of(buffer+first_delim+1, '|');
+          int first_delim = str_index_of(buffer, '|');
+          int second_delim = first_delim + str_index_of(buffer+first_delim+1, '|');
 
           int title_len = second_delim - first_delim;
           if (title_len > 17) {
             title_len = 17;
           }
-          fc_str_ncopy(entries[entry_max].title, buffer + first_delim + 1, title_len);
+          str_ncopy(entries[entry_max].title, buffer + first_delim + 1, title_len);
 
-          fc_str_ncopy(entries[entry_max].command, buffer + first_delim + second_delim + 1, 80);
+          str_ncopy(entries[entry_max].command, buffer + first_delim + second_delim + 1, 80);
           entry_max++;
         }
       }
     }
   }
-  fc_dsr_close(dsr, &pab);
+  dsr_close(dsr, &pab);
   page_total = (entry_max / disp_limit) + 1;
 
   // slow clear once
-  fc_exec_cmd("CLS");
+  exec_cmd("CLS");
   // then color free clearing...
   drawBackdrop();
   layoutMenu();
@@ -114,8 +114,8 @@ int fcmain(char* args) {
   mouseOn = 0;
   struct MouseData mouseData;
 
-  fc_mouse_show(&mouseData);
-  fc_mouse_hide(); // hide the mouse for now
+  mouse_show(&mouseData);
+  mouse_hide(); // hide the mouse for now
 
   updateMouse(&mouseData); // clear any click queued by tipi
 
@@ -130,7 +130,7 @@ int fcmain(char* args) {
 
     VDP_WAIT_VBLANK_CRU;
     cycles++;
-    fc_ui_gotoxy(1, dinfo.displayHeight - 1);
+    ui_gotoxy(1, dinfo.displayHeight - 1);
 
     int buttons = updateMouse(&mouseData);
     if (buttons & MB_LEFT) {
@@ -152,8 +152,8 @@ int fcmain(char* args) {
 }
 
 int childWantsQuit() {
-  char* value = fc_var_get(QUITVAR);
-  return !fc_str_cmp("QUIT", value);
+  char* value = var_get(QUITVAR);
+  return !str_cmp("QUIT", value);
 }
 
 void handleKey(int key) {
@@ -217,9 +217,9 @@ void handleClick(int x, int y) {
 }
 
 void cleanupBeforeExit() {
-  fc_mouse_hide();
-  fc_exec_cmd("CLS");
-  fc_var_set(QUITVAR, "");
+  mouse_hide();
+  exec_cmd("CLS");
+  var_set(QUITVAR, "");
 }
 
 void selectionUp() {
@@ -304,41 +304,41 @@ void skipSeparatorPrev() {
 
 void selectionRun(struct MenuEntry* entry) {
   mouseOn = 0;
-  fc_mouse_hide();
-  fc_exec_cmd(entry->command);
+  mouse_hide();
+  exec_cmd(entry->command);
   drawBackdrop();
   layoutMenu();
 }
 
 void drawBackdrop() {
   vdp_memset(0, ' ', dinfo.displayWidth * dinfo.displayHeight);
-  fc_ui_gotoxy(0,0);
+  ui_gotoxy(0,0);
   vdp_memset(0, 0xB0, dinfo.displayWidth);
   vdp_memset((dinfo.displayHeight - 1) * dinfo.displayWidth, 0xB0, dinfo.displayWidth);
-  fc_ui_gotoxy((dinfo.displayWidth / 2) - 7,0);
-  fc_term_puts(" FCMenu v1.2 ");
+  ui_gotoxy((dinfo.displayWidth / 2) - 7,0);
+  term_puts(" FCMenu v1.2 ");
   cycles = 0; // since we erased the clock, allow it to redraw on next attempt
 }
 
 void drawClock() {
   struct DateTime dt;
-  fc_time_get(&dt);
+  time_get(&dt);
   if (dt.hours != 0 && dt.minutes != 0) {
-    fc_ui_gotoxy(dinfo.displayWidth - 9, 0);
-    fc_term_putc(' ');
-    fc_term_puts(fc_str_from_uint(dt.hours));
-    fc_term_putc(':');
+    ui_gotoxy(dinfo.displayWidth - 9, 0);
+    term_putc(' ');
+    term_puts(str_from_uint(dt.hours));
+    term_putc(':');
     if (dt.minutes < 10) {
-      fc_term_putc('0');
+      term_putc('0');
     }
-    fc_term_puts(fc_str_from_uint(dt.minutes));
+    term_puts(str_from_uint(dt.minutes));
     if (dt.pm) {
-      fc_term_putc('p');
+      term_putc('p');
     }
     else {
-      fc_term_putc('a');
+      term_putc('a');
     }
-    fc_term_puts("m ");
+    term_puts("m ");
   }
 }
 
@@ -353,16 +353,16 @@ void clearSelection() {
   int x;
   int y;
   selection_x_y(&x, &y);
-  fc_ui_gotoxy(x, y);
-  fc_term_putc(' ');
+  ui_gotoxy(x, y);
+  term_putc(' ');
 }
 
 void drawSelection() {
   int x;
   int y;
   selection_x_y(&x, &y);
-  fc_ui_gotoxy(x, y);
-  fc_term_putc(0x1A);
+  ui_gotoxy(x, y);
+  term_putc(0x1A);
 }
 
 void layoutMenu() {
@@ -385,18 +385,18 @@ void layoutMenu() {
     } else if (itemcount >= 10) {
       column = 22;
     }
-    fc_ui_gotoxy(column, y);
+    ui_gotoxy(column, y);
     if (entries[i].key == '-') {
       // draw a separation
-      int vaddr = fc_vdp_cursor_addr();
+      int vaddr = vdp_cursor_addr();
       vdp_memset(vaddr, 0xC4, 18);
     } else {
-      fc_term_putc(entries[i].key);
-      fc_ui_gotoxy(column + 2, y);
-      fc_term_puts(entries[i].title);
+      term_putc(entries[i].key);
+      ui_gotoxy(column + 2, y);
+      term_puts(entries[i].title);
       if (selection == i) {
-        fc_ui_gotoxy(column - 1, y);
-        fc_term_putc(0x1A);
+        ui_gotoxy(column - 1, y);
+        term_putc(0x1A);
       }
     }
     y += 2;
@@ -407,17 +407,17 @@ void layoutMenu() {
   }
 
   // draw a page indicator
-  fc_ui_gotoxy(dinfo.displayWidth - 8, dinfo.displayHeight - 1);
-  fc_term_puts("Page ");
-  fc_term_puts(fc_str_from_uint(page));
-  fc_term_putc('/');
-  fc_term_puts(fc_str_from_uint(page_total));
+  ui_gotoxy(dinfo.displayWidth - 8, dinfo.displayHeight - 1);
+  term_puts("Page ");
+  term_puts(str_from_uint(page));
+  term_putc('/');
+  term_puts(str_from_uint(page_total));
 
-  fc_ui_gotoxy(0, dinfo.displayHeight - 1);
+  ui_gotoxy(0, dinfo.displayHeight - 1);
 }
 
 int readKeyboard() {
-  unsigned int key = fc_term_kscan(5);
+  unsigned int key = term_kscan(5);
   if (KSCAN_STATUS & KSCAN_MASK) {
     return key;
   } else {
@@ -426,10 +426,10 @@ int readKeyboard() {
 }
 
 int updateMouse(struct MouseData* mouseData) {
-  fc_mouse_move(mouseData);
+  mouse_move(mouseData);
   if (!mouseOn && (mouseData->mx != 0 || mouseData->my != 0)) {
     mouseOn = 1;
-    fc_mouse_show(mouseData);
+    mouse_show(mouseData);
   }
   return mouseData->buttons;
 }

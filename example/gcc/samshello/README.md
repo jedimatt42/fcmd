@@ -14,17 +14,17 @@ The Force Command mechanism isn't trying to be all for everyone. There are infin
 ## Declaring pages
 
 ```asm
-    REF fc_main
+    REF main
     data 0xFCFC   ; Flag for valid Force Command binary
     data 0x0004   ; SAMS page count - 0x0004 means sams required, 2 banks of 2 pages - 4
     data 0xFCFC   ; Flag that program promises to use screen safely
-    data fc_main     ; program start address
+    data main     ; program start address
 ```
 
 The only difference here is the second word of the header is now 0x0004 to indicate that we are to be loaded into
 paged memory as 4 pages, 2 8k banks. So that gives us space for bank 0 and bank 1.
 
-The _header.o will end up in bank 0 when we link. And fc_main must be in bank 0.
+The _header.o will end up in bank 0 when we link. And main must be in bank 0.
 
 ## Source code files
 
@@ -60,7 +60,7 @@ b0_hello.c looks pretty normal... it includes the alt.h header file to get the s
 
 #include "alt.h"
 
-int fc_main(char* args) {
+int main(char* args) {
   fc_tputs("Hello\n");
   alt();
   return 0;

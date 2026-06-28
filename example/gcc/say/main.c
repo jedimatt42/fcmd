@@ -54,45 +54,45 @@ void __attribute__((noinline)) read_sample_line(int addr, int len) {
 void __attribute__((noinline)) load_sample(char* fname_buffer, struct DeviceServiceRoutine* dsr) {
   struct PAB pab;
 
-  int ferr = fc_dsr_open(dsr, &pab, fname_buffer, DSR_TYPE_INPUT | DSR_TYPE_VARIABLE, 0);
+  int ferr = dsr_open(dsr, &pab, fname_buffer, DSR_TYPE_INPUT | DSR_TYPE_VARIABLE, 0);
   if (ferr) {
-    fc_term_puts("error opening file\n");
+    term_puts("error opening file\n");
     return;
   }
 
   while (!ferr) {
-    ferr = fc_dsr_read(dsr, &pab, 0);
+    ferr = dsr_read(dsr, &pab, 0);
     if (!ferr) {
       read_sample_line(pab.VDPBuffer, pab.CharCount);
     }
   }
 
-  fc_dsr_close(dsr, &pab);
+  dsr_close(dsr, &pab);
 }
 
 void __attribute__((noinline)) play_sample() {
   if (sample_len > 0) {
-    fc_speech_reset();
-    fc_speech_say_data(sample, sample_len);
-    fc_speech_wait();
+    speech_reset();
+    speech_say_data(sample, sample_len);
+    speech_wait();
   }
 }
 
-int fc_main(char* args) {
+int main(char* args) {
   // expect DV80 file of hex data
   struct DeviceServiceRoutine* dsr;
   char fname_buffer[30];
-  fc_path_parse(args, &dsr, fname_buffer, PR_REQUIRED);
+  path_parse(args, &dsr, fname_buffer, PR_REQUIRED);
   if (dsr == 0) {
-    fc_term_puts("error no speech file specified\n\n");
-    fc_term_puts("SAY <file>\n");
+    term_puts("error no speech file specified\n\n");
+    term_puts("SAY <file>\n");
   } else {
     load_sample(fname_buffer, dsr);
     if (!sample_len) {
-      fc_term_puts("Error: No speech data loaded\n");
+      term_puts("Error: No speech data loaded\n");
     } else
-    if (!fc_speech_detect()) {
-      fc_term_puts("Error: No speech synthesizer detected\n");
+    if (!speech_detect()) {
+      term_puts("Error: No speech synthesizer detected\n");
     } else {
       play_sample();
     }
