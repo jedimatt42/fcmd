@@ -1,7 +1,7 @@
 	DEF	_cart
-	AORG 	>6000
 
-; Cartridge ROM header
+; Standard cartridge ROM header
+	AORG	BASE_ADDR
 	BYTE	>AA		; Standard Header
         BYTE	>01		; version
     	BYTE	>01		; # of application programs
@@ -21,12 +21,6 @@ menua:
 	TEXT	"FORCE CMD"	; menu text
 	EVEN
 
-; start here instead of C typical entry of _start, so we can
-; force over to bank0, as most cartridges don't guarantee
-; power-on bank selection.
 _cart:
-	CLR	@>6000		; move to bank0
-	B	@_start		; now branch into C.
-
-	
-
+	CLR	@BASE_ADDR	; select bank 0
+	B	@_start		; branch into C init

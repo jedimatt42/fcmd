@@ -9,10 +9,12 @@ define(`TOTALROMSPACE', `BANKROMSIZE($1) + ifelse(eval($1 > $2), 1, `TOTALROMSPA
 
 define(TOP_BANK, 15)
 
+ifdef(`BASE_ADDR', `', `define(`BASE_ADDR', 0x6000)')
+
 MEMORY
 {
-  cart_rom   (rx) : ORIGIN = 0x6000, LENGTH = 0x0080 /* 128 bytes up front of common code */
-  bank_rom   (rx) : ORIGIN = 0x6080, LENGTH = 0x2000 - 0x0080 /* 8k-header of bankable cartridge ROM */
+  cart_rom   (rx) : ORIGIN = BASE_ADDR, LENGTH = 0x0080 /* 128 bytes up front of common code */
+  bank_rom   (rx) : ORIGIN = eval(BASE_ADDR + 0x0080), LENGTH = 0x2000 - 0x0080 /* 8k-header of bankable cartridge ROM */
   lower_exp  (wx) : ORIGIN = 0x2000, LENGTH = 0x2000 /* 8k        */
   upper_exp  (wx) : ORIGIN = 0xA000, LENGTH = 0x6000 /* 24k upper ram */
   scratchpad (wx) : ORIGIN = 0x8320, LENGTH = 0x00e0 /* 32b is for workspace */

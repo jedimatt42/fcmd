@@ -8,6 +8,29 @@ XDM99?=$(shell which xdm99.py)
 
 FNAME=FCMD
 
+BASE_ADDR ?= 0x6000
+
+# Hex string representations (without prefix) for use in inline asm
+BASE_HEX_STR := $(shell printf "%X" $$(( $(BASE_ADDR) )) )
+BASE_80_HEX_STR := $(shell printf "%X" $$(( $(BASE_ADDR) + 0x80 )) )
+
+# Console ROM mode: set CONSOLE_ROM=1 to use console ROM header format
+# (auto-enabled when BASE_ADDR is 0x0000)
+ifneq ($(filter 0x0000,$(BASE_ADDR)),)
+override CONSOLE_ROM=1
+endif
+CONSOLE_ROM ?= 0
+
+# Select the correct header source file
+ifeq ($(CONSOLE_ROM),1)
+HEADER_SRC = header_console.asm
+else
+HEADER_SRC = header_cart.asm
+endif
+
+CFLAGS += -DCONSOLE_ROM=$(CONSOLE_ROM)
+ASFLAGS += --defsym CONSOLE_ROM=$(CONSOLE_ROM)
+
 BANKBINS:=$(shell seq -s ' ' -f "bank%1g.page" 0 15)
 
 VER:=$(shell grep "\#define APP_VER" b0_main.h | cut -d '"' -f2)
@@ -19,14 +42,18 @@ LDFLAGS=\
   --script=linkfile
 
 CFLAGS=\
-  -std=gnu99 -nostdlib -ffreestanding -Os -Wno-int-to-pointer-cast -Wno-pointer-to-int-cast -Werror --save-temps -I$(abspath .) -I$(abspath libti99)
+  -std=gnu99 -nostdlib -ffreestanding -Os -Wno-int-to-pointer-cast -Wno-pointer-to-int-cast -Werror --save-temps -I$(abspath .) -I$(abspath libti99) -DBASE_ADDR=$(BASE_ADDR) -DBASE_HEX_STR=$(BASE_HEX_STR) -DBASE_80_HEX_STR=$(BASE_80_HEX_STR)
+
+ASFLAGS=\
+  --defsym BASE_ADDR=$(BASE_ADDR)
 
 SRCS:=$(sort $(wildcard *.c) $(wildcard *.asm))
 LIBTI99_SRCS=$(sort $(wildcard libti99/*.c))
 
 LIBTI99_OBJS:=$(notdir $(LIBTI99_SRCS:.c=.o))
 OBJECT_LIST:=$(SRCS:.c=.o) $(LIBTI99_OBJS)
-OBJECT_LIST:=$(filter-out api.o b3_fcbanner.o,$(OBJECT_LIST:.asm=.o)) api.o b3_fcbanner.o
+OBJECT_LIST:=$(filter-out api.o b3_fcbanner.o header_cart.o header_console.o,$(OBJECT_LIST:.asm=.o)) api.o b3_fcbanner.o
+OBJECT_LIST+=header.o
 
 LINK_OBJECTS:=$(addprefix objects/,$(OBJECT_LIST))
 
@@ -37,6 +64,10 @@ all: forcecmd_$(VER).zip
 COMMON_SIZE = 128
 
 HEADBIN:=objects/header.bin
+
+# Explicit header rule — use cart or console header based on CONSOLE_ROM
+objects/header.o: $(HEADER_SRC)
+	mkdir -p objects; cd objects; $(GAS) $(ASFLAGS) $(abspath $(HEADER_SRC)) -o $(notdir $@)
 
 $(HEADBIN): $(FNAME).elf
 	$(OBJCOPY) -O binary -j .text $< $(HEADBIN)
@@ -63,7 +94,7 @@ $(FNAME).elf: $(LINK_OBJECTS) linkfile
 	$(LD) $(LINK_OBJECTS) $(LDFLAGS) -o $(FNAME).elf -Map=mapfile
 
 linkfile: linkfile.m4
-	m4 $< > $@
+	m4 -DBASE_ADDR=$(BASE_ADDR) $< > $@
 
 clean:
 	rm -f forcecmd_*.zip
@@ -82,7 +113,7 @@ clean:
 	rm -f fcsdk.linkfile
 
 objects/%.o: %.asm
-	mkdir -p objects; cd objects; $(GAS) $(abspath $<) -o $(notdir $@)
+	mkdir -p objects; cd objects; $(GAS) $(ASFLAGS) $(abspath $<) -o $(notdir $@)
 
 objects/%.o: %.c
 	mkdir -p objects; cd objects; $(CC) -c $(abspath $<) $(CFLAGS) -o $(notdir $@)
@@ -93,7 +124,7 @@ objects/%.o: libti99/%.c
 api.asm: fc_api.lst makeapi.py fc_api_template
 	rm -f api.asm
 	grep DECLARE_BANKED libti99/*.h *.h >api.banks
-	python3 ./makeapi.py fc_api.lst api.asm api.banks example/gcc/fcsdk/fc_api.h
+	python3 ./makeapi.py fc_api.lst api.asm api.banks example/gcc/fcsdk/fc_api.h $(BASE_ADDR)
 
 fcsdk.linkfile: $(FNAME).elf
 	( echo -n "memcpy = 0x"; grep gcc_memcpy mapfile | egrep -v '\.' | sed 's/^\s*0x0*\([0-9a-f]*\) *gcc_memcpy/\1;/' ) > $@
