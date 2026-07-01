@@ -3,11 +3,11 @@
 ; Standard cartridge ROM header
 	AORG	BASE_ADDR
 	BYTE	>AA		; Standard Header
-        BYTE	>01		; version
-    	BYTE	>01		; # of application programs
+    BYTE	>01		; version
+    BYTE	>01		; # of application programs
 	BYTE	>00		; reserved
-    	DATA	>0000 		; power up list (unused)
-    	DATA	menua 		; program menu entry list
+    DATA	>0000 		; power up list (unused)
+    DATA	menua 		; program menu entry list
 	DATA	>0000		; unused - DSR list
 	DATA	>0000		; unused - subprogram list
 	DATA	>0000		; unused - interrupt list

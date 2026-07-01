@@ -84,8 +84,19 @@ bank0.page: $(FNAME).elf $(HEADBIN)
 	cat $(HEADBIN) objects/$@_tmp >$@
 	@dd if=/dev/null of=$@ bs=8192 seek=1
 
+# In console ROM mode, produce a 512KB image:
+#   lower 128KB = FCMD banks 0-15
+#   middle 376KB = zero padding
+#   top 8KB = original console ROM (994a_rom_8k.bin)
+ifeq ($(CONSOLE_ROM),1)
+$(FNAME)C.bin: $(BANKBINS) 994a_rom_8k.bin
+	cat $(BANKBINS) > $@
+	dd if=/dev/zero bs=1 count=$$((512*1024 - 128*1024 - 8192)) >> $@ 2>/dev/null
+	cat 994a_rom_8k.bin >> $@
+else
 $(FNAME)C.bin: $(BANKBINS)
 	cat $^ >$@
+endif
 
 $(FNAME)G.bin: gpl-boot.g99 $(FNAME).elf
 	python3 $(XGA99) -D "CART=$(shell echo -n '>' ; grep _cart mapfile | sed 's/^\s*0x0*\([0-9a-f]*\) *_cart/\1/')" -o $@ $<
@@ -100,7 +111,7 @@ clean:
 	rm -f forcecmd_*.zip
 	rm -fr objects
 	rm -f *.elf
-	rm -f *.bin
+	rm -f 512K.bin FCMDC.bin FCMDG.bin FCMD512.bin
 	rm -f *.page
 	rm -f linkfile
 	rm -f mapfile
