@@ -52,8 +52,8 @@ LIBTI99_SRCS=$(sort $(wildcard libti99/*.c))
 
 LIBTI99_OBJS:=$(notdir $(LIBTI99_SRCS:.c=.o))
 OBJECT_LIST:=$(SRCS:.c=.o) $(LIBTI99_OBJS)
-OBJECT_LIST:=$(filter-out api.o b3_fcbanner.o header_cart.o header_console.o,$(OBJECT_LIST:.asm=.o)) api.o b3_fcbanner.o
-OBJECT_LIST+=header.o
+OBJECT_LIST:=$(filter-out api.o b3_fcbanner.o header_cart.o header_console.o trampoline.o trampoline_alt.o,$(OBJECT_LIST:.asm=.o)) api.o b3_fcbanner.o
+OBJECT_LIST+=header.o trampoline.o
 
 LINK_OBJECTS:=$(addprefix objects/,$(OBJECT_LIST))
 
@@ -68,6 +68,17 @@ HEADBIN:=objects/header.bin
 # Explicit header rule — use cart or console header based on CONSOLE_ROM
 objects/header.o: $(HEADER_SRC)
 	mkdir -p objects; cd objects; $(GAS) $(ASFLAGS) $(abspath $(HEADER_SRC)) -o $(notdir $@)
+
+# Select trampoline source based on bank switching hardware
+ifeq ($(CONSOLE_ROM),1)
+TRAMPOLINE_SRC = trampoline_alt.asm
+else
+TRAMPOLINE_SRC = trampoline.asm
+endif
+
+# Explicit trampoline rule — use cartridge or alt based on BASE_ADDR
+objects/trampoline.o: $(TRAMPOLINE_SRC)
+	mkdir -p objects; cd objects; $(GAS) $(ASFLAGS) $(abspath $<) -o $(notdir $@)
 
 $(HEADBIN): $(FNAME).elf
 	$(OBJCOPY) -O binary -j .text $< $(HEADBIN)

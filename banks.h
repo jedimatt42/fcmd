@@ -3,9 +3,10 @@
 
 #ifndef BASE_ADDR
 #define BASE_ADDR 0x6000
-#endif
-
 #define BANK(x) (BASE_ADDR|(x<<1))
+#else
+#define BANK(x) (BASE_ADDR|x)
+#endif
 
 #endif
 
