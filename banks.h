@@ -6,6 +6,7 @@
 #define BANK(x) (BASE_ADDR|(x<<1))
 #else
 #define BANK(x) (BASE_ADDR|x)
+#define CONSOLE_BANK 63
 #endif
 
 #endif

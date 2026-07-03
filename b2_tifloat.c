@@ -5,7 +5,9 @@
 #include "b8_terminal.h"
 #include "string.h"
 
+#ifndef CONSOLE_BANK
 #define _USE_FAC 1
+#endif
 
 #ifndef _USE_FAC
 
