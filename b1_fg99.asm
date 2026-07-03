@@ -44,6 +44,7 @@ fgdelay:
 
 fgdone:
        lwpi >83E0
+       seto @>0000            ; bank console rom in top bank
        mov  r6,r6             ; test for 0x0000
        jeq  fgrst
        li   r7, >60           ; if not zero, re-enter GPL and continue to that GROM address
