@@ -1,6 +1,12 @@
 #include "banks.h"
 #define MYBANK BANK(10)
 
+#ifdef CONSOLE_BANK
+#define PAL_THRESHOLD 15000
+#else
+#define PAL_THRESHOLD 7500
+#endif
+
 int isPal() {
   volatile int cycles = 0;
 
@@ -39,7 +45,7 @@ int isPal() {
   cycles = 0;
 
   // now wait again, but count while we wait.
-  // and repeat this 4 times, a fraction of a second
+  // and repeat this 6 times, a fraction of a second
   // as it is not precise
   for (int i = 0; i < 6; i++) {
     __asm__(
@@ -55,5 +61,5 @@ int isPal() {
   }
 
   // with 6 iterations, NTSC reaches about 6800, and PAL reaches 8000
-  return cycles >= 7500;
+  return cycles >= PAL_THRESHOLD;
 }

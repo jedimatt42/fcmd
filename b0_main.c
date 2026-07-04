@@ -49,11 +49,11 @@ void playtipi() {
   SET_SOUND_PTR(0x3E00);
   SET_SOUND_VDP();
   START_SOUND();
-  // while(SOUND_CNT != 0) {
-  //   VDP_INT_POLL;
-  // }
+  while(SOUND_CNT != 0) {
+    VDP_INT_POLL;
+  }
   MUTE_SOUND();
-  //VDP_INT_POLL;
+  VDP_INT_POLL;
 }
 
 void titleScreen() {

@@ -19,7 +19,7 @@ int isF18A() {
     VDP_SET_REGISTER(0x37, 0x00);
   }
 
-  int frames = 3;
+  int frames = 6;
   while(frames--) {
     VDP_SET_ADDRESS(0x3F00);
     int res = VDPRD;
