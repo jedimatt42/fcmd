@@ -17,16 +17,15 @@
 ; Copy bank-switch-and-reset routine to scratchpad RAM (>8300)
 ; so we can execute it coherently after switching banks.
 _boot:
-    LWPI >8300
-	LI   r1, >c800  ; mov r0, @>0000 (switch to console rom bank)
+	LWPI >8300      ; we'll use register loads to put machine code for bank switch and reset into ram.
+	LI   r1, >0720  ; seto @>0000 (switch to console rom bank)
 	CLR  r2
 	LI   r3, >0420  ; blwp @>0000 (console reset)
 	CLR  r4
-	SETO r0
 	B    @>8302
 
 _cart:
-    B    @_start
+	B    @_start
 
 _vdp_isr:
 	MOVB @>8802, R0
