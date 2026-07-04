@@ -26,7 +26,6 @@ SECTIONS
   .text : {              /* all modules listed here will end up at front of each ROM bank */
     objects/header.o(.text)
     objects/trampoline.o(.text)
-    objects/ea5_reset.o(.text)
     objects/str_memcpy.o(.text)  /* gcc will implicity call this to initialize strings on stack */
   } >cart_rom
 

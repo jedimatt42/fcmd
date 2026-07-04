@@ -11,8 +11,6 @@
 #define GPLWSR11  *((volatile unsigned int*)0x83F6)
 #define GPLWSR12	*((volatile unsigned int*)0x83F8)
 
-extern int* GOEA5;
-
 inline static unsigned char ea5_vdpreadchar(int pAddr) {
   VDP_SET_ADDRESS(pAddr);
   __asm__("NOP");
@@ -30,6 +28,22 @@ inline static void ea5_vdpchar(int pAddr, int ch) {
 #define BSIZE (*(volatile int *)0x8326)
 #define ADDR (*(volatile int *)0x8328)
 
+void ea5launch() {
+#ifdef CONSOLE_BANK
+  __asm__(
+      "LWPI >83E0\n\t"
+      "SETO @>0000\n\t" // bank into console rom
+      "BL   *r11\n\t"
+      "BLWP @>0000\n\t"
+  );
+#else
+  __asm__(
+      "LWPI >83E0\n\t"
+      "BL   *r11\n\t"
+      "BLWP @>0000\n\t"
+  );
+#endif
+}
 
 void dsr_ea5_load(struct DeviceServiceRoutine* dsr, const char* fname) {
   struct PAB* pab = (struct PAB*) 0x8320;
@@ -76,8 +90,16 @@ void dsr_ea5_load(struct DeviceServiceRoutine* dsr, const char* fname) {
       // If the header flag is 0, then this is the last file to place, so launch it.
       // We aren't comming back from this, so feel free to lie to gcc.
       GPLWSR11 = FADDR;
+      
+      int* src = (int*)ea5launch;
+      int* end = (int*)dsr_ea5_load;
+      int* dst = (int*)0x83A0; // store it in the FAC
+      while(src<end) {
+        *dst++ = *src++;
+      }
+      
       __asm__(
-        "b @GOEA5"
+        "B    @>83A0\n\t"
       );
     } else {
       // increment name in vdp pab...
