@@ -25,7 +25,7 @@ trampoline:
     mov @RET_BANK(r12), @RET_BANK(r10)  ; stash caller bank
     mov @TAR_ADDR(r12), r11             ; load target address
     mov *r12, r12                       ; load target bank
-    clr *r12                            ; switch to target bank
+    clr *r12                            ; switch to target bank - for cart banking the value written is ignored, the address is what is latched
     bl  *r11                            ; call target
     mov @RET_BANK(r10), r12             ; load the return bank
     clr *r12                            ; switch back to source bank

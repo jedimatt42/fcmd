@@ -24,7 +24,7 @@ trampoline:
     mov @trampdata,r12                  ; put trampdata address in index register
     mov @RET_BANK(r12), @RET_BANK(r10)  ; stash caller bank
     mov @TAR_ADDR(r12), r11             ; load target address
-    mov *r12, @>0000                     ; switch to target bank
+    mov *r12, @>0000                    ; switch to target bank - for console rom, the bank is the value written to >0000 
     bl  *r11                            ; call target
     mov @RET_BANK(r10), @>0000          ; switch back to source bank
     mov @RET_ADDR(r10), r11             ; restore return address

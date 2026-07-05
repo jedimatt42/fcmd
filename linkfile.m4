@@ -17,7 +17,6 @@ MEMORY
   bank_rom   (rx) : ORIGIN = eval(BASE_ADDR + 0x0080), LENGTH = 0x2000 - 0x0080 /* 8k-header of bankable cartridge ROM */
   lower_exp  (wx) : ORIGIN = 0x2000, LENGTH = 0x2000 /* 8k        */
   upper_exp  (wx) : ORIGIN = 0xA000, LENGTH = 0x6000 /* 24k upper ram */
-  scratchpad (wx) : ORIGIN = 0x8320, LENGTH = 0x00e0 /* 32b is for workspace */
 }
 
 SECTIONS
