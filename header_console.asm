@@ -24,9 +24,6 @@ _boot:
 	CLR  r4
 	B    @>8302
 
-_cart:
-	B    @_start
-
 _vdp_isr:
 	MOVB @>8802, R0
 	RTWP
