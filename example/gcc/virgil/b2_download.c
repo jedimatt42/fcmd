@@ -84,9 +84,9 @@ void saveTiFiles(struct TiFiles* tifiles) {
   struct DeviceServiceRoutine* dsr = get_downloads_dir(pathname);
   crubase = dsr->crubase;
  
-  struct SystemInformation sys_info;
-  sys_info(&sys_info); 
-  vdp_io_buf = sys_info.vdp_io_buf;
+  struct SystemInformation sysInfo;
+  sys_info(&sysInfo); 
+  vdp_io_buf = sysInfo.vdp_io_buf;
 
   // addinfo must be in scratchpad
   struct AddInfo* addInfoPtr = (struct AddInfo*)0x8320;

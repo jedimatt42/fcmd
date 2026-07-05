@@ -59,8 +59,8 @@ void __attribute__((noinline)) set_line_text(int offset, char* text) {
 }
 
 void FC_SAMS(1,screen_title()) {
-  struct SamsInformation sys_sams_info;
-  sys_sams_info(&sys_sams_info);
+  struct SamsInformation samsInfo;
+  sys_sams_info(&samsInfo);
 
   ui_gotoxy(1, 1);
   char tmp[80];
@@ -73,11 +73,11 @@ void FC_SAMS(1,screen_title()) {
   tmp[i++] = BR;
   i+=2;
   tmp[i++] = BL;
-  str_copy(tmp + i, str_from_uint(sys_sams_info.next_page * 4));
+  str_copy(tmp + i, str_from_uint(samsInfo.next_page * 4));
   i += str_len(tmp + i);
   tmp[i++] = 'K';
   tmp[i++] = '/';
-  str_copy(tmp + i, str_from_uint(sys_sams_info.total_pages * 4));
+  str_copy(tmp + i, str_from_uint(samsInfo.total_pages * 4));
   i += str_len(tmp + i);
   tmp[i++] = 'K';
   tmp[i++] = BR;

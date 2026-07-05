@@ -48,55 +48,55 @@ int main(char* args) {
   term_puts("\n");
 
   term_puts("ftoa(0): ");
-  fc_ftoa(buffer, 0.0);
+  ftoa(buffer, 0.0);
   term_puts(buffer);
 
   term_puts("\nftoa(1.0): ");
-  fc_ftoa(buffer, 1.0);
+  ftoa(buffer, 1.0);
   term_puts(buffer);
 
   term_puts("\nftoa(-1.0): ");
-  fc_ftoa(buffer, -1.0);
+  ftoa(buffer, -1.0);
   term_puts(buffer);
 
     term_puts("\nftoa(10.0): ");
-  fc_ftoa(buffer, 10.0);
+  ftoa(buffer, 10.0);
   term_puts(buffer);
 
   term_puts("\nftoa(-10.0): ");
-  fc_ftoa(buffer, -10.0);
+  ftoa(buffer, -10.0);
   term_puts(buffer);
 
   term_puts("\nftoa(100.3): ");
-  fc_ftoa(buffer, 100.3);
+  ftoa(buffer, 100.3);
   term_puts(buffer);
 
   term_puts("\nftoa(-100.3): ");
-  fc_ftoa(buffer, -100.3);
+  ftoa(buffer, -100.3);
   term_puts(buffer);
 
   term_puts("\nftoa(1234.3): ");
-  fc_ftoa(buffer, 1234.3);
+  ftoa(buffer, 1234.3);
   term_puts(buffer);
 
   term_puts("\nftoa(-1234.3): ");
-  fc_ftoa(buffer, -1234.3);
+  ftoa(buffer, -1234.3);
   term_puts(buffer);
 
   term_puts("\nftoa(12345.3): ");
-  fc_ftoa(buffer, 12345.3);
+  ftoa(buffer, 12345.3);
   term_puts(buffer);
 
   term_puts("\nftoa(-12345.3): ");
-  fc_ftoa(buffer, -12345.3);
+  ftoa(buffer, -12345.3);
   term_puts(buffer);
 
   term_puts("\nftoa(123456.3): ");
-  fc_ftoa(buffer, 123456.3);
+  ftoa(buffer, 123456.3);
   term_puts(buffer);
 
   term_puts("\nftoa(-123456.3): ");
-  fc_ftoa(buffer, -123456.3);
+  ftoa(buffer, -123456.3);
   term_puts(buffer);
 
   term_puts("\n");
@@ -161,7 +161,7 @@ int main(char* args) {
 
   // term_puts("-- int to float & float to int conversion -\n");
   // c = takesint(-3, 3);
-  // fc_ftoa(buffer, c);
+  // ftoa(buffer, c);
   // term_puts("takesint(-3, 3) = -27: ");
   // term_puts(buffer);
   // term_puts("\n");
@@ -169,7 +169,7 @@ int main(char* args) {
   // term_puts("\n");
 
   // c = takesint(2, 8);
-  // fc_ftoa(buffer, c);
+  // ftoa(buffer, c);
   // term_puts("takesint(2, 8) = 256: ");
   // term_puts(buffer);
   // term_puts("\n");
@@ -177,7 +177,7 @@ int main(char* args) {
   // term_puts("\n");
 
   // c = takesint(5, 3);
-  // fc_ftoa(buffer, c);
+  // ftoa(buffer, c);
   // term_puts("takesint(5, 3) = 125: ");
   // term_puts(buffer);
   // term_puts("\n");
@@ -203,7 +203,7 @@ int main(char* args) {
     term_puts("\n  bytes: ");
     print_double_bytes(value);
     term_puts("\n  float string: ");
-    fc_ftoa(buffer, value);
+    ftoa(buffer, value);
     term_puts(buffer);
     term_puts("\n");
   }

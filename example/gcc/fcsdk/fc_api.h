@@ -347,59 +347,60 @@ extern void* memcpy(void* dest, const void* src, int count);
 #define FC_TIME_GET 0x30
 #define FC_DSR_FIND 0x31
 #define FC_PATH_PARSE 0x32
-#define FC_STR_FROM_UINT 0x33
-#define FC_HEX_FROM_UINT 0x34
-#define FC_STR_TO_INT 0x35
-#define FC_HEX_TO_INT 0x36
-#define FC_STR_FROM_FLOAT 0x37
-#define FC_STR_COPY 0x38
-#define FC_STR_NCOPY 0x39
-#define FC_STR_CAT 0x3a
-#define FC_STR_TOKEN 0x3b
-#define FC_STR_TOKEN_PEEK 0x3c
-#define FC_STR_LEN 0x3d
-#define FC_STR_CMP 0x3e
-#define FC_STR_CMP_ICASE 0x3f
-#define FC_STR_INDEX_OF 0x40
-#define FC_STR_LAST_INDEX_OF 0x41
-#define FC_STR_STARTSWITH 0x42
-#define FC_STR_ENDSWITH 0x43
-#define FC_STR_FROM_BASIC 0x44
-#define FC_STR_SET 0x45
-#define FC_STR_TOKEN_NEXT 0x46
-#define FC_AUDIO_BEEP 0x47
-#define FC_AUDIO_HONK 0x48
-#define FC_TERM_SET_IDENTIFY_HOOK 0x49
-#define FC_VDP_SETCHAR 0x4a
-#define FC_VDP_CURSOR_ADDR 0x4b
-#define FC_UI_DROP_DOWN 0x4c
-#define FC_UI_GOTOXY 0x4d
-#define FC_SPEECH_RESET 0x4e
-#define FC_SPEECH_DETECT 0x4f
-#define FC_SPEECH_SAY_VOCAB 0x50
-#define FC_SPEECH_SAY_DATA 0x51
-#define FC_SPEECH_START 0x52
-#define FC_SPEECH_CONTINUE 0x53
-#define FC_SPEECH_WAIT 0x54
-#define FC_MOUSE_READ 0x55
-#define FC_MOUSE_MOVE 0x56
-#define FC_MOUSE_SHOW 0x57
-#define FC_MOUSE_HIDE 0x58
-#define FC_TLS_CONNECT 0x59
-#define FC_TLS_CLOSE 0x5a
-#define FC_TLS_READ_SOCKET 0x5b
-#define FC_TLS_SEND_CHARS 0x5c
-#define FC_SOCKBUF_INIT 0x5d
-#define FC_SOCKBUF_READLINE 0x5e
-#define FC_SOCKBUF_READSTREAM 0x5f
-#define FC_LIST_INIT 0x60
-#define FC_LIST_PUSH 0x61
-#define FC_LIST_POP 0x62
-#define FC_LIST_GET 0x63
-#define FC_COLOR_TEXT 0x64
-#define FC_COLOR_BG 0x65
-#define FC_COLOR_BORDER 0x66
-#define FC_TIPI_LOG 0x67
+#define FC_FTOA 0x33
+#define FC_STR_FROM_UINT 0x34
+#define FC_HEX_FROM_UINT 0x35
+#define FC_STR_TO_INT 0x36
+#define FC_HEX_TO_INT 0x37
+#define FC_STR_FROM_FLOAT 0x38
+#define FC_STR_COPY 0x39
+#define FC_STR_NCOPY 0x3a
+#define FC_STR_CAT 0x3b
+#define FC_STR_TOKEN 0x3c
+#define FC_STR_TOKEN_PEEK 0x3d
+#define FC_STR_LEN 0x3e
+#define FC_STR_CMP 0x3f
+#define FC_STR_CMP_ICASE 0x40
+#define FC_STR_INDEX_OF 0x41
+#define FC_STR_LAST_INDEX_OF 0x42
+#define FC_STR_STARTSWITH 0x43
+#define FC_STR_ENDSWITH 0x44
+#define FC_STR_FROM_BASIC 0x45
+#define FC_STR_SET 0x46
+#define FC_STR_TOKEN_NEXT 0x47
+#define FC_AUDIO_BEEP 0x48
+#define FC_AUDIO_HONK 0x49
+#define FC_TERM_SET_IDENTIFY_HOOK 0x4a
+#define FC_VDP_SETCHAR 0x4b
+#define FC_VDP_CURSOR_ADDR 0x4c
+#define FC_UI_DROP_DOWN 0x4d
+#define FC_UI_GOTOXY 0x4e
+#define FC_SPEECH_RESET 0x4f
+#define FC_SPEECH_DETECT 0x50
+#define FC_SPEECH_SAY_VOCAB 0x51
+#define FC_SPEECH_SAY_DATA 0x52
+#define FC_SPEECH_START 0x53
+#define FC_SPEECH_CONTINUE 0x54
+#define FC_SPEECH_WAIT 0x55
+#define FC_MOUSE_READ 0x56
+#define FC_MOUSE_MOVE 0x57
+#define FC_MOUSE_SHOW 0x58
+#define FC_MOUSE_HIDE 0x59
+#define FC_TLS_CONNECT 0x5a
+#define FC_TLS_CLOSE 0x5b
+#define FC_TLS_READ_SOCKET 0x5c
+#define FC_TLS_SEND_CHARS 0x5d
+#define FC_SOCKBUF_INIT 0x5e
+#define FC_SOCKBUF_READLINE 0x5f
+#define FC_SOCKBUF_READSTREAM 0x60
+#define FC_LIST_INIT 0x61
+#define FC_LIST_PUSH 0x62
+#define FC_LIST_POP 0x63
+#define FC_LIST_GET 0x64
+#define FC_COLOR_TEXT 0x65
+#define FC_COLOR_BG 0x66
+#define FC_COLOR_BORDER 0x67
+#define FC_TIPI_LOG 0x68
 
 // function: void term_putc(int c)
 DECL_FC_API_CALL(FC_TERM_PUTC, term_putc, void, (int c), (c))
@@ -553,6 +554,9 @@ DECL_FC_API_CALL(FC_DSR_FIND, dsr_find, struct DeviceServiceRoutine*, (char* dev
 
 // function: void path_parse(char* str_in, struct DeviceServiceRoutine** dsr, char* buffer, int requirements)
 DECL_FC_API_CALL(FC_PATH_PARSE, path_parse, void, (char* str_in, struct DeviceServiceRoutine** dsr, char* buffer, int requirements), (str_in, dsr, buffer, requirements))
+
+// function: void ftoa(char* dest, double a)
+DECL_FC_API_CALL(FC_FTOA, ftoa, void, (char* dest, double a), (dest, a))
 
 // function: char * str_from_uint(unsigned int x)
 DECL_FC_API_CALL(FC_STR_FROM_UINT, str_from_uint, char *, (unsigned int x), (x))

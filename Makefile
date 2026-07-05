@@ -8,44 +8,113 @@ XDM99?=$(shell which xdm99.py)
 
 FNAME=FCMD
 
-BASE_ADDR ?= 0x6000
+VER:=$(shell grep "\#define APP_VER" b0_main.h | cut -d '"' -f2)
 
-# Hex string representations (without prefix) for use in inline asm
-BASE_HEX_STR := $(shell printf "%X" $$(( $(BASE_ADDR) )) )
+SUPPORT=FC/BOOT FC/LOAD FC/FCMD FC/FCMDXB FC/BIN/DISKIMAGE FC/BIN/FCMENU FC/BIN/FTP FC/BIN/SAMPLE FC/BIN/SAY FC/BIN/TELNET FC/BIN/VIRGIL99 FC/BIN/FONT FC/MDOSANSI FC/MDOSFONT
+
+SUBDIRS=hello samshello charset diskimage fcmenu ftp say telnet virgil font
+
+CFLAGS=\
+  -std=gnu99 -nostdlib -ffreestanding -Os -Wno-int-to-pointer-cast -Wno-pointer-to-int-cast -Werror --save-temps -I$(abspath .) -I$(abspath libti99)
+
+ASFLAGS=\
+  --defsym BASE_ADDR=$(BASE_ADDR) --defsym CONSOLE_ROM=$(CONSOLE_ROM)
+
+ifeq ($(ONE_TARGET),)
+
+# ======================================================================
+# TOP-LEVEL DISPATCH (ONE_TARGET not set)
+# ======================================================================
+
+.PHONY: all build_0x6000 build_0x0000 subdirs support clean
+
+all: b3_fcbanner.asm forcecmd_$(VER).zip
+
+build_0x6000: b3_fcbanner.asm
+	$(MAKE) ONE_TARGET=1 BASE_ADDR=0x6000
+
+build_0x0000: b3_fcbanner.asm
+	$(MAKE) ONE_TARGET=1 BASE_ADDR=0x0000
+
+b3_fcbanner.asm: fcbanner.ans ans2asm.py
+	python3 ./ans2asm.py
+
+subdirs: build_0x6000
+	cp build_0x6000/fcsdk.linkfile example/gcc/fcsdk/fc.ld
+	for d in $(SUBDIRS); do $(MAKE) -C example/gcc/$$d; done
+
+support:
+	$(MAKE) -C FC
+
+$(FNAME).DSK: subdirs support
+	python3 $(XDM99) $(FNAME).DSK -X 360 -t -a FC/BIN/DISKIMAGE FC/BIN/FCMENU FC/BIN/FTP FC/BIN/TELNET FC/BIN/SAY FC/BIN/SAMPLE FC/BIN/VIRGIL99 FC/BIN/FONT FC/MDOSANSI FC/MDOSFONT
+
+fcsdk: subdirs
+	rm -fr ./fcsdk
+	cp -a example/gcc/fcsdk ./fcsdk
+	cp -a example/gcc/hello ./fcsdk/hello
+	cp -a example/gcc/samshello ./fcsdk/samshello
+	find fcsdk -name "objects" -o -name "mapfile" -o -name "*HELLO*" | xargs rm -r
+
+forcecmd_$(VER).zip: build_0x6000 build_0x0000 subdirs support $(FNAME).DSK fcsdk
+	rm -f $@
+	zip -j $@ README.md build_0x0000/FCMD_0000.bin build_0x6000/FCMD.RPK build_0x6000/FCMDC.bin build_0x6000/FCMDG.bin $(FNAME).DSK
+	zip -r $@ $(SUPPORT) fcsdk
+
+clean:
+	rm -f forcecmd_*.zip
+	rm -f api.asm api.banks
+	rm -f b3_fcbanner.asm
+	rm -f *.RPK
+	rm -f *.DSK
+	rm -f linkfile fcsdk.linkfile
+	rm -fr build_0x6000 build_0x0000
+	$(MAKE) -C FC clean
+	for d in $(SUBDIRS); do $(MAKE) -C example/gcc/$$d clean; done
+	rm -fr fcsdk
+
+else
+
+# ======================================================================
+# SINGLE-TARGET BUILD (ONE_TARGET=1)
+# ======================================================================
+
+BUILD_DIR = build_$(BASE_ADDR)
+OBJ_DIR   = $(BUILD_DIR)/objects
+
+BASE_HEX_STR := $(shell printf "%04X" $$(( $(BASE_ADDR) )) )
 BASE_80_HEX_STR := $(shell printf "%X" $$(( $(BASE_ADDR) + 0x80 )) )
 
-# Console ROM mode: set CONSOLE_ROM=1 to use console ROM header format
-# (auto-enabled when BASE_ADDR is 0x0000)
 ifneq ($(filter 0x0000,$(BASE_ADDR)),)
 override CONSOLE_ROM=1
 endif
 CONSOLE_ROM ?= 0
 
-# Select the correct header source file
 ifeq ($(CONSOLE_ROM),1)
 HEADER_SRC = header_console.asm
+FINAL_BIN  = $(BUILD_DIR)/$(FNAME)_$(BASE_HEX_STR).bin
 else
 HEADER_SRC = header_cart.asm
+FINAL_BIN  = $(BUILD_DIR)/$(FNAME)C.bin
 endif
 
-CFLAGS += -DCONSOLE_ROM=$(CONSOLE_ROM)
-ASFLAGS += --defsym CONSOLE_ROM=$(CONSOLE_ROM)
+# Default target when recursing: build the final binary, fcsdk.linkfile, and RPK
+.PHONY: _one_target_all
+_one_target_all: $(FINAL_BIN) $(BUILD_DIR)/fcsdk.linkfile
 
-BANKBINS:=$(shell seq -s ' ' -f "bank%1g.page" 0 15)
+# Cartridge-only: also build the RPK (which pulls in FCMDG.bin)
+ifneq ($(CONSOLE_ROM),1)
+_one_target_all: $(BUILD_DIR)/$(FNAME).RPK
+endif
 
-VER:=$(shell grep "\#define APP_VER" b0_main.h | cut -d '"' -f2)
+CFLAGS += -DCONSOLE_ROM=$(CONSOLE_ROM) -DBASE_ADDR=$(BASE_ADDR) -DBASE_HEX_STR=$(BASE_HEX_STR) -DBASE_80_HEX_STR=$(BASE_80_HEX_STR)
 
-MANIFEST=FCMDG.bin FCMDC.bin README.md
-SUPPORT=FC/BOOT FC/LOAD FC/FCMD FC/FCMDXB FC/BIN/DISKIMAGE FC/BIN/FCMENU FC/BIN/FTP FC/BIN/SAMPLE FC/BIN/SAY FC/BIN/TELNET FC/BIN/VIRGIL99 FC/BIN/FONT FC/MDOSANSI FC/MDOSFONT
+BANKBINS:=$(shell seq -s ' ' -f "$(BUILD_DIR)/bank%1g.page" 0 15)
 
 LDFLAGS=\
-  --script=linkfile
+  --script=$(BUILD_DIR)/linkfile
 
-CFLAGS=\
-  -std=gnu99 -nostdlib -ffreestanding -Os -Wno-int-to-pointer-cast -Wno-pointer-to-int-cast -Werror --save-temps -I$(abspath .) -I$(abspath libti99) -DBASE_ADDR=$(BASE_ADDR) -DBASE_HEX_STR=$(BASE_HEX_STR) -DBASE_80_HEX_STR=$(BASE_80_HEX_STR)
-
-ASFLAGS=\
-  --defsym BASE_ADDR=$(BASE_ADDR)
+HEADBIN:=$(OBJ_DIR)/header.bin
 
 SRCS:=$(sort $(wildcard *.c) $(wildcard *.asm))
 LIBTI99_SRCS=$(sort $(wildcard libti99/*.c))
@@ -55,19 +124,13 @@ OBJECT_LIST:=$(SRCS:.c=.o) $(LIBTI99_OBJS)
 OBJECT_LIST:=$(filter-out api.o b3_fcbanner.o header_cart.o header_console.o trampoline.o trampoline_alt.o,$(OBJECT_LIST:.asm=.o)) api.o b3_fcbanner.o
 OBJECT_LIST+=header.o trampoline.o
 
-LINK_OBJECTS:=$(addprefix objects/,$(OBJECT_LIST))
+LINK_OBJECTS:=$(addprefix $(OBJ_DIR)/,$(OBJECT_LIST))
 
-all: forcecmd_$(VER).zip
-
-# The size of the cart_rom segment in decimal
-# must agree with linkfile
 COMMON_SIZE = 128
 
-HEADBIN:=objects/header.bin
-
-# Explicit header rule — use cart or console header based on CONSOLE_ROM
-objects/header.o: $(HEADER_SRC)
-	mkdir -p objects; cd objects; $(GAS) $(ASFLAGS) $(abspath $(HEADER_SRC)) -o $(notdir $@)
+# Explicit header rule
+$(OBJ_DIR)/header.o: $(HEADER_SRC) | $(OBJ_DIR)
+	cd $(OBJ_DIR); $(GAS) $(ASFLAGS) $(abspath $(HEADER_SRC)) -o header.o
 
 # Select trampoline source based on bank switching hardware
 ifeq ($(CONSOLE_ROM),1)
@@ -76,128 +139,98 @@ else
 TRAMPOLINE_SRC = trampoline.asm
 endif
 
-# Explicit trampoline rule — use cartridge or alt based on BASE_ADDR
-objects/trampoline.o: $(TRAMPOLINE_SRC)
-	mkdir -p objects; cd objects; $(GAS) $(ASFLAGS) $(abspath $<) -o $(notdir $@)
+$(OBJ_DIR)/trampoline.o: $(TRAMPOLINE_SRC) | $(OBJ_DIR)
+	cd $(OBJ_DIR); $(GAS) $(ASFLAGS) $(abspath $<) -o trampoline.o
 
-$(HEADBIN): $(FNAME).elf
+$(OBJ_DIR):
+	mkdir -p $(OBJ_DIR)
+	mkdir -p $(BUILD_DIR)
+
+$(HEADBIN): $(BUILD_DIR)/$(FNAME).elf
 	$(OBJCOPY) -O binary -j .text $< $(HEADBIN)
 	@dd if=/dev/null of=$(HEADBIN) bs=$(COMMON_SIZE) seek=1
 
-bank0.page: $(FNAME).elf $(HEADBIN)
-	$(OBJCOPY) -O binary -j .data $< objects/data.bin_tmp
-	$(OBJCOPY) -O binary -j .bank0 $< objects/$@_tmp
-	cat $(HEADBIN) objects/$@_tmp objects/data.bin_tmp >$@
+$(BUILD_DIR)/bank0.page: $(BUILD_DIR)/$(FNAME).elf $(HEADBIN)
+	$(OBJCOPY) -O binary -j .data $< $(OBJ_DIR)/data.bin_tmp
+	$(OBJCOPY) -O binary -j .bank0 $< $(OBJ_DIR)/$(@F)_tmp
+	cat $(HEADBIN) $(OBJ_DIR)/$(@F)_tmp $(OBJ_DIR)/data.bin_tmp >$@
 	@dd if=/dev/null of=$@ bs=8192 seek=1
 
-%.page: $(FNAME).elf $(HEADBIN)
-	$(OBJCOPY) -O binary -j .$(basename $@) $< objects/$@_tmp
-	cat $(HEADBIN) objects/$@_tmp >$@
+$(BUILD_DIR)/bank%.page: $(BUILD_DIR)/$(FNAME).elf $(HEADBIN)
+	$(OBJCOPY) -O binary -j .$(basename $(@F)) $< $(OBJ_DIR)/$(@F)_tmp
+	cat $(HEADBIN) $(OBJ_DIR)/$(@F)_tmp >$@
 	@dd if=/dev/null of=$@ bs=8192 seek=1
 
-# In console ROM mode, produce a 512KB image:
-#   lower 128KB = FCMD banks 0-15
-#   middle 376KB = zero padding
-#   top 8KB = original console ROM (994a_rom_8k.bin)
+# Console ROM: 512KB image with original console ROM patched in
 ifeq ($(CONSOLE_ROM),1)
-$(FNAME)C.bin: $(BANKBINS) 994a_rom_8k.bin
+$(FINAL_BIN): $(BANKBINS) 994a_rom/994a_rom_8k.bin
 	cat $(BANKBINS) > $@
 	dd if=/dev/zero bs=1 count=$$((512*1024 - 128*1024 - 8192)) >> $@ 2>/dev/null
-	cat 994a_rom_8k.bin >> $@
+	cat 994a_rom/994a_rom_8k.bin >> $@
 else
-$(FNAME)C.bin: $(BANKBINS)
+$(FINAL_BIN): $(BANKBINS)
 	cat $^ >$@
 endif
 
-$(FNAME)G.bin: gpl-boot.g99 $(FNAME).elf
-	python3 $(XGA99) -D "CART=$(shell echo -n '>' ; grep _cart mapfile | sed 's/^\s*0x0*\([0-9a-f]*\) *_cart/\1/')" -o $@ $<
+# GROM boot binary — cartridge only
+ifneq ($(CONSOLE_ROM),1)
+$(BUILD_DIR)/$(FNAME)G.bin: gpl-boot.g99 $(BUILD_DIR)/$(FNAME).elf
+	python3 $(XGA99) -D "CART=$(shell echo -n '>' ; grep _cart $(BUILD_DIR)/mapfile | sed 's/^\s*0x0*\([0-9a-f]*\) *_cart/\1/')" -o $@ $<
+endif
 
-$(FNAME).elf: $(LINK_OBJECTS) linkfile
-	$(LD) $(LINK_OBJECTS) $(LDFLAGS) -o $(FNAME).elf -Map=mapfile
+$(BUILD_DIR)/$(FNAME).elf: $(LINK_OBJECTS) $(BUILD_DIR)/linkfile
+	$(LD) $(LINK_OBJECTS) $(LDFLAGS) -o $(BUILD_DIR)/$(FNAME).elf -Map=$(BUILD_DIR)/mapfile
 
-linkfile: linkfile.m4
-	m4 -DBASE_ADDR=$(BASE_ADDR) $< > $@
+$(BUILD_DIR)/linkfile: linkfile.m4 | $(BUILD_DIR)
+	m4 -DBASE_ADDR=$(BASE_ADDR) -DOBJDIR=$(OBJ_DIR) $< > $@
 
-clean:
-	rm -f forcecmd_*.zip
-	rm -fr objects
-	rm -f *.elf
-	rm -f 512K.bin FCMDC.bin FCMDG.bin FCMD512.bin
-	rm -f *.page
-	rm -f linkfile
-	rm -f mapfile
-	rm -f *.RPK
-	rm -f api.asm
-	rm -f api.banks
-	$(MAKE) -C FC clean
-	for d in $(SUBDIRS); do $(MAKE) -C example/gcc/$$d clean; done
-	rm -fr fcsdk
-	rm -f fcsdk.linkfile
+# Compilation rules
+$(OBJ_DIR)/%.o: %.c | $(OBJ_DIR)
+	cd $(OBJ_DIR); $(CC) -c $(abspath $<) $(CFLAGS) -o $(notdir $@)
 
-objects/%.o: %.asm
-	mkdir -p objects; cd objects; $(GAS) $(ASFLAGS) $(abspath $<) -o $(notdir $@)
+$(OBJ_DIR)/%.o: %.asm | $(OBJ_DIR)
+	cd $(OBJ_DIR); $(GAS) $(ASFLAGS) $(abspath $<) -o $(notdir $@)
 
-objects/%.o: %.c
-	mkdir -p objects; cd objects; $(CC) -c $(abspath $<) $(CFLAGS) -o $(notdir $@)
+$(OBJ_DIR)/%.o: libti99/%.c | $(OBJ_DIR)
+	cd $(OBJ_DIR); $(CC) -c $(abspath $<) $(CFLAGS) -o $(notdir $@)
 
-objects/%.o: libti99/%.c
-	mkdir -p objects; cd objects; $(CC) -c $(abspath $<) $(CFLAGS) -o $(notdir $@)
+# API table generation (per-variant — bank addresses depend on BASE_ADDR)
+$(OBJ_DIR)/api.asm: fc_api.lst makeapi.py fc_api_template | $(OBJ_DIR)
+	grep DECLARE_BANKED libti99/*.h *.h >$(OBJ_DIR)/api.banks
+	python3 ./makeapi.py fc_api.lst $(OBJ_DIR)/api.asm $(OBJ_DIR)/api.banks example/gcc/fcsdk/fc_api.h $(BASE_ADDR)
 
-api.asm: fc_api.lst makeapi.py fc_api_template
-	rm -f api.asm
-	grep DECLARE_BANKED libti99/*.h *.h >api.banks
-	python3 ./makeapi.py fc_api.lst api.asm api.banks example/gcc/fcsdk/fc_api.h $(BASE_ADDR)
+# api.asm is per-variant (in OBJ_DIR), so explicit rule needed — pattern rule looks for it at project root
+$(OBJ_DIR)/api.o: $(OBJ_DIR)/api.asm | $(OBJ_DIR)
+	cd $(OBJ_DIR); $(GAS) $(ASFLAGS) $(abspath $<) -o api.o
 
-fcsdk.linkfile: $(FNAME).elf
-	( echo -n "memcpy = 0x"; grep gcc_memcpy mapfile | egrep -v '\.' | sed 's/^\s*0x0*\([0-9a-f]*\) *gcc_memcpy/\1;/' ) > $@
-	( echo -n "memset = 0x"; grep gcc_memset mapfile | egrep -v '\.' | sed 's/^\s*0x0*\([0-9a-f]*\) *gcc_memset/\1;/' ) >> $@
-	( echo -n "__adddf3 = 0x"; grep gcc_adddf3 mapfile | egrep -v '\.' | sed 's/^\s*0x0*\([0-9a-f]*\) *gcc_adddf3/\1;/' ) >> $@
-	( echo -n "__subdf3 = 0x"; grep gcc_subdf3 mapfile | egrep -v '\.' | sed 's/^\s*0x0*\([0-9a-f]*\) *gcc_subdf3/\1;/' ) >> $@
-	( echo -n "__muldf3 = 0x"; grep gcc_muldf3 mapfile | egrep -v '\.' | sed 's/^\s*0x0*\([0-9a-f]*\) *gcc_muldf3/\1;/' ) >> $@
-	( echo -n "__divdf3 = 0x"; grep gcc_divdf3 mapfile | egrep -v '\.' | sed 's/^\s*0x0*\([0-9a-f]*\) *gcc_divdf3/\1;/' ) >> $@
-	( echo -n "__ltdf2 = 0x"; grep gcc_d_compare mapfile | egrep -v '\.' | sed 's/^\s*0x0*\([0-9a-f]*\) *gcc_d_compare/\1;/' ) >> $@
-	( echo -n "__ledf2 = 0x"; grep gcc_d_compare mapfile | egrep -v '\.' | sed 's/^\s*0x0*\([0-9a-f]*\) *gcc_d_compare/\1;/' ) >> $@
-	( echo -n "__gtdf2 = 0x"; grep gcc_d_compare mapfile | egrep -v '\.' | sed 's/^\s*0x0*\([0-9a-f]*\) *gcc_d_compare/\1;/' ) >> $@
-	( echo -n "__gedf2 = 0x"; grep gcc_d_compare mapfile | egrep -v '\.' | sed 's/^\s*0x0*\([0-9a-f]*\) *gcc_d_compare/\1;/' ) >> $@
-	( echo -n "__eqdf2 = 0x"; grep gcc_eqdf2 mapfile | egrep -v '\.' | sed 's/^\s*0x0*\([0-9a-f]*\) *gcc_eqdf2/\1;/' ) >> $@
-	( echo -n "__nedf2 = 0x"; grep gcc_eqdf2 mapfile | egrep -v '\.' | sed 's/^\s*0x0*\([0-9a-f]*\) *gcc_eqdf2/\1;/' ) >> $@
-	( echo -n "__floatsidf = 0x"; grep gcc_floatsidf mapfile | egrep -v '\.' | sed 's/^\s*0x0*\([0-9a-f]*\) *gcc_floatsidf/\1;/' ) >> $@
-	( echo -n "__fixdfsi = 0x"; grep gcc_fixdfsi mapfile | egrep -v '\.' | sed 's/^\s*0x0*\([0-9a-f]*\) *gcc_fixdfsi/\1;/' ) >> $@
+# fcsdk linkfile — symbols for client programs
+$(BUILD_DIR)/fcsdk.linkfile: $(BUILD_DIR)/$(FNAME).elf
+	( echo -n "memcpy = 0x"; grep gcc_memcpy $(BUILD_DIR)/mapfile | egrep -v '\.' | sed 's/^\s*0x0*\([0-9a-f]*\) *gcc_memcpy/\1;/' ) > $@
+	( echo -n "memset = 0x"; grep gcc_memset $(BUILD_DIR)/mapfile | egrep -v '\.' | sed 's/^\s*0x0*\([0-9a-f]*\) *gcc_memset/\1;/' ) >> $@
+	( echo -n "__adddf3 = 0x"; grep gcc_adddf3 $(BUILD_DIR)/mapfile | egrep -v '\.' | sed 's/^\s*0x0*\([0-9a-f]*\) *gcc_adddf3/\1;/' ) >> $@
+	( echo -n "__subdf3 = 0x"; grep gcc_subdf3 $(BUILD_DIR)/mapfile | egrep -v '\.' | sed 's/^\s*0x0*\([0-9a-f]*\) *gcc_subdf3/\1;/' ) >> $@
+	( echo -n "__muldf3 = 0x"; grep gcc_muldf3 $(BUILD_DIR)/mapfile | egrep -v '\.' | sed 's/^\s*0x0*\([0-9a-f]*\) *gcc_muldf3/\1;/' ) >> $@
+	( echo -n "__divdf3 = 0x"; grep gcc_divdf3 $(BUILD_DIR)/mapfile | egrep -v '\.' | sed 's/^\s*0x0*\([0-9a-f]*\) *gcc_divdf3/\1;/' ) >> $@
+	( echo -n "__ltdf2 = 0x"; grep gcc_d_compare $(BUILD_DIR)/mapfile | egrep -v '\.' | sed 's/^\s*0x0*\([0-9a-f]*\) *gcc_d_compare/\1;/' ) >> $@
+	( echo -n "__ledf2 = 0x"; grep gcc_d_compare $(BUILD_DIR)/mapfile | egrep -v '\.' | sed 's/^\s*0x0*\([0-9a-f]*\) *gcc_d_compare/\1;/' ) >> $@
+	( echo -n "__gtdf2 = 0x"; grep gcc_d_compare $(BUILD_DIR)/mapfile | egrep -v '\.' | sed 's/^\s*0x0*\([0-9a-f]*\) *gcc_d_compare/\1;/' ) >> $@
+	( echo -n "__gedf2 = 0x"; grep gcc_d_compare $(BUILD_DIR)/mapfile | egrep -v '\.' | sed 's/^\s*0x0*\([0-9a-f]*\) *gcc_d_compare/\1;/' ) >> $@
+	( echo -n "__eqdf2 = 0x"; grep gcc_eqdf2 $(BUILD_DIR)/mapfile | egrep -v '\.' | sed 's/^\s*0x0*\([0-9a-f]*\) *gcc_eqdf2/\1;/' ) >> $@
+	( echo -n "__nedf2 = 0x"; grep gcc_eqdf2 $(BUILD_DIR)/mapfile | egrep -v '\.' | sed 's/^\s*0x0*\([0-9a-f]*\) *gcc_eqdf2/\1;/' ) >> $@
+	( echo -n "__floatsidf = 0x"; grep gcc_floatsidf $(BUILD_DIR)/mapfile | egrep -v '\.' | sed 's/^\s*0x0*\([0-9a-f]*\) *gcc_floatsidf/\1;/' ) >> $@
+	( echo -n "__fixdfsi = 0x"; grep gcc_fixdfsi $(BUILD_DIR)/mapfile | egrep -v '\.' | sed 's/^\s*0x0*\([0-9a-f]*\) *gcc_fixdfsi/\1;/' ) >> $@
 
-b3_fcbanner.asm: fcbanner.ans ans2asm.py
-	python3 ./ans2asm.py
+# Cartridge-only: RPK packaging
+ifneq ($(CONSOLE_ROM),1)
+$(BUILD_DIR)/$(FNAME).RPK: $(FINAL_BIN) $(BUILD_DIR)/$(FNAME)G.bin layout.xml
+	cp layout.xml $(BUILD_DIR)/
+	cd $(BUILD_DIR) && zip $(FNAME).RPK $(FNAME)C.bin $(FNAME)G.bin layout.xml
 
-SUBDIRS=hello samshello charset diskimage fcmenu ftp say telnet virgil font
-
-subdirs: api.asm fcsdk.linkfile
-	cp fcsdk.linkfile example/gcc/fcsdk/fc.ld
-	for d in $(SUBDIRS); do $(MAKE) -C example/gcc/$$d; done
-
-support: FC/reload_fcmd.asm FC/loadxb.bas
-	$(MAKE) -C FC
-
-$(FNAME).DSK: subdirs support
-	python3 $(XDM99) $(FNAME).DSK -X 360 -t -a FC/BIN/DISKIMAGE FC/BIN/FCMENU FC/BIN/FTP FC/BIN/TELNET FC/BIN/SAY FC/BIN/SAMPLE FC/BIN/VIRGIL99 FC/BIN/FONT FC/MDOSANSI FC/MDOSFONT
-
-$(FNAME).RPK: $(FNAME)C.bin $(FNAME)G.bin layout.xml
-	zip $@ $^
-
-$(FNAME)_ALT.RPK: $(FNAME)C.bin layout_alt.xml
-	cp $^ /tmp
+$(BUILD_DIR)/$(FNAME)_ALT.RPK: $(FINAL_BIN) layout_alt.xml
+	cp $(FINAL_BIN) layout_alt.xml /tmp
 	mv /tmp/layout_alt.xml /tmp/layout.xml
 	cd /tmp && zip $@ layout.xml $(FNAME)C.bin
-	mv /tmp/$@ $@
+	mv /tmp/$@ $(BUILD_DIR)/
+endif
 
-fcsdk:  subdirs
-	rm -fr ./fcsdk
-	cp -a example/gcc/fcsdk ./fcsdk
-	cp -a example/gcc/hello ./fcsdk/hello
-	cp -a example/gcc/samshello ./fcsdk/samshello
-	find fcsdk -name "objects" -o -name "mapfile" -o -name "*HELLO*" | xargs rm -r
-
-forcecmd_$(VER).zip: $(MANIFEST) subdirs support $(FNAME).RPK $(FNAME).DSK fcsdk
-	rm -f $@
-	zip -r $@ $(MANIFEST) $(SUPPORT) $(FNAME).RPK $(FNAME).DSK fcsdk
-
-.PHONY: clean subdirs support
-
+endif

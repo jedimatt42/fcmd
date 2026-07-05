@@ -17,9 +17,10 @@ if [ -z ${CART_DEPLOY_DIR:-} ]; then
 else
   # Copy cartridge binaries to a place Classic99.ini can reference them
   # that is convenient for also fetching for deployment to my FinalGROM99 cartridge
-  cp FCMD*.bin $CART_DEPLOY_DIR
+  cp build_0x6000/FCMDC.bin $CART_DEPLOY_DIR 2>/dev/null || true
+  cp build_0x6000/FCMD_6000.bin $CART_DEPLOY_DIR 2>/dev/null || true
   # Copy the RPK cartridge binary somewhere convenient to upload to JS99ER
-  cp *.RPK $CART_DEPLOY_DIR
+  cp build_0x6000/FCMD.RPK $CART_DEPLOY_DIR 2>/dev/null || true
 fi
 
 if [ -z ${CLASSIC99_DSK1_DIR:-} ]; then

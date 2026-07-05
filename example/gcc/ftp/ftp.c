@@ -79,11 +79,11 @@ void fetchInfo() {
   struct DisplayInformation info;
   sys_display_info(&info);
   displayWidth = info.displayWidth;
-  struct SystemInformation sys_info;
-  sys_info(&sys_info);
-  currentDsr = sys_info.currentDsr;
-  currentPath = sys_info.currentPath;
-  vdp_io_buf = sys_info.vdp_io_buf;
+  struct SystemInformation sysInfo;
+  sys_info(&sysInfo);
+  currentDsr = sysInfo.currentDsr;
+  currentPath = sysInfo.currentPath;
+  vdp_io_buf = sysInfo.vdp_io_buf;
 }
 
 int main(char* args) {
