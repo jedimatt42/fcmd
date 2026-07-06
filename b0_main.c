@@ -61,7 +61,12 @@ void titleScreen() {
   tputs_rom(APP_VER);
   bk_tputc(' ');
   tputs_rom(__DATE__);
-  tputs_rom("\nwww.jedimatt42.com\nko-fi.com/jedimatt42\n");
+#if CONSOLE_ROM == BUILD_CONSOLE  
+  tputs_rom("\n16-bit ROM\n");
+#else
+  tputs_rom("\n8-bit CART\n");
+#endif
+  tputs_rom("jedimatt42.com\n");
 }
 
 void prompt() {

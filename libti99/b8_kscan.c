@@ -7,7 +7,7 @@ make the call and return to the FCMD bank and code. If we take advantage of usin
 the GPLWS, we can prepare registers.
 */
 
-#ifdef CONSOLE_BANK
+#if CONSOLE_ROM == BUILD_CONSOLE
 
 void crom_tramp() {
     __asm__(

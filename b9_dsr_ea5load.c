@@ -29,20 +29,14 @@ inline static void ea5_vdpchar(int pAddr, int ch) {
 #define ADDR (*(volatile int *)0x8328)
 
 void ea5launch() {
-#ifdef CONSOLE_BANK
   __asm__(
       "LWPI >83E0\n\t"
+#if CONSOLE_ROM == BUILD_CONSOLE
       "SETO @>0000\n\t" // bank into console rom
-      "BL   *r11\n\t"
-      "BLWP @>0000\n\t"
-  );
-#else
-  __asm__(
-      "LWPI >83E0\n\t"
-      "BL   *r11\n\t"
-      "BLWP @>0000\n\t"
-  );
 #endif
+      "BL   *r11\n\t"
+      "BLWP @>0000\n\t"
+  );
 }
 
 void dsr_ea5_load(struct DeviceServiceRoutine* dsr, const char* fname) {

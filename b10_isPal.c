@@ -1,7 +1,7 @@
 #include "banks.h"
 #define MYBANK BANK(10)
 
-#ifdef CONSOLE_BANK
+#if CONSOLE_ROM == BUILD_CONSOLE
 #define PAL_THRESHOLD 15000
 #else
 #define PAL_THRESHOLD 7500

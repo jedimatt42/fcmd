@@ -5,7 +5,7 @@
 #include "b8_terminal.h"
 #include "string.h"
 
-#ifndef CONSOLE_BANK
+#if CONSOLE_ROM == BUILD_CART
 #define _USE_FAC 1
 #endif
 
