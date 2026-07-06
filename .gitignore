@@ -3,7 +3,7 @@ build_*/
 api.asm
 api.h
 api.banks
-b3_fcbanner.asm
+src/b3_fcbanner.asm
 fcsdk.linkfile
 FC/BIN
 /fcsdk

@@ -8,14 +8,14 @@ XDM99?=$(shell which xdm99.py)
 
 FNAME=FCMD
 
-VER:=$(shell grep "\#define APP_VER" b0_main.h | cut -d '"' -f2)
+VER:=$(shell grep "\#define APP_VER" src/b0_main.h | cut -d '"' -f2)
 
 SUPPORT=FC/BOOT FC/LOAD FC/FCMD FC/FCMDXB FC/BIN/DISKIMAGE FC/BIN/FCMENU FC/BIN/FTP FC/BIN/SAMPLE FC/BIN/SAY FC/BIN/TELNET FC/BIN/VIRGIL99 FC/BIN/FONT FC/MDOSANSI FC/MDOSFONT
 
 SUBDIRS=hello samshello charset diskimage fcmenu ftp say telnet virgil font
 
 CFLAGS=\
-  -std=gnu99 -nostdlib -ffreestanding -Os -Wno-int-to-pointer-cast -Wno-pointer-to-int-cast -Werror --save-temps -I$(abspath .) -I$(abspath libti99)
+  -std=gnu99 -nostdlib -ffreestanding -Os -Wno-int-to-pointer-cast -Wno-pointer-to-int-cast -Werror --save-temps -I$(abspath src) -I$(abspath src/libti99)
 
 ASFLAGS=\
   --defsym BASE_ADDR=$(BASE_ADDR) --defsym CONSOLE_ROM=$(CONSOLE_ROM)
@@ -91,10 +91,10 @@ endif
 CONSOLE_ROM ?= 0
 
 ifeq ($(CONSOLE_ROM),1)
-HEADER_SRC = header_console.asm
+HEADER_SRC = src/header_console.asm
 FINAL_BIN  = $(BUILD_DIR)/$(FNAME)_$(BASE_HEX_STR).bin
 else
-HEADER_SRC = header_cart.asm
+HEADER_SRC = src/header_cart.asm
 FINAL_BIN  = $(BUILD_DIR)/$(FNAME)C.bin
 endif
 
@@ -116,11 +116,11 @@ LDFLAGS=\
 
 HEADBIN:=$(OBJ_DIR)/header.bin
 
-SRCS:=$(sort $(wildcard *.c) $(wildcard *.asm))
-LIBTI99_SRCS=$(sort $(wildcard libti99/*.c))
+SRCS:=$(sort $(wildcard src/*.c) $(wildcard src/*.asm))
+LIBTI99_SRCS=$(sort $(wildcard src/libti99/*.c))
 
 LIBTI99_OBJS:=$(notdir $(LIBTI99_SRCS:.c=.o))
-OBJECT_LIST:=$(SRCS:.c=.o) $(LIBTI99_OBJS)
+OBJECT_LIST:=$(notdir $(SRCS:.c=.o)) $(LIBTI99_OBJS)
 OBJECT_LIST:=$(filter-out api.o b3_fcbanner.o header_cart.o header_console.o trampoline.o trampoline_alt.o,$(OBJECT_LIST:.asm=.o)) api.o b3_fcbanner.o
 OBJECT_LIST+=header.o trampoline.o
 
@@ -134,9 +134,9 @@ $(OBJ_DIR)/header.o: $(HEADER_SRC) | $(OBJ_DIR)
 
 # Select trampoline source based on bank switching hardware
 ifeq ($(CONSOLE_ROM),1)
-TRAMPOLINE_SRC = trampoline_alt.asm
+TRAMPOLINE_SRC = src/trampoline_alt.asm
 else
-TRAMPOLINE_SRC = trampoline.asm
+TRAMPOLINE_SRC = src/trampoline.asm
 endif
 
 $(OBJ_DIR)/trampoline.o: $(TRAMPOLINE_SRC) | $(OBJ_DIR)
@@ -185,18 +185,18 @@ $(BUILD_DIR)/linkfile: linkfile.m4 | $(BUILD_DIR)
 	m4 -DBASE_ADDR=$(BASE_ADDR) -DOBJDIR=$(OBJ_DIR) $< > $@
 
 # Compilation rules
-$(OBJ_DIR)/%.o: %.c | $(OBJ_DIR)
+$(OBJ_DIR)/%.o: src/%.c | $(OBJ_DIR)
 	cd $(OBJ_DIR); $(CC) -c $(abspath $<) $(CFLAGS) -o $(notdir $@)
 
-$(OBJ_DIR)/%.o: %.asm | $(OBJ_DIR)
+$(OBJ_DIR)/%.o: src/%.asm | $(OBJ_DIR)
 	cd $(OBJ_DIR); $(GAS) $(ASFLAGS) $(abspath $<) -o $(notdir $@)
 
-$(OBJ_DIR)/%.o: libti99/%.c | $(OBJ_DIR)
+$(OBJ_DIR)/%.o: src/libti99/%.c | $(OBJ_DIR)
 	cd $(OBJ_DIR); $(CC) -c $(abspath $<) $(CFLAGS) -o $(notdir $@)
 
 # API table generation (per-variant — bank addresses depend on BASE_ADDR)
 $(OBJ_DIR)/api.asm: fc_api.lst makeapi.py fc_api_template | $(OBJ_DIR)
-	grep DECLARE_BANKED libti99/*.h *.h >$(OBJ_DIR)/api.banks
+	grep DECLARE_BANKED src/libti99/*.h src/*.h >$(OBJ_DIR)/api.banks
 	python3 ./makeapi.py fc_api.lst $(OBJ_DIR)/api.asm $(OBJ_DIR)/api.banks example/gcc/fcsdk/fc_api.h $(BASE_ADDR)
 
 # api.asm is per-variant (in OBJ_DIR), so explicit rule needed — pattern rule looks for it at project root
