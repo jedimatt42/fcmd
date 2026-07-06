@@ -36,8 +36,8 @@ build_0x6000: b3_fcbanner.asm
 build_0x0000: b3_fcbanner.asm
 	$(MAKE) ONE_TARGET=1 BASE_ADDR=0x0000
 
-b3_fcbanner.asm: fcbanner.ans ans2asm.py
-	python3 ./ans2asm.py
+b3_fcbanner.asm: fcbanner.ans scripts/ans2asm.py
+	python3 ./scripts/ans2asm.py
 
 subdirs: build_0x6000
 	cp build_0x6000/fcsdk.linkfile example/gcc/fcsdk/fc.ld
@@ -174,7 +174,7 @@ endif
 
 # GROM boot binary — cartridge only
 ifneq ($(CONSOLE_ROM),1)
-$(BUILD_DIR)/$(FNAME)G.bin: gpl-boot.g99 $(BUILD_DIR)/$(FNAME).elf
+$(BUILD_DIR)/$(FNAME)G.bin: src/gpl-boot.g99 $(BUILD_DIR)/$(FNAME).elf
 	python3 $(XGA99) -D "CART=$(shell echo -n '>' ; grep _cart $(BUILD_DIR)/mapfile | sed 's/^\s*0x0*\([0-9a-f]*\) *_cart/\1/')" -o $@ $<
 endif
 
@@ -195,9 +195,9 @@ $(OBJ_DIR)/%.o: src/libti99/%.c | $(OBJ_DIR)
 	cd $(OBJ_DIR); $(CC) -c $(abspath $<) $(CFLAGS) -o $(notdir $@)
 
 # API table generation (per-variant — bank addresses depend on BASE_ADDR)
-$(OBJ_DIR)/api.asm: fc_api.lst makeapi.py fc_api_template | $(OBJ_DIR)
+$(OBJ_DIR)/api.asm: fc_api.lst scripts/makeapi.py fc_api_template | $(OBJ_DIR)
 	grep DECLARE_BANKED src/libti99/*.h src/*.h >$(OBJ_DIR)/api.banks
-	python3 ./makeapi.py fc_api.lst $(OBJ_DIR)/api.asm $(OBJ_DIR)/api.banks example/gcc/fcsdk/fc_api.h $(BASE_ADDR)
+	python3 ./scripts/makeapi.py fc_api.lst $(OBJ_DIR)/api.asm $(OBJ_DIR)/api.banks example/gcc/fcsdk/fc_api.h $(BASE_ADDR)
 
 # api.asm is per-variant (in OBJ_DIR), so explicit rule needed — pattern rule looks for it at project root
 $(OBJ_DIR)/api.o: $(OBJ_DIR)/api.asm | $(OBJ_DIR)
