@@ -2,9 +2,9 @@
 #define MYBANK BANK(0)
 
 #include "commands.h"
-#include "main.h"
+#include "honk.h"
 
 int handleTipiBeeps() {
-    playtipi();
+    bk_playtipi();
   return 0;
 }

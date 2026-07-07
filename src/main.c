@@ -3,6 +3,7 @@
 
 #include "debugwait.h"
 #include "main.h"
+#include "honk.h"
 
 #include <sound.h>
 #include <string.h>
@@ -30,31 +31,6 @@
 #include "runScript.h"
 #include "getstr.h"
 #include "ed.h"
-
-const char tipibeeps[] = {
-  0x04, 0x9f, 0xbf, 0xdf, 0xff, 0x02,
-  0x03, 0x80, 0x05, 0x94, 0x07,
-  0x03, 0x8B, 0x06, 0x94, 0x07,
-  0x03, 0x80, 0x05, 0x90, 0x0e,
-  0x01, 0x9f, 0x00
-};
-
-void playtipi() {
-  char* pSrc = (char*) tipibeeps;
-  unsigned int cnt = sizeof(tipibeeps);
-  VDP_SET_ADDRESS_WRITE(0x3E00);
-  while (cnt--) {
-    VDPWD=*(pSrc++);
-  }
-  SET_SOUND_PTR(0x3E00);
-  SET_SOUND_VDP();
-  START_SOUND();
-  while(SOUND_CNT != 0) {
-    VDP_INT_POLL;
-  }
-  MUTE_SOUND();
-  VDP_INT_POLL;
-}
 
 void titleScreen() {
   tputs_rom("Force Command v");
@@ -127,7 +103,7 @@ void cartmain()
       bk_banner();
     }
     titleScreen();
-    //playtipi();
+    bk_playtipi();
   }
 
   while(1) {

@@ -92,7 +92,7 @@ inline int VDP_SCREEN_TEXT64(unsigned int r, unsigned int c)			{	return (((r)<<6
 // wait for a vblank (interrupts disabled - will work unreliably if enabled)
 // call vdpwaitvint() instead if you want to keep running the console interrupt
 // DO NOT USE the non-CRU version - this will miss interrupts.
-//#define VDP_WAIT_VBLANK  		while (!(VDPST & VDP_ST_INT)) { }
+#define VDP_WAIT_VBLANK  		while (!(VDPST & VDP_ST_INT)) { }
 #define VDP_WAIT_VBLANK_CRU	  __asm__( "clr r12\n\ttb 2\n\tjeq -4\n\tmovb @>8802,r12" : : : "r12" );
 // This version lets you get the status register into a variable (pass the desired variable)
 #define VDP_WAIT_VBLANK_CRU_STATUS(x)	  __asm__( "clr r12\n\ttb 2\n\tjeq -4\n\tmovb @>8802,%0" : "=rm" (x) : : "r12" );

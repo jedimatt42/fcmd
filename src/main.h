@@ -8,7 +8,6 @@ void cartmain();
 void initGlobals();
 void sleep(int jiffies);
 void titleScreen();
-void playtipi();
 void checkBackspaceVar();
 
 inline void reboot() {
