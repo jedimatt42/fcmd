@@ -28,7 +28,6 @@ int runScript(struct DeviceServiceRoutine* dsr, char* scriptName) {
     ran = 1;
     while(!ferr) {
       checkBackspaceVar();
-      //VDP_INT_POLL;
       char commandbuf[256];
 
       bk_strset(commandbuf, 0, 255);

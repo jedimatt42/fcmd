@@ -1,65 +1,64 @@
 #include "banks.h"
 #define MYBANK BANK(10)
 
-#if CONSOLE_ROM == BUILD_CONSOLE
-#define PAL_THRESHOLD 15000
-#else
-#define PAL_THRESHOLD 7500
-#endif
+#include <vdp.h>
 
 int isPal() {
-  volatile int cycles = 0;
+  volatile int t;
 
-  // wait for VDP interrupt
-  // with limit loop, in case it doesn't physically exist
-  // EVPC card might not have VDP-INT hooked up...
-  // (or it may be connected to EXT-INT tb 1)
+  // Wait for VDP interrupt with timeout
+  t = 30000;
   __asm__(
     "limi 0\n\t"
     "clr r12\n"
-    "loop_%=:\n\t"
+    "0:\n\t"
     "dec %0\n\t"
-    "jeq break_%=\n\t"
+    "jeq 2f\n\t"
     "tb 2\n\t"
-    "jeq loop_%=\n"
-    "break_%=:\n\t"
-    "movb @>8802,r12"
-    : "=r"(cycles)
-    : "r"(cycles)
+    "jeq 0b\n\t"
+    "movb @>8802,r12\n"
+    "2:"
+    : "+r"(t)
+    :
     : "r12"
   );
 
-  if (cycles == 0) {
-    return 0;
-  }
+  // If no interrupt occurred, it must be a misconfigured 9938 expansion.
+  if (t == 0) return 0;
 
-  // again, provides a normalized result
+  // Normalize: wait for next VDP interrupt
+  VDP_WAIT_VBLANK_CRU;
+
+  // Start TMS9901 timer with max value (>3FFF = 16383)
+  // Timer decrements every 64 PHI3* cycles = ~21.33 us
   __asm__(
     "clr r12\n\t"
-    "tb 2\n\t"
-    "jeq -4\n\t"
-    "movb @>8802,r12"
-    : : : "r12"
+    "sbo 0\n\t"
+    "li r1,>3FFF\n\t"
+    "inct r12\n\t"
+    "ldcr r1,14\n\t"
+    "dect r12\n\t"
+    "sbz 0\n\t"
+    : : : "r12", "r1"
   );
 
-  cycles = 0;
+  // Wait for next VDP interrupt
+  VDP_WAIT_VBLANK_CRU;
 
-  // now wait again, but count while we wait.
-  // and repeat this 6 times, a fraction of a second
-  // as it is not precise
-  for (int i = 0; i < 6; i++) {
-    __asm__(
-      "clr r12\n\t"
-      "inc %0\n\t"
-      "tb 2\n\t"
-      "jeq -6\n\t"
-      "movb @>8802,r12"
-      : "=r"(cycles)
-      : "r"(cycles)
-      : "r12"
-    );
-  }
+  // Read timer and stop it
+  __asm__(
+    "clr r12\n\t"
+    "sbo 0\n\t"
+    "stcr r1,15\n\t"
+    "srl r1,1\n\t"
+    "mov r1,%0\n\t"
+    "ldcr r12,15\n\t"
+    : "=r"(t)
+    :
+    : "r12", "r1"
+  );
 
-  // with 6 iterations, NTSC reaches about 6800, and PAL reaches 8000
-  return cycles >= PAL_THRESHOLD;
+  // NTSC (60Hz): ~782 ticks elapsed, remaining ~15601
+  // PAL  (50Hz): ~939 ticks elapsed, remaining ~15444
+  return t < 15500;
 }

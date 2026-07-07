@@ -110,7 +110,6 @@ void cartmain()
     checkBackspaceVar();
     char commandbuf[256];
 
-    VDP_INT_POLL;
     bk_strset(commandbuf, 0, 255);
     prompt();
     history_on = 1;
