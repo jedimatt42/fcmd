@@ -2,32 +2,14 @@
 #define MYBANK BANK(10)
 
 #include <vdp.h>
+#include "string.h"
+#include "terminal.h"
 
 int isPal() {
-  volatile int t;
-
-  // Wait for VDP interrupt with timeout
-  t = 30000;
-  __asm__(
-    "limi 0\n\t"
-    "clr r12\n"
-    "0:\n\t"
-    "dec %0\n\t"
-    "jeq 2f\n\t"
-    "tb 2\n\t"
-    "jeq 0b\n\t"
-    "movb @>8802,r12\n"
-    "2:"
-    : "+r"(t)
-    :
-    : "r12"
-  );
-
-  // If no interrupt occurred, it must be a misconfigured 9938 expansion.
-  if (t == 0) return 0;
+  int t;
 
   // Normalize: wait for next VDP interrupt
-  VDP_WAIT_VBLANK_CRU;
+  VDP_WAIT_VBLANK;
 
   // Start TMS9901 timer with max value (>3FFF = 16383)
   // Timer decrements every 64 PHI3* cycles = ~21.33 us
@@ -43,7 +25,7 @@ int isPal() {
   );
 
   // Wait for next VDP interrupt
-  VDP_WAIT_VBLANK_CRU;
+  VDP_WAIT_VBLANK;
 
   // Read timer and stop it
   __asm__(
@@ -58,7 +40,13 @@ int isPal() {
     : "r12", "r1"
   );
 
+  tputs_rom("\nt=");
+  bk_tputs_ram(bk_uint2str((unsigned int)t));
+  tputs_rom("\n");
+
   // NTSC (60Hz): ~782 ticks elapsed, remaining ~15601
   // PAL  (50Hz): ~939 ticks elapsed, remaining ~15444
-  return t < 15500;
+  // However in practice there is a delay gettting the timer started, so actual elapsed ticks will be less.
+  // On MAME with evpc 9938 set to PAL, I measure 15722 remaining, and in NTSC I measure 16300.
+  return t < 16000;
 }
