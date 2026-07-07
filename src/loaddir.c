@@ -1,0 +1,94 @@
+#include "banks.h"
+#include "files.h"
+#define MYBANK BANK(9)
+
+#include "globals.h"
+#include "main.h"
+#include "dsrutil.h"
+#include "mds_dsrlnk.h"
+#include "tifloat.h"
+#include "strutil.h"
+#include "terminal.h"
+#include <vdp.h>
+#include <string.h>
+
+unsigned int dsr_catalog(struct DeviceServiceRoutine* dsr, const char* pathname, vol_entry_cb vol_cb, dir_entry_cb dir_cb) {
+  struct PAB pab;
+
+  struct VolInfo volInfo;
+  struct DirEntry dirEntry;
+
+  // CATALOG file must be INPUT | INTERNAL | RELATIVE
+  // try with timestamps
+  unsigned int ferr = bk_dsr_open(dsr, &pab, pathname, DSR_TYPE_INPUT | DSR_TYPE_DISPLAY | DSR_TYPE_FIXED | DSR_TYPE_INTERNAL | DSR_TYPE_RELATIVE, 146);
+  if (ferr) {
+    // if that fails, try without
+    unsigned int ferr = bk_dsr_open(dsr, &pab, pathname, DSR_TYPE_INPUT | DSR_TYPE_DISPLAY | DSR_TYPE_FIXED | DSR_TYPE_INTERNAL | DSR_TYPE_RELATIVE, 38);
+    if (ferr) {
+      return ferr;
+    }
+  }
+
+  int recNo = 0;
+  ferr = DSR_ERR_NONE;
+  while(ferr == DSR_ERR_NONE && request_break == 0) {
+    char cbuf[150];
+    ferr = bk_dsr_read_cpu(dsr, &pab, recNo, (char*) cbuf);
+    if (ferr == DSR_ERR_NONE) {
+      // process Record
+      if (recNo == 0) {
+        int namlen = bk_basicToCstr(cbuf, volInfo.volname);
+        int a = bk_ti_floatToInt(cbuf+1+namlen);
+        int j = bk_ti_floatToInt(cbuf+10+namlen);
+        int k = bk_ti_floatToInt(cbuf+19+namlen);
+        volInfo.total = j;
+        volInfo.available = k;
+        volInfo.timestamps = (pab.CharCount > 38);
+        vol_cb(&volInfo);
+      } else {
+        int namlen = bk_basicToCstr(cbuf, dirEntry.name);
+        if (namlen == 0) {
+          break;
+        }
+        char* cursor = cbuf+1+namlen;
+        dirEntry.type = bk_ti_floatToInt(cursor);
+        cursor += 9;
+        dirEntry.sectors = bk_ti_floatToInt(cursor);
+        cursor += 9;
+        dirEntry.reclen = bk_ti_floatToInt(cursor);
+
+        if (pab.CharCount > 38) {
+          cursor += 9 /* point to 'creation time' */ +
+            (6 * 9) /* and then to modified time */;
+          dirEntry.ts_second = bk_ti_floatToInt(cursor);
+          cursor += 9;
+          dirEntry.ts_min = bk_ti_floatToInt(cursor);
+          cursor += 9;
+          dirEntry.ts_hour = bk_ti_floatToInt(cursor);
+          cursor += 9;
+          dirEntry.ts_day = bk_ti_floatToInt(cursor);
+          cursor += 9;
+          dirEntry.ts_month = bk_ti_floatToInt(cursor);
+          cursor += 9;
+          dirEntry.ts_year = bk_ti_floatToInt(cursor);
+        } else {
+          dirEntry.ts_year = 0;
+          dirEntry.ts_month = 0;
+          dirEntry.ts_day = 0;
+          dirEntry.ts_hour = 0;
+          dirEntry.ts_min = 0;
+          dirEntry.ts_second = 0;
+        }
+
+        if (dirEntry.name[0] != 0) {
+          dir_cb(&dirEntry);
+        }
+      }
+      recNo++;
+    } else {
+      break;
+    }
+  }
+
+  return bk_dsr_close(dsr, &pab);
+}

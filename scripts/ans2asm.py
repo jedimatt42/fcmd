@@ -2,7 +2,7 @@
 with open('fcbanner.ans', 'rb') as ansi:
     data = ansi.read()
   
-with open('src/b3_fcbanner.asm', 'w') as h:
+with open('src/fcbanner.asm', 'w') as h:
     h.write('\tDEF\tbandata\n')
     h.write('\n')
     h.write('bandata:\n')

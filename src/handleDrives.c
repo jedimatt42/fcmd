@@ -1,0 +1,46 @@
+#include "banks.h"
+#define MYBANK BANK(4)
+
+#include "commands.h"
+#include "dsrutil.h"
+#include "terminal.h"
+#include "globals.h"
+#include <string.h>
+#include "strutil.h"
+
+int handleDrives() {
+  int addresses = 0;
+  char* peek = bk_strtokpeek(0, ' ');
+  if (0 == bk_strcmpi(str2ram("/a"), peek)) {
+    addresses = 1;
+  }
+
+  int i = 0;
+  int cb = 0;
+
+  while(dsrList[i].name[0] != 0 && request_break == 0) {
+    cb = dsrList[i].crubase;
+    bk_tputs_ram(bk_uint2hex(cb));
+    tputs_rom(" -");
+    if (addresses) {
+      bk_tputc('\n');
+    }
+    while (cb == dsrList[i].crubase) {
+      bk_tputc(' ');
+      bk_tputs_ram(dsrList[i].name);
+      if (addresses) {
+        bk_tputc(':');
+        bk_tputs_ram(bk_uint2hex(dsrList[i].addr));
+        if (dsrList[i].cpuSup) {
+          tputs_rom(" {c}");
+        }
+        bk_tputc('\n');
+      }
+      i++;
+    }
+    bk_tputc('\n');
+  }
+  return 0;
+}
+
+

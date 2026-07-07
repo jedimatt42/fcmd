@@ -1,0 +1,67 @@
+#include "banks.h"
+#define MYBANK BANK(12)
+
+#include "commands.h"
+
+#include "globals.h"
+#include "parsing.h"
+#include "strutil.h"
+#include "dsrutil.h"
+#include "terminal.h"
+#include "getstr.h"
+#include <string.h>
+
+int dumpMem(unsigned int addr, int len);
+
+int cmdM(char* tok) {
+    int limit = bk_atoi(bk_strtok(0, ' '));
+    dumpMem(bk_htoi(tok + 1), limit == 0 ? 8 : limit);
+  return 0;
+}
+
+
+int handleDebug() {
+    char cmdline[40];
+    while (1) {
+        for(int i=0; i<40; i++) {cmdline[i] = 0;}
+        tputs_rom("\n] ");
+        bk_getstr(cmdline, 40, backspace);
+        bk_tputc('\n');
+
+        char* tok = bk_strtok(cmdline, ' ');
+        int toklen = bk_strlen(tok);
+        if (toklen > 0) {
+            char cmd = tok[0];
+            switch(cmd) {
+                case 'M':
+                    cmdM(tok);
+                    break;
+                // Add Memory poke
+                // Add Cru editing
+                // Add Grom read
+                // Add Grom poke 
+                case 'Q':
+  return 0;
+                default:
+                    tputs_rom("unkown command\n");
+            }
+        }
+    }
+  return 0;
+}
+
+int dumpMem(unsigned int addr, int len) {
+    unsigned int* memory = (unsigned int*)addr;
+    unsigned int* limit = memory + len;
+    while(memory < limit && request_break == 0) {
+        bk_tputs_ram(bk_uint2hex((unsigned int)memory));
+        bk_tputc(':');
+        for(int i=0; i<4; i++) {
+            bk_tputs_ram(bk_uint2hex(*memory));
+            bk_tputc(' ');
+            memory++;
+        }
+        bk_tputc('\n');
+    }
+  return 0;
+}

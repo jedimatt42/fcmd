@@ -1,9 +1,10 @@
 objects
 build_*/
+linkfile.m4
 api.asm
 api.h
 api.banks
-src/b3_fcbanner.asm
+src/fcbanner.asm
 fcsdk.linkfile
 FC/BIN
 /fcsdk

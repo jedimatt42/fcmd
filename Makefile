@@ -8,7 +8,7 @@ XDM99?=$(shell which xdm99.py)
 
 FNAME=FCMD
 
-VER:=$(shell grep "\#define APP_VER" src/b0_main.h | cut -d '"' -f2)
+VER:=$(shell grep "\#define APP_VER" src/main.h | cut -d '"' -f2)
 
 SUPPORT=FC/BOOT FC/LOAD FC/FCMD FC/FCMDXB FC/BIN/DISKIMAGE FC/BIN/FCMENU FC/BIN/FTP FC/BIN/SAMPLE FC/BIN/SAY FC/BIN/TELNET FC/BIN/VIRGIL99 FC/BIN/FONT FC/MDOSANSI FC/MDOSFONT
 
@@ -28,16 +28,19 @@ ifeq ($(ONE_TARGET),)
 
 .PHONY: all build_0x6000 build_0x0000 subdirs support clean
 
-all: b3_fcbanner.asm forcecmd_$(VER).zip
+all: src/fcbanner.asm linkfile.m4 forcecmd_$(VER).zip
 
-build_0x6000: b3_fcbanner.asm
+build_0x6000: src/fcbanner.asm linkfile.m4
 	$(MAKE) ONE_TARGET=1 BASE_ADDR=0x6000
 
-build_0x0000: b3_fcbanner.asm
+build_0x0000: src/fcbanner.asm linkfile.m4
 	$(MAKE) ONE_TARGET=1 BASE_ADDR=0x0000
 
-b3_fcbanner.asm: fcbanner.ans scripts/ans2asm.py
+src/fcbanner.asm: fcbanner.ans scripts/ans2asm.py
 	python3 ./scripts/ans2asm.py
+
+linkfile.m4: scripts/gen-linkfile-m4.py linkfile.m4.in src/fcbanner.asm $(wildcard src/*.c) $(wildcard src/*.asm) $(wildcard src/libti99/*.c)
+	python3 ./scripts/gen-linkfile-m4.py $@
 
 subdirs: build_0x6000
 	cp build_0x6000/fcsdk.linkfile example/gcc/fcsdk/fc.ld
@@ -64,10 +67,10 @@ forcecmd_$(VER).zip: build_0x6000 build_0x0000 subdirs support $(FNAME).DSK fcsd
 clean:
 	rm -f forcecmd_*.zip
 	rm -f api.asm api.banks
-	rm -f b3_fcbanner.asm
+	rm -f src/fcbanner.asm
 	rm -f *.RPK
 	rm -f *.DSK
-	rm -f linkfile fcsdk.linkfile
+	rm -f linkfile.m4 linkfile fcsdk.linkfile
 	rm -fr build_0x6000 build_0x0000
 	$(MAKE) -C FC clean
 	for d in $(SUBDIRS); do $(MAKE) -C example/gcc/$$d clean; done
@@ -121,7 +124,7 @@ LIBTI99_SRCS=$(sort $(wildcard src/libti99/*.c))
 
 LIBTI99_OBJS:=$(notdir $(LIBTI99_SRCS:.c=.o))
 OBJECT_LIST:=$(notdir $(SRCS:.c=.o)) $(LIBTI99_OBJS)
-OBJECT_LIST:=$(filter-out api.o b3_fcbanner.o header_cart.o header_console.o trampoline.o trampoline_alt.o,$(OBJECT_LIST:.asm=.o)) api.o b3_fcbanner.o
+OBJECT_LIST:=$(filter-out api.o fcbanner.o header_cart.o header_console.o trampoline.o trampoline_alt.o,$(OBJECT_LIST:.asm=.o)) api.o fcbanner.o
 OBJECT_LIST+=header.o trampoline.o
 
 LINK_OBJECTS:=$(addprefix $(OBJ_DIR)/,$(OBJECT_LIST))

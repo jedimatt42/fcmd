@@ -1,0 +1,37 @@
+#include "banks.h"
+#define MYBANK BANK(13)
+
+#include "globals.h"
+#include "terminal.h"
+#include "vdp.h"
+#include "conio.h"
+#include "editor.h"
+
+
+void dropDownBar(int y) {
+  conio_x = 0;
+  conio_y = y;
+  ED_VDPCHAR(0xd4);
+  for (int x = 1; x < displayWidth - 1; x++) {
+    ED_VDPCHAR(0xcd);
+  }
+  ED_VDPCHAR(0xbe);
+}
+
+void dropDownSpace(int y) {
+  conio_x = 0;
+  conio_y = y;
+  ED_VDPCHAR(0xb3);
+  for (int x = 1; x < displayWidth - 1; x++) {
+    ED_VDPCHAR(' ');
+  }
+  ED_VDPCHAR(0xb3);
+}
+
+void ui_drop_down(int linecount) {
+  for(int i=0; i<linecount; i++) {
+    dropDownSpace(i);
+  }
+  dropDownBar(linecount);
+}
+

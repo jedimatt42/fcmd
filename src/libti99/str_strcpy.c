@@ -1,0 +1,12 @@
+#include "banks.h"
+#define MYBANK BANK(1)
+
+// String code for the TI-99/4A by Tursi
+// You can copy this file and use it at will ;)
+
+char *str_copy(char *d, const char *s) {
+  char *ret = d;
+  while (*s) *(d++)=*(s++);
+  *d='\0';
+  return ret;
+}

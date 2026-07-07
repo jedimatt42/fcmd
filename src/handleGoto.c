@@ -1,0 +1,68 @@
+#include "banks.h"
+
+#define MYBANK BANK(4)
+
+#include "commands.h"
+#include "strutil.h"
+#include "terminal.h"
+#include "labellist.h"
+#include "globals.h"
+#include <vdp.h>
+#include <string.h>
+
+int handleGoto() {
+  if (!scripton) {
+    tputs_rom("Error, 'goto' only valid in a script\n");
+  return 0;
+  }
+
+  char* label = bk_strtok(0, ' ');
+
+  if (!label) {
+    tputs_rom("Error, label required\n");
+  return 0;
+  }
+
+  int gotoline = labels_get(label);
+  if (-1 == gotoline) {
+    char commandbuf[255];
+    // scan forward for label definitions :(
+
+    int record = *goto_line_ref;
+    while((bk_dsr_status(scriptDsr, scriptPab) & DSR_STATUS) != DSR_STATUS_EOF) {
+      bk_strset(commandbuf, 0, 255);
+      int ferr = bk_dsr_read_cpu(scriptDsr, scriptPab, 0, commandbuf);
+      record++;
+      if (!ferr) {
+        char* tok = bk_strtok(commandbuf, ' ');
+        if (tok[bk_strlen(tok)-1] == ':') {
+          tok[bk_strlen(tok)-1] = 0; // shorten to just the name
+          labels_add(tok, record);
+        }
+      }
+    }
+    gotoline = labels_get(label);
+  }
+
+  if (-1 == gotoline) {
+    tputs_rom("Error, no label named: ");
+    bk_tputs_ram(label);
+    bk_tputc('\n');
+    gotoline = *goto_line_ref;
+  } else {
+    *goto_line_ref = gotoline;
+  }
+  // either return to where we left off, or advance to the target goto line
+
+  // scriptPab should point to script name
+  // reset back to first record
+  bk_dsr_reset(scriptDsr, scriptPab, 0);
+  // then script to line after the label we
+  // are jumping to...
+  for(int i=0; i<gotoline; i++) {
+    // reading sequential files with record
+    // number 0 auto advances
+    bk_dsr_read(scriptDsr, scriptPab, 0);
+  }
+  return 0;
+}
