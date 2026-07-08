@@ -1,6 +1,8 @@
 #include "banks.h"
 #define MYBANK BANK(0)
 
+#include "crom_tramp.h"
+
 /* double.c
    This file includes double math functions that the GCC compiler requires.
    06/23/2023 mrvan initial version
@@ -39,11 +41,18 @@ double __adddf3(double a, double b) {
    *FADD_AUGEND = a;
    *FADD_ADDEND = b;
 
+#if CONSOLE_ROM == BUILD_CONSOLE
+    volatile short* tramp = (volatile short*)api_crom_tramp;
+    tramp[CROM_TRAMP_BL_OFFS] = 0x0D80;
+    tramp[CROM_TRAMP_RET_OFFS] = MYBANK;
+    ((void (*)(void))api_crom_tramp)();
+#else
   __asm__(
     "lwpi >83E0\n\t"
     "bl @>0D80\n\t"
     "lwpi >8300\n\t"
   );
+#endif
 
   return *FADD_SUM;
 }
@@ -57,11 +66,18 @@ double __subdf3(double a, double b) {
    *FSUB_MINUEND    = a;
    *FSUB_SUBTRAHEND = b;
 
+#if CONSOLE_ROM == BUILD_CONSOLE
+    volatile short* tramp = (volatile short*)api_crom_tramp;
+    tramp[CROM_TRAMP_BL_OFFS] = 0x0D7C;
+    tramp[CROM_TRAMP_RET_OFFS] = MYBANK;
+    ((void (*)(void))api_crom_tramp)();
+#else
   __asm__(
     "lwpi >83E0\n\t"
     "bl @>0D7C\n\t"
     "lwpi >8300\n\t"
   );
+#endif
 
   return *FSUB_DIFFERENCE;
 }
@@ -75,11 +91,18 @@ double __muldf3(double a, double b) {
    *FMUL_MULTIPLICAND = a;
    *FMUL_MULTIPLIER   = b;
 
+#if CONSOLE_ROM == BUILD_CONSOLE
+    volatile short* tramp = (volatile short*)api_crom_tramp;
+    tramp[CROM_TRAMP_BL_OFFS] = 0x0E88;
+    tramp[CROM_TRAMP_RET_OFFS] = MYBANK;
+    ((void (*)(void))api_crom_tramp)();
+#else
   __asm__(
     "lwpi >83E0\n\t"
     "bl @>0E88\n\t"
     "lwpi >8300\n\t"
   );
+#endif
 
   return *FMUL_PRODUCT;
 }
@@ -93,11 +116,18 @@ double __divdf3(double a, double b) {
    *FDIV_DIVIDEND = b;
    *FDIV_DIVISOR  = a;
 
+#if CONSOLE_ROM == BUILD_CONSOLE
+    volatile short* tramp = (volatile short*)api_crom_tramp;
+    tramp[CROM_TRAMP_BL_OFFS] = 0x0FF4;
+    tramp[CROM_TRAMP_RET_OFFS] = MYBANK;
+    ((void (*)(void))api_crom_tramp)();
+#else
   __asm__(
     "lwpi >83E0\n\t"
     "bl @>0FF4\n\t"
     "lwpi >8300\n\t"
   );
+#endif
 
   return *FDIV_QUOTIENT;
 }
@@ -161,11 +191,18 @@ int __fixdfsi(double a) {
 //     "bl @>12b8\n\t"
   *FAC_PTR = a;
 
+#if CONSOLE_ROM == BUILD_CONSOLE
+    volatile short* tramp = (volatile short*)api_crom_tramp;
+    tramp[CROM_TRAMP_BL_OFFS] = 0x12B8;
+    tramp[CROM_TRAMP_RET_OFFS] = MYBANK;
+    ((void (*)(void))api_crom_tramp)();
+#else
   __asm__(
     "lwpi >83E0\n\t"
     "bl @>12b8\n\t"
     "lwpi >8300\n\t"
   );
+#endif
 
   return *(int*)FAC_PTR;
 }

@@ -5,37 +5,20 @@
 #include <banks.h>
 
 /*
-When the console rom is banked, we have to carefully craft code in RAM >8320 to
-make the call and return to the FCMD bank and code. If we take advantage of using
-the GPLWS, we can prepare registers.
+When the console rom is banked, we use the common crom_tramp in api_data
+(lower expansion RAM) that handles bank switching and calling the console ROM.
 */
 
 #if CONSOLE_ROM == BUILD_CONSOLE
 
-void crom_tramp() {
-    __asm__(
-        "LWPI >83E0\n\t"
-		"LI   r1, 63\n\t"
-		"MOV  r1, @>0000\n\t"
-		"BL   @>000E\n\t"
-        "LI   r1, 8\n\t"
-		"MOV  r1, @>0000\n\t"
-		"LWPI >8300\n\t"
-	);
-}
+#include "crom_tramp.h"
 
 unsigned int term_kscan(unsigned int mode) {
 	KSCAN_MODE = mode;
-
-    int* src = (int*)crom_tramp;
-	int* end = (int*)term_kscan;
-	int* dst = (int*)0x8320;
-	while(src < end) {
-		*dst++ = *src++;
-	}
-
-	((void (*)(void))0x8320)();
-
+    volatile short* tramp = (volatile short*)api_crom_tramp;
+	tramp[CROM_TRAMP_BL_OFFS] = 0x000E;
+	tramp[CROM_TRAMP_RET_OFFS] = MYBANK;
+	((void (*)(void))api_crom_tramp)();
 	return KSCAN_KEY;
 }
 
