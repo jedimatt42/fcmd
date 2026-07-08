@@ -32,7 +32,11 @@ def get_api_banks():
             # b8_terminal.h:DECLARE_BANKED_VOID(tputc, BANK(8), bk_tputc, (int c), (c))
             m = pat.search(line)
             if m:
-                bank_map[m.group(2)] = (int(m.group(3)) << 1) + base_addr
+                bank_num = int(m.group(3))
+                if base_addr == 0:
+                    bank_map[m.group(2)] = bank_num  # console ROM: raw bank number
+                else:
+                    bank_map[m.group(2)] = (bank_num << 1) + base_addr  # cartridge: bank switch address
 
     return bank_map
 
