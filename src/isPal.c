@@ -2,8 +2,10 @@
 #define MYBANK BANK(10)
 
 #include <vdp.h>
+/*
 #include "string.h"
 #include "terminal.h"
+*/
 
 int isPal() {
   int t;
@@ -40,13 +42,16 @@ int isPal() {
     : "r12", "r1"
   );
 
+/*
   tputs_rom("\nt=");
   bk_tputs_ram(bk_uint2str((unsigned int)t));
   tputs_rom("\n");
+*/
 
   // NTSC (60Hz): ~782 ticks elapsed, remaining ~15601
   // PAL  (50Hz): ~939 ticks elapsed, remaining ~15444
   // However in practice there is a delay gettting the timer started, so actual elapsed ticks will be less.
   // On MAME with evpc 9938 set to PAL, I measure 15722 remaining, and in NTSC I measure 16300.
-  return t < 16000;
+  // On js99er, with F18A enabled, NTSC produces 16189, and TMS9918 produces 15804
+  return t < 15800;
 }

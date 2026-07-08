@@ -27,6 +27,22 @@ void samsMapOff() {
     );
 }
 
+void samsWaitStateOff() {
+    __asm__(
+        "LI r12, >1E00\n\t"
+        "SBO 2\n\t"
+        : : : "r12"
+    );
+}
+
+void samsWaitStateOn() {
+    __asm__(
+        "LI r12, >1E00\n\t"
+        "SBZ 2\n\t"
+        : : : "r12"
+    );
+}
+
 void __attribute__((noinline)) sams_map_page(int page, int location) {
     unsigned int shadow_idx = ((unsigned int)location);
     if (shadow_idx >= 0xA000) {
@@ -111,6 +127,7 @@ int init_sams() {
     if (hasSams()) {
         int total_pages = samsPageCount();
         samsMapOn(); // and leave it on.
+        samsWaitStateOff();
         sams_map_page(0, 0x2000);
         sams_map_page(1, 0x3000);
         sams_next_page = 2;
