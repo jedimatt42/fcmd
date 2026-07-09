@@ -25,7 +25,7 @@ def get_api_banks():
     # return a map of function name => bank switch address
     bank_map = { }
 
-    pat = re.compile(r"DECLARE_BANKED(_VOID)?\((\w+), BANK\((\d+)\)")
+    pat = re.compile(r"DECLARE_BANKED(_VOID)?\((\w+),\s*BANK\((\d+)\)")
 
     with open(sys.argv[3], 'r') as api_banks:
         for line in api_banks.readlines():

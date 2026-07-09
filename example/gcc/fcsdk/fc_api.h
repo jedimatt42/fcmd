@@ -400,6 +400,11 @@ extern void* memcpy(void* dest, const void* src, int count);
 #define FC_COLOR_BG 0x65
 #define FC_COLOR_BORDER 0x66
 #define FC_TIPI_LOG 0x67
+#define FC_SND_START 0x68
+#define FC_SND_TICK 0x69
+#define FC_SND_PLAYING 0x6a
+#define FC_SND_STOP 0x6b
+#define FC_SND_PLAY 0x6c
 
 // function: void term_putc(int c)
 DECL_FC_API_CALL(FC_TERM_PUTC, term_putc, void, (int c), (c))
@@ -712,5 +717,20 @@ DECL_FC_API_CALL(FC_COLOR_BORDER, color_border, unsigned int, (unsigned int x), 
 
 // function: void tipi_log(char* msg)
 DECL_FC_API_CALL(FC_TIPI_LOG, tipi_log, void, (char* msg), (msg))
+
+// function: void snd_start(const unsigned char *list)
+DECL_FC_API_CALL(FC_SND_START, snd_start, void, (const unsigned char *list), (list))
+
+// function: void snd_tick()
+DECL_FC_API_CALL(FC_SND_TICK, snd_tick, void, (), ())
+
+// function: int snd_playing()
+DECL_FC_API_CALL(FC_SND_PLAYING, snd_playing, int, (), ())
+
+// function: void snd_stop()
+DECL_FC_API_CALL(FC_SND_STOP, snd_stop, void, (), ())
+
+// function: void snd_play(const unsigned char *list)
+DECL_FC_API_CALL(FC_SND_PLAY, snd_play, void, (const unsigned char *list), (list))
 
 #endif
