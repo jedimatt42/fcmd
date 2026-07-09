@@ -1,0 +1,257 @@
+# The ForTI card
+
+The ForTI card is a sound card that features four TMS9919 sound chips,
+identical to the one located within the console. The card-controlling
+software is written in Forth, wich may be the reason for the card's
+name.
+
+**Hardware  **
+[Bus interface
+](#Bus%20interface)[Power supply
+](#Power)[Address decoding
+](#Address%20decoding)[TMS9919 wiring](#TMS9919%20wiring)
+
+**Software  **
+[Low-level access
+](#Software)[High level program](#high-level)
+
+##  Hardware
+
+#### Bus interface
+
+The card interfaces with the PE-box bus in the prescribed manner: a
+74LS245 buffers the data bus, and three 74LS244 take care of the address
+and control bus. A 74LS125 is used to buffer the card-generated RDBENA\*
+signal that will enable the data bus drivers in the PE-box connection
+card and firehose connector. The remaining 3 gates on the 74LS125 are
+not used.
+
+           +------+      
+     A0&gt;---|      |---A0    
+      .    |      |   .  
+      .    |      |   .    
+      .    |      |   .    
+      .    |      |   .   
+      .    |      |   .     
+     A7&gt;---|      |---A7        
+      Gnd--|EN*   |         
+           +------+    
+            74LS244     
+           +------+   
+     A8&gt;---|      |---A8    
+      .    |      |   .       
+      .    |      |   .         
+      .    |      |   .       
+      .    |      |   .                  
+      .    |      |   .    
+     A15&gt;--|      |---A15       
+      Gnd--|EN*   |      
+           +------+      
+            74LS244         
+           +------+         
+    AMA&gt;---|      |---AMA
+    AMB&gt;---|      |---AMB
+    AMC&gt;---|      |---AMC
+ MEMEN*&gt;---|      |---Memen*
+    WE*&gt;---|      |---WE*        
+CRUCLK*&gt;---|      | (nc)         
+CLKOUT*&gt;---|      | (nc)         
+   DBIN&gt;---|      |---,            
+      Gnd--|EN*   |   |       
+           +------+   |      
+            74LS245   |       
+           +------+   |       
+           |   DIR|&lt;--&#39;       
+     D0&lt;---|      |---D0            
+      .    |      |   .        
+      .    |      |   .    
+      .    |      |   .   
+      .    |      |   .                     
+      .    |      |   .                     
+     D7&lt;---|      |---D7                
+           |   OE*|&lt;------+---CardSel*    
+           +------+       |                            
+                          |         
+RDBENA*&lt;------------------&lt;|--Gnd
+                      74LS125  
+
+There is no CRU interface, and no memory to hold DSRs. Also, there is no
+LED to shine when the card is accessed.
+
+####  Power supply
+
+               +----------+      +5V                 +-----+
++8V---+--------|Vin   Vout|----+-+----- ... --+------|Vcc  |    
+      |        |   Gnd    |    | |            |      |     |
+      = 0.1 uF +----------+ 47 = = 0.1 uF     =0.1uF |     |
+      |             |       uF | |            |      |     |
+     Gnd           Gnd         Gnd            &#39;------|Vss  |
+                                                     +-----+
+
+Power supplied by a standard 7805 +5 volts voltage regulator, hoooked to
+the unregulated +8 volts line.
+
+Each chip (including the sound chips) has a 0.1 uF bypass capacitor
+across its power lines, to damp oscillations.
+
+####  Address decoding
+
+The address decoding is performed with few TTL chips: a triple 3-bit NOR
+gate (74LS27), a dual 4-input NAND gate (74LS20) and two inverters from
+a 74LS04 hex-inverter chip. Together, they sample A0 through A5 to make
+sure the address is in the range \>84xx, as well as Memen\*, WE\* (the
+card can only be written to), A15 (only even bytes are accessible), and
+the reserved address lines AMA through AMC.
+
+ A2---)&gt;o--------,
+ A3-&#39;    74LS27  |
+     A4___       |
+    A15---)&gt;o--, |
+ Memen*-&#39;      | |  _
+      _        | &#39;-| )
+A0---| )       &#39;---|  )o---CardSel*
+AMA--|  )o---|&gt;o---|  )
+AMB--|  )   &#39;04  ,-|_) 74LS20
+AMC--|_)         |
+                 |
+WE*-----,__      |
+A5---|&gt;o---)&gt;o---&#39;
+  74LS04 |   74LS27
+        Gnd
+
+The resulting CardSel\* signal enables the 74LS245 data bus transceiver,
+generates the RDBENA\* signal, and enables one or the other sound chip.
+
+The sound chips are not selected by a multiplexer though, but rather by
+the address lines A11 through A14 (active low). This means that it is
+possible to access several chips at a time, for instance to play the
+same sound on more than one chip (stereo, etc). As can be seen below,
+each address line is combined with the CardSel\* signal via an OR gate
+(74LS32) to activate the CS\* pin of a TMS9919 chip.
+
+####  TMS9919 wiring
+
+The wiring is common to the four chips for all pins but the CS\* pin and
+of course the AudioOut pin. Pins D0 through D7 are connected to the data
+bus, pin WE\* is held low permanently (why not use the WE\* signal?),
+and the READY pins are connected direclty to the SysRdy\* line in the
+PE-box bus.
+
+The clock signal is generated by an onboard oscillating circuit, since
+the required 3.58 MHz signal is not part of the PE-box bus. The
+oscillator consists of a 3.58 MHz crystal, and three inverters, from the
+74LS04 TTL chip (which leaves only one gate unused in this chip). The
+signal is then divided by 8 thanks to a 74LS161 counter. I'm not sure
+why this is necessary. Maybe so that sounds with a frequency lower than
+110 Hz (the minimum with 3.58 MHz) can be programmed?
+
+       3.58 MHz             +-------+
+ ,------|[]|------,  +5V--+-|EnP    |
+ | 1K2        1K2 |       +-|EnT    |
+ +-WWW-,    ,-WWW-+       +-|Rst*   |
+ |     |    |     |       &#39;-|LD*    |
+ +-|&gt;o-+-||-+-|&gt;o-+---|&gt;o---|Ck     |
+ |      10nF    74LS04      |    RCO|
+ = 33pF                   ,-|A    QA|
+ |                        +-|B    QB|
+Gnd                       +-|C    QC|--,
+                          +-|D    QD|  |
+                            +-------+  |
+          ,----------------------------&#39;
+          |  +--------+
+          &#39;--|Ck Ready|----------&gt;SysRdy*
+     D0------|D0      |+
+     .       | .      ||
+     .       | .      ||+
+     D7------|D7      |||
+        Gnd--|WE*     |||+
+ A14---,     |        ||||    100 uF
+,------=)&gt;---|CS*  Out|----+---||------------&lt;  #1
+| A13---,    +--------+||| |            Gnd-&#39;
++-------=)&gt;---|CS*  Out|---|-+---||----------&lt;  #2
+|  A12---,    +--------+|| | |          Gnd-&#39;
++--------=)&gt;---|CS*  Out|--|-|-+---||--------&lt;  #3
+|   A11---,    +--------+| | | |        Gnd-&#39;
+&#39;---------=)&gt;---|CS*  Out|-|-|-|-+---||------&lt;  #4
+        74LS32  +--------+ | | | |      Gnd-&#39;
+                           = = = = 0.1 uF
+                           | | | |
+                           R R R R 10 Ohms
+                           | | | |
+                           &#39;-+-+-+-Gnd
+
+Finally, each AudioOut pin is filtered and applied to one of the four
+audio jacks, at the back of the card, thereby providing a quadriphonic
+output. A mixer adapter can be build with six 390 Ohms resistors to
+convert these four outputs into a stereo signal, with chips \#1 and \#3
+making up one channel, and chips \#2 and \#4 making up the other.
+
+#4|--+--WWW--------&lt;
+     &#39;--WWW--,
+#2|-----WWW--+-------------&lt; Stereo 1
+  #3|-----WWW--+-------------&lt; Stereo 2
+     ,--WWW--&#39;
+#1|--+--WWW-------&lt;
+
+##  Software
+
+As I mentionned, the card does not have any DSR memory. All the software
+must thus be loaded upon use.
+
+####  Low-level access
+
+Refer to [this page](tms9919.htm#Programming) for details on programming
+a TMS9919 chip. The target address changes according to the chip,
+remember that it is possible to access more than one chip at a time.
+
+The memory map for all four chips is the following:
+
+    Address TMS9919#1 #2 #3 #4    Chip accessed
+     >8400          +  +  +  +    All
+     >8402             +  +  +
+     >8404          +     +  +
+     >8406                +  +
+     >8408          +  +     +
+     >840A             +     +
+     >840C          +        +
+     >840E                   +    #4 alone
+     >8410          +  +  +
+     >8412             +  +
+     >8414          +     +
+     >8416                +       #3 alone
+     >8418          +  +
+     >841A             +          #2 alone
+     >841C          +             #1 alone
+     >841E                        none (console chip alone)
+
+    NB The console TMS9919 answers to all addresses.
+       The above pattern is repeated for addresses >8420-843E, >8440-845E, upto >87FE.
+
+In most cases, you will only need to access one chip at a time, except
+to silence them all. The usefull addresses thus boil down to:
+
+    >841C: TMS9919 #1
+    >841A: TMS9919 #2
+    >8416: TMS9919 #3
+    >840E: TMS9919 #4
+    >8400: All
+    >841E: Console chip only
+
+###  High-level program
+
+A sophisticated Forth program is provided with the card, that lets you
+program music within a Forth "Screen". It lets you define:
+
+Voices: a succession of sounds, i.e. one melodic line.
+
+Envelopes: the volume characteristics of each note (attack, fading,
+etc).
+
+Conductors: that distributes voices among the twelve available TMS9919
+sound chanels, sets the tempo, the global volume, etc.
+
+If you're used to compose on music paper, it will seem a little
+complicated at first, but for programmers with little musical backgroud,
+the system is quite appealing.
+Revision 1 1/7/03. Ok to release.
+[Back to the TI-99/4A Tech Pages](titechpages.md)
