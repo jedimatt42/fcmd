@@ -17,8 +17,8 @@ FCMDXB: reload_fcmd.asm
 	python3 $(XAS99) --embed-xb -R -L assemblexb.lst -o FCMD.xb reload_fcmd.asm
 	python3 $(XDM99) -T FCMD.xb -t -f "INT/VAR 254" -n FCMDXB -o FCMDXB
 
-BOOT: boot_rom.asm
-	python3 $(XAS99) -i -L boot_rom.lst -o BOOT.ea5 boot_rom.asm
+BOOT: boot_rom.asm ../build_0x0000/mapfile
+	python3 $(XAS99) -i -D "_START_ADDR=>`grep ' _start$$' ../build_0x0000/mapfile | sed 's/.* 0x0*//' | sed 's/ .*//'`" -L boot_rom.lst -o BOOT.ea5 boot_rom.asm
 	python3 $(XDM99) -T BOOT.ea5 -t -f PROGRAM -n BOOT -o BOOT
 
 LOAD: loadxb.bas

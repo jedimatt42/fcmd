@@ -10,6 +10,6 @@
 
        LIMI 0          ; disable interrupts
        CLR  @>0000     ; select bank 0 (FCMD)
-       B    @>0220     ; jump to FCMD _start
+       B    @_START_ADDR     ; jump to FCMD _start
 
        END >2000
