@@ -36,38 +36,17 @@ void cclear(unsigned int length);
 // cclearxy - write spaces at a location
 void cclearxy(int col, int row, int v);
 
-// output a horizonal line
-void chline(int v);
-
-// output a line at a position
-void chlinexy(int xx, int yy, int v);
-
 // clear the screen
 void clrscr();
-
-// print formatted text
-int cprintf(const char *fmt, ...);
 
 // print a char (with control characters)
 void cputc(int ch);
 
-// print a char at location
-void cputcxy(int xx, int yy, int ch);
-
 // print a string (knows control codes)
 void cputs(const char *s);
 
-// print a string (knows control codes)
-void cputsxy(int xx, int yy, const char *s);
-
 // enable/disable the cgetc cursor
 #define cursor(x) conio_cursorFlag=(x)
-
-// draw a vertical line
-void cvline(int len);
-
-// draw a vertical line at location
-void cvlinexy(int x, int y, int len);
 
 // change the x location only
 #define gotox(x) conio_x = (x)
@@ -90,9 +69,6 @@ void screensize(unsigned char *x, unsigned char *y);
 // changes the color of the text - works in TEXT mode only and changes ALL text on the screen
 // unless in text80color mode, or text64 mode, which allow separate color per character.
 unsigned int color_text(unsigned int color);
-
-// printf with a format list
-int vcprintf(const char *fmt, va_list argp);
 
 // return the x position
 inline int wherex() { return conio_x; }

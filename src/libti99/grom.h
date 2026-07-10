@@ -43,20 +43,4 @@ inline void GROM_SET_ADDRESS(unsigned int x)		{	GROMWA=((x)>>8); GROMWA=((x)&0xf
 // Reading the address destroys it, so you must set the address again afterwards.
 inline unsigned int GROM_GET_ADDRESS()				{	unsigned int ret; ret=(GROMRA)<<8; ret|=GROMRA; return ret; }
 
-//*********************
-// More comprehensive GROM functions (multiple ports)
-//*********************
-
-// Read a byte from GROM at the specified address and port (use port 0 if you want the default).
-// Inputs: GROM address to read (0x0000-0xFFFF), Port number (0-15)
-// Note that console GROMs and most cartridges will respond at all ports. The maximum port supported
-// by this library is 15.
-unsigned char GromReadData(unsigned int address, unsigned char port);
-
-// Write a byte to GROM at the specified address and port (use port 0 if you want the default).
-// Inputs: GROM address to read (0x0000-0xFFFF), Port number (0-15), value to write
-// Note that console GROMs and most cartridges will respond at all ports. The maximum port supported
-// by this library is 15. Assumes that writable GROM is available.
-void GromWriteData(unsigned int address, unsigned char port, unsigned char dat);
-
 #endif /* GROM_H */

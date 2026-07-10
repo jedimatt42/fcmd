@@ -70,9 +70,7 @@ struct PAB {
 };
 
 
-// Set maximum number of open files
-// Inputs: number of files (1-9 valid on most devices, consumes VRAM from the top of memory)
-void files(unsigned char count);
+
 
 // Perform a GPL DSRLNK - this uses the routine in the console GROMs and can handle assembly and GPL
 // DSRs both. It requires the GPL areas of the scratchpad be unchanged.
@@ -81,16 +79,6 @@ void files(unsigned char count);
 // Returns: 0 on success, or PAB error on failure
 //unsigned char gpldsrlnk(struct PAB *pab, unsigned int vdp);		NOT IMPLEMENTED YET
 
-// Perform a DSR function per the passed in PAB, which is installed in VRAM at the specified address
-// Inputs: pab - pointer to the populated PAB struct
-//         vdp - address in VDP to store the PAB (10 bytes plus length of filename)
-// Returns: 0 on success, or PAB error on failure
-unsigned char dsrlnk(struct PAB *pab, unsigned int vdp);
 
-// Execute a DSR link on the PAB already in VDP. Use this if you know the VDP PAB is already
-// updated and you don't want the overhead of copying it again.
-// Inputs: pointer to PAB in VDP
-// Note: no return code. Read it from the PAB yourself. :)
-void dsrlnkraw(unsigned int vdppab);
 
 #endif /* FILES_H */

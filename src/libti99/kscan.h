@@ -54,14 +54,4 @@
 // requires console ROM and GROM to be present.
 unsigned int term_kscan(unsigned int mode);
 
-// does a simple read of the keyboard with no shifts and no debounce. Mode 0 is keyboard,
-// mode 1 is joystick 1 fire button (only!) and mode 2 is joystick 2 fire button (only!)
-// Fire buttons are /not/ aliased to 'Q' and 'Y' on the keyboard. Returns key in KSCAN_KEY,
-// no status. Key is 0xff if none pressed.
-void kscanfast(int mode);
-
-// read a joystick directly. 'unit' is either 1 or 2 for the joystick desired
-// returns data in KSCAN_JOYY and KSCAN_JOYX
-void joystfast(int unit);
-
 #endif /* KSCAN_H */

@@ -16,36 +16,16 @@ int str_to_int(char *s);
 // copy a zero-terminated string from s to d, returns d
 char *str_copy(char *d, const char *s);
 
-// compare two zero-terminated strings, return >0 if s1 is greater,
-// <0 if s2 is greater, or 0 if the strings are equal
-int str_cmp(const char *s1, const char *s2);
-
-// compare two memory blocks, return >0 if s1 is greater,
-// <0 if s2 is greater, or 0 if the blocks are equal
-int memcmp(const void *s1, const void *s2, int n);
-
 // copy a block of memory from src to dest, of cnt bytes. Returns dest.
 void *memcpy(void *dest, const void *src, int cnt);
-
-// set a block of memory at dest to src, of cnt bytes. Returns dest.
-void *memset(void *dest, int src, int cnt);
 
 // returns a pointer to a static string, a number converted as unsigned
 // Not thread safe, don't use from interrupt handlers.
 char *str_from_uint(unsigned int x);
 
-// returns a pointer to a static string, a number converted as signed
-// Not thread safe, don't use from interrupt handlers.
-char *int2str(int x);
-
 // returns a pointer to a static hex string, a number converted as unsigned
 // Not thread safe, don't use from interrupt handlers.
 char* hex_from_uint(unsigned int x);
-
-// reads a string from the keyboard - pulls in KSCAN. Uses keyboard mode 5.
-// Displays a solid cursor. The only edit key supported is Fctn-S. Stops
-// at maxlen, returned string is zero-terminated. Needs KSCAN, VDP, etc.
-void gets(char *buf, int maxlen);
 
 // bank switchable routines
 DECLARE_BANKED(str_len, BANK(1), int, bk_strlen, (const char *s), (s))

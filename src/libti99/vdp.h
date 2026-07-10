@@ -191,16 +191,6 @@ int set_text80_raw();
 // this version enables the screen and sets the KSCAN copy for you
 void set_text80();
 
-// set_text80_color - sets up 80 column text mode - 80x24 with Position Attributes (F18A only!)
-// Inputs: none
-// this version enables the screen and sets the KSCAN copy for you
-// Use color_bg and color_text functions from conio to change colors.
-// Return: returns a value to be written to VDP_REG_MODE1 (and VDP_REG1_KSCAN_MIRROR if you use term_kscan())
-// The screen is blanked until you do this write, to allow you time to set it up
-int set_text80_color_raw();
-// this version enables the screen and sets the KSCAN copy for you
-void set_text80_color();
-
 // set_text80_color - sets up 80 column text mode - 80x30 with Position Attributes (F18A only!)
 // Inputs: none
 // this version enables the screen and sets the KSCAN copy for you
@@ -210,35 +200,6 @@ void set_text80_color();
 int set_text80x30_color_raw();
 // this version enables the screen and sets the KSCAN copy for you
 void set_text80x30_color();
-
-// set_text64_color - sets up simulated 64-column text mode in bitmap mode - 64x24
-// Inputs: none
-// this version enables the screen and sets the KSCAN copy for you
-// Use color_bg and color_text functions from conio to change colors.
-void set_text64_color();
-
-
-
-// set_multicolor - sets up multicolor mode - 64x48, 256 chars, color, sprites
-// Inputs: pass in VDP_SPR_xxx for the sprite mode you want
-// Return: returns a value to be written to VDP_REG_MODE1 (and VDP_REG1_KSCAN_MIRROR if you use term_kscan())
-// The screen is blanked until you do this write, to allow you time to set it up
-int set_multicolor_raw(int sprite_mode);
-// this version enables the screen and sets the KSCAN copy for you
-void set_multicolor(int sprite_mode);
-
-// set_bitmap - sets up graphics II (aka bitmap) mode - 32x24, 768 chars in three zones, color, sprites
-// Inputs: pass in VDP_SPR_xxx for the sprite mode you want
-// Return: returns a value to be written to VDP_REG_MODE1 (and VDP_REG1_KSCAN_MIRROR if you use term_kscan())
-// The screen is blanked until you do this write, to allow you time to set it up
-int set_bitmap_raw(int sprite_mode);
-// this version enables the screen and sets the KSCAN copy for you
-void set_bitmap(int sprite_mode);
-
-// writestring - writes an arbitrary string of characters at any position on the screen
-// Inputs: row and column (zero-based), NUL-terminated string to write
-// Note: supports text mode
-void writestring(int row, int col, char *pStr);
 
 // vdpmemset - sets a count of VDP memory bytes to a value
 // Inputs: VDP address to start, the byte to set, and number of repeats
@@ -274,12 +235,6 @@ inline void vdpmemread(int pAddr, char *pDest, int cnt)
 	}
 }
 
-// vdpwriteinc - writes an incrementing sequence of values to VDP
-// Inputs: VDP address to start, first value to write, number of bytes to write
-// This is intended to be useful for setting up bitmap and multicolor mode with
-// incrementing tables
-void vdpwriteinc(int pAddr, int nStart, int cnt);
-
 // vdpchar - write a character to VDP memory (NOT to be confused with basic's CALL CHAR)
 // Inputs: VDP address to write, character to be written
 // use indirect function call for each mode
@@ -296,79 +251,10 @@ inline unsigned char vdpreadchar(int pAddr)
 	__asm__("NOP");
 	return VDPRD;
 }
-
-// vdpwritescreeninc - like vdpwriteinc, but writes to the screen image table
-// Inputs: offset from the screen image table to write, first value to write, number of bytes to write
-void vdpwritescreeninc(int pAddr, int nStart, int cnt);
-
-// vdpscreenchar - like vdpchar, but writes to the screen image table
-// Inputs: offset from the screen image table to write to, value to be written
-void vdpscreenchar(int pAddr, int ch);
-
-// vdpwaitvint - enables console interrupts, then waits for one to happen
-// Interrupts are disabled upon exit.
-void vdpwaitvint();
-
-// putchar - writes a single character with limited formatting to the bottom of the screen
-// Inputs: character to emit
-// Returns: character input
-// All characters are emitted except \r and \n which is handled for scrn_scroll and next line.
-// It works in both 32x24 and 40x24 modes. Tracking of the cursor is thus
-// automatic in this function, and it pulls in scrn_scroll.
-int putchar(int x);
-
-// putstring - writes a string with limited formatting to the bottom of the screen
-// Inputs: NUL-terminated string to write
-// This function only emits printable ASCII characters (32-127). It works in both
-// 32x24 and 40x24 modes. It recognizes \r to go to the beginning of the line, and
-// \n to go to a new line and scroll the screen. Tracking of the cursor is thus
-// automatic in this function, and it pulls in scrn_scroll.
-void putstring(char *s);
-
-// puts - calls putstring, but adds a carriage return. Needed for gcc compatibility
-// always returns 1
-int puts(char *s);
-
-// printf - writes a string with limited formatting. Only supports a very small subset
-// of formatting at the moment. Supports width (for most fields), s, u, i, d, c and X
-// (X is byte only). This function will call in putchar().
-// Inputs: format string, and varable argument list
-// Returns: always returns 0
-int printf(char *str, ...);
-
-// hexprint - generates a 2 character hex string from an int and calls putstring to print it
-void hexprint(unsigned char x);
-
-// fast_hexprint - generates a 2 character hex string from an int and calls putstring to print it
-// uses a 512 byte lookup table - so it is fast but costs more to use
-void fast_hexprint(unsigned char x);
-
-// faster_hexprint - works like fast_hexprint but displays directly to VDPWD, no formatting or
-// scroll and you must set the VDP address before calling
-void faster_hexprint(unsigned char x);
-
 // scrn_scroll - scrolls the screen upwards one line - works in 32x24, 40x24 and 80x24 modes
 // the pointer let you replace it, particularly with fast_scrn_scroll
 void scrn_scroll_default();
 extern void (*scrn_scroll)();
-
-// fast_scrn_scroll- does the same, but uses 256 fixed bytes to do it faster
-void fast_scrn_scroll();
-
-// hchar - repeat a character horizontally on the screen, similar to CALL HCHAR
-// Inputs: row and column (0-based, not 1-based) to start, character to repeat, number of repetitions (not optional)
-// Note: for a single character, vdpscreenchar() is more efficient
-void hchar(int r, int c, int ch, int cnt);
-
-// vchar - repeat a character vertically on the screen, similar to CALL VCHAR
-// Inputs: row and column (0-based, not 1-based), character to repeat, number of repetitions (not optional)
-// Note: for a single character, vdpscreenchar() is more efficient
-void vchar(int r, int c, int ch, int cnt);
-
-// gchar - return a character from the screen, similar to CALL GCHAR
-// Inputs: row and column (0-based, not 1-based) to read from
-// Return: character at the specified position on the screen
-unsigned char gchar(int r, int c);
 
 // sprite - set up an entry in the sprite attribute list, similar to CALL SPRITE
 // Inputs: sprite number (0-31), character (0-255), color (COLOR_xx), row and column (0-based)
@@ -379,10 +265,6 @@ void sprite(int n, int ch, int col, int r, int c);
 
 // update only the row and column of the sprite
 void sprite_loc(int n, int r, int c);
-
-// delsprite - remove a sprite by placing it offscreen
-// Inputs: sprite number (0-31) to hide
-void delsprite(int n);
 
 // charset - load the default character set from GROM. This will load both upper and lowercase (small capital) characters.
 // Not compatible with the 99/4, if it matters.
@@ -401,65 +283,6 @@ void charsetlc();
 // is not compatible with the 99/4 (because it copies 7 bytes per character, and the 99/4
 // only provided 6 bytes).
 void gplvdp(int vect, int adr, int cnt);
-
-// bm_setforeground - specify foreground color to use when drawing
-void bm_setforeground(int c);
-
-// bm_setbackground - specify background color to use when drawing
-void bm_setbackground(int c);
-
-// bm_clearscreen - clear the screen and sets all regions to the
-//                  current colors
-void bm_clearscreen();
-
-// bm_setpixel - turn a pixel on
-// Inputs: x - 0-255 - horizontal location
-//         y - 0-192 - vertial location
-void bm_setpixel(unsigned int x, unsigned int y);
-
-// bm_clearpixel - turn a pixel off
-// Inputs: x - 0-255 - horizontal location
-//         y - 0-192 - vertial location
-void bm_clearpixel(unsigned int x, unsigned int y);
-
-// bm_drawline - plot a line between two points
-void bm_drawline(int x0, int y0, int x1, int y1);
-
-// bm_drawlinefast - plot a line between two points
-// this version can DRAW (0), ERASE (1) or XOR (2)
-// Erase and XOR modes skip the color update
-// this function is faster but corrupts scratchpad from >8320 to >833F
-// extra setup time may make it slower for short lines
-// finally, color table must be at >2000 and pattern table at >0000 (setbitmap does this)
-void bm_drawlinefast(int x0, int y0, int x1, int y1, int mode);
-
-// bm_sethlinefast - draws a very fast horizontal line (there's not much speedup possible for vertical)
-// does NOT change the color
-void bm_sethlinefast(unsigned int x0, unsigned int y0, unsigned int x1);
-
-// bm_clearhlinefast - clears a very fast horizontal line (there's not much speedup possible for vertical)
-void bm_clearhlinefast(unsigned int x0, unsigned int y0, unsigned int x1);
-
-// bm_consolefont - loads console font to vdp, then copies it up into ram for
-// later use in bitmap mode. Use this before switching to bitmap mode if
-// you want a TI font.
-void bm_consolefont();
-
-// bm_putc - draw a character at a tile location.
-// Inputs : c - character column  0:31
-//          r - character row  0:23
-void bm_putc(int c, int r, unsigned char alphanum);
-
-// bm_puts - draw a 0 terminated string at a tile location.
-//    this provides no scrolling, or bounds limiting.
-// Inputs : c - character column  0:31
-//          r - character row  0:23
-void bm_puts(int c, int r, unsigned char* str);
-
-// bm_placetile - draw a 8x8 pattern at the given tile.
-// Inputs : c - character column  0:31
-//          r - character row  0:23
-void bm_placetile(int c, int r, const unsigned char* pattern);
 
 #define BM_FONT_SIZE (8*(127-32))
 
