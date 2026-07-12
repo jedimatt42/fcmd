@@ -46,7 +46,7 @@ static void ww(int addr, int val) {
 
 int fc_cc_malloc(int size, int* out) {
     if (size <= 0 || size > PAGE_SIZE - BLOCK_HEADER_SIZE)
-        return -1;
+        return 1;
 
     int block_size = (size + BLOCK_HEADER_SIZE + 1) & ~1;
     if (block_size < MIN_BLOCK_SIZE)
@@ -105,7 +105,7 @@ int fc_cc_malloc(int size, int* out) {
     } else {
         page_id = sams_alloc_pages(1);
         if (page_id < 0)
-            return -1;
+            return 2;
     }
 
     sams_map_page(page_id, 0xE000);
@@ -135,17 +135,17 @@ int fc_cc_free(int* ptr) {
     int page_id = ptr[1];
 
     if (header_off >= PAGE_SIZE || header_off < 0)
-        return -1;
+        return 1;
 
     int pi = find_page(page_id);
     if (pi < 0)
-        return -1;
+        return 2;
 
     sams_map_page(page_id, 0xE000);
 
     int header = rw(0xE000 + header_off);
     if (!(header & 0x8000))
-        return -1;
+        return 3;
 
     int block_size = header & 0x7FFF;
 
@@ -181,7 +181,7 @@ int fc_cc_free(int* ptr) {
 int fc_cc_calloc(int count, int size, int* out) {
     int total = count * size;
     if (fc_cc_malloc(total, out) != 0)
-        return -1;
+        return 1;
 
     int data_offset = out[0] & 0x0FFF;
     int page_id = out[1];

@@ -148,3 +148,10 @@ int sams_free_pages(int count) {
     sams_next_page -= count;
     return sams_next_page;
 }
+
+int sams_read_page(int slot) {
+    if (slot < 0xA000 || slot > 0xF000)
+        return -1;
+    int idx = (slot - 0xA000) >> 12;
+    return sams_map_shadow[idx];
+}

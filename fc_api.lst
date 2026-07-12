@@ -6,6 +6,7 @@ term_kscan
 sams_map_page
 sams_alloc_pages
 sams_free_pages
+sams_read_page
 
 sys_info
 sys_display_info

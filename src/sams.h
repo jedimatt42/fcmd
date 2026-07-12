@@ -38,6 +38,10 @@ int sams_alloc_pages(int count);
 // returns new top page
 int sams_free_pages(int count);
 
+// read the SAMS page number currently mapped at a 4K-aligned slot address.
+// Returns the page ID, or -1 if slot is not in range 0xA000-0xF000.
+int sams_read_page(int slot);
+
 struct SamsInformation {
   int next_page;
   int total_pages;
@@ -49,6 +53,7 @@ void sys_sams_info(struct SamsInformation* info);
 DECLARE_BANKED_VOID(sams_map_page, BANK(0), bk_map_page, (int page, int addr), (page, addr))
 DECLARE_BANKED(sams_alloc_pages, BANK(0), int, bk_alloc_pages, (int count), (count))
 DECLARE_BANKED(sams_free_pages, BANK(0), int, bk_free_pages, (int count), (count))
+DECLARE_BANKED(sams_read_page, BANK(0), int, bk_read_page, (int slot), (slot))
 DECLARE_BANKED_VOID(sys_sams_info, BANK(0), bk_sams_info, (struct SamsInformation* info), (info))
 
 #endif
