@@ -61,7 +61,7 @@ fcsdk: subdirs
 
 forcecmd_$(VER).zip: build_0x6000 build_0x0000 subdirs support $(FNAME).DSK fcsdk
 	rm -f $@
-	zip -j $@ README.md build_0x0000/FCMD_0000.bin build_0x6000/FCMD.RPK build_0x6000/FCMDC.bin build_0x6000/FCMDG.bin $(FNAME).DSK
+	zip -j $@ README.md build_0x0000/FCMD_0000.bin build_0x0000/FCMDG1.bin build_0x6000/FCMD.RPK build_0x6000/FCMDC.bin build_0x6000/FCMDG.bin $(FNAME).DSK
 	zip -r $@ $(SUPPORT) fcsdk
 
 clean:
@@ -108,6 +108,11 @@ _one_target_all: $(FINAL_BIN) $(BUILD_DIR)/fcsdk.linkfile
 # Cartridge-only: also build the RPK (which pulls in FCMDG.bin)
 ifneq ($(CONSOLE_ROM),1)
 _one_target_all: $(BUILD_DIR)/$(FNAME).RPK
+endif
+
+# Console ROM replacement: also build the patched GROM 1
+ifeq ($(CONSOLE_ROM),1)
+_one_target_all: $(BUILD_DIR)/$(FNAME)G1.bin
 endif
 
 CFLAGS += -DCONSOLE_ROM=$(CONSOLE_ROM) -DBASE_ADDR=$(BASE_ADDR) -DBASE_HEX_STR=$(BASE_HEX_STR) -DBASE_80_HEX_STR=$(BASE_80_HEX_STR)
@@ -170,6 +175,13 @@ $(FINAL_BIN): $(BANKBINS) 994a_rom/994a_rom_8k.bin
 	cat $(BANKBINS) > $@
 	dd if=/dev/zero bs=1 count=$$((512*1024 - 128*1024 - 8192)) >> $@ 2>/dev/null
 	cat 994a_rom/994a_rom_8k.bin >> $@
+
+# Patched GROM 1 with powerup routine branching to _start
+$(BUILD_DIR)/$(FNAME)G1.bin: 994a_rom/994a_grom1.bin $(BUILD_DIR)/$(FNAME).elf
+	python3 scripts/patch_grom1.py \
+		--input 994a_rom/994a_grom1.bin \
+		--start $$(grep ' _start$$' $(BUILD_DIR)/mapfile | sed 's/.*0x0*//' | sed 's/ .*//') \
+		--output $@
 else
 $(FINAL_BIN): $(BANKBINS)
 	cat $^ >$@
