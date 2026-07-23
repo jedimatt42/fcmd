@@ -86,6 +86,7 @@ audio_honk
 term_set_identify_hook
 vdp_setchar
 vdp_cursor_addr
+vdp_screenmode
 ui_drop_down
 ui_gotoxy
 

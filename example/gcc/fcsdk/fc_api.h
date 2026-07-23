@@ -104,6 +104,12 @@ struct SystemInformation {
 #define VDP_9958 0x9958
 #define VDP_9918 0x9918
 
+// Screen mode constants for vdp_screenmode
+#define VDP_SCREENMODE_GRAPHICS    0
+#define VDP_SCREENMODE_TEXT        1
+#define VDP_SCREENMODE_TEXT80      2
+#define VDP_SCREENMODE_TEXT80X30   3
+
 // Color attribute values
 #define COLOR_TRANS 0x00
 #define COLOR_BLACK 0x01
@@ -373,39 +379,40 @@ extern void* memcpy(void* dest, const void* src, int count);
 #define FC_TERM_SET_IDENTIFY_HOOK 0x4a
 #define FC_VDP_SETCHAR 0x4b
 #define FC_VDP_CURSOR_ADDR 0x4c
-#define FC_UI_DROP_DOWN 0x4d
-#define FC_UI_GOTOXY 0x4e
-#define FC_SPEECH_RESET 0x4f
-#define FC_SPEECH_DETECT 0x50
-#define FC_SPEECH_SAY_VOCAB 0x51
-#define FC_SPEECH_SAY_DATA 0x52
-#define FC_SPEECH_START 0x53
-#define FC_SPEECH_CONTINUE 0x54
-#define FC_SPEECH_WAIT 0x55
-#define FC_MOUSE_READ 0x56
-#define FC_MOUSE_MOVE 0x57
-#define FC_MOUSE_SHOW 0x58
-#define FC_MOUSE_HIDE 0x59
-#define FC_TLS_CONNECT 0x5a
-#define FC_TLS_CLOSE 0x5b
-#define FC_TLS_READ_SOCKET 0x5c
-#define FC_TLS_SEND_CHARS 0x5d
-#define FC_SOCKBUF_INIT 0x5e
-#define FC_SOCKBUF_READLINE 0x5f
-#define FC_SOCKBUF_READSTREAM 0x60
-#define FC_LIST_INIT 0x61
-#define FC_LIST_PUSH 0x62
-#define FC_LIST_POP 0x63
-#define FC_LIST_GET 0x64
-#define FC_COLOR_TEXT 0x65
-#define FC_COLOR_BG 0x66
-#define FC_COLOR_BORDER 0x67
-#define FC_TIPI_LOG 0x68
-#define FC_SND_START 0x69
-#define FC_SND_TICK 0x6a
-#define FC_SND_PLAYING 0x6b
-#define FC_SND_STOP 0x6c
-#define FC_SND_PLAY 0x6d
+#define FC_VDP_SCREENMODE 0x4d
+#define FC_UI_DROP_DOWN 0x4e
+#define FC_UI_GOTOXY 0x4f
+#define FC_SPEECH_RESET 0x50
+#define FC_SPEECH_DETECT 0x51
+#define FC_SPEECH_SAY_VOCAB 0x52
+#define FC_SPEECH_SAY_DATA 0x53
+#define FC_SPEECH_START 0x54
+#define FC_SPEECH_CONTINUE 0x55
+#define FC_SPEECH_WAIT 0x56
+#define FC_MOUSE_READ 0x57
+#define FC_MOUSE_MOVE 0x58
+#define FC_MOUSE_SHOW 0x59
+#define FC_MOUSE_HIDE 0x5a
+#define FC_TLS_CONNECT 0x5b
+#define FC_TLS_CLOSE 0x5c
+#define FC_TLS_READ_SOCKET 0x5d
+#define FC_TLS_SEND_CHARS 0x5e
+#define FC_SOCKBUF_INIT 0x5f
+#define FC_SOCKBUF_READLINE 0x60
+#define FC_SOCKBUF_READSTREAM 0x61
+#define FC_LIST_INIT 0x62
+#define FC_LIST_PUSH 0x63
+#define FC_LIST_POP 0x64
+#define FC_LIST_GET 0x65
+#define FC_COLOR_TEXT 0x66
+#define FC_COLOR_BG 0x67
+#define FC_COLOR_BORDER 0x68
+#define FC_TIPI_LOG 0x69
+#define FC_SND_START 0x6a
+#define FC_SND_TICK 0x6b
+#define FC_SND_PLAYING 0x6c
+#define FC_SND_STOP 0x6d
+#define FC_SND_PLAY 0x6e
 
 // function: void term_putc(int c)
 DECL_FC_API_CALL(FC_TERM_PUTC, term_putc, void, (int c), (c))
@@ -637,6 +644,9 @@ DECL_FC_API_CALL(FC_VDP_SETCHAR, vdp_setchar, void, (int pAddr, int ch), (pAddr,
 
 // function: unsigned int vdp_cursor_addr()
 DECL_FC_API_CALL(FC_VDP_CURSOR_ADDR, vdp_cursor_addr, unsigned int, (), ())
+
+// function: int vdp_screenmode(int mode)
+DECL_FC_API_CALL(FC_VDP_SCREENMODE, vdp_screenmode, int, (int mode), (mode))
 
 // function: void ui_drop_down(int linecount)
 DECL_FC_API_CALL(FC_UI_DROP_DOWN, ui_drop_down, void, (int linecount), (linecount))

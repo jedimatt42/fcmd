@@ -25,6 +25,7 @@ int set_text_raw() {
 	nTextPos = nTextRow;
 	nTextFlags = TEXT_WIDTH_40;
 
+	gUnblank = unblank;
 	return unblank;
 }
 

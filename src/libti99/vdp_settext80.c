@@ -29,6 +29,7 @@ int set_text80_raw() {
 	nTextPos = nTextRow;
 	nTextFlags = TEXT_WIDTH_80;
 
+	gUnblank = unblank;
 	return unblank;
 }
 

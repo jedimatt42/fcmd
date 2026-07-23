@@ -40,6 +40,9 @@ DECLARE_BANKED_VOID(vdp_setchar, BANK(8), bk_vdp_setchar, (int pAddr, int ch), (
 DECLARE_BANKED(vdp_cursor_addr, BANK(8), unsigned int, bk_conio_getvram, (), ())
 DECLARE_BANKED_VOID(raw_cputc, BANK(8), bk_raw_cputc, (int ch), (ch))
 
+int vdp_screenmode(int mode);
+DECLARE_BANKED(vdp_screenmode, BANK(8), int, bk_vdp_screenmode, (int mode), (mode))
+
 #define tputs_rom(x) bk_tputs_ram(str2ram(x))
 
 #endif

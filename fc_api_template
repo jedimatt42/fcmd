@@ -104,6 +104,26 @@ struct SystemInformation {
 #define VDP_9958 0x9958
 #define VDP_9918 0x9918
 
+// Screen mode constants for vdp_screenmode
+// GRAPHICS: 32x24, 2 colors per 8 chars, sprites.
+//   SIT >0000(768B) | SprAttr >0300(128B) | Color >0380(32B)
+//   Pattern >0800(2048B, shared with sprite patterns)
+#define VDP_SCREENMODE_GRAPHICS    0
+
+// TEXT: 40x24, 2 colors global, no sprites.
+//   SIT >0000(960B) | Pattern >0800(2048B)
+//   Color table unused, sprite tables unused
+#define VDP_SCREENMODE_TEXT        1
+
+// TEXT80: 80x24/26, 2 colors global, no sprites. Requires 9938/9958/F18A.
+//   SIT >0000(1920B) | Pattern >1000(2048B)
+#define VDP_SCREENMODE_TEXT80      2
+
+// TEXT80X30: 80x30, per-char colors, sprites. F18A only.
+//   SIT >0000(2400B) | SprAttr >0A00(128B) | Pattern >1000(2048B)
+//   Color-attrib >1800(2400B, one byte per screen pos)
+#define VDP_SCREENMODE_TEXT80X30   3
+
 // Color attribute values
 #define COLOR_TRANS 0x00
 #define COLOR_BLACK 0x01

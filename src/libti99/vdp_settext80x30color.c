@@ -76,7 +76,8 @@ int set_text80x30_color_raw() {
     VDP_SET_REGISTER(0x36, 0x3f);
     VDP_SET_REGISTER(0x37, 0x00);
 
-    return unblank;
+	gUnblank = unblank;
+	return unblank;
 }
 
 

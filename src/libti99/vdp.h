@@ -305,6 +305,7 @@ extern unsigned int gColor;				// CR,  Register 3 * 0x40
 extern unsigned int gPattern;				// PDT, Register 4 * 0x800
 extern unsigned int gSprite;				// SAL, Register 5 * 0x80
 extern unsigned int gSpritePat;			// SDT, Register 6 * 0x800
+extern unsigned int gUnblank;			// last written VDP_REG_MODE1 value
 
 // text position information used by putstring and scrn_scroll
 extern int nTextRow,nTextEnd;
@@ -329,6 +330,12 @@ extern unsigned char gSaveIntCnt;	// console interrupt count byte
 
 // 512 byte lookup table for converting a byte to two ASCII hex characters
 extern const unsigned int byte2hex[256];
+
+// screen mode constants for vdp_screenmode
+#define VDP_SCREENMODE_GRAPHICS    0
+#define VDP_SCREENMODE_TEXT        1
+#define VDP_SCREENMODE_TEXT80      2
+#define VDP_SCREENMODE_TEXT80X30   3
 
 // f18a specific utility
 // enable extended f18a VDP functions

@@ -10,4 +10,5 @@ unsigned int gColor;
 unsigned int gPattern;
 unsigned int gSprite;
 unsigned int gSpritePat;
+unsigned int gUnblank;
 
