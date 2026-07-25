@@ -130,7 +130,7 @@ int fcmain(char* args) {
 
     VDP_WAIT_VBLANK_CRU;
     cycles++;
-    ui_gotoxy(1, dinfo.displayHeight - 1);
+    term_gotoxy(1, dinfo.displayHeight - 1);
 
     int buttons = updateMouse(&mouseData);
     if (buttons & MB_LEFT) {
@@ -312,10 +312,10 @@ void selectionRun(struct MenuEntry* entry) {
 
 void drawBackdrop() {
   vdp_memset(0, ' ', dinfo.displayWidth * dinfo.displayHeight);
-  ui_gotoxy(0,0);
+  term_gotoxy(0,0);
   vdp_memset(0, 0xB0, dinfo.displayWidth);
   vdp_memset((dinfo.displayHeight - 1) * dinfo.displayWidth, 0xB0, dinfo.displayWidth);
-  ui_gotoxy((dinfo.displayWidth / 2) - 7,0);
+  term_gotoxy((dinfo.displayWidth / 2) - 7,0);
   term_puts(" FCMenu v1.2 ");
   cycles = 0; // since we erased the clock, allow it to redraw on next attempt
 }
@@ -324,7 +324,7 @@ void drawClock() {
   struct DateTime dt;
   time_get(&dt);
   if (dt.hours != 0 && dt.minutes != 0) {
-    ui_gotoxy(dinfo.displayWidth - 9, 0);
+    term_gotoxy(dinfo.displayWidth - 9, 0);
     term_putc(' ');
     term_puts(str_from_uint(dt.hours));
     term_putc(':');
@@ -353,7 +353,7 @@ void clearSelection() {
   int x;
   int y;
   selection_x_y(&x, &y);
-  ui_gotoxy(x, y);
+  term_gotoxy(x, y);
   term_putc(' ');
 }
 
@@ -361,7 +361,7 @@ void drawSelection() {
   int x;
   int y;
   selection_x_y(&x, &y);
-  ui_gotoxy(x, y);
+  term_gotoxy(x, y);
   term_putc(0x1A);
 }
 
@@ -385,17 +385,17 @@ void layoutMenu() {
     } else if (itemcount >= 10) {
       column = 22;
     }
-    ui_gotoxy(column, y);
+    term_gotoxy(column, y);
     if (entries[i].key == '-') {
       // draw a separation
       int vaddr = vdp_cursor_addr();
       vdp_memset(vaddr, 0xC4, 18);
     } else {
       term_putc(entries[i].key);
-      ui_gotoxy(column + 2, y);
+      term_gotoxy(column + 2, y);
       term_puts(entries[i].title);
       if (selection == i) {
-        ui_gotoxy(column - 1, y);
+        term_gotoxy(column - 1, y);
         term_putc(0x1A);
       }
     }
@@ -407,13 +407,13 @@ void layoutMenu() {
   }
 
   // draw a page indicator
-  ui_gotoxy(dinfo.displayWidth - 8, dinfo.displayHeight - 1);
+  term_gotoxy(dinfo.displayWidth - 8, dinfo.displayHeight - 1);
   term_puts("Page ");
   term_puts(str_from_uint(page));
   term_putc('/');
   term_puts(str_from_uint(page_total));
 
-  ui_gotoxy(0, dinfo.displayHeight - 1);
+  term_gotoxy(0, dinfo.displayHeight - 1);
 }
 
 int readKeyboard() {

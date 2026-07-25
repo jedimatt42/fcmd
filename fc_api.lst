@@ -2,6 +2,18 @@ term_putc
 term_puts
 term_gets
 term_kscan
+term_gotoxy
+term_cls
+term_set_identify_hook
+term_drop_down
+
+vdp_setchar
+vdp_cursor_addr
+vdp_screenmode
+
+term_set_text_color
+term_set_bg_color
+term_set_border_color
 
 sams_map_page
 sams_alloc_pages
@@ -17,6 +29,7 @@ var_set
 
 exec_cmd
 
+dsr_find
 dsr_ea5_load
 dsr_open
 dsr_close
@@ -31,6 +44,7 @@ dsr_prg_save
 dsr_scratch
 dsr_catalog
 
+path_parse
 path_to_iocode
 lvl2_input
 lvl2_input_cpu
@@ -51,14 +65,22 @@ tcp_close
 tcp_read_socket
 tcp_send_chars
 
+tls_connect
+tls_close
+tls_read_socket
+tls_send_chars
+
+sockbuf_init
+sockbuf_readline
+sockbuf_readstream
+
 tipi_on
 tipi_off
 tipi_sendmsg
 tipi_recvmsg
+tipi_log
 
 time_get
-dsr_find
-path_parse
 
 str_from_uint
 hex_from_uint
@@ -83,12 +105,12 @@ str_token_next
 
 audio_beep
 audio_honk
-term_set_identify_hook
-vdp_setchar
-vdp_cursor_addr
-vdp_screenmode
-ui_drop_down
-ui_gotoxy
+
+snd_start
+snd_tick
+snd_playing
+snd_stop
+snd_play
 
 speech_reset
 speech_detect
@@ -103,28 +125,7 @@ mouse_move
 mouse_show
 mouse_hide
 
-tls_connect
-tls_close
-tls_read_socket
-tls_send_chars
-
-sockbuf_init
-sockbuf_readline
-sockbuf_readstream
-
 list_init
 list_push
 list_pop
 list_get
-
-color_text
-color_bg
-color_border
-
-tipi_log
-
-snd_start
-snd_tick
-snd_playing
-snd_stop
-snd_play

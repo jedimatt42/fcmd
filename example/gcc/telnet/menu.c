@@ -3,12 +3,12 @@
 #include "menu.h"
 
 int show_menu() {
-  ui_drop_down(4);
+  term_drop_down(4);
 
   // I want fc_gotoxy(x, y);
-  ui_gotoxy(3, 2);
+  term_gotoxy(3, 2);
   term_puts("^Q - close terminal");
-  ui_gotoxy(3, 3);
+  term_gotoxy(3, 3);
   term_puts("BACK - resume");
 
   int done = 0;

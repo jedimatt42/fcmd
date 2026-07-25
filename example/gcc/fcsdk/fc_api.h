@@ -105,9 +105,23 @@ struct SystemInformation {
 #define VDP_9918 0x9918
 
 // Screen mode constants for vdp_screenmode
+// GRAPHICS: 32x24, 2 colors per 8 chars, sprites.
+//   SIT >0000(768B) | SprAttr >0300(128B) | Color >0380(32B)
+//   Pattern >0800(2048B, shared with sprite patterns)
 #define VDP_SCREENMODE_GRAPHICS    0
+
+// TEXT: 40x24, 2 colors global, no sprites.
+//   SIT >0000(960B) | Pattern >0800(2048B)
+//   Color table unused, sprite tables unused
 #define VDP_SCREENMODE_TEXT        1
+
+// TEXT80: 80x24/26, 2 colors global, no sprites. Requires 9938/9958/F18A.
+//   SIT >0000(1920B) | Pattern >1000(2048B)
 #define VDP_SCREENMODE_TEXT80      2
+
+// TEXT80X30: 80x30, per-char colors, sprites. F18A only.
+//   SIT >0000(2400B) | SprAttr >0A00(128B) | Pattern >1000(2048B)
+//   Color-attrib >1800(2400B, one byte per screen pos)
 #define VDP_SCREENMODE_TEXT80X30   3
 
 // Color attribute values
@@ -306,113 +320,114 @@ extern void* memcpy(void* dest, const void* src, int count);
 #define FC_TERM_PUTS 0x1
 #define FC_TERM_GETS 0x2
 #define FC_TERM_KSCAN 0x3
-#define FC_SAMS_MAP_PAGE 0x4
-#define FC_SAMS_ALLOC_PAGES 0x5
-#define FC_SAMS_FREE_PAGES 0x6
-#define FC_SAMS_READ_PAGE 0x7
-#define FC_SYS_INFO 0x8
-#define FC_SYS_DISPLAY_INFO 0x9
-#define FC_SYS_SAMS_INFO 0xa
-#define FC_VAR_GET 0xb
-#define FC_VAR_SET 0xc
-#define FC_EXEC_CMD 0xd
-#define FC_DSR_EA5_LOAD 0xe
-#define FC_DSR_OPEN 0xf
-#define FC_DSR_CLOSE 0x10
-#define FC_DSR_READ 0x11
-#define FC_DSR_READ_CPU 0x12
-#define FC_DSR_WRITE 0x13
-#define FC_DSR_STATUS 0x14
-#define FC_DSR_RESET 0x15
-#define FC_DSR_DELETE 0x16
-#define FC_DSR_PRG_LOAD 0x17
-#define FC_DSR_PRG_SAVE 0x18
-#define FC_DSR_SCRATCH 0x19
-#define FC_DSR_CATALOG 0x1a
-#define FC_PATH_TO_IOCODE 0x1b
-#define FC_LVL2_INPUT 0x1c
-#define FC_LVL2_INPUT_CPU 0x1d
-#define FC_LVL2_OUTPUT 0x1e
-#define FC_LVL2_OUTPUT_CPU 0x1f
-#define FC_LVL2_PROTECT 0x20
-#define FC_LVL2_RENAME 0x21
-#define FC_LVL2_SETDIR 0x22
-#define FC_LVL2_MKDIR 0x23
-#define FC_LVL2_RMDIR 0x24
-#define FC_LVL2_RENDIR 0x25
-#define FC_LVL2_SECTOR_READ 0x26
-#define FC_LVL2_SECTOR_WRITE 0x27
-#define FC_LVL2_FORMAT 0x28
-#define FC_TCP_CONNECT 0x29
-#define FC_TCP_CLOSE 0x2a
-#define FC_TCP_READ_SOCKET 0x2b
-#define FC_TCP_SEND_CHARS 0x2c
-#define FC_TIPI_ON 0x2d
-#define FC_TIPI_OFF 0x2e
-#define FC_TIPI_SENDMSG 0x2f
-#define FC_TIPI_RECVMSG 0x30
-#define FC_TIME_GET 0x31
-#define FC_DSR_FIND 0x32
-#define FC_PATH_PARSE 0x33
-#define FC_STR_FROM_UINT 0x34
-#define FC_HEX_FROM_UINT 0x35
-#define FC_STR_TO_INT 0x36
-#define FC_HEX_TO_INT 0x37
-#define FC_STR_FROM_FLOAT 0x38
-#define FC_STR_COPY 0x39
-#define FC_STR_NCOPY 0x3a
-#define FC_STR_CAT 0x3b
-#define FC_STR_TOKEN 0x3c
-#define FC_STR_TOKEN_PEEK 0x3d
-#define FC_STR_LEN 0x3e
-#define FC_STR_CMP 0x3f
-#define FC_STR_CMP_ICASE 0x40
-#define FC_STR_INDEX_OF 0x41
-#define FC_STR_LAST_INDEX_OF 0x42
-#define FC_STR_STARTSWITH 0x43
-#define FC_STR_ENDSWITH 0x44
-#define FC_STR_FROM_BASIC 0x45
-#define FC_STR_SET 0x46
-#define FC_STR_TOKEN_NEXT 0x47
-#define FC_AUDIO_BEEP 0x48
-#define FC_AUDIO_HONK 0x49
-#define FC_TERM_SET_IDENTIFY_HOOK 0x4a
-#define FC_VDP_SETCHAR 0x4b
-#define FC_VDP_CURSOR_ADDR 0x4c
-#define FC_VDP_SCREENMODE 0x4d
-#define FC_UI_DROP_DOWN 0x4e
-#define FC_UI_GOTOXY 0x4f
-#define FC_SPEECH_RESET 0x50
-#define FC_SPEECH_DETECT 0x51
-#define FC_SPEECH_SAY_VOCAB 0x52
-#define FC_SPEECH_SAY_DATA 0x53
-#define FC_SPEECH_START 0x54
-#define FC_SPEECH_CONTINUE 0x55
-#define FC_SPEECH_WAIT 0x56
-#define FC_MOUSE_READ 0x57
-#define FC_MOUSE_MOVE 0x58
-#define FC_MOUSE_SHOW 0x59
-#define FC_MOUSE_HIDE 0x5a
-#define FC_TLS_CONNECT 0x5b
-#define FC_TLS_CLOSE 0x5c
-#define FC_TLS_READ_SOCKET 0x5d
-#define FC_TLS_SEND_CHARS 0x5e
-#define FC_SOCKBUF_INIT 0x5f
-#define FC_SOCKBUF_READLINE 0x60
-#define FC_SOCKBUF_READSTREAM 0x61
-#define FC_LIST_INIT 0x62
-#define FC_LIST_PUSH 0x63
-#define FC_LIST_POP 0x64
-#define FC_LIST_GET 0x65
-#define FC_COLOR_TEXT 0x66
-#define FC_COLOR_BG 0x67
-#define FC_COLOR_BORDER 0x68
-#define FC_TIPI_LOG 0x69
-#define FC_SND_START 0x6a
-#define FC_SND_TICK 0x6b
-#define FC_SND_PLAYING 0x6c
-#define FC_SND_STOP 0x6d
-#define FC_SND_PLAY 0x6e
+#define FC_TERM_GOTOXY 0x4
+#define FC_TERM_CLS 0x5
+#define FC_TERM_SET_IDENTIFY_HOOK 0x6
+#define FC_TERM_DROP_DOWN 0x7
+#define FC_VDP_SETCHAR 0x8
+#define FC_VDP_CURSOR_ADDR 0x9
+#define FC_VDP_SCREENMODE 0xa
+#define FC_TERM_SET_TEXT_COLOR 0xb
+#define FC_TERM_SET_BG_COLOR 0xc
+#define FC_TERM_SET_BORDER_COLOR 0xd
+#define FC_SAMS_MAP_PAGE 0xe
+#define FC_SAMS_ALLOC_PAGES 0xf
+#define FC_SAMS_FREE_PAGES 0x10
+#define FC_SAMS_READ_PAGE 0x11
+#define FC_SYS_INFO 0x12
+#define FC_SYS_DISPLAY_INFO 0x13
+#define FC_SYS_SAMS_INFO 0x14
+#define FC_VAR_GET 0x15
+#define FC_VAR_SET 0x16
+#define FC_EXEC_CMD 0x17
+#define FC_DSR_FIND 0x18
+#define FC_DSR_EA5_LOAD 0x19
+#define FC_DSR_OPEN 0x1a
+#define FC_DSR_CLOSE 0x1b
+#define FC_DSR_READ 0x1c
+#define FC_DSR_READ_CPU 0x1d
+#define FC_DSR_WRITE 0x1e
+#define FC_DSR_STATUS 0x1f
+#define FC_DSR_RESET 0x20
+#define FC_DSR_DELETE 0x21
+#define FC_DSR_PRG_LOAD 0x22
+#define FC_DSR_PRG_SAVE 0x23
+#define FC_DSR_SCRATCH 0x24
+#define FC_DSR_CATALOG 0x25
+#define FC_PATH_PARSE 0x26
+#define FC_PATH_TO_IOCODE 0x27
+#define FC_LVL2_INPUT 0x28
+#define FC_LVL2_INPUT_CPU 0x29
+#define FC_LVL2_OUTPUT 0x2a
+#define FC_LVL2_OUTPUT_CPU 0x2b
+#define FC_LVL2_PROTECT 0x2c
+#define FC_LVL2_RENAME 0x2d
+#define FC_LVL2_SETDIR 0x2e
+#define FC_LVL2_MKDIR 0x2f
+#define FC_LVL2_RMDIR 0x30
+#define FC_LVL2_RENDIR 0x31
+#define FC_LVL2_SECTOR_READ 0x32
+#define FC_LVL2_SECTOR_WRITE 0x33
+#define FC_LVL2_FORMAT 0x34
+#define FC_TCP_CONNECT 0x35
+#define FC_TCP_CLOSE 0x36
+#define FC_TCP_READ_SOCKET 0x37
+#define FC_TCP_SEND_CHARS 0x38
+#define FC_TLS_CONNECT 0x39
+#define FC_TLS_CLOSE 0x3a
+#define FC_TLS_READ_SOCKET 0x3b
+#define FC_TLS_SEND_CHARS 0x3c
+#define FC_SOCKBUF_INIT 0x3d
+#define FC_SOCKBUF_READLINE 0x3e
+#define FC_SOCKBUF_READSTREAM 0x3f
+#define FC_TIPI_ON 0x40
+#define FC_TIPI_OFF 0x41
+#define FC_TIPI_SENDMSG 0x42
+#define FC_TIPI_RECVMSG 0x43
+#define FC_TIPI_LOG 0x44
+#define FC_TIME_GET 0x45
+#define FC_STR_FROM_UINT 0x46
+#define FC_HEX_FROM_UINT 0x47
+#define FC_STR_TO_INT 0x48
+#define FC_HEX_TO_INT 0x49
+#define FC_STR_FROM_FLOAT 0x4a
+#define FC_STR_COPY 0x4b
+#define FC_STR_NCOPY 0x4c
+#define FC_STR_CAT 0x4d
+#define FC_STR_TOKEN 0x4e
+#define FC_STR_TOKEN_PEEK 0x4f
+#define FC_STR_LEN 0x50
+#define FC_STR_CMP 0x51
+#define FC_STR_CMP_ICASE 0x52
+#define FC_STR_INDEX_OF 0x53
+#define FC_STR_LAST_INDEX_OF 0x54
+#define FC_STR_STARTSWITH 0x55
+#define FC_STR_ENDSWITH 0x56
+#define FC_STR_FROM_BASIC 0x57
+#define FC_STR_SET 0x58
+#define FC_STR_TOKEN_NEXT 0x59
+#define FC_AUDIO_BEEP 0x5a
+#define FC_AUDIO_HONK 0x5b
+#define FC_SND_START 0x5c
+#define FC_SND_TICK 0x5d
+#define FC_SND_PLAYING 0x5e
+#define FC_SND_STOP 0x5f
+#define FC_SND_PLAY 0x60
+#define FC_SPEECH_RESET 0x61
+#define FC_SPEECH_DETECT 0x62
+#define FC_SPEECH_SAY_VOCAB 0x63
+#define FC_SPEECH_SAY_DATA 0x64
+#define FC_SPEECH_START 0x65
+#define FC_SPEECH_CONTINUE 0x66
+#define FC_SPEECH_WAIT 0x67
+#define FC_MOUSE_READ 0x68
+#define FC_MOUSE_MOVE 0x69
+#define FC_MOUSE_SHOW 0x6a
+#define FC_MOUSE_HIDE 0x6b
+#define FC_LIST_INIT 0x6c
+#define FC_LIST_PUSH 0x6d
+#define FC_LIST_POP 0x6e
+#define FC_LIST_GET 0x6f
 
 // function: void term_putc(int c)
 DECL_FC_API_CALL(FC_TERM_PUTC, term_putc, void, (int c), (c))
@@ -425,6 +440,36 @@ DECL_FC_API_CALL(FC_TERM_GETS, term_gets, void, (char* var, int limit, int backs
 
 // function: unsigned int term_kscan(unsigned int mode)
 DECL_FC_API_CALL(FC_TERM_KSCAN, term_kscan, unsigned int, (unsigned int mode), (mode))
+
+// function: void term_gotoxy(int x, int y)
+DECL_FC_API_CALL(FC_TERM_GOTOXY, term_gotoxy, void, (int x, int y), (x, y))
+
+// function: void term_cls()
+DECL_FC_API_CALL(FC_TERM_CLS, term_cls, void, (), ())
+
+// function: void term_set_identify_hook(identify_callback cb)
+DECL_FC_API_CALL(FC_TERM_SET_IDENTIFY_HOOK, term_set_identify_hook, void, (identify_callback cb), (cb))
+
+// function: void term_drop_down(int linecount)
+DECL_FC_API_CALL(FC_TERM_DROP_DOWN, term_drop_down, void, (int linecount), (linecount))
+
+// function: void vdp_setchar(int pAddr, int ch)
+DECL_FC_API_CALL(FC_VDP_SETCHAR, vdp_setchar, void, (int pAddr, int ch), (pAddr, ch))
+
+// function: unsigned int vdp_cursor_addr()
+DECL_FC_API_CALL(FC_VDP_CURSOR_ADDR, vdp_cursor_addr, unsigned int, (), ())
+
+// function: int vdp_screenmode(int mode)
+DECL_FC_API_CALL(FC_VDP_SCREENMODE, vdp_screenmode, int, (int mode), (mode))
+
+// function: unsigned int term_set_text_color(unsigned int color)
+DECL_FC_API_CALL(FC_TERM_SET_TEXT_COLOR, term_set_text_color, unsigned int, (unsigned int color), (color))
+
+// function: unsigned int term_set_bg_color(unsigned int color)
+DECL_FC_API_CALL(FC_TERM_SET_BG_COLOR, term_set_bg_color, unsigned int, (unsigned int color), (color))
+
+// function: unsigned int term_set_border_color(unsigned int x)
+DECL_FC_API_CALL(FC_TERM_SET_BORDER_COLOR, term_set_border_color, unsigned int, (unsigned int x), (x))
 
 // function: void sams_map_page(int page, int addr)
 DECL_FC_API_CALL(FC_SAMS_MAP_PAGE, sams_map_page, void, (int page, int addr), (page, addr))
@@ -455,6 +500,9 @@ DECL_FC_API_CALL(FC_VAR_SET, var_set, void, (char* name, char* value), (name, va
 
 // function: int exec_cmd(char* command)
 DECL_FC_API_CALL(FC_EXEC_CMD, exec_cmd, int, (char* command), (command))
+
+// function: struct DeviceServiceRoutine* dsr_find(char* devicename, int crubase)
+DECL_FC_API_CALL(FC_DSR_FIND, dsr_find, struct DeviceServiceRoutine*, (char* devicename, int crubase), (devicename, crubase))
 
 // function: void dsr_ea5_load(struct DeviceServiceRoutine * dsr, const char *fname)
 DECL_FC_API_CALL(FC_DSR_EA5_LOAD, dsr_ea5_load, void, (struct DeviceServiceRoutine * dsr, const char *fname), (dsr, fname))
@@ -494,6 +542,9 @@ DECL_FC_API_CALL(FC_DSR_SCRATCH, dsr_scratch, unsigned int, (struct DeviceServic
 
 // function: unsigned int dsr_catalog(struct DeviceServiceRoutine* dsr, const char* pathname, vol_entry_cb vol_cb, dir_entry_cb dir_cb)
 DECL_FC_API_CALL(FC_DSR_CATALOG, dsr_catalog, unsigned int, (struct DeviceServiceRoutine* dsr, const char* pathname, vol_entry_cb vol_cb, dir_entry_cb dir_cb), (dsr, pathname, vol_cb, dir_cb))
+
+// function: void path_parse(char* str_in, struct DeviceServiceRoutine** dsr, char* buffer, int requirements)
+DECL_FC_API_CALL(FC_PATH_PARSE, path_parse, void, (char* str_in, struct DeviceServiceRoutine** dsr, char* buffer, int requirements), (str_in, dsr, buffer, requirements))
 
 // function: unsigned int path_to_iocode(const char* currentPath)
 DECL_FC_API_CALL(FC_PATH_TO_IOCODE, path_to_iocode, unsigned int, (const char* currentPath), (currentPath))
@@ -549,6 +600,27 @@ DECL_FC_API_CALL(FC_TCP_READ_SOCKET, tcp_read_socket, int, (unsigned int socketI
 // function: int tcp_send_chars(unsigned int socketId, char* buf, int size)
 DECL_FC_API_CALL(FC_TCP_SEND_CHARS, tcp_send_chars, int, (unsigned int socketId, char* buf, int size), (socketId, buf, size))
 
+// function: unsigned int tls_connect(unsigned int socketId, char* hostname, char* port)
+DECL_FC_API_CALL(FC_TLS_CONNECT, tls_connect, unsigned int, (unsigned int socketId, char* hostname, char* port), (socketId, hostname, port))
+
+// function: unsigned int tls_close(unsigned int socketId)
+DECL_FC_API_CALL(FC_TLS_CLOSE, tls_close, unsigned int, (unsigned int socketId), (socketId))
+
+// function: int tls_read_socket(unsigned int socketId, char* buf, int bufsize)
+DECL_FC_API_CALL(FC_TLS_READ_SOCKET, tls_read_socket, int, (unsigned int socketId, char* buf, int bufsize), (socketId, buf, bufsize))
+
+// function: int tls_send_chars(unsigned int socketId, char* buf, int size)
+DECL_FC_API_CALL(FC_TLS_SEND_CHARS, tls_send_chars, int, (unsigned int socketId, char* buf, int size), (socketId, buf, size))
+
+// function: void sockbuf_init(struct SocketBuffer* socket_buf, int tls, unsigned int socketId)
+DECL_FC_API_CALL(FC_SOCKBUF_INIT, sockbuf_init, void, (struct SocketBuffer* socket_buf, int tls, unsigned int socketId), (socket_buf, tls, socketId))
+
+// function: char* sockbuf_readline(struct SocketBuffer* socket_buf)
+DECL_FC_API_CALL(FC_SOCKBUF_READLINE, sockbuf_readline, char*, (struct SocketBuffer* socket_buf), (socket_buf))
+
+// function: int sockbuf_readstream(struct SocketBuffer* socket_buf, char* block, int limit)
+DECL_FC_API_CALL(FC_SOCKBUF_READSTREAM, sockbuf_readstream, int, (struct SocketBuffer* socket_buf, char* block, int limit), (socket_buf, block, limit))
+
 // function: int tipi_on()
 DECL_FC_API_CALL(FC_TIPI_ON, tipi_on, int, (), ())
 
@@ -561,14 +633,11 @@ DECL_FC_API_CALL(FC_TIPI_SENDMSG, tipi_sendmsg, void, (unsigned int len, const c
 // function: void tipi_recvmsg(unsigned int* len, char* buf)
 DECL_FC_API_CALL(FC_TIPI_RECVMSG, tipi_recvmsg, void, (unsigned int* len, char* buf), (len, buf))
 
+// function: void tipi_log(char* msg)
+DECL_FC_API_CALL(FC_TIPI_LOG, tipi_log, void, (char* msg), (msg))
+
 // function: void time_get(struct DateTime* dt)
 DECL_FC_API_CALL(FC_TIME_GET, time_get, void, (struct DateTime* dt), (dt))
-
-// function: struct DeviceServiceRoutine* dsr_find(char* devicename, int crubase)
-DECL_FC_API_CALL(FC_DSR_FIND, dsr_find, struct DeviceServiceRoutine*, (char* devicename, int crubase), (devicename, crubase))
-
-// function: void path_parse(char* str_in, struct DeviceServiceRoutine** dsr, char* buffer, int requirements)
-DECL_FC_API_CALL(FC_PATH_PARSE, path_parse, void, (char* str_in, struct DeviceServiceRoutine** dsr, char* buffer, int requirements), (str_in, dsr, buffer, requirements))
 
 // function: char * str_from_uint(unsigned int x)
 DECL_FC_API_CALL(FC_STR_FROM_UINT, str_from_uint, char *, (unsigned int x), (x))
@@ -636,23 +705,20 @@ DECL_FC_API_CALL(FC_AUDIO_BEEP, audio_beep, void, (), ())
 // function: void audio_honk()
 DECL_FC_API_CALL(FC_AUDIO_HONK, audio_honk, void, (), ())
 
-// function: void term_set_identify_hook(identify_callback cb)
-DECL_FC_API_CALL(FC_TERM_SET_IDENTIFY_HOOK, term_set_identify_hook, void, (identify_callback cb), (cb))
+// function: void snd_start(const unsigned char *list)
+DECL_FC_API_CALL(FC_SND_START, snd_start, void, (const unsigned char *list), (list))
 
-// function: void vdp_setchar(int pAddr, int ch)
-DECL_FC_API_CALL(FC_VDP_SETCHAR, vdp_setchar, void, (int pAddr, int ch), (pAddr, ch))
+// function: void snd_tick()
+DECL_FC_API_CALL(FC_SND_TICK, snd_tick, void, (), ())
 
-// function: unsigned int vdp_cursor_addr()
-DECL_FC_API_CALL(FC_VDP_CURSOR_ADDR, vdp_cursor_addr, unsigned int, (), ())
+// function: int snd_playing()
+DECL_FC_API_CALL(FC_SND_PLAYING, snd_playing, int, (), ())
 
-// function: int vdp_screenmode(int mode)
-DECL_FC_API_CALL(FC_VDP_SCREENMODE, vdp_screenmode, int, (int mode), (mode))
+// function: void snd_stop()
+DECL_FC_API_CALL(FC_SND_STOP, snd_stop, void, (), ())
 
-// function: void ui_drop_down(int linecount)
-DECL_FC_API_CALL(FC_UI_DROP_DOWN, ui_drop_down, void, (int linecount), (linecount))
-
-// function: void ui_gotoxy(int x, int y)
-DECL_FC_API_CALL(FC_UI_GOTOXY, ui_gotoxy, void, (int x, int y), (x, y))
+// function: void snd_play(const unsigned char *list)
+DECL_FC_API_CALL(FC_SND_PLAY, snd_play, void, (const unsigned char *list), (list))
 
 // function: void speech_reset()
 DECL_FC_API_CALL(FC_SPEECH_RESET, speech_reset, void, (), ())
@@ -687,27 +753,6 @@ DECL_FC_API_CALL(FC_MOUSE_SHOW, mouse_show, void, (struct MouseData* mouseData),
 // function: void mouse_hide()
 DECL_FC_API_CALL(FC_MOUSE_HIDE, mouse_hide, void, (), ())
 
-// function: unsigned int tls_connect(unsigned int socketId, char* hostname, char* port)
-DECL_FC_API_CALL(FC_TLS_CONNECT, tls_connect, unsigned int, (unsigned int socketId, char* hostname, char* port), (socketId, hostname, port))
-
-// function: unsigned int tls_close(unsigned int socketId)
-DECL_FC_API_CALL(FC_TLS_CLOSE, tls_close, unsigned int, (unsigned int socketId), (socketId))
-
-// function: int tls_read_socket(unsigned int socketId, char* buf, int bufsize)
-DECL_FC_API_CALL(FC_TLS_READ_SOCKET, tls_read_socket, int, (unsigned int socketId, char* buf, int bufsize), (socketId, buf, bufsize))
-
-// function: int tls_send_chars(unsigned int socketId, char* buf, int size)
-DECL_FC_API_CALL(FC_TLS_SEND_CHARS, tls_send_chars, int, (unsigned int socketId, char* buf, int size), (socketId, buf, size))
-
-// function: void sockbuf_init(struct SocketBuffer* socket_buf, int tls, unsigned int socketId)
-DECL_FC_API_CALL(FC_SOCKBUF_INIT, sockbuf_init, void, (struct SocketBuffer* socket_buf, int tls, unsigned int socketId), (socket_buf, tls, socketId))
-
-// function: char* sockbuf_readline(struct SocketBuffer* socket_buf)
-DECL_FC_API_CALL(FC_SOCKBUF_READLINE, sockbuf_readline, char*, (struct SocketBuffer* socket_buf), (socket_buf))
-
-// function: int sockbuf_readstream(struct SocketBuffer* socket_buf, char* block, int limit)
-DECL_FC_API_CALL(FC_SOCKBUF_READSTREAM, sockbuf_readstream, int, (struct SocketBuffer* socket_buf, char* block, int limit), (socket_buf, block, limit))
-
 // function: void list_init(struct List* list, void* addr, void* ceiling)
 DECL_FC_API_CALL(FC_LIST_INIT, list_init, void, (struct List* list, void* addr, void* ceiling), (list, addr, ceiling))
 
@@ -719,32 +764,5 @@ DECL_FC_API_CALL(FC_LIST_POP, list_pop, void, (struct List* list, char* buffer, 
 
 // function: struct ListEntry* list_get(struct List* list, int index)
 DECL_FC_API_CALL(FC_LIST_GET, list_get, struct ListEntry*, (struct List* list, int index), (list, index))
-
-// function: unsigned int color_text(unsigned int color)
-DECL_FC_API_CALL(FC_COLOR_TEXT, color_text, unsigned int, (unsigned int color), (color))
-
-// function: unsigned int color_bg(unsigned int color)
-DECL_FC_API_CALL(FC_COLOR_BG, color_bg, unsigned int, (unsigned int color), (color))
-
-// function: unsigned int color_border(unsigned int x)
-DECL_FC_API_CALL(FC_COLOR_BORDER, color_border, unsigned int, (unsigned int x), (x))
-
-// function: void tipi_log(char* msg)
-DECL_FC_API_CALL(FC_TIPI_LOG, tipi_log, void, (char* msg), (msg))
-
-// function: void snd_start(const unsigned char *list)
-DECL_FC_API_CALL(FC_SND_START, snd_start, void, (const unsigned char *list), (list))
-
-// function: void snd_tick()
-DECL_FC_API_CALL(FC_SND_TICK, snd_tick, void, (), ())
-
-// function: int snd_playing()
-DECL_FC_API_CALL(FC_SND_PLAYING, snd_playing, int, (), ())
-
-// function: void snd_stop()
-DECL_FC_API_CALL(FC_SND_STOP, snd_stop, void, (), ())
-
-// function: void snd_play(const unsigned char *list)
-DECL_FC_API_CALL(FC_SND_PLAY, snd_play, void, (const unsigned char *list), (list))
 
 #endif

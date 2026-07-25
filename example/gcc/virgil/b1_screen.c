@@ -62,7 +62,7 @@ void FC_SAMS(1,screen_title()) {
   struct SamsInformation samsInfo;
   sys_sams_info(&samsInfo);
 
-  ui_gotoxy(1, 1);
+  term_gotoxy(1, 1);
   char tmp[80];
   str_set(tmp, BS, 80);
   tmp[1] = BL;
@@ -193,13 +193,13 @@ void FC_SAMS(1,screen_redraw()) {
 
 void FC_SAMS(1,screen_prompt(char* dst, char* prompt)) {
   mouse_hide();
-  ui_gotoxy(1, 2);
+  term_gotoxy(1, 2);
   vdp_memset(imageAddr + 80, ' ', 80 * 3);
   vdp_memset(colorAddr + 80, CBLACK_ON_GREEN, 80 * 3);
   write_string(80, prompt, 80);
-  ui_gotoxy(1,3);
-  color_bg(COLOR_MEDGREEN);
-  color_text(COLOR_BLACK);
+  term_gotoxy(1,3);
+  term_set_bg_color(COLOR_MEDGREEN);
+  term_set_text_color(COLOR_BLACK);
   term_gets(dst, 79, 1);
   screen_redraw();
   mouse_show(&md);

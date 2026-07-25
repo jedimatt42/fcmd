@@ -36,7 +36,7 @@ void cursorUp(int lines);
 void cursorDown(int lines);
 void cursorRight(int cols);
 void cursorLeft(int cols);
-void ui_gotoxy(int x, int y);
+void term_gotoxy(int x, int y);
 void eraseDisplay(int opt);
 void eraseLine(int opt);
 void scrollUp(int lc);
@@ -158,7 +158,12 @@ void cursorLeft(int cols) {
   gotox(x);
 }
 
-void ui_gotoxy(int x, int y) {
+void term_cls() {
+  clrscr();
+  tgotoxy(0, 0);
+}
+
+void term_gotoxy(int x, int y) {
   unsigned char scx;
   unsigned char scy;
   screensize(&scx, &scy);
@@ -344,13 +349,13 @@ void doCsiCommand(unsigned char c) {
       gotox(0);
       break;
     case 'G': // set cursor column, 1 param, default 1
-      ui_gotoxy(getParamA(1),twherey() + 1);
+      term_gotoxy(getParamA(1),twherey() + 1);
       break;
     case 'H': // set position, 2 param, defaults 1, 1
-      ui_gotoxy(getParamB(1), getParamA(1));
+      term_gotoxy(getParamB(1), getParamA(1));
       break;
     case 'f': // synonym
-      ui_gotoxy(getParamB(1), getParamA(1));
+      term_gotoxy(getParamB(1), getParamA(1));
       break;
     case 'J': // erase in display, 1 param, default 0
       eraseDisplay(getParamA(0));
@@ -522,4 +527,16 @@ void term_puts(const char* str) {
 
 void vdp_setchar(int pAddr, int ch) {
   vdpchar(pAddr, ch);
+}
+
+unsigned int term_set_text_color(unsigned int color) {
+  return color_text(color);
+}
+
+unsigned int term_set_bg_color(unsigned int color) {
+  return color_bg(color);
+}
+
+unsigned int term_set_border_color(unsigned int x) {
+  return color_border(x);
 }

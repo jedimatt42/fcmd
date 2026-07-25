@@ -2,8 +2,10 @@
 #define MYBANK BANK(8)
 
 #include "vdp.h"
+#include "gpu_scroll.h"
 
 int vdp_screenmode(int mode) {
+	bk_disable_gpu_scroll();
 	switch (mode) {
 	case VDP_SCREENMODE_GRAPHICS:
 		set_graphics(VDP_SPR_8x8);

@@ -387,7 +387,7 @@ void ed_save(char* devpath) {
   int o_x = conio_x;
   int o_y = conio_y;
 
-  ui_drop_down(4);
+  term_drop_down(4);
   conio_x = 2;
   conio_y = 1;
   tputs_rom("Write File: ");
@@ -427,7 +427,7 @@ void ed_showHelp() {
   int o_x = conio_x;
   int o_y = conio_y;
 
-  ui_drop_down(12);
+  term_drop_down(12);
 
   conio_x = 2;
   conio_y = 1;

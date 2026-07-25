@@ -99,3 +99,8 @@ void install_gpu_scroll() {
         vdpmemcpy(0x3f00, (unsigned char*)gpu_scroll, 0x4a);
     }
 }
+
+void disable_gpu_scroll() {
+    VDP_SET_REGISTER(0x36, 0x00);
+    VDP_SET_REGISTER(0x37, 0x00);
+}

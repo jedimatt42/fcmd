@@ -3,8 +3,8 @@
 
 #include "banking.h"
 
-void ui_drop_down(int linecount);
+void term_drop_down(int linecount);
 
-DECLARE_BANKED_VOID(ui_drop_down, BANK(13), bk_dropDown, (int linecount), (linecount))
+DECLARE_BANKED_VOID(term_drop_down, BANK(13), bk_dropDown, (int linecount), (linecount))
 
 #endif
