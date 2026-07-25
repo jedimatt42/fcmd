@@ -236,8 +236,8 @@ void scrollUp(int lc) {
 }
 
 void setColors(int fore, int back) {
-  color_bg(back);
-  color_text(fore);
+  term_set_bg_color(back);
+  term_set_text_color(fore);
 }
 
 void doSGRCommand() {
@@ -527,16 +527,4 @@ void term_puts(const char* str) {
 
 void vdp_setchar(int pAddr, int ch) {
   vdpchar(pAddr, ch);
-}
-
-unsigned int term_set_text_color(unsigned int color) {
-  return color_text(color);
-}
-
-unsigned int term_set_bg_color(unsigned int color) {
-  return color_bg(color);
-}
-
-unsigned int term_set_border_color(unsigned int x) {
-  return color_border(x);
 }

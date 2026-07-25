@@ -19,16 +19,16 @@
 extern int conio_x,conio_y;
 unsigned int vdp_cursor_addr();
 
-// color_bg - sets the character background color in attribute-based text modes
+// term_set_bg_color - sets the character background color in attribute-based text modes
 extern unsigned int conio_scrnCol;
 
 #define FOREGROUND (conio_scrnCol >> 4)
 #define BACKGROUND (conio_scrnCol & 0x0f)
 
-unsigned int color_bg(unsigned int color);
+unsigned int term_set_bg_color(unsigned int color);
 
-// color_border - set the background color on the TI
-unsigned int color_border(unsigned int x);
+// term_set_border_color - set the border color on the TI
+unsigned int term_set_border_color(unsigned int x);
 
 // cclear - write spaces
 void cclear(unsigned int length);
@@ -68,7 +68,7 @@ void screensize(unsigned char *x, unsigned char *y);
 
 // changes the color of the text - works in TEXT mode only and changes ALL text on the screen
 // unless in text80color mode, or text64 mode, which allow separate color per character.
-unsigned int color_text(unsigned int color);
+unsigned int term_set_text_color(unsigned int color);
 
 // return the x position
 inline int wherex() { return conio_x; }

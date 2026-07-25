@@ -194,7 +194,7 @@ void set_text80();
 // set_text80_color - sets up 80 column text mode - 80x30 with Position Attributes (F18A only!)
 // Inputs: none
 // this version enables the screen and sets the KSCAN copy for you
-// Use color_bg and color_text functions from conio to change colors.
+// Use term_set_bg_color and term_set_text_color functions from conio to change colors.
 // Return: returns a value to be written to VDP_REG_MODE1 (and VDP_REG1_KSCAN_MIRROR if you use term_kscan())
 // The screen is blanked until you do this write, to allow you time to set it up
 int set_text80x30_color_raw();

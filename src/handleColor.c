@@ -34,8 +34,8 @@ int handleColor() {
   }
 
   if (displayWidth == 80 && vdp_type == VDP_F18A) {
-    bk_bgcolor(background);
-    bk_textcolor(foreground);
+    bk_term_set_bg_color(background);
+    bk_term_set_text_color(foreground);
     VDP_SET_REGISTER(VDP_REG_COL, background);
   } else {
     VDP_SET_REGISTER(VDP_REG_COL, foreground << 4 | background);

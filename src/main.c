@@ -74,8 +74,8 @@ void cartmain()
   system_dict.end = 0;
 
   vdp_type = bk_detect_vdp();
-  bk_textcolor(15);
-  bk_bgcolor(4);
+  bk_term_set_text_color(15);
+  bk_term_set_bg_color(4);
   bk_setupScreen(vdp_type == VDP_9918 ? 40 : 80);
   if (vdp_type == VDP_F18A) {
     bk_set_palette(0, 0);

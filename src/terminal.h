@@ -4,9 +4,6 @@
 #include "banking.h"
 #include "strutil.h"
 
-unsigned int color_bg(unsigned int color); // from conio
-unsigned int color_text(unsigned int color); // from conio
-unsigned int color_border(unsigned int x); // from conio
 unsigned int term_kscan(unsigned int mode); // from term_kscan
 void gplvdp(int vect, int adr, int cnt); // from vdp_gplvdp
 void vdp_setchar(int pAddr, int ch); // write a char to screen address
@@ -35,9 +32,6 @@ DECLARE_BANKED_VOID(term_cls, BANK(8), bk_term_cls, (), ())
 DECLARE_BANKED_VOID(gplvdp, BANK(8), bk_gplvdp, (int vect, int adr, int cnt), (vect, adr, cnt))
 DECLARE_BANKED_VOID(term_gotoxy, BANK(8), bk_cursorGoto, (int x, int y), (x, y))
 
-DECLARE_BANKED(color_bg, BANK(8), unsigned int, bk_bgcolor, (unsigned int color), (color))
-DECLARE_BANKED(color_text, BANK(8), unsigned int, bk_textcolor, (unsigned int color), (color))
-DECLARE_BANKED(color_border, BANK(8), unsigned int, bk_bordercolor, (unsigned int x), (x))
 DECLARE_BANKED(term_set_text_color, BANK(8), unsigned int, bk_term_set_text_color, (unsigned int color), (color))
 DECLARE_BANKED(term_set_bg_color, BANK(8), unsigned int, bk_term_set_bg_color, (unsigned int color), (color))
 DECLARE_BANKED(term_set_border_color, BANK(8), unsigned int, bk_term_set_border_color, (unsigned int x), (x))
