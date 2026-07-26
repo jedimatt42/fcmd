@@ -37,6 +37,8 @@ tui_win_t* tui_win_open(int x, int y, int w, int h) {
     win->focus = 0;
     win->next = tui_ctx->windows;
     tui_ctx->windows = win;
+    conio_scrnCol = (unsigned int)((win->fg << 4) | (win->bg & 0x0F));
+    tui_fill(win->x, win->y, win->w, win->h, ' ');
     tui_win_draw_box(win);
     return win;
 }
