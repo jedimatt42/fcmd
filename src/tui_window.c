@@ -57,15 +57,20 @@ void tui_win_close(tui_win_t* win) {
     }
     tui_fill(win->x, win->y, win->w, win->h, ' ');
 
+    tui_win_t* stack[10];
+    int count = 0;
     tui_win_t* w = tui_ctx->windows;
-    while (w) {
-        tui_win_draw_box(w);
-        tui_widget_t* child = w->children;
+    while (w && count < 10) {
+        stack[count++] = w;
+        w = w->next;
+    }
+    for (int i = count - 1; i >= 0; i--) {
+        tui_win_draw_box(stack[i]);
+        tui_widget_t* child = stack[i]->children;
         while (child) {
             tui_render_widget(child);
             child = child->next;
         }
-        w = w->next;
     }
 }
 

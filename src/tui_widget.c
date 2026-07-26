@@ -41,7 +41,9 @@ void tui_widget_focus(tui_widget_t* w) {
     if (tui_ctx->focus && tui_ctx->focus != w) {
         tui_widget_t* old = tui_ctx->focus;
         old->flags &= ~TUI_WF_FOCUSED;
-        tui_render_widget(old);
+        if (old->parent == w->parent) {
+            tui_render_widget(old);
+        }
     }
     w->flags |= TUI_WF_FOCUSED;
     tui_ctx->focus = w;
