@@ -56,6 +56,17 @@ void tui_win_close(tui_win_t* win) {
         tui_ctx->focus = 0;
     }
     tui_fill(win->x, win->y, win->w, win->h, ' ');
+
+    tui_win_t* w = tui_ctx->windows;
+    while (w) {
+        tui_win_draw_box(w);
+        tui_widget_t* child = w->children;
+        while (child) {
+            tui_render_widget(child);
+            child = child->next;
+        }
+        w = w->next;
+    }
 }
 
 void tui_win_set_title(tui_win_t* win, const char* title) {
