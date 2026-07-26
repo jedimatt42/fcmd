@@ -54,7 +54,9 @@ void tui_button_render(tui_widget_t* w) {
     vdpmemset(addr + 1, ' ', w->w - 2);
     bk_tui_vdpchar(addr + w->w - 1, rb);
     if (label_len > 0 && label_len <= text_w) {
-        vdpmemcpy(addr + 1 + pad, d->label, label_len);
+        for (int i = 0; i < label_len; i++) {
+            bk_tui_vdpchar(addr + 1 + pad + i, d->label[i]);
+        }
     }
     if (nTextFlags & TEXT_FLAG_HAS_ATTRIBUTES) {
         vdpmemset(gColor + (addr - gImage), conio_scrnCol, w->w);
