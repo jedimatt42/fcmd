@@ -6,7 +6,10 @@ static void demo_widgets() {
     int sw = tui_screen_width();
     int sh = tui_screen_height();
 
-    tui_win_t* win = tui_win_open(4, 3, 50, 16);
+    tui_win_t* win = tui_win_open(0, 0, sw, sh);
+    tui_win_set_colors(win, COLOR_CYAN, COLOR_BLACK);
+    tui_set_color(COLOR_CYAN, COLOR_BLACK);
+    tui_fill(0, 0, sw, sh, ' ');
     tui_win_set_title(win, " Widget Demo ");
 
     tui_widget_t* list = tui_list_create(win, 1, 1, 28, 5);
@@ -70,39 +73,19 @@ static int demo_input() {
     return ok;
 }
 
-static void demo_startup() {
-    int w = tui_screen_width();
-    int h = tui_screen_height();
-    int c = tui_has_color();
-
-    tui_box(0, 0, w, 3);
-    tui_gotoxy(1, 1);
-    tui_puts("TUI Demo");
-    tui_gotoxy(w - 12, 1);
-    tui_puts("v1.0");
-    tui_gotoxy(2, 2);
-    tui_puts("Screen: ");
-    tui_putc('0' + w / 10);
-    tui_putc('0' + w % 10);
-    tui_putc('x');
-    tui_putc('0' + h / 10);
-    tui_putc('0' + h % 10);
-    if (c) {
-        tui_puts("  Color: yes");
-    } else {
-        tui_puts("  Color: no");
-    }
-}
-
 int main(char* args) {
     (void)args;
 
     term_cls();
     if (tui_init(tui_pool, sizeof(tui_pool)) != 0) return 1;
 
-    demo_startup();
+    int sw = tui_screen_width();
+    int sh = tui_screen_height();
 
-    tui_win_t* menu = tui_win_open(10, 5, 40, 14);
+    tui_win_t* menu = tui_win_open(0, 0, sw, sh);
+    tui_win_set_colors(menu, COLOR_CYAN, COLOR_BLACK);
+    tui_set_color(COLOR_CYAN, COLOR_BLACK);
+    tui_fill(0, 0, sw, sh, ' ');
     tui_win_set_title(menu, " Main Menu ");
 
     tui_widget_t* demo_list = tui_list_create(menu, 1, 1, 28, 6);
@@ -138,9 +121,6 @@ int main(char* args) {
                         case 3: demo_input(); break;
                         case 4: running = 0; break;
                     }
-                    tui_box(0, 0, tui_screen_width(), 3);
-                    tui_gotoxy(1, 1);
-                    tui_puts("TUI Demo  v1.0");
                     if (tui_checkbox_get(auto_cb) && sel + 1 < 5) {
                         tui_list_set_selected(demo_list, sel + 1);
                     }
