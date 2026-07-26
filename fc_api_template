@@ -316,3 +316,75 @@ struct ListEntry {
 // memcpy is special, it is in all bank of the cartridge
 extern void* memcpy(void* dest, const void* src, int count);
 
+/*
+  TUI widget types
+*/
+enum tui_widget_type {
+    TUI_WIDGET_BUTTON,
+    TUI_WIDGET_LABEL,
+    TUI_WIDGET_LIST,
+    TUI_WIDGET_TEXTFIELD,
+    TUI_WIDGET_CHECKBOX,
+    TUI_WIDGET_PROGRESSBAR,
+};
+
+/*
+  TUI event types
+*/
+enum tui_event_type {
+    TUI_EV_NONE = 0,
+    TUI_EV_KEY,
+    TUI_EV_MOUSE_CLICK,
+    TUI_EV_MOUSE_MOVE,
+    TUI_EV_WIDGET_ACTIVATED,
+};
+
+/*
+  TUI event structure
+*/
+struct tui_event {
+    enum tui_event_type type;
+    struct tui_widget* widget;
+    int key;
+    int mx;
+    int my;
+    int buttons;
+};
+
+/*
+  TUI widget base structure
+*/
+struct tui_widget {
+    enum tui_widget_type type;
+    int x;
+    int y;
+    int w;
+    int h;
+    unsigned char flags;
+    struct tui_window* parent;
+    struct tui_widget* next;
+};
+
+/*
+  TUI window structure
+*/
+struct tui_window {
+    int x;
+    int y;
+    int w;
+    int h;
+    int cx;
+    int cy;
+    int cw;
+    int ch;
+    int fg;
+    int bg;
+    char title[41];
+    struct tui_widget* children;
+    struct tui_widget* focus;
+    struct tui_window* next;
+};
+
+typedef struct tui_window tui_win_t;
+typedef struct tui_widget tui_widget_t;
+
