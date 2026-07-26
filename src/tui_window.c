@@ -72,6 +72,13 @@ void tui_win_close(tui_win_t* win) {
             child = child->next;
         }
     }
+
+    if (!tui_ctx->focus && tui_ctx->windows) {
+        tui_win_t* top = tui_ctx->windows;
+        if (top->focus && (top->focus->flags & TUI_WF_ENABLED)) {
+            tui_widget_focus(top->focus);
+        }
+    }
 }
 
 void tui_win_set_title(tui_win_t* win, const char* title) {

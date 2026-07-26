@@ -138,17 +138,11 @@ int main(char* args) {
                         case 3: demo_input(); break;
                         case 4: running = 0; break;
                     }
-                    tipi_log("ML: post-demo");
-                    {
-                        int swd = tui_screen_width();
-                        tui_box(0, 0, swd, 3);
-                        tui_gotoxy(1, 1);
-                        tui_puts("TUI Demo  v1.0");
-                        tui_widget_focus(demo_list);
-                        if (tui_checkbox_get(auto_cb) && sel + 1 < 5) {
-                            tui_list_set_selected(demo_list, sel + 1);
-                        }
-                        tipi_log("ML: post-demo done");
+                    tui_box(0, 0, tui_screen_width(), 3);
+                    tui_gotoxy(1, 1);
+                    tui_puts("TUI Demo  v1.0");
+                    if (tui_checkbox_get(auto_cb) && sel + 1 < 5) {
+                        tui_list_set_selected(demo_list, sel + 1);
                     }
                 }
             }
