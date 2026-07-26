@@ -50,7 +50,10 @@ static void demo_widgets() {
 }
 
 static int demo_message() {
-    return tui_message_box(" Notice ", "This is a message box.");
+    tipi_log("DM: enter msg");
+    int r = tui_message_box(" Notice ", "This is a message box.");
+    tipi_log("DM: msg returned");
+    return r;
 }
 
 static int demo_confirm() {
@@ -135,13 +138,17 @@ int main(char* args) {
                         case 3: demo_input(); break;
                         case 4: running = 0; break;
                     }
-                    tui_box(0, 0, tui_screen_width(), 3);
-                    tui_gotoxy(1, 1);
-                    tui_puts("TUI Demo  v1.0");
-                    if (!tui_checkbox_get(auto_cb)) {
+                    tipi_log("ML: post-demo");
+                    {
+                        int swd = tui_screen_width();
+                        tui_box(0, 0, swd, 3);
+                        tui_gotoxy(1, 1);
+                        tui_puts("TUI Demo  v1.0");
                         tui_widget_focus(demo_list);
-                    } else if (sel + 1 < 5) {
-                        tui_list_set_selected(demo_list, sel + 1);
+                        if (tui_checkbox_get(auto_cb) && sel + 1 < 5) {
+                            tui_list_set_selected(demo_list, sel + 1);
+                        }
+                        tipi_log("ML: post-demo done");
                     }
                 }
             }
