@@ -76,6 +76,14 @@ void tui_box(int x, int y, int w, int h) {
     tui_vdpchar(gImage + lastrow * rowstride + x, 0xC0);
     vdpmemset(gImage + lastrow * rowstride + x + 1, 0xC4, w - 2);
     tui_vdpchar(gImage + lastrow * rowstride + lastcol, 0xD9);
+
+    if (nTextFlags & TEXT_FLAG_HAS_ATTRIBUTES) {
+        vdpmemset(gColor + y * rowstride + x, conio_scrnCol, w);
+        for (int r = y + 1; r < lastrow; r++) {
+            vdpmemset(gColor + r * rowstride + x, conio_scrnCol, w);
+        }
+        vdpmemset(gColor + lastrow * rowstride + x, conio_scrnCol, w);
+    }
 }
 
 void tui_box_title(int x, int y, int w, int h, const char* title) {
