@@ -73,6 +73,7 @@ void tui_gotoxy(int x, int y);
 void tui_putc(int c);
 void tui_puts(const char* s);
 void tui_set_color(int fg, int bg);
+void tui_vdpchar(int pAddr, int ch);
 void tui_hline(int x, int y, int w);
 void tui_vline(int x, int y, int h);
 void tui_box(int x, int y, int w, int h);
@@ -136,6 +137,7 @@ int tui_textfield_handle_key(tui_widget_t* w, int key);
 void tui_checkbox_render(tui_widget_t* w);
 int tui_checkbox_handle_key(tui_widget_t* w, int key);
 void tui_progressbar_render(tui_widget_t* w);
+void tui_render_widget(tui_widget_t* w);
 void tui_menu_render(tui_win_t* menu);
 int tui_menu_handle_key(tui_win_t* menu, int key);
 
@@ -148,6 +150,7 @@ DECLARE_BANKED_VOID(tui_gotoxy, BANK(11), bk_tui_gotoxy, (int x, int y), (x, y))
 DECLARE_BANKED_VOID(tui_putc, BANK(11), bk_tui_putc, (int c), (c))
 DECLARE_BANKED_VOID(tui_puts, BANK(11), bk_tui_puts, (const char* s), (s))
 DECLARE_BANKED_VOID(tui_set_color, BANK(11), bk_tui_set_color, (int fg, int bg), (fg, bg))
+DECLARE_BANKED_VOID(tui_vdpchar, BANK(11), bk_tui_vdpchar, (int pAddr, int ch), (pAddr, ch))
 DECLARE_BANKED_VOID(tui_hline, BANK(11), bk_tui_hline, (int x, int y, int w), (x, y, w))
 DECLARE_BANKED_VOID(tui_vline, BANK(11), bk_tui_vline, (int x, int y, int h), (x, y, h))
 DECLARE_BANKED_VOID(tui_box, BANK(11), bk_tui_box, (int x, int y, int w, int h), (x, y, w, h))
@@ -174,6 +177,7 @@ DECLARE_BANKED_VOID(tui_set_focus, BANK(11), bk_tui_set_focus, (tui_widget_t* w)
 DECLARE_BANKED(tui_get_focus, BANK(11), tui_widget_t*, bk_tui_get_focus, (), ())
 DECLARE_BANKED(tui_get_event, BANK(11), int, bk_tui_get_event, (struct tui_event* ev), (ev))
 DECLARE_BANKED(tui_dispatch_event, BANK(11), int, bk_tui_dispatch_event, (struct tui_event* ev), (ev))
+DECLARE_BANKED_VOID(tui_render_widget, BANK(11), bk_tui_render_widget, (tui_widget_t* w), (w))
 
 DECLARE_BANKED(tui_button_create, BANK(12), tui_widget_t*, bk_tui_button_create, (tui_win_t* win, int x, int y, int w, const char* label), (win, x, y, w, label))
 DECLARE_BANKED_VOID(tui_button_set_label, BANK(12), bk_tui_button_set_label, (tui_widget_t* btn, const char* label), (btn, label))

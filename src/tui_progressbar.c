@@ -18,7 +18,7 @@ tui_widget_t* tui_progressbar_create(tui_win_t* win, int x, int y, int w) {
     win->children = wgt;
     struct tui_progressbar_data* d = (struct tui_progressbar_data*)tui_widget_data(wgt);
     d->value = 0;
-    tui_render_widget(wgt);
+    bk_tui_render_widget(wgt);
     return wgt;
 }
 
@@ -28,7 +28,7 @@ void tui_progressbar_set(tui_widget_t* pb, int value) {
     if (value < 0) value = 0;
     if (value > 100) value = 100;
     d->value = value;
-    tui_render_widget(pb);
+    bk_tui_render_widget(pb);
 }
 
 void tui_progressbar_render(tui_widget_t* w) {
@@ -39,7 +39,7 @@ void tui_progressbar_render(tui_widget_t* w) {
     int fill_w = w->w - 2;
     if (fill_w < 1) fill_w = 1;
     int filled = (d->value * fill_w) / 100;
-    vdpchar(addr, '[');
+    bk_tui_vdpchar(addr, '[');
     if (filled > 0) {
         vdpmemset(addr + 1, 0xDB, filled);
     }
@@ -47,7 +47,7 @@ void tui_progressbar_render(tui_widget_t* w) {
     if (empty > 0) {
         vdpmemset(addr + 1 + filled, 0x2D, empty);
     }
-    vdpchar(addr + w->w - 1, ']');
+    bk_tui_vdpchar(addr + w->w - 1, ']');
     if (nTextFlags & TEXT_FLAG_HAS_ATTRIBUTES) {
         vdpmemset(gColor + (addr - gImage), conio_scrnCol, w->w);
     }

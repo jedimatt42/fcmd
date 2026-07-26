@@ -22,7 +22,7 @@ tui_widget_t* tui_list_create(tui_win_t* win, int x, int y, int w, int h) {
     d->scroll_offset = 0;
     d->head = 0;
     d->tail = 0;
-    tui_render_widget(wgt);
+    bk_tui_render_widget(wgt);
     return wgt;
 }
 
@@ -50,7 +50,7 @@ int tui_list_add(tui_widget_t* list, const char* item) {
     d->tail = li;
     int idx = d->count;
     d->count++;
-    tui_render_widget(list);
+    bk_tui_render_widget(list);
     return idx;
 }
 
@@ -74,7 +74,7 @@ int tui_list_insert(tui_widget_t* list, int idx, const char* item) {
     }
     if (d->selected >= idx) d->selected++;
     d->count++;
-    tui_render_widget(list);
+    bk_tui_render_widget(list);
     return idx;
 }
 
@@ -101,7 +101,7 @@ void tui_list_remove(tui_widget_t* list, int idx) {
     if (d->scroll_offset > 0 && d->scroll_offset >= d->count) {
         d->scroll_offset = d->count > list->h ? d->count - list->h : 0;
     }
-    tui_render_widget(list);
+    bk_tui_render_widget(list);
 }
 
 void tui_list_clear(tui_widget_t* list) {
@@ -112,7 +112,7 @@ void tui_list_clear(tui_widget_t* list) {
     d->scroll_offset = 0;
     d->head = 0;
     d->tail = 0;
-    tui_render_widget(list);
+    bk_tui_render_widget(list);
 }
 
 int tui_list_count(tui_widget_t* list) {
@@ -137,7 +137,7 @@ void tui_list_set_selected(tui_widget_t* list, int idx) {
     } else if (idx >= d->scroll_offset + list->h) {
         d->scroll_offset = idx - list->h + 1;
     }
-    tui_render_widget(list);
+    bk_tui_render_widget(list);
 }
 
 void tui_list_render(tui_widget_t* w) {
@@ -154,9 +154,9 @@ void tui_list_render(tui_widget_t* w) {
         if (idx < d->count) {
             struct tui_list_item* li = tui_list_item_at(w, idx);
             if (w->flags & TUI_WF_FOCUSED && idx == d->selected) {
-                vdpchar(addr, 0x10);
+                bk_tui_vdpchar(addr, 0x10);
             } else {
-                vdpchar(addr, ' ');
+                bk_tui_vdpchar(addr, ' ');
             }
             int text_len = tui_strlen(li->text);
             int copy_len = text_len < item_w - 1 ? text_len : item_w - 1;
@@ -173,7 +173,7 @@ void tui_list_render(tui_widget_t* w) {
             int thumb_pos = (d->count > w->h)
                 ? (d->scroll_offset * (w->h - 1)) / (d->count - w->h)
                 : 0;
-            vdpchar(addr + item_w, (r == thumb_pos) ? 0xDB : 0xB0);
+            bk_tui_vdpchar(addr + item_w, (r == thumb_pos) ? 0xDB : 0xB0);
         }
         if (nTextFlags & TEXT_FLAG_HAS_ATTRIBUTES) {
             vdpmemset(gColor + (addr - gImage), conio_scrnCol, w->w);
@@ -217,7 +217,7 @@ int tui_list_handle_key(tui_widget_t* w, int key) {
             return 0;
     }
     if (old != d->selected) {
-        tui_render_widget(w);
+        bk_tui_render_widget(w);
     }
     return 0;
 }

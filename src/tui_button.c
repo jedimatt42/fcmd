@@ -18,7 +18,7 @@ tui_widget_t* tui_button_create(tui_win_t* win, int x, int y, int w, const char*
     win->children = wgt;
     struct tui_button_data* d = (struct tui_button_data*)tui_widget_data(wgt);
     tui_strncpy(d->label, label, 41);
-    tui_render_widget(wgt);
+    bk_tui_render_widget(wgt);
     return wgt;
 }
 
@@ -26,7 +26,7 @@ void tui_button_set_label(tui_widget_t* btn, const char* label) {
     if (!btn || btn->type != TUI_WIDGET_BUTTON) return;
     struct tui_button_data* d = (struct tui_button_data*)tui_widget_data(btn);
     tui_strncpy(d->label, label, 41);
-    tui_render_widget(btn);
+    bk_tui_render_widget(btn);
 }
 
 void tui_button_render(tui_widget_t* w) {
@@ -50,9 +50,9 @@ void tui_button_render(tui_widget_t* w) {
     int pad = (text_w - label_len) / 2;
     if (pad < 0) pad = 0;
     int addr = gImage + sy * displayWidth + sx;
-    vdpchar(addr, lb);
+    bk_tui_vdpchar(addr, lb);
     vdpmemset(addr + 1, ' ', w->w - 2);
-    vdpchar(addr + w->w - 1, rb);
+    bk_tui_vdpchar(addr + w->w - 1, rb);
     if (label_len > 0 && label_len <= text_w) {
         vdpmemcpy(addr + 1 + pad, d->label, label_len);
     }

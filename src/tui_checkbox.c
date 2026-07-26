@@ -23,7 +23,7 @@ tui_widget_t* tui_checkbox_create(tui_win_t* win, int x, int y, const char* labe
         d->label[0] = 0;
     }
     d->state = 0;
-    tui_render_widget(wgt);
+    bk_tui_render_widget(wgt);
     return wgt;
 }
 
@@ -31,7 +31,7 @@ void tui_checkbox_set(tui_widget_t* cb, int state) {
     if (!cb || cb->type != TUI_WIDGET_CHECKBOX) return;
     struct tui_checkbox_data* d = (struct tui_checkbox_data*)tui_widget_data(cb);
     d->state = state ? 1 : 0;
-    tui_render_widget(cb);
+    bk_tui_render_widget(cb);
 }
 
 int tui_checkbox_get(tui_widget_t* cb) {
@@ -46,19 +46,19 @@ void tui_checkbox_render(tui_widget_t* w) {
     int sy = w->parent->cy + w->y;
     int addr = gImage + sy * displayWidth + sx;
     if (!(w->flags & TUI_WF_ENABLED)) {
-        vdpchar(addr, '(');
-        vdpchar(addr + 1, d->state ? '*' : ' ');
-        vdpchar(addr + 2, ')');
+        bk_tui_vdpchar(addr, '(');
+        bk_tui_vdpchar(addr + 1, d->state ? '*' : ' ');
+        bk_tui_vdpchar(addr + 2, ')');
     } else if (w->flags & TUI_WF_FOCUSED) {
-        vdpchar(addr, '<');
-        vdpchar(addr + 1, d->state ? '*' : ' ');
-        vdpchar(addr + 2, '>');
+        bk_tui_vdpchar(addr, '<');
+        bk_tui_vdpchar(addr + 1, d->state ? '*' : ' ');
+        bk_tui_vdpchar(addr + 2, '>');
     } else {
-        vdpchar(addr, '[');
-        vdpchar(addr + 1, d->state ? '*' : ' ');
-        vdpchar(addr + 2, ']');
+        bk_tui_vdpchar(addr, '[');
+        bk_tui_vdpchar(addr + 1, d->state ? '*' : ' ');
+        bk_tui_vdpchar(addr + 2, ']');
     }
-    vdpchar(addr + 3, ' ');
+    bk_tui_vdpchar(addr + 3, ' ');
     int label_len = tui_strlen(d->label);
     if (label_len > 0) {
         vdpmemcpy(addr + 4, d->label, label_len);
@@ -72,7 +72,7 @@ int tui_checkbox_handle_key(tui_widget_t* w, int key) {
     if (key == 13 || key == 32) {
         struct tui_checkbox_data* d = (struct tui_checkbox_data*)tui_widget_data(w);
         d->state = d->state ? 0 : 1;
-        tui_render_widget(w);
+        bk_tui_render_widget(w);
         return 1;
     }
     return 0;

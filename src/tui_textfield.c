@@ -20,7 +20,7 @@ tui_widget_t* tui_textfield_create(tui_win_t* win, int x, int y, int w) {
     d->buffer[0] = 0;
     d->cursor = 0;
     d->len = 0;
-    tui_render_widget(wgt);
+    bk_tui_render_widget(wgt);
     return wgt;
 }
 
@@ -30,7 +30,7 @@ void tui_textfield_set(tui_widget_t* tf, const char* text) {
     tui_strncpy(d->buffer, text, 81);
     d->len = tui_strlen(d->buffer);
     d->cursor = d->len;
-    tui_render_widget(tf);
+    bk_tui_render_widget(tf);
 }
 
 const char* tui_textfield_get(tui_widget_t* tf) {
@@ -45,7 +45,7 @@ void tui_textfield_set_cursor(tui_widget_t* tf, int pos) {
     if (pos < 0) pos = 0;
     if (pos > d->len) pos = d->len;
     d->cursor = pos;
-    tui_render_widget(tf);
+    bk_tui_render_widget(tf);
 }
 
 void tui_textfield_render(tui_widget_t* w) {
@@ -134,7 +134,7 @@ int tui_textfield_handle_key(tui_widget_t* w, int key) {
     }
     if (redraw) {
         d->buffer[d->len] = 0;
-        tui_render_widget(w);
+        bk_tui_render_widget(w);
     }
     return 0;
 }

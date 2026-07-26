@@ -24,7 +24,7 @@ tui_widget_t* tui_label_create(tui_win_t* win, int x, int y, const char* text) {
         d->text[0] = 0;
         wgt->w = 0;
     }
-    tui_render_widget(wgt);
+    bk_tui_render_widget(wgt);
     return wgt;
 }
 
@@ -38,7 +38,7 @@ void tui_label_set_text(tui_widget_t* lbl, const char* text) {
         d->text[0] = 0;
         lbl->w = 0;
     }
-    tui_render_widget(lbl);
+    bk_tui_render_widget(lbl);
 }
 
 void tui_label_render(tui_widget_t* w) {

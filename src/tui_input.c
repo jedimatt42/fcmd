@@ -5,6 +5,7 @@
 #include "terminal.h"
 #include "tipi_mouse.h"
 #include "editor.h"
+#include "kscan.h"
 
 int tui_get_event(struct tui_event* ev) {
     if (!ev) return 0;
@@ -16,7 +17,7 @@ int tui_get_event(struct tui_event* ev) {
     ev->buttons = 0;
 
     int k = (int)bk_kscan(5);
-    if (k != 255) {
+    if (k != 255 && (KSCAN_STATUS & KSCAN_MASK)) {
         ev->key = k;
         ev->type = TUI_EV_KEY;
 

@@ -3,8 +3,8 @@
 static char tui_pool[4096];
 
 static void demo_widgets() {
-    int w = tui_screen_width();
-    int h = tui_screen_height();
+    int sw = tui_screen_width();
+    int sh = tui_screen_height();
 
     tui_win_t* win = tui_win_open(4, 3, 50, 16);
     tui_win_set_title(win, " Widget Demo ");
@@ -25,7 +25,7 @@ static void demo_widgets() {
 
     tui_widget_t* pb = tui_progressbar_create(win, 1, 12, 46);
 
-    tui_widget_t* ok = tui_button_create(win, 15, 14, 10, "   OK   ");
+    tui_widget_t* ok = tui_button_create(win, 20, 13, 10, "   OK   ");
     tui_widget_focus(list);
 
     int running = 1;
@@ -50,7 +50,7 @@ static void demo_widgets() {
 }
 
 static int demo_message() {
-    return tui_message_box(" Notice ", "This is a message box.\nIt displays information.");
+    return tui_message_box(" Notice ", "This is a message box.");
 }
 
 static int demo_confirm() {
@@ -62,8 +62,6 @@ static int demo_input() {
     buf[0] = 0;
     int ok = tui_input_box(" Input ", "Enter your name:", buf, 80);
     if (ok) {
-        char msg[100];
-        msg[0] = 0;
         tui_message_box(" Hello ", buf);
     }
     return ok;
@@ -115,7 +113,7 @@ int main(char* args) {
     tui_widget_t* run_btn = tui_button_create(menu, 30, 1, 8, "  Run  ");
     tui_widget_t* quit_btn = tui_button_create(menu, 30, 3, 8, " Quit ");
 
-    tui_widget_t* auto_cb = tui_checkbox_create(menu, 1, 8, "Run demo after selection");
+    tui_widget_t* auto_cb = tui_checkbox_create(menu, 1, 8, "Run after selection");
     tui_checkbox_set(auto_cb, 1);
 
     tui_widget_focus(demo_list);
