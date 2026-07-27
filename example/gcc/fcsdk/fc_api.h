@@ -501,68 +501,68 @@ typedef struct tui_widget tui_widget_t;
 #define FC_VDP_CURSOR_ADDR 0x6e
 #define FC_VDP_SCREENMODE 0x6f
 #define FC_VDP_SETCHAR 0x70
-#define FC_TUI_INIT 0x71
-#define FC_TUI_DONE 0x72
-#define FC_TUI_SCREEN_WIDTH 0x73
-#define FC_TUI_SCREEN_HEIGHT 0x74
-#define FC_TUI_HAS_COLOR 0x75
-#define FC_TUI_GOTOXY 0x76
-#define FC_TUI_PUTC 0x77
-#define FC_TUI_PUTS 0x78
-#define FC_TUI_SET_COLOR 0x79
-#define FC_TUI_HLINE 0x7a
-#define FC_TUI_VLINE 0x7b
-#define FC_TUI_BOX 0x7c
-#define FC_TUI_BOX_TITLE 0x7d
-#define FC_TUI_FILL 0x7e
-#define FC_TUI_WIN_OPEN 0x7f
-#define FC_TUI_WIN_CLOSE 0x80
-#define FC_TUI_WIN_SET_TITLE 0x81
-#define FC_TUI_WIN_MOVE 0x82
-#define FC_TUI_WIN_RESIZE 0x83
-#define FC_TUI_WIN_SET_COLORS 0x84
-#define FC_TUI_WIN_GOTOXY 0x85
-#define FC_TUI_WIN_PUTC 0x86
-#define FC_TUI_WIN_PUTS 0x87
-#define FC_TUI_WIN_PRINTF 0x88
-#define FC_TUI_WIN_SCROLL 0x89
-#define FC_TUI_WIDGET_DESTROY 0x8a
-#define FC_TUI_WIDGET_SHOW 0x8b
-#define FC_TUI_WIDGET_HIDE 0x8c
-#define FC_TUI_WIDGET_FOCUS 0x8d
-#define FC_TUI_WIDGET_ENABLE 0x8e
-#define FC_TUI_WIDGET_DISABLE 0x8f
-#define FC_TUI_BUTTON_CREATE 0x90
-#define FC_TUI_BUTTON_SET_LABEL 0x91
-#define FC_TUI_LABEL_CREATE 0x92
-#define FC_TUI_LABEL_SET_TEXT 0x93
-#define FC_TUI_LIST_CREATE 0x94
-#define FC_TUI_LIST_ADD 0x95
-#define FC_TUI_LIST_INSERT 0x96
-#define FC_TUI_LIST_REMOVE 0x97
-#define FC_TUI_LIST_CLEAR 0x98
-#define FC_TUI_LIST_COUNT 0x99
-#define FC_TUI_LIST_GET_SELECTED 0x9a
-#define FC_TUI_LIST_SET_SELECTED 0x9b
-#define FC_TUI_TEXTFIELD_CREATE 0x9c
-#define FC_TUI_TEXTFIELD_SET 0x9d
-#define FC_TUI_TEXTFIELD_GET 0x9e
-#define FC_TUI_TEXTFIELD_SET_CURSOR 0x9f
-#define FC_TUI_CHECKBOX_CREATE 0xa0
-#define FC_TUI_CHECKBOX_SET 0xa1
-#define FC_TUI_CHECKBOX_GET 0xa2
-#define FC_TUI_PROGRESSBAR_CREATE 0xa3
-#define FC_TUI_PROGRESSBAR_SET 0xa4
-#define FC_TUI_GET_EVENT 0xa5
-#define FC_TUI_DISPATCH_EVENT 0xa6
-#define FC_TUI_SET_FOCUS 0xa7
-#define FC_TUI_GET_FOCUS 0xa8
-#define FC_TUI_MESSAGE_BOX 0xa9
-#define FC_TUI_CONFIRM_BOX 0xaa
-#define FC_TUI_INPUT_BOX 0xab
-#define FC_TUI_MENU_CREATE 0xac
-#define FC_TUI_MENU_DESTROY 0xad
-#define FC_TUI_MENU_GET_SELECTED 0xae
+#define FC_TUI_BOX 0x71
+#define FC_TUI_BOX_TITLE 0x72
+#define FC_TUI_BUTTON_CREATE 0x73
+#define FC_TUI_BUTTON_SET_LABEL 0x74
+#define FC_TUI_CHECKBOX_CREATE 0x75
+#define FC_TUI_CHECKBOX_GET 0x76
+#define FC_TUI_CHECKBOX_SET 0x77
+#define FC_TUI_CONFIRM_BOX 0x78
+#define FC_TUI_DISPATCH_EVENT 0x79
+#define FC_TUI_DONE 0x7a
+#define FC_TUI_FILL 0x7b
+#define FC_TUI_GET_EVENT 0x7c
+#define FC_TUI_GET_FOCUS 0x7d
+#define FC_TUI_GOTOXY 0x7e
+#define FC_TUI_HAS_COLOR 0x7f
+#define FC_TUI_HLINE 0x80
+#define FC_TUI_INIT 0x81
+#define FC_TUI_INPUT_BOX 0x82
+#define FC_TUI_LABEL_CREATE 0x83
+#define FC_TUI_LABEL_SET_TEXT 0x84
+#define FC_TUI_LIST_ADD 0x85
+#define FC_TUI_LIST_CLEAR 0x86
+#define FC_TUI_LIST_COUNT 0x87
+#define FC_TUI_LIST_CREATE 0x88
+#define FC_TUI_LIST_GET_SELECTED 0x89
+#define FC_TUI_LIST_INSERT 0x8a
+#define FC_TUI_LIST_REMOVE 0x8b
+#define FC_TUI_LIST_SET_SELECTED 0x8c
+#define FC_TUI_MENU_CREATE 0x8d
+#define FC_TUI_MENU_DESTROY 0x8e
+#define FC_TUI_MENU_GET_SELECTED 0x8f
+#define FC_TUI_MESSAGE_BOX 0x90
+#define FC_TUI_PROGRESSBAR_CREATE 0x91
+#define FC_TUI_PROGRESSBAR_SET 0x92
+#define FC_TUI_PUTC 0x93
+#define FC_TUI_PUTS 0x94
+#define FC_TUI_SCREEN_HEIGHT 0x95
+#define FC_TUI_SCREEN_WIDTH 0x96
+#define FC_TUI_SET_COLOR 0x97
+#define FC_TUI_SET_FOCUS 0x98
+#define FC_TUI_TEXTFIELD_CREATE 0x99
+#define FC_TUI_TEXTFIELD_GET 0x9a
+#define FC_TUI_TEXTFIELD_SET 0x9b
+#define FC_TUI_TEXTFIELD_SET_CURSOR 0x9c
+#define FC_TUI_VLINE 0x9d
+#define FC_TUI_WIDGET_DESTROY 0x9e
+#define FC_TUI_WIDGET_DISABLE 0x9f
+#define FC_TUI_WIDGET_ENABLE 0xa0
+#define FC_TUI_WIDGET_FOCUS 0xa1
+#define FC_TUI_WIDGET_HIDE 0xa2
+#define FC_TUI_WIDGET_SHOW 0xa3
+#define FC_TUI_WIN_CLOSE 0xa4
+#define FC_TUI_WIN_GOTOXY 0xa5
+#define FC_TUI_WIN_MOVE 0xa6
+#define FC_TUI_WIN_OPEN 0xa7
+#define FC_TUI_WIN_PRINTF 0xa8
+#define FC_TUI_WIN_PUTC 0xa9
+#define FC_TUI_WIN_PUTS 0xaa
+#define FC_TUI_WIN_RESIZE 0xab
+#define FC_TUI_WIN_SCROLL 0xac
+#define FC_TUI_WIN_SET_COLORS 0xad
+#define FC_TUI_WIN_SET_TITLE 0xae
 
 // function: void audio_beep()
 DECL_FC_API_CALL(FC_AUDIO_BEEP, audio_beep, void, (), ())
@@ -903,98 +903,11 @@ DECL_FC_API_CALL(FC_VDP_SCREENMODE, vdp_screenmode, int, (int mode), (mode))
 // function: void vdp_setchar(int pAddr, int ch)
 DECL_FC_API_CALL(FC_VDP_SETCHAR, vdp_setchar, void, (int pAddr, int ch), (pAddr, ch))
 
-// function: int tui_init(void* pool, int size)
-DECL_FC_API_CALL(FC_TUI_INIT, tui_init, int, (void* pool, int size), (pool, size))
-
-// function: void tui_done()
-DECL_FC_API_CALL(FC_TUI_DONE, tui_done, void, (), ())
-
-// function: int tui_screen_width()
-DECL_FC_API_CALL(FC_TUI_SCREEN_WIDTH, tui_screen_width, int, (), ())
-
-// function: int tui_screen_height()
-DECL_FC_API_CALL(FC_TUI_SCREEN_HEIGHT, tui_screen_height, int, (), ())
-
-// function: int tui_has_color()
-DECL_FC_API_CALL(FC_TUI_HAS_COLOR, tui_has_color, int, (), ())
-
-// function: void tui_gotoxy(int x, int y)
-DECL_FC_API_CALL(FC_TUI_GOTOXY, tui_gotoxy, void, (int x, int y), (x, y))
-
-// function: void tui_putc(int c)
-DECL_FC_API_CALL(FC_TUI_PUTC, tui_putc, void, (int c), (c))
-
-// function: void tui_puts(const char* s)
-DECL_FC_API_CALL(FC_TUI_PUTS, tui_puts, void, (const char* s), (s))
-
-// function: void tui_set_color(int fg, int bg)
-DECL_FC_API_CALL(FC_TUI_SET_COLOR, tui_set_color, void, (int fg, int bg), (fg, bg))
-
-// function: void tui_hline(int x, int y, int w)
-DECL_FC_API_CALL(FC_TUI_HLINE, tui_hline, void, (int x, int y, int w), (x, y, w))
-
-// function: void tui_vline(int x, int y, int h)
-DECL_FC_API_CALL(FC_TUI_VLINE, tui_vline, void, (int x, int y, int h), (x, y, h))
-
 // function: void tui_box(int x, int y, int w, int h)
 DECL_FC_API_CALL(FC_TUI_BOX, tui_box, void, (int x, int y, int w, int h), (x, y, w, h))
 
 // function: void tui_box_title(int x, int y, int w, int h, const char* title)
 DECL_FC_API_CALL(FC_TUI_BOX_TITLE, tui_box_title, void, (int x, int y, int w, int h, const char* title), (x, y, w, h, title))
-
-// function: void tui_fill(int x, int y, int w, int h, int ch)
-DECL_FC_API_CALL(FC_TUI_FILL, tui_fill, void, (int x, int y, int w, int h, int ch), (x, y, w, h, ch))
-
-// function: tui_win_t* tui_win_open(int x, int y, int w, int h)
-DECL_FC_API_CALL(FC_TUI_WIN_OPEN, tui_win_open, tui_win_t*, (int x, int y, int w, int h), (x, y, w, h))
-
-// function: void tui_win_close(tui_win_t* win)
-DECL_FC_API_CALL(FC_TUI_WIN_CLOSE, tui_win_close, void, (tui_win_t* win), (win))
-
-// function: void tui_win_set_title(tui_win_t* win, const char* title)
-DECL_FC_API_CALL(FC_TUI_WIN_SET_TITLE, tui_win_set_title, void, (tui_win_t* win, const char* title), (win, title))
-
-// function: void tui_win_move(tui_win_t* win, int x, int y)
-DECL_FC_API_CALL(FC_TUI_WIN_MOVE, tui_win_move, void, (tui_win_t* win, int x, int y), (win, x, y))
-
-// function: void tui_win_resize(tui_win_t* win, int w, int h)
-DECL_FC_API_CALL(FC_TUI_WIN_RESIZE, tui_win_resize, void, (tui_win_t* win, int w, int h), (win, w, h))
-
-// function: void tui_win_set_colors(tui_win_t* win, int fg, int bg)
-DECL_FC_API_CALL(FC_TUI_WIN_SET_COLORS, tui_win_set_colors, void, (tui_win_t* win, int fg, int bg), (win, fg, bg))
-
-// function: void tui_win_gotoxy(tui_win_t* win, int x, int y)
-DECL_FC_API_CALL(FC_TUI_WIN_GOTOXY, tui_win_gotoxy, void, (tui_win_t* win, int x, int y), (win, x, y))
-
-// function: void tui_win_putc(tui_win_t* win, int c)
-DECL_FC_API_CALL(FC_TUI_WIN_PUTC, tui_win_putc, void, (tui_win_t* win, int c), (win, c))
-
-// function: void tui_win_puts(tui_win_t* win, const char* s)
-DECL_FC_API_CALL(FC_TUI_WIN_PUTS, tui_win_puts, void, (tui_win_t* win, const char* s), (win, s))
-
-// function: void tui_win_printf(tui_win_t* win, const char* fmt, ...)
-DECL_FC_API_CALL(FC_TUI_WIN_PRINTF, tui_win_printf, void, (tui_win_t* win, const char* fmt, ...), (win, fmt))
-
-// function: void tui_win_scroll(tui_win_t* win, int lines)
-DECL_FC_API_CALL(FC_TUI_WIN_SCROLL, tui_win_scroll, void, (tui_win_t* win, int lines), (win, lines))
-
-// function: void tui_widget_destroy(tui_widget_t* w)
-DECL_FC_API_CALL(FC_TUI_WIDGET_DESTROY, tui_widget_destroy, void, (tui_widget_t* w), (w))
-
-// function: void tui_widget_show(tui_widget_t* w)
-DECL_FC_API_CALL(FC_TUI_WIDGET_SHOW, tui_widget_show, void, (tui_widget_t* w), (w))
-
-// function: void tui_widget_hide(tui_widget_t* w)
-DECL_FC_API_CALL(FC_TUI_WIDGET_HIDE, tui_widget_hide, void, (tui_widget_t* w), (w))
-
-// function: void tui_widget_focus(tui_widget_t* w)
-DECL_FC_API_CALL(FC_TUI_WIDGET_FOCUS, tui_widget_focus, void, (tui_widget_t* w), (w))
-
-// function: void tui_widget_enable(tui_widget_t* w)
-DECL_FC_API_CALL(FC_TUI_WIDGET_ENABLE, tui_widget_enable, void, (tui_widget_t* w), (w))
-
-// function: void tui_widget_disable(tui_widget_t* w)
-DECL_FC_API_CALL(FC_TUI_WIDGET_DISABLE, tui_widget_disable, void, (tui_widget_t* w), (w))
 
 // function: tui_widget_t* tui_button_create(tui_win_t* win, int x, int y, int w, const char* label)
 DECL_FC_API_CALL(FC_TUI_BUTTON_CREATE, tui_button_create, tui_widget_t*, (tui_win_t* win, int x, int y, int w, const char* label), (win, x, y, w, label))
@@ -1002,23 +915,56 @@ DECL_FC_API_CALL(FC_TUI_BUTTON_CREATE, tui_button_create, tui_widget_t*, (tui_wi
 // function: void tui_button_set_label(tui_widget_t* btn, const char* label)
 DECL_FC_API_CALL(FC_TUI_BUTTON_SET_LABEL, tui_button_set_label, void, (tui_widget_t* btn, const char* label), (btn, label))
 
+// function: tui_widget_t* tui_checkbox_create(tui_win_t* win, int x, int y, const char* label)
+DECL_FC_API_CALL(FC_TUI_CHECKBOX_CREATE, tui_checkbox_create, tui_widget_t*, (tui_win_t* win, int x, int y, const char* label), (win, x, y, label))
+
+// function: int tui_checkbox_get(tui_widget_t* cb)
+DECL_FC_API_CALL(FC_TUI_CHECKBOX_GET, tui_checkbox_get, int, (tui_widget_t* cb), (cb))
+
+// function: void tui_checkbox_set(tui_widget_t* cb, int state)
+DECL_FC_API_CALL(FC_TUI_CHECKBOX_SET, tui_checkbox_set, void, (tui_widget_t* cb, int state), (cb, state))
+
+// function: int tui_confirm_box(const char* title, const char* msg)
+DECL_FC_API_CALL(FC_TUI_CONFIRM_BOX, tui_confirm_box, int, (const char* title, const char* msg), (title, msg))
+
+// function: int tui_dispatch_event(struct tui_event* ev)
+DECL_FC_API_CALL(FC_TUI_DISPATCH_EVENT, tui_dispatch_event, int, (struct tui_event* ev), (ev))
+
+// function: void tui_done()
+DECL_FC_API_CALL(FC_TUI_DONE, tui_done, void, (), ())
+
+// function: void tui_fill(int x, int y, int w, int h, int ch)
+DECL_FC_API_CALL(FC_TUI_FILL, tui_fill, void, (int x, int y, int w, int h, int ch), (x, y, w, h, ch))
+
+// function: int tui_get_event(struct tui_event* ev)
+DECL_FC_API_CALL(FC_TUI_GET_EVENT, tui_get_event, int, (struct tui_event* ev), (ev))
+
+// function: tui_widget_t* tui_get_focus()
+DECL_FC_API_CALL(FC_TUI_GET_FOCUS, tui_get_focus, tui_widget_t*, (), ())
+
+// function: void tui_gotoxy(int x, int y)
+DECL_FC_API_CALL(FC_TUI_GOTOXY, tui_gotoxy, void, (int x, int y), (x, y))
+
+// function: int tui_has_color()
+DECL_FC_API_CALL(FC_TUI_HAS_COLOR, tui_has_color, int, (), ())
+
+// function: void tui_hline(int x, int y, int w)
+DECL_FC_API_CALL(FC_TUI_HLINE, tui_hline, void, (int x, int y, int w), (x, y, w))
+
+// function: int tui_init(void* pool, int size)
+DECL_FC_API_CALL(FC_TUI_INIT, tui_init, int, (void* pool, int size), (pool, size))
+
+// function: int tui_input_box(const char* title, const char* prompt, char* buf, int len)
+DECL_FC_API_CALL(FC_TUI_INPUT_BOX, tui_input_box, int, (const char* title, const char* prompt, char* buf, int len), (title, prompt, buf, len))
+
 // function: tui_widget_t* tui_label_create(tui_win_t* win, int x, int y, const char* text)
 DECL_FC_API_CALL(FC_TUI_LABEL_CREATE, tui_label_create, tui_widget_t*, (tui_win_t* win, int x, int y, const char* text), (win, x, y, text))
 
 // function: void tui_label_set_text(tui_widget_t* lbl, const char* text)
 DECL_FC_API_CALL(FC_TUI_LABEL_SET_TEXT, tui_label_set_text, void, (tui_widget_t* lbl, const char* text), (lbl, text))
 
-// function: tui_widget_t* tui_list_create(tui_win_t* win, int x, int y, int w, int h)
-DECL_FC_API_CALL(FC_TUI_LIST_CREATE, tui_list_create, tui_widget_t*, (tui_win_t* win, int x, int y, int w, int h), (win, x, y, w, h))
-
 // function: int tui_list_add(tui_widget_t* list, const char* item)
 DECL_FC_API_CALL(FC_TUI_LIST_ADD, tui_list_add, int, (tui_widget_t* list, const char* item), (list, item))
-
-// function: int tui_list_insert(tui_widget_t* list, int idx, const char* item)
-DECL_FC_API_CALL(FC_TUI_LIST_INSERT, tui_list_insert, int, (tui_widget_t* list, int idx, const char* item), (list, idx, item))
-
-// function: void tui_list_remove(tui_widget_t* list, int idx)
-DECL_FC_API_CALL(FC_TUI_LIST_REMOVE, tui_list_remove, void, (tui_widget_t* list, int idx), (list, idx))
 
 // function: void tui_list_clear(tui_widget_t* list)
 DECL_FC_API_CALL(FC_TUI_LIST_CLEAR, tui_list_clear, void, (tui_widget_t* list), (list))
@@ -1026,59 +972,20 @@ DECL_FC_API_CALL(FC_TUI_LIST_CLEAR, tui_list_clear, void, (tui_widget_t* list), 
 // function: int tui_list_count(tui_widget_t* list)
 DECL_FC_API_CALL(FC_TUI_LIST_COUNT, tui_list_count, int, (tui_widget_t* list), (list))
 
+// function: tui_widget_t* tui_list_create(tui_win_t* win, int x, int y, int w, int h)
+DECL_FC_API_CALL(FC_TUI_LIST_CREATE, tui_list_create, tui_widget_t*, (tui_win_t* win, int x, int y, int w, int h), (win, x, y, w, h))
+
 // function: int tui_list_get_selected(tui_widget_t* list)
 DECL_FC_API_CALL(FC_TUI_LIST_GET_SELECTED, tui_list_get_selected, int, (tui_widget_t* list), (list))
 
+// function: int tui_list_insert(tui_widget_t* list, int idx, const char* item)
+DECL_FC_API_CALL(FC_TUI_LIST_INSERT, tui_list_insert, int, (tui_widget_t* list, int idx, const char* item), (list, idx, item))
+
+// function: void tui_list_remove(tui_widget_t* list, int idx)
+DECL_FC_API_CALL(FC_TUI_LIST_REMOVE, tui_list_remove, void, (tui_widget_t* list, int idx), (list, idx))
+
 // function: void tui_list_set_selected(tui_widget_t* list, int idx)
 DECL_FC_API_CALL(FC_TUI_LIST_SET_SELECTED, tui_list_set_selected, void, (tui_widget_t* list, int idx), (list, idx))
-
-// function: tui_widget_t* tui_textfield_create(tui_win_t* win, int x, int y, int w)
-DECL_FC_API_CALL(FC_TUI_TEXTFIELD_CREATE, tui_textfield_create, tui_widget_t*, (tui_win_t* win, int x, int y, int w), (win, x, y, w))
-
-// function: void tui_textfield_set(tui_widget_t* tf, const char* text)
-DECL_FC_API_CALL(FC_TUI_TEXTFIELD_SET, tui_textfield_set, void, (tui_widget_t* tf, const char* text), (tf, text))
-
-// function: const char* tui_textfield_get(tui_widget_t* tf)
-DECL_FC_API_CALL(FC_TUI_TEXTFIELD_GET, tui_textfield_get, const char*, (tui_widget_t* tf), (tf))
-
-// function: void tui_textfield_set_cursor(tui_widget_t* tf, int pos)
-DECL_FC_API_CALL(FC_TUI_TEXTFIELD_SET_CURSOR, tui_textfield_set_cursor, void, (tui_widget_t* tf, int pos), (tf, pos))
-
-// function: tui_widget_t* tui_checkbox_create(tui_win_t* win, int x, int y, const char* label)
-DECL_FC_API_CALL(FC_TUI_CHECKBOX_CREATE, tui_checkbox_create, tui_widget_t*, (tui_win_t* win, int x, int y, const char* label), (win, x, y, label))
-
-// function: void tui_checkbox_set(tui_widget_t* cb, int state)
-DECL_FC_API_CALL(FC_TUI_CHECKBOX_SET, tui_checkbox_set, void, (tui_widget_t* cb, int state), (cb, state))
-
-// function: int tui_checkbox_get(tui_widget_t* cb)
-DECL_FC_API_CALL(FC_TUI_CHECKBOX_GET, tui_checkbox_get, int, (tui_widget_t* cb), (cb))
-
-// function: tui_widget_t* tui_progressbar_create(tui_win_t* win, int x, int y, int w)
-DECL_FC_API_CALL(FC_TUI_PROGRESSBAR_CREATE, tui_progressbar_create, tui_widget_t*, (tui_win_t* win, int x, int y, int w), (win, x, y, w))
-
-// function: void tui_progressbar_set(tui_widget_t* pb, int value)
-DECL_FC_API_CALL(FC_TUI_PROGRESSBAR_SET, tui_progressbar_set, void, (tui_widget_t* pb, int value), (pb, value))
-
-// function: int tui_get_event(struct tui_event* ev)
-DECL_FC_API_CALL(FC_TUI_GET_EVENT, tui_get_event, int, (struct tui_event* ev), (ev))
-
-// function: int tui_dispatch_event(struct tui_event* ev)
-DECL_FC_API_CALL(FC_TUI_DISPATCH_EVENT, tui_dispatch_event, int, (struct tui_event* ev), (ev))
-
-// function: void tui_set_focus(tui_widget_t* w)
-DECL_FC_API_CALL(FC_TUI_SET_FOCUS, tui_set_focus, void, (tui_widget_t* w), (w))
-
-// function: tui_widget_t* tui_get_focus()
-DECL_FC_API_CALL(FC_TUI_GET_FOCUS, tui_get_focus, tui_widget_t*, (), ())
-
-// function: int tui_message_box(const char* title, const char* msg)
-DECL_FC_API_CALL(FC_TUI_MESSAGE_BOX, tui_message_box, int, (const char* title, const char* msg), (title, msg))
-
-// function: int tui_confirm_box(const char* title, const char* msg)
-DECL_FC_API_CALL(FC_TUI_CONFIRM_BOX, tui_confirm_box, int, (const char* title, const char* msg), (title, msg))
-
-// function: int tui_input_box(const char* title, const char* prompt, char* buf, int len)
-DECL_FC_API_CALL(FC_TUI_INPUT_BOX, tui_input_box, int, (const char* title, const char* prompt, char* buf, int len), (title, prompt, buf, len))
 
 // function: tui_win_t* tui_menu_create(int x, int y, const char** items, int count)
 DECL_FC_API_CALL(FC_TUI_MENU_CREATE, tui_menu_create, tui_win_t*, (int x, int y, const char** items, int count), (x, y, items, count))
@@ -1088,5 +995,98 @@ DECL_FC_API_CALL(FC_TUI_MENU_DESTROY, tui_menu_destroy, void, (tui_win_t* menu),
 
 // function: int tui_menu_get_selected(tui_win_t* menu)
 DECL_FC_API_CALL(FC_TUI_MENU_GET_SELECTED, tui_menu_get_selected, int, (tui_win_t* menu), (menu))
+
+// function: int tui_message_box(const char* title, const char* msg)
+DECL_FC_API_CALL(FC_TUI_MESSAGE_BOX, tui_message_box, int, (const char* title, const char* msg), (title, msg))
+
+// function: tui_widget_t* tui_progressbar_create(tui_win_t* win, int x, int y, int w)
+DECL_FC_API_CALL(FC_TUI_PROGRESSBAR_CREATE, tui_progressbar_create, tui_widget_t*, (tui_win_t* win, int x, int y, int w), (win, x, y, w))
+
+// function: void tui_progressbar_set(tui_widget_t* pb, int value)
+DECL_FC_API_CALL(FC_TUI_PROGRESSBAR_SET, tui_progressbar_set, void, (tui_widget_t* pb, int value), (pb, value))
+
+// function: void tui_putc(int c)
+DECL_FC_API_CALL(FC_TUI_PUTC, tui_putc, void, (int c), (c))
+
+// function: void tui_puts(const char* s)
+DECL_FC_API_CALL(FC_TUI_PUTS, tui_puts, void, (const char* s), (s))
+
+// function: int tui_screen_height()
+DECL_FC_API_CALL(FC_TUI_SCREEN_HEIGHT, tui_screen_height, int, (), ())
+
+// function: int tui_screen_width()
+DECL_FC_API_CALL(FC_TUI_SCREEN_WIDTH, tui_screen_width, int, (), ())
+
+// function: void tui_set_color(int fg, int bg)
+DECL_FC_API_CALL(FC_TUI_SET_COLOR, tui_set_color, void, (int fg, int bg), (fg, bg))
+
+// function: void tui_set_focus(tui_widget_t* w)
+DECL_FC_API_CALL(FC_TUI_SET_FOCUS, tui_set_focus, void, (tui_widget_t* w), (w))
+
+// function: tui_widget_t* tui_textfield_create(tui_win_t* win, int x, int y, int w)
+DECL_FC_API_CALL(FC_TUI_TEXTFIELD_CREATE, tui_textfield_create, tui_widget_t*, (tui_win_t* win, int x, int y, int w), (win, x, y, w))
+
+// function: const char* tui_textfield_get(tui_widget_t* tf)
+DECL_FC_API_CALL(FC_TUI_TEXTFIELD_GET, tui_textfield_get, const char*, (tui_widget_t* tf), (tf))
+
+// function: void tui_textfield_set(tui_widget_t* tf, const char* text)
+DECL_FC_API_CALL(FC_TUI_TEXTFIELD_SET, tui_textfield_set, void, (tui_widget_t* tf, const char* text), (tf, text))
+
+// function: void tui_textfield_set_cursor(tui_widget_t* tf, int pos)
+DECL_FC_API_CALL(FC_TUI_TEXTFIELD_SET_CURSOR, tui_textfield_set_cursor, void, (tui_widget_t* tf, int pos), (tf, pos))
+
+// function: void tui_vline(int x, int y, int h)
+DECL_FC_API_CALL(FC_TUI_VLINE, tui_vline, void, (int x, int y, int h), (x, y, h))
+
+// function: void tui_widget_destroy(tui_widget_t* w)
+DECL_FC_API_CALL(FC_TUI_WIDGET_DESTROY, tui_widget_destroy, void, (tui_widget_t* w), (w))
+
+// function: void tui_widget_disable(tui_widget_t* w)
+DECL_FC_API_CALL(FC_TUI_WIDGET_DISABLE, tui_widget_disable, void, (tui_widget_t* w), (w))
+
+// function: void tui_widget_enable(tui_widget_t* w)
+DECL_FC_API_CALL(FC_TUI_WIDGET_ENABLE, tui_widget_enable, void, (tui_widget_t* w), (w))
+
+// function: void tui_widget_focus(tui_widget_t* w)
+DECL_FC_API_CALL(FC_TUI_WIDGET_FOCUS, tui_widget_focus, void, (tui_widget_t* w), (w))
+
+// function: void tui_widget_hide(tui_widget_t* w)
+DECL_FC_API_CALL(FC_TUI_WIDGET_HIDE, tui_widget_hide, void, (tui_widget_t* w), (w))
+
+// function: void tui_widget_show(tui_widget_t* w)
+DECL_FC_API_CALL(FC_TUI_WIDGET_SHOW, tui_widget_show, void, (tui_widget_t* w), (w))
+
+// function: void tui_win_close(tui_win_t* win)
+DECL_FC_API_CALL(FC_TUI_WIN_CLOSE, tui_win_close, void, (tui_win_t* win), (win))
+
+// function: void tui_win_gotoxy(tui_win_t* win, int x, int y)
+DECL_FC_API_CALL(FC_TUI_WIN_GOTOXY, tui_win_gotoxy, void, (tui_win_t* win, int x, int y), (win, x, y))
+
+// function: void tui_win_move(tui_win_t* win, int x, int y)
+DECL_FC_API_CALL(FC_TUI_WIN_MOVE, tui_win_move, void, (tui_win_t* win, int x, int y), (win, x, y))
+
+// function: tui_win_t* tui_win_open(int x, int y, int w, int h)
+DECL_FC_API_CALL(FC_TUI_WIN_OPEN, tui_win_open, tui_win_t*, (int x, int y, int w, int h), (x, y, w, h))
+
+// function: void tui_win_printf(tui_win_t* win, const char* fmt, ...)
+DECL_FC_API_CALL(FC_TUI_WIN_PRINTF, tui_win_printf, void, (tui_win_t* win, const char* fmt, ...), (win, fmt))
+
+// function: void tui_win_putc(tui_win_t* win, int c)
+DECL_FC_API_CALL(FC_TUI_WIN_PUTC, tui_win_putc, void, (tui_win_t* win, int c), (win, c))
+
+// function: void tui_win_puts(tui_win_t* win, const char* s)
+DECL_FC_API_CALL(FC_TUI_WIN_PUTS, tui_win_puts, void, (tui_win_t* win, const char* s), (win, s))
+
+// function: void tui_win_resize(tui_win_t* win, int w, int h)
+DECL_FC_API_CALL(FC_TUI_WIN_RESIZE, tui_win_resize, void, (tui_win_t* win, int w, int h), (win, w, h))
+
+// function: void tui_win_scroll(tui_win_t* win, int lines)
+DECL_FC_API_CALL(FC_TUI_WIN_SCROLL, tui_win_scroll, void, (tui_win_t* win, int lines), (win, lines))
+
+// function: void tui_win_set_colors(tui_win_t* win, int fg, int bg)
+DECL_FC_API_CALL(FC_TUI_WIN_SET_COLORS, tui_win_set_colors, void, (tui_win_t* win, int fg, int bg), (win, fg, bg))
+
+// function: void tui_win_set_title(tui_win_t* win, const char* title)
+DECL_FC_API_CALL(FC_TUI_WIN_SET_TITLE, tui_win_set_title, void, (tui_win_t* win, const char* title), (win, title))
 
 #endif
