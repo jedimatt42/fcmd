@@ -43,6 +43,7 @@ lvl2_setdir
 mouse_hide
 mouse_move
 mouse_read
+mouse_set_pointer
 mouse_show
 
 path_parse

@@ -20,5 +20,5 @@ FC_SAMS_BANKED(0, int, update_mouse, (), ());
 
 FC_SAMS_VOIDBANKED(0, handle_mouse_click, (), ());
 
-FC_SAMS_VOIDBANKED(0, mouse_set_pointer, (int p), (p));
+
 
