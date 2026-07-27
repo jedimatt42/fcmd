@@ -44,7 +44,7 @@ linkfile.m4: scripts/gen-linkfile-m4.py linkfile.m4.in src/fcbanner.asm $(wildca
 
 subdirs: build_0x6000
 	cp build_0x6000/fcsdk.linkfile example/gcc/fcsdk/fc.ld
-	for d in $(SUBDIRS); do $(MAKE) -C example/gcc/$$d; done
+	set -e; for d in $(SUBDIRS); do $(MAKE) -C example/gcc/$$d; done
 
 support:
 	$(MAKE) -C FC
