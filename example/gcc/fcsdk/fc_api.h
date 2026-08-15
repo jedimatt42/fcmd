@@ -368,6 +368,12 @@ struct tui_widget {
 /*
   TUI window structure
 */
+
+#define TUI_BF_TOP    0x01
+#define TUI_BF_BOTTOM 0x02
+#define TUI_BF_SIDES  0x04
+#define TUI_BF_ALL    0x07
+
 struct tui_window {
     int x;
     int y;
@@ -379,6 +385,7 @@ struct tui_window {
     int ch;
     int fg;
     int bg;
+    unsigned char border_flags;
     char title[41];
     struct tui_widget* children;
     struct tui_widget* focus;
@@ -563,6 +570,7 @@ typedef struct tui_widget tui_widget_t;
 #define FC_TUI_WIN_SCROLL 0xac
 #define FC_TUI_WIN_SET_COLORS 0xad
 #define FC_TUI_WIN_SET_TITLE 0xae
+#define FC_TUI_WIN_SET_BORDER 0xaf
 
 // function: void audio_beep()
 DECL_FC_API_CALL(FC_AUDIO_BEEP, audio_beep, void, (), ())
@@ -1088,5 +1096,8 @@ DECL_FC_API_CALL(FC_TUI_WIN_SET_COLORS, tui_win_set_colors, void, (tui_win_t* wi
 
 // function: void tui_win_set_title(tui_win_t* win, const char* title)
 DECL_FC_API_CALL(FC_TUI_WIN_SET_TITLE, tui_win_set_title, void, (tui_win_t* win, const char* title), (win, title))
+
+// function: void tui_win_set_border(tui_win_t* win, int flags)
+DECL_FC_API_CALL(FC_TUI_WIN_SET_BORDER, tui_win_set_border, void, (tui_win_t* win, int flags), (win, flags))
 
 #endif

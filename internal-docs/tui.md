@@ -134,12 +134,25 @@ void tui_fill(int x, int y, int w, int h, int ch);
 
 ### Window Management
 
-Windows are bordered rectangles. The client area is the interior (w-2 × h-2).
+Windows are bordered rectangles. By default, the client area is the interior
+(w-2 × h-2). Borders can be selectively enabled/disabled via `border_flags`:
+
+| Flag           | Value | Meaning                                    |
+|----------------|-------|--------------------------------------------|
+| `TUI_BF_TOP`   | 0x01  | Title bar (top edge with corners + title)  |
+| `TUI_BF_BOTTOM`| 0x02  | Footer bar (bottom edge with corners)      |
+| `TUI_BF_SIDES` | 0x04  | Left + right vertical borders (paired)     |
+| `TUI_BF_ALL`   | 0x07  | All borders (default)                      |
+
+When a border is absent, that character cell becomes part of the client area.
+For example, `TUI_BF_TOP | TUI_BF_BOTTOM` (no sides) gives `cx=x, cw=w`,
+while `TUI_BF_TOP | TUI_BF_SIDES | TUI_BF_BOTTOM` (full) gives `cx=x+1, cw=w-2`.
 
 ```c
 tui_win_t* tui_win_open(int x, int y, int w, int h);  // → NULL on OOM
 void       tui_win_close(tui_win_t* win);
 void       tui_win_set_title(tui_win_t* win, const char* title);
+void       tui_win_set_border(tui_win_t* win, int flags);  // TUI_BF_* flags
 void       tui_win_move(tui_win_t* win, int x, int y);
 void       tui_win_resize(tui_win_t* win, int w, int h);
 void       tui_win_set_colors(tui_win_t* win, int fg, int bg);
@@ -149,6 +162,10 @@ void       tui_win_puts(tui_win_t* win, const char* s);
 void       tui_win_printf(tui_win_t* win, const char* fmt, ...);  // %s %d %u %%
 void       tui_win_scroll(tui_win_t* win, int lines);  // +N = up, -N = down
 ```
+
+`tui_win_set_border` sets the border flags and updates the client area.
+To make the change visible, call `tui_win_set_title` (which redraws the border)
+or trigger a window move/resize.
 
 Windows track child widgets and focus. Closing a window destroys all children
 (they are unlinked; memory is NOT freed — the pool is reset on `tui_init`).

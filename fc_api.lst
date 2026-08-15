@@ -194,3 +194,4 @@ tui_win_resize
 tui_win_scroll
 tui_win_set_colors
 tui_win_set_title
+tui_win_set_border

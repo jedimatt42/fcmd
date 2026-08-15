@@ -40,6 +40,11 @@ struct tui_widget {
     struct tui_widget* next;
 };
 
+#define TUI_BF_TOP    0x01
+#define TUI_BF_BOTTOM 0x02
+#define TUI_BF_SIDES  0x04
+#define TUI_BF_ALL    0x07
+
 struct tui_window {
     int x;
     int y;
@@ -51,6 +56,7 @@ struct tui_window {
     int ch;
     int fg;
     int bg;
+    unsigned char border_flags;
     char title[41];
     struct tui_widget* children;
     struct tui_widget* focus;
@@ -84,6 +90,7 @@ void tui_win_close(tui_win_t* win);
 void tui_win_set_title(tui_win_t* win, const char* title);
 void tui_win_move(tui_win_t* win, int x, int y);
 void tui_win_resize(tui_win_t* win, int w, int h);
+void tui_win_set_border(tui_win_t* win, int flags);
 void tui_win_set_colors(tui_win_t* win, int fg, int bg);
 void tui_win_gotoxy(tui_win_t* win, int x, int y);
 void tui_win_putc(tui_win_t* win, int c);
@@ -161,6 +168,7 @@ DECLARE_BANKED_VOID(tui_win_close, BANK(11), bk_tui_win_close, (tui_win_t* win),
 DECLARE_BANKED_VOID(tui_win_set_title, BANK(11), bk_tui_win_set_title, (tui_win_t* win, const char* title), (win, title))
 DECLARE_BANKED_VOID(tui_win_move, BANK(11), bk_tui_win_move, (tui_win_t* win, int x, int y), (win, x, y))
 DECLARE_BANKED_VOID(tui_win_resize, BANK(11), bk_tui_win_resize, (tui_win_t* win, int w, int h), (win, w, h))
+DECLARE_BANKED_VOID(tui_win_set_border, BANK(11), bk_tui_win_set_border, (tui_win_t* win, int flags), (win, flags))
 DECLARE_BANKED_VOID(tui_win_set_colors, BANK(11), bk_tui_win_set_colors, (tui_win_t* win, int fg, int bg), (win, fg, bg))
 DECLARE_BANKED_VOID(tui_win_gotoxy, BANK(11), bk_tui_win_gotoxy, (tui_win_t* win, int x, int y), (win, x, y))
 DECLARE_BANKED_VOID(tui_win_putc, BANK(11), bk_tui_win_putc, (tui_win_t* win, int c), (win, c))

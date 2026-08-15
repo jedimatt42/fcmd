@@ -8,14 +8,40 @@
 
 static void tui_win_draw_box(tui_win_t* win) {
     conio_scrnCol = (unsigned int)((win->fg << 4) | (win->bg & 0x0F));
-    tui_box(win->x, win->y, win->w, win->h);
-    if (win->title[0]) {
-        int avail = win->w - 2;
-        int title_len = tui_strlen(win->title);
-        int start_x = win->x + 1 + (avail - title_len) / 2;
-        if (start_x < win->x + 1) start_x = win->x + 1;
-        int addr = gImage + win->y * displayWidth + start_x;
-        vdpmemcpy(addr, win->title, title_len);
+    int flags = win->border_flags;
+    int lastcol = win->x + win->w - 1;
+    int lastrow = win->y + win->h - 1;
+    int rs = displayWidth;
+    if (flags & TUI_BF_TOP) {
+        tui_vdpchar(gImage + win->y * rs + win->x, 0xDA);
+        vdpmemset(gImage + win->y * rs + win->x + 1, 0xC4, win->w - 2);
+        tui_vdpchar(gImage + win->y * rs + lastcol, 0xBF);
+        if (nTextFlags & TEXT_FLAG_HAS_ATTRIBUTES) {
+            vdpmemset(gColor + win->y * rs + win->x, conio_scrnCol, win->w);
+        }
+        if (win->title[0]) {
+            int avail = win->w - 2;
+            int title_len = tui_strlen(win->title);
+            int start_x = win->x + 1 + (avail - title_len) / 2;
+            if (start_x < win->x + 1) start_x = win->x + 1;
+            vdpmemcpy(gImage + win->y * rs + start_x, win->title, title_len);
+        }
+    }
+    if (flags & TUI_BF_SIDES) {
+        int bs = win->y + ((flags & TUI_BF_TOP) ? 1 : 0);
+        int be = win->y + win->h - ((flags & TUI_BF_BOTTOM) ? 1 : 0);
+        for (int r = bs; r < be; r++) {
+            tui_vdpchar(gImage + r * rs + win->x, 0xB3);
+            tui_vdpchar(gImage + r * rs + lastcol, 0xB3);
+        }
+    }
+    if (flags & TUI_BF_BOTTOM) {
+        tui_vdpchar(gImage + lastrow * rs + win->x, 0xC0);
+        vdpmemset(gImage + lastrow * rs + win->x + 1, 0xC4, win->w - 2);
+        tui_vdpchar(gImage + lastrow * rs + lastcol, 0xD9);
+        if (nTextFlags & TEXT_FLAG_HAS_ATTRIBUTES) {
+            vdpmemset(gColor + lastrow * rs + win->x, conio_scrnCol, win->w);
+        }
     }
 }
 
@@ -26,6 +52,7 @@ tui_win_t* tui_win_open(int x, int y, int w, int h) {
     win->y = y;
     win->w = w;
     win->h = h;
+    win->border_flags = TUI_BF_ALL;
     win->cx = x + 1;
     win->cy = y + 1;
     win->cw = w - 2;
@@ -92,8 +119,8 @@ void tui_win_move(tui_win_t* win, int x, int y) {
     tui_fill(win->x, win->y, win->w, win->h, ' ');
     win->x = x;
     win->y = y;
-    win->cx = x + 1;
-    win->cy = y + 1;
+    win->cx = x + ((win->border_flags & TUI_BF_SIDES) ? 1 : 0);
+    win->cy = y + ((win->border_flags & TUI_BF_TOP) ? 1 : 0);
     tui_win_draw_box(win);
     tui_widget_t* w = win->children;
     while (w) {
@@ -107,8 +134,8 @@ void tui_win_resize(tui_win_t* win, int w, int h) {
     tui_fill(win->x, win->y, win->w, win->h, ' ');
     win->w = w;
     win->h = h;
-    win->cw = w - 2;
-    win->ch = h - 2;
+    win->cw = w - ((win->border_flags & TUI_BF_SIDES) ? 2 : 0);
+    win->ch = h - ((win->border_flags & TUI_BF_TOP) ? 1 : 0) - ((win->border_flags & TUI_BF_BOTTOM) ? 1 : 0);
     tui_win_draw_box(win);
     tui_widget_t* child = win->children;
     while (child) {
@@ -121,6 +148,15 @@ void tui_win_set_colors(tui_win_t* win, int fg, int bg) {
     if (!win) return;
     win->fg = fg;
     win->bg = bg;
+}
+
+void tui_win_set_border(tui_win_t* win, int flags) {
+    if (!win) return;
+    win->border_flags = (unsigned char)flags;
+    win->cx = win->x + ((flags & TUI_BF_SIDES) ? 1 : 0);
+    win->cy = win->y + ((flags & TUI_BF_TOP) ? 1 : 0);
+    win->cw = win->w - ((flags & TUI_BF_SIDES) ? 2 : 0);
+    win->ch = win->h - ((flags & TUI_BF_TOP) ? 1 : 0) - ((flags & TUI_BF_BOTTOM) ? 1 : 0);
 }
 
 void tui_win_gotoxy(tui_win_t* win, int x, int y) {

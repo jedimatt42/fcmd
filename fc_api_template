@@ -368,6 +368,12 @@ struct tui_widget {
 /*
   TUI window structure
 */
+
+#define TUI_BF_TOP    0x01
+#define TUI_BF_BOTTOM 0x02
+#define TUI_BF_SIDES  0x04
+#define TUI_BF_ALL    0x07
+
 struct tui_window {
     int x;
     int y;
@@ -379,6 +385,7 @@ struct tui_window {
     int ch;
     int fg;
     int bg;
+    unsigned char border_flags;
     char title[41];
     struct tui_widget* children;
     struct tui_widget* focus;
