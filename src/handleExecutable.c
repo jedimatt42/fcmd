@@ -67,6 +67,10 @@ int handleExecutable(char *ext)
   struct ProcInfo procInfo;
   procInfo.prev = procInfoPtr;
   procInfo.base_page = 0;
+  procInfo.exit_sp = 0;
+  procInfo.exit_resume = 0;
+  procInfo.exit_status = 0;
+  procInfo.exit_active = 0;
   procInfoPtr = &procInfo;
 
   int samsSnapshot[6];

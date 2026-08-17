@@ -9,6 +9,8 @@
  */
 int main(char* args);
 
+#define exit(x) fc_exit((x))
+
 #define FC_SYS *(int *)0x2000
 
 #define DECL_FC_API_CALL(index, func, return_type, arg_sig, args)     \
@@ -394,4 +396,3 @@ struct tui_window {
 
 typedef struct tui_window tui_win_t;
 typedef struct tui_widget tui_widget_t;
-

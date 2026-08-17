@@ -9,6 +9,8 @@
  */
 int main(char* args);
 
+#define exit(x) fc_exit((x))
+
 #define FC_SYS *(int *)0x2000
 
 #define DECL_FC_API_CALL(index, func, return_type, arg_sig, args)     \
@@ -394,7 +396,6 @@ struct tui_window {
 
 typedef struct tui_window tui_win_t;
 typedef struct tui_widget tui_widget_t;
-
 #define FC_AUDIO_BEEP 0x0
 #define FC_AUDIO_HONK 0x1
 #define FC_DSR_CATALOG 0x2
@@ -571,6 +572,7 @@ typedef struct tui_widget tui_widget_t;
 #define FC_TUI_WIN_SET_COLORS 0xad
 #define FC_TUI_WIN_SET_TITLE 0xae
 #define FC_TUI_WIN_SET_BORDER 0xaf
+#define FC_FC_EXIT 0xb0
 
 // function: void audio_beep()
 DECL_FC_API_CALL(FC_AUDIO_BEEP, audio_beep, void, (), ())
@@ -1099,5 +1101,8 @@ DECL_FC_API_CALL(FC_TUI_WIN_SET_TITLE, tui_win_set_title, void, (tui_win_t* win,
 
 // function: void tui_win_set_border(tui_win_t* win, int flags)
 DECL_FC_API_CALL(FC_TUI_WIN_SET_BORDER, tui_win_set_border, void, (tui_win_t* win, int flags), (win, flags))
+
+// function: void fc_exit(int status)
+DECL_FC_API_CALL(FC_FC_EXIT, fc_exit, void, (int status), (status))
 
 #endif
