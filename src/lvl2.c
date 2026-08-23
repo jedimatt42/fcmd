@@ -3,6 +3,7 @@
 
 #include "lvl2.h"
 #include "dsrutil.h"
+#include "detect_vdp.h"
 #include "strutil.h"
 
 #include <string.h>
@@ -34,6 +35,28 @@
 
 static void call_addr(int crubase, int addr, int link);
 static int supportsCpuBuffers(int crubase);
+
+static void lvl2_vdp_set_address(unsigned int address, int write) {
+  if (vdp_type == VDP_9938 || vdp_type == VDP_9958) {
+    VDP_SET_REGISTER(0x0e, address >> 14);
+  }
+  if (write) VDP_SET_ADDRESS_WRITE(address & 0x3fff);
+  else VDP_SET_ADDRESS(address & 0x3fff);
+}
+
+static void lvl2_vdp_memcpy(unsigned int address, const char* source, int count) {
+  lvl2_vdp_set_address(address, 1);
+  while (count--) VDPWD = *(source++);
+}
+
+static void lvl2_vdp_memread(unsigned int address, char* dest, int count) {
+  lvl2_vdp_set_address(address, 0);
+  while (count--) *(dest++) = VDPRD;
+}
+
+static int vdp_buffer_has_space(unsigned int blockcount) {
+  return blockcount == 0 || blockcount * 256 <= vdp_filesystem_file_buffer_size;
+}
 
 // Returns lvl2 device management base code in LSB, and unit number in MSB
 // 	Floppy disk controllers:	DSK	>1x
@@ -104,10 +127,10 @@ unsigned int lvl2_setdir(int crubase, unsigned int iocode, char* path) {
     bk_strncpy(basicString.chars, path, 40);
     LVL2_PARAMADDR1 = (int) &basicString;
   } else {
-    LVL2_PARAMADDR1 = FBUF;
-    VDP_SET_ADDRESS_WRITE(FBUF);
+    LVL2_PARAMADDR1 = vdp_filesystem_buffer;
+    lvl2_vdp_set_address(vdp_filesystem_buffer, 1);
     VDPWD = len;
-    vdpmemcpy(FBUF+1, path, len);
+    lvl2_vdp_memcpy(vdp_filesystem_buffer+1, path, len);
   }
 
   call_lvl2(crubase, OPNAME(iocode, LVL2_OP_SETDIR));
@@ -140,15 +163,18 @@ unsigned int lvl2_output(int crubase, unsigned int iocode, char* filename, unsig
 }
 
 unsigned char direct_io(int crubase, unsigned int iocode, char operation, char* filename, unsigned char blockcount, struct AddInfo* addInfoPtr) {
-  LVL2_PARAMADDR1 = FBUF;
+  if (!vdp_buffer_has_space(blockcount)) {
+    return 0xff;
+  }
+  LVL2_PARAMADDR1 = vdp_filesystem_buffer;
   bk_strpad(filename, 10, ' ');
-  vdpmemcpy(FBUF, filename, 10);
+  lvl2_vdp_memcpy(vdp_filesystem_buffer, filename, 10);
 
   LVL2_UNIT = UNITNO(iocode);
   LVL2_PROTECT = blockcount;
   LVL2_STATUS = ((unsigned int) addInfoPtr) - 0x8300;
 
-  addInfoPtr->buffer = VDPFBUF; // safe from file and path name overwrites.
+  addInfoPtr->buffer = vdp_filesystem_file_buffer; // safe from file and path name overwrites.
   unsigned char opname = OPNAME(iocode, operation);
   call_lvl2(crubase, opname);
 
@@ -156,23 +182,32 @@ unsigned char direct_io(int crubase, unsigned int iocode, char operation, char* 
 }
 
 unsigned int lvl2_input_cpu(int crubase, unsigned int iocode, char* filename, unsigned int blockcount, struct AddInfo* addInfoPtr) {
+  if (!supportsCpuBuffers(crubase) && !vdp_buffer_has_space(blockcount)) {
+    return 0xff;
+  }
   int status = direct_io_cpu(crubase, iocode, LVL2_OP_INPUT, filename, blockcount, addInfoPtr);
   if (!status && !supportsCpuBuffers(crubase) && blockcount != 0) {
     // device didn't support cpu buffers, so the data ended up in VDP, copy to the requested cpu buffer
-    vdpmemread(VDPFBUF, (char*) addInfoPtr->buffer, blockcount * 256);
+    lvl2_vdp_memread(vdp_filesystem_file_buffer, (char*) addInfoPtr->buffer, blockcount * 256);
   }
   return status;
 }
 
 unsigned int lvl2_output_cpu(int crubase, unsigned int iocode, char* filename, unsigned int blockcount, struct AddInfo* addInfoPtr) {
+  if (!supportsCpuBuffers(crubase) && !vdp_buffer_has_space(blockcount)) {
+    return 0xff;
+  }
   if (!supportsCpuBuffers(crubase) && blockcount != 0) {
     // device doesn't support cpu buffers, so copy the call cpu buffer into VDP
-    vdpmemcpy(VDPFBUF, (char*) addInfoPtr->buffer, blockcount * 256);
+    lvl2_vdp_memcpy(vdp_filesystem_file_buffer, (char*) addInfoPtr->buffer, blockcount * 256);
   }
   return direct_io_cpu(crubase, iocode, LVL2_OP_OUTPUT, filename, blockcount, addInfoPtr);
 }
 
 unsigned char direct_io_cpu(int crubase, unsigned int iocode, char operation, char* filename, unsigned char blockcount, struct AddInfo* addInfoPtr) {
+  if (!supportsCpuBuffers(crubase) && !vdp_buffer_has_space(blockcount)) {
+    return 0xff;
+  }
   LVL2_UNIT = UNITNO(iocode);
   LVL2_PROTECT = blockcount;
   LVL2_STATUS = ((unsigned int) addInfoPtr) - 0x8300;
@@ -188,9 +223,9 @@ unsigned char direct_io_cpu(int crubase, unsigned int iocode, char operation, ch
     LVL2_UNIT = LVL2_UNIT | 0x80; // set cpu buffer bit in unit number
     LVL2_PARAMADDR1 = (int) param1buf;
   } else {
-    LVL2_PARAMADDR1 = FBUF;
-    vdpmemcpy(FBUF, param1buf, 10);
-    addInfoPtr->buffer = VDPFBUF; // safe from file and path name overwrites.
+    LVL2_PARAMADDR1 = vdp_filesystem_buffer;
+    lvl2_vdp_memcpy(vdp_filesystem_buffer, param1buf, 10);
+    addInfoPtr->buffer = vdp_filesystem_file_buffer; // safe from file and path name overwrites.
   }
 
   unsigned char opname = OPNAME(iocode, operation);
@@ -209,18 +244,21 @@ unsigned int lvl2_sector_read(int crubase, unsigned int iocode, unsigned int sec
   LVL2_PARAMADDR2 = sector;
 
   int useCpuBuffer = supportsCpuBuffers(crubase);
+  if (!useCpuBuffer && !vdp_buffer_has_space(1)) {
+    return 0xff;
+  }
   if (useCpuBuffer) {
     LVL2_UNIT = LVL2_UNIT | 0x80; // set cpu buffer bit in unit number
     LVL2_PARAMADDR1 = (int) bufaddr;
   } else {
-    LVL2_PARAMADDR1 = FBUF;
+    LVL2_PARAMADDR1 = vdp_filesystem_buffer;
   }
   
   unsigned char opname = OPNAME(iocode, LVL2_OP_SECTOR);
   call_lvl2(crubase, opname);
 
   if (!useCpuBuffer) {
-    vdpmemread(FBUF, bufaddr, 256);
+    lvl2_vdp_memread(vdp_filesystem_buffer, bufaddr, 256);
   }
 
   return LVL2_STATUS;
@@ -233,12 +271,15 @@ unsigned int lvl2_sector_write(int crubase, unsigned int iocode, unsigned int se
   LVL2_PARAMADDR2 = sector;
 
   int useCpuBuffer = supportsCpuBuffers(crubase);
+  if (!useCpuBuffer && !vdp_buffer_has_space(1)) {
+    return 0xff;
+  }
   if (useCpuBuffer) {
     LVL2_UNIT = LVL2_UNIT | 0x80; // set cpu buffer bit in unit number
     LVL2_PARAMADDR1 = (int) bufaddr;
   } else {
-    LVL2_PARAMADDR1 = FBUF;
-    vdpmemcpy(FBUF, bufaddr, 256);
+    LVL2_PARAMADDR1 = vdp_filesystem_buffer;
+    lvl2_vdp_memcpy(vdp_filesystem_buffer, bufaddr, 256);
   }
 
   unsigned char opname = OPNAME(iocode, LVL2_OP_SECTOR);
@@ -253,7 +294,7 @@ unsigned int lvl2_format(int crubase, unsigned int iocode, unsigned int tracks, 
   // for HFDC the interleave can be 0, for default or specified, it fits into the density as the top 6 bits while density is limited to the bottom 2 bits.
   LVL2_DENSITY = (unsigned char) ((0x03 & density) | (interleave << 2));
   LVL2_SIDES = (unsigned char) sides;
-  LVL2_FORMAT_BUFFER = FBUF;
+  LVL2_FORMAT_BUFFER = vdp_filesystem_buffer;
   
   unsigned char opname = OPNAME(iocode, LVL2_OP_FORMAT);
   call_lvl2(crubase, opname);
@@ -290,8 +331,8 @@ unsigned char __attribute__((noinline)) base_lvl2(int crubase, unsigned int ioco
     LVL2_UNIT = LVL2_UNIT | 0x80; // set cpu buffer bit in unit number
     LVL2_PARAMADDR1 = (int) param1buf;
   } else {
-    LVL2_PARAMADDR1 = FBUF;
-    vdpmemcpy(LVL2_PARAMADDR1, param1buf, 10);
+    LVL2_PARAMADDR1 = vdp_filesystem_buffer;
+    lvl2_vdp_memcpy(LVL2_PARAMADDR1, param1buf, 10);
   }
 
   if (name2 == 0) {
@@ -302,8 +343,8 @@ unsigned char __attribute__((noinline)) base_lvl2(int crubase, unsigned int ioco
     if (useCpuBuffer) {
       LVL2_PARAMADDR2 = (int) param2buf;
     } else {
-      LVL2_PARAMADDR2 = FBUF + 10;
-      vdpmemcpy(LVL2_PARAMADDR2, name2, 10);
+      LVL2_PARAMADDR2 = vdp_filesystem_buffer + 10;
+      lvl2_vdp_memcpy(LVL2_PARAMADDR2, name2, 10);
     }
   }
 
@@ -353,7 +394,7 @@ void __attribute__((noinline)) call_lvl2(int crubase, unsigned char operation) {
       link = (unsigned int) entry;
       // Ensure the PAB name is in VDP
       unsigned int vdp = VPAB + 9;
-      vdpmemcpy(vdp, entry->name, 2);
+      lvl2_vdp_memcpy(vdp, entry->name, 2);
       PPAB = VPAB + 9 + 2;
       NCOMP = 1;
       break;

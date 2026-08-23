@@ -11,7 +11,7 @@ void sys_info(struct SystemInformation* info) {
   info->dsrList = dsrList;
   info->currentDsr = currentDsr;
   info->currentPath = currentPath;
-  info->vdp_io_buf = VDPFBUF;
+  info->vdp_io_buf = vdp_filesystem_file_buffer;
 }
 
 void sys_display_info(struct DisplayInformation* info) {

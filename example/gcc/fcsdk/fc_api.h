@@ -158,6 +158,96 @@ struct DisplayInformation {
   int spritePatternAddr;
 };
 
+/* High-level graphics modes. */
+#define GFX_MODE_GRAPHICS1       0
+#define GFX_MODE_TEXT40          1
+#define GFX_MODE_GRAPHICS2       2
+#define GFX_MODE_BITMAP          GFX_MODE_GRAPHICS2
+#define GFX_MODE_MULTICOLOR      3
+#define GFX_MODE_GRAPHICS3       4
+#define GFX_MODE_GRAPHICS4       5
+#define GFX_MODE_GRAPHICS5       6
+#define GFX_MODE_GRAPHICS6       7
+#define GFX_MODE_GRAPHICS7       8
+#define GFX_MODE_TEXT80          9
+#define GFX_MODE_YJK_YAE         10
+#define GFX_MODE_YJK_RGB         11
+#define GFX_MODE_YJK             12
+#define GFX_MODE_F18A_TEXT80X30  13
+
+#define GFX_SCREEN_INTERLACED    0x0001
+#define GFX_SPRITE_8X8           0x00
+#define GFX_SPRITE_8X8_MAG       0x01
+#define GFX_SPRITE_16X16         0x02
+#define GFX_SPRITE_16X16_MAG     0x03
+
+#define GFX_OK                   0
+#define GFX_ERR_INVALID          -1
+#define GFX_ERR_UNSUPPORTED      -2
+#define GFX_ERR_WRONG_MODE       -3
+#define GFX_ERR_RANGE            -4
+#define GFX_ERR_BUSY             -5
+#define GFX_ERR_NO_VRAM          -6
+
+#define GFX_CAP_TEXT             0x0001
+#define GFX_CAP_TILES            0x0002
+#define GFX_CAP_PIXELS           0x0004
+#define GFX_CAP_LINES            0x0008
+#define GFX_CAP_CIRCLES          0x0010
+#define GFX_CAP_PAINT            0x0020
+#define GFX_CAP_COPY             0x0040
+#define GFX_CAP_PAGES            0x0080
+#define GFX_CAP_PALETTE          0x0100
+#define GFX_CAP_SPRITES          0x0200
+#define GFX_CAP_SPRITE_STATUS    0x0400
+#define GFX_CAP_YJK              0x0800
+#define GFX_CAP_ATTRIBUTES       0x1000
+
+#define GFX_COLOR_INDEXED        0
+#define GFX_COLOR_DIRECT         1
+#define GFX_COLOR_YJK            2
+#define GFX_COLOR_ATTRIBUTES     3
+
+#define GFX_OP_PSET              0
+#define GFX_OP_PRESET            1
+#define GFX_OP_AND               2
+#define GFX_OP_OR                3
+#define GFX_OP_XOR               4
+#define GFX_LINE_NORMAL          0x00
+#define GFX_LINE_BOX             0x01
+#define GFX_LINE_FILL            0x02
+#define GFX_COLOR_DEFAULT        -1
+
+#define GFX_RGB(r, g, b) \
+    ((((r) & 0x0f) << 8) | (((g) & 0x0f) << 4) | ((b) & 0x0f))
+
+struct GfxInformation {
+    int vdp_type;
+    int mode;
+    int width;
+    int height;
+    int physical_width;
+    int physical_height;
+    int colors;
+    int color_model;
+    int sprite_count;
+    int display_page;
+    int draw_page;
+    int page_count;
+    int capabilities;
+    unsigned int image_addr;
+    unsigned int pattern_addr;
+    unsigned int color_addr;
+    unsigned int sprite_addr;
+    unsigned int sprite_pattern_addr;
+};
+
+struct GfxSpriteStatus {
+    int collision;
+    int fifth_sprite;
+    int overflow;
+};
+
 struct SamsInformation {
   int next_page;
   int total_pages;
@@ -509,70 +599,94 @@ typedef struct tui_widget tui_widget_t;
 #define FC_VDP_CURSOR_ADDR 0x6e
 #define FC_VDP_SCREENMODE 0x6f
 #define FC_VDP_SETCHAR 0x70
-#define FC_TUI_BOX 0x71
-#define FC_TUI_BOX_TITLE 0x72
-#define FC_TUI_BUTTON_CREATE 0x73
-#define FC_TUI_BUTTON_SET_LABEL 0x74
-#define FC_TUI_CHECKBOX_CREATE 0x75
-#define FC_TUI_CHECKBOX_GET 0x76
-#define FC_TUI_CHECKBOX_SET 0x77
-#define FC_TUI_CONFIRM_BOX 0x78
-#define FC_TUI_DISPATCH_EVENT 0x79
-#define FC_TUI_DONE 0x7a
-#define FC_TUI_FILL 0x7b
-#define FC_TUI_GET_EVENT 0x7c
-#define FC_TUI_GET_FOCUS 0x7d
-#define FC_TUI_GOTOXY 0x7e
-#define FC_TUI_HAS_COLOR 0x7f
-#define FC_TUI_HLINE 0x80
-#define FC_TUI_INIT 0x81
-#define FC_TUI_INPUT_BOX 0x82
-#define FC_TUI_LABEL_CREATE 0x83
-#define FC_TUI_LABEL_SET_TEXT 0x84
-#define FC_TUI_LIST_ADD 0x85
-#define FC_TUI_LIST_CLEAR 0x86
-#define FC_TUI_LIST_COUNT 0x87
-#define FC_TUI_LIST_CREATE 0x88
-#define FC_TUI_LIST_GET_SELECTED 0x89
-#define FC_TUI_LIST_INSERT 0x8a
-#define FC_TUI_LIST_REMOVE 0x8b
-#define FC_TUI_LIST_SET_SELECTED 0x8c
-#define FC_TUI_MENU_CREATE 0x8d
-#define FC_TUI_MENU_DESTROY 0x8e
-#define FC_TUI_MENU_GET_SELECTED 0x8f
-#define FC_TUI_MESSAGE_BOX 0x90
-#define FC_TUI_PROGRESSBAR_CREATE 0x91
-#define FC_TUI_PROGRESSBAR_SET 0x92
-#define FC_TUI_PUTC 0x93
-#define FC_TUI_PUTS 0x94
-#define FC_TUI_SCREEN_HEIGHT 0x95
-#define FC_TUI_SCREEN_WIDTH 0x96
-#define FC_TUI_SET_COLOR 0x97
-#define FC_TUI_SET_FOCUS 0x98
-#define FC_TUI_TEXTFIELD_CREATE 0x99
-#define FC_TUI_TEXTFIELD_GET 0x9a
-#define FC_TUI_TEXTFIELD_SET 0x9b
-#define FC_TUI_TEXTFIELD_SET_CURSOR 0x9c
-#define FC_TUI_VLINE 0x9d
-#define FC_TUI_WIDGET_DESTROY 0x9e
-#define FC_TUI_WIDGET_DISABLE 0x9f
-#define FC_TUI_WIDGET_ENABLE 0xa0
-#define FC_TUI_WIDGET_FOCUS 0xa1
-#define FC_TUI_WIDGET_HIDE 0xa2
-#define FC_TUI_WIDGET_SHOW 0xa3
-#define FC_TUI_WIN_CLOSE 0xa4
-#define FC_TUI_WIN_GOTOXY 0xa5
-#define FC_TUI_WIN_MOVE 0xa6
-#define FC_TUI_WIN_OPEN 0xa7
-#define FC_TUI_WIN_PRINTF 0xa8
-#define FC_TUI_WIN_PUTC 0xa9
-#define FC_TUI_WIN_PUTS 0xaa
-#define FC_TUI_WIN_RESIZE 0xab
-#define FC_TUI_WIN_SCROLL 0xac
-#define FC_TUI_WIN_SET_COLORS 0xad
-#define FC_TUI_WIN_SET_TITLE 0xae
-#define FC_TUI_WIN_SET_BORDER 0xaf
-#define FC_FC_EXIT 0xb0
+#define FC_GFX_SCREEN 0x71
+#define FC_GFX_GET_INFO 0x72
+#define FC_GFX_COLOR 0x73
+#define FC_GFX_SET_PAGE 0x74
+#define FC_GFX_SET_CURSOR 0x75
+#define FC_GFX_GET_CURSOR 0x76
+#define FC_GFX_CLEAR 0x77
+#define FC_GFX_PSET 0x78
+#define FC_GFX_PRESET 0x79
+#define FC_GFX_POINT 0x7a
+#define FC_GFX_LINE 0x7b
+#define FC_GFX_CIRCLE 0x7c
+#define FC_GFX_PAINT 0x7d
+#define FC_GFX_DRAW 0x7e
+#define FC_GFX_COPY 0x7f
+#define FC_GFX_PATTERN_DEFINE 0x80
+#define FC_GFX_TILE 0x81
+#define FC_GFX_SPRITE_PATTERN 0x82
+#define FC_GFX_SPRITE 0x83
+#define FC_GFX_SPRITE_LOC 0x84
+#define FC_GFX_SPRITE_HIDE 0x85
+#define FC_GFX_SPRITE_ENABLE 0x86
+#define FC_GFX_SPRITE_STATUS 0x87
+#define FC_GFX_PALETTE_SET 0x88
+#define FC_TUI_BOX 0x89
+#define FC_TUI_BOX_TITLE 0x8a
+#define FC_TUI_BUTTON_CREATE 0x8b
+#define FC_TUI_BUTTON_SET_LABEL 0x8c
+#define FC_TUI_CHECKBOX_CREATE 0x8d
+#define FC_TUI_CHECKBOX_GET 0x8e
+#define FC_TUI_CHECKBOX_SET 0x8f
+#define FC_TUI_CONFIRM_BOX 0x90
+#define FC_TUI_DISPATCH_EVENT 0x91
+#define FC_TUI_DONE 0x92
+#define FC_TUI_FILL 0x93
+#define FC_TUI_GET_EVENT 0x94
+#define FC_TUI_GET_FOCUS 0x95
+#define FC_TUI_GOTOXY 0x96
+#define FC_TUI_HAS_COLOR 0x97
+#define FC_TUI_HLINE 0x98
+#define FC_TUI_INIT 0x99
+#define FC_TUI_INPUT_BOX 0x9a
+#define FC_TUI_LABEL_CREATE 0x9b
+#define FC_TUI_LABEL_SET_TEXT 0x9c
+#define FC_TUI_LIST_ADD 0x9d
+#define FC_TUI_LIST_CLEAR 0x9e
+#define FC_TUI_LIST_COUNT 0x9f
+#define FC_TUI_LIST_CREATE 0xa0
+#define FC_TUI_LIST_GET_SELECTED 0xa1
+#define FC_TUI_LIST_INSERT 0xa2
+#define FC_TUI_LIST_REMOVE 0xa3
+#define FC_TUI_LIST_SET_SELECTED 0xa4
+#define FC_TUI_MENU_CREATE 0xa5
+#define FC_TUI_MENU_DESTROY 0xa6
+#define FC_TUI_MENU_GET_SELECTED 0xa7
+#define FC_TUI_MESSAGE_BOX 0xa8
+#define FC_TUI_PROGRESSBAR_CREATE 0xa9
+#define FC_TUI_PROGRESSBAR_SET 0xaa
+#define FC_TUI_PUTC 0xab
+#define FC_TUI_PUTS 0xac
+#define FC_TUI_SCREEN_HEIGHT 0xad
+#define FC_TUI_SCREEN_WIDTH 0xae
+#define FC_TUI_SET_COLOR 0xaf
+#define FC_TUI_SET_FOCUS 0xb0
+#define FC_TUI_TEXTFIELD_CREATE 0xb1
+#define FC_TUI_TEXTFIELD_GET 0xb2
+#define FC_TUI_TEXTFIELD_SET 0xb3
+#define FC_TUI_TEXTFIELD_SET_CURSOR 0xb4
+#define FC_TUI_VLINE 0xb5
+#define FC_TUI_WIDGET_DESTROY 0xb6
+#define FC_TUI_WIDGET_DISABLE 0xb7
+#define FC_TUI_WIDGET_ENABLE 0xb8
+#define FC_TUI_WIDGET_FOCUS 0xb9
+#define FC_TUI_WIDGET_HIDE 0xba
+#define FC_TUI_WIDGET_SHOW 0xbb
+#define FC_TUI_WIN_CLOSE 0xbc
+#define FC_TUI_WIN_GOTOXY 0xbd
+#define FC_TUI_WIN_MOVE 0xbe
+#define FC_TUI_WIN_OPEN 0xbf
+#define FC_TUI_WIN_PRINTF 0xc0
+#define FC_TUI_WIN_PUTC 0xc1
+#define FC_TUI_WIN_PUTS 0xc2
+#define FC_TUI_WIN_RESIZE 0xc3
+#define FC_TUI_WIN_SCROLL 0xc4
+#define FC_TUI_WIN_SET_COLORS 0xc5
+#define FC_TUI_WIN_SET_TITLE 0xc6
+#define FC_TUI_WIN_SET_BORDER 0xc7
+#define FC_FC_EXIT 0xc8
 
 // function: void audio_beep()
 DECL_FC_API_CALL(FC_AUDIO_BEEP, audio_beep, void, (), ())
@@ -912,6 +1026,78 @@ DECL_FC_API_CALL(FC_VDP_SCREENMODE, vdp_screenmode, int, (int mode), (mode))
 
 // function: void vdp_setchar(int pAddr, int ch)
 DECL_FC_API_CALL(FC_VDP_SETCHAR, vdp_setchar, void, (int pAddr, int ch), (pAddr, ch))
+
+// function: int gfx_screen(int mode, int sprite_mode, int flags)
+DECL_FC_API_CALL(FC_GFX_SCREEN, gfx_screen, int, (int mode, int sprite_mode, int flags), (mode, sprite_mode, flags))
+
+// function: int gfx_get_info(struct GfxInformation* info)
+DECL_FC_API_CALL(FC_GFX_GET_INFO, gfx_get_info, int, (struct GfxInformation* info), (info))
+
+// function: int gfx_color(int foreground, int background, int border)
+DECL_FC_API_CALL(FC_GFX_COLOR, gfx_color, int, (int foreground, int background, int border), (foreground, background, border))
+
+// function: int gfx_set_page(int display_page, int draw_page)
+DECL_FC_API_CALL(FC_GFX_SET_PAGE, gfx_set_page, int, (int display_page, int draw_page), (display_page, draw_page))
+
+// function: int gfx_set_cursor(int x, int y)
+DECL_FC_API_CALL(FC_GFX_SET_CURSOR, gfx_set_cursor, int, (int x, int y), (x, y))
+
+// function: int gfx_get_cursor(int* x, int* y)
+DECL_FC_API_CALL(FC_GFX_GET_CURSOR, gfx_get_cursor, int, (int* x, int* y), (x, y))
+
+// function: int gfx_clear(int color)
+DECL_FC_API_CALL(FC_GFX_CLEAR, gfx_clear, int, (int color), (color))
+
+// function: int gfx_pset(int x, int y, int color, int op)
+DECL_FC_API_CALL(FC_GFX_PSET, gfx_pset, int, (int x, int y, int color, int op), (x, y, color, op))
+
+// function: int gfx_preset(int x, int y, int color, int op)
+DECL_FC_API_CALL(FC_GFX_PRESET, gfx_preset, int, (int x, int y, int color, int op), (x, y, color, op))
+
+// function: int gfx_point(int x, int y, int* color)
+DECL_FC_API_CALL(FC_GFX_POINT, gfx_point, int, (int x, int y, int* color), (x, y, color))
+
+// function: int gfx_line(int x1, int y1, int x2, int y2, int color, int style, int op)
+DECL_FC_API_CALL(FC_GFX_LINE, gfx_line, int, (int x1, int y1, int x2, int y2, int color, int style, int op), (x1, y1, x2, y2, color, style, op))
+
+// function: int gfx_circle(int center_x, int center_y, int radius, int color, int start_angle, int end_angle, int aspect, int op)
+DECL_FC_API_CALL(FC_GFX_CIRCLE, gfx_circle, int, (int center_x, int center_y, int radius, int color, int start_angle, int end_angle, int aspect, int op), (center_x, center_y, radius, color, start_angle, end_angle, aspect, op))
+
+// function: int gfx_paint(int x, int y, int color, int border_color, int op)
+DECL_FC_API_CALL(FC_GFX_PAINT, gfx_paint, int, (int x, int y, int color, int border_color, int op), (x, y, color, border_color, op))
+
+// function: int gfx_draw(const char* commands, int color, int op)
+DECL_FC_API_CALL(FC_GFX_DRAW, gfx_draw, int, (const char* commands, int color, int op), (commands, color, op))
+
+// function: int gfx_copy(int source_page, int destination_page, int x1, int y1, int x2, int y2, int destination_x, int destination_y, int op)
+DECL_FC_API_CALL(FC_GFX_COPY, gfx_copy, int, (int source_page, int destination_page, int x1, int y1, int x2, int y2, int destination_x, int destination_y, int op), (source_page, destination_page, x1, y1, x2, y2, destination_x, destination_y, op))
+
+// function: int gfx_pattern_define(int pattern, const unsigned char* data, int bytes)
+DECL_FC_API_CALL(FC_GFX_PATTERN_DEFINE, gfx_pattern_define, int, (int pattern, const unsigned char* data, int bytes), (pattern, data, bytes))
+
+// function: int gfx_tile(int x, int y, int pattern, int color)
+DECL_FC_API_CALL(FC_GFX_TILE, gfx_tile, int, (int x, int y, int pattern, int color), (x, y, pattern, color))
+
+// function: int gfx_sprite_pattern(int pattern, const unsigned char* data, int bytes)
+DECL_FC_API_CALL(FC_GFX_SPRITE_PATTERN, gfx_sprite_pattern, int, (int pattern, const unsigned char* data, int bytes), (pattern, data, bytes))
+
+// function: int gfx_sprite(int number, int pattern, int color, int x, int y)
+DECL_FC_API_CALL(FC_GFX_SPRITE, gfx_sprite, int, (int number, int pattern, int color, int x, int y), (number, pattern, color, x, y))
+
+// function: int gfx_sprite_loc(int number, int x, int y)
+DECL_FC_API_CALL(FC_GFX_SPRITE_LOC, gfx_sprite_loc, int, (int number, int x, int y), (number, x, y))
+
+// function: int gfx_sprite_hide(int number)
+DECL_FC_API_CALL(FC_GFX_SPRITE_HIDE, gfx_sprite_hide, int, (int number), (number))
+
+// function: int gfx_sprite_enable(int enabled)
+DECL_FC_API_CALL(FC_GFX_SPRITE_ENABLE, gfx_sprite_enable, int, (int enabled), (enabled))
+
+// function: int gfx_sprite_status(struct GfxSpriteStatus* status)
+DECL_FC_API_CALL(FC_GFX_SPRITE_STATUS, gfx_sprite_status, int, (struct GfxSpriteStatus* status), (status))
+
+// function: int gfx_palette_set(int index, int red, int green, int blue)
+DECL_FC_API_CALL(FC_GFX_PALETTE_SET, gfx_palette_set, int, (int index, int red, int green, int blue), (index, red, green, blue))
 
 // function: void tui_box(int x, int y, int w, int h)
 DECL_FC_API_CALL(FC_TUI_BOX, tui_box, void, (int x, int y, int w, int h), (x, y, w, h))

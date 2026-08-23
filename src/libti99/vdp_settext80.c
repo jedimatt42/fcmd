@@ -2,6 +2,7 @@
 #define MYBANK BANK(8)
 
 #include "vdp.h"
+#include "vdp_internal.h"
 
 // requires 9938!!
 int set_text80_raw() {
@@ -37,5 +38,5 @@ void set_text80() {
     int x = set_text80_raw();
     VDP_SET_REGISTER(VDP_REG_MODE1, x);
     VDP_REG1_KSCAN_MIRROR = x;
+    vdp_screen_mode_changed(VDP_SCREENMODE_TEXT80);
 }
-

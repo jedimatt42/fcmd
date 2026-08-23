@@ -81,7 +81,9 @@ int handleChecksum() {
     }
 
     for(int i=0; i < maxByte; i++) {
-      sum1 = (sum1 + vdpreadchar(addInfoPtr->buffer + i)) & 0xFF;
+      unsigned char value;
+      bk_vdp_filesystem_memread(addInfoPtr->buffer + i, (char*)&value, 1);
+      sum1 = (sum1 + value) & 0xFF;
       sum2 = (sum2 + sum1) & 0xFF;
     }
 
@@ -96,4 +98,3 @@ int handleChecksum() {
   bk_tputc('\n');
   return 0;
 }
-

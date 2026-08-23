@@ -259,7 +259,8 @@ int checkFormat(struct DeviceServiceRoutine* dsr, int iocode, char* filename, st
   }
   // just after the AddInfo in scratchpad
   struct FCProgramHeader header;
-  vdpmemread(addInfoPtr->buffer, (char*)&header, sizeof(struct FCProgramHeader));
+  bk_vdp_filesystem_memread(addInfoPtr->buffer, (char*)&header,
+                            sizeof(struct FCProgramHeader));
 
   if (header.fcfc != 0xFCFC) {
     // not an FC executable

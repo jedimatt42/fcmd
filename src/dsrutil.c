@@ -2,6 +2,7 @@
 #define MYBANK BANK(2)
 
 #include "globals.h"
+#include "detect_vdp.h"
 #include "dsrutil.h"
 #include "mds_dsrlnk.h"
 #include "strutil.h"
@@ -10,6 +11,37 @@
 #include <string.h>
 
 struct DeviceServiceRoutine* dsrList;
+unsigned int vdp_pab_buffer = 0x2160;
+unsigned int vdp_filesystem_buffer = 0x2300;
+unsigned int vdp_filesystem_file_buffer = 0x2400;
+unsigned int vdp_filesystem_file_buffer_size = 0x1100;
+
+void dsr_set_vdp_buffers(unsigned int pab, unsigned int buffer,
+                         unsigned int file_buffer,
+                         unsigned int file_buffer_size) {
+  vdp_pab_buffer = pab;
+  vdp_filesystem_buffer = buffer;
+  vdp_filesystem_file_buffer = file_buffer;
+  vdp_filesystem_file_buffer_size = file_buffer_size;
+}
+
+static void dsr_vdp_set_address(unsigned int address, int write) {
+  if (vdp_type == VDP_9938 || vdp_type == VDP_9958) {
+    VDP_SET_REGISTER(0x0e, address >> 14);
+  }
+  if (write) VDP_SET_ADDRESS_WRITE(address & 0x3fff);
+  else VDP_SET_ADDRESS(address & 0x3fff);
+}
+
+void vdp_filesystem_memcpy(unsigned int address, const char* source, int count) {
+  dsr_vdp_set_address(address, 1);
+  while (count--) VDPWD = *(source++);
+}
+
+void vdp_filesystem_memread(unsigned int address, char* dest, int count) {
+  dsr_vdp_set_address(address, 0);
+  while (count--) *(dest++) = VDPRD;
+}
 
 int matchesPrefix(char* basicstr, char* device_prefix) {
   return basicstr[1] == device_prefix[0] &&
@@ -94,7 +126,7 @@ void initPab(struct PAB* pab) {
   pab->ScreenOffset = 0;
   pab->NameLength = 0;
   pab->CharCount = 0;
-  pab->VDPBuffer = FBUF;
+  pab->VDPBuffer = vdp_filesystem_buffer;
 }
 
 unsigned int dsr_prg_load(struct DeviceServiceRoutine* dsr, struct PAB* pab, const char* fname, int vdpaddr, int maxsize) {
@@ -129,7 +161,7 @@ unsigned int dsr_open(struct DeviceServiceRoutine* dsr, struct PAB* pab, const c
   pab->pName = (unsigned char*)fname;
 
   int res = mds_lvl3_dsrlnk(dsr->crubase, pab, VPAB);
-  vdpmemread(VPAB + 4, (char*) (&pab->RecordLength), 1);
+  vdp_filesystem_memread(VPAB + 4, (char*) (&pab->RecordLength), 1);
   return res;
 }
 
@@ -150,7 +182,7 @@ unsigned int dsr_scratch(struct DeviceServiceRoutine* dsr, struct PAB* pab, int 
   return mds_lvl3_dsrlnk(dsr->crubase, pab, VPAB);
 }
 
-// the data read is in FBUF, the length read in pab->CharCount
+// the data read is in vdp_filesystem_buffer, the length read in pab->CharCount
 // typically passing 0 in for record number will let the controller
 // auto-increment it.
 unsigned int dsr_read(struct DeviceServiceRoutine* dsr, struct PAB* pab, int recordNumber) {
@@ -166,17 +198,17 @@ unsigned int dsr_read_cpu(struct DeviceServiceRoutine* dsr, struct PAB* pab, int
     pab->VDPBuffer = (int) recordBuf;
     pab->OpCode = pab->OpCode | 0x40;
   } else {
-    pab->VDPBuffer = FBUF;
+    pab->VDPBuffer = vdp_filesystem_buffer;
   }
   unsigned char result = mds_lvl3_dsrlnk(dsr->crubase, pab, VPAB);
-  vdpmemread(VPAB + 5, (char*) (&pab->CharCount), 1);
+  vdp_filesystem_memread(VPAB + 5, (char*) (&pab->CharCount), 1);
   if (! (pab->Status & DSR_TYPE_VARIABLE)) {
     pab->CharCount = pab->RecordLength;
   }
 
   if (recordBuf != 0 && !dsr->cpuSup)  {
     // If cpu buffers are not supported by dsr, then copy from VDP to record buffer ourselves
-    vdpmemread(pab->VDPBuffer, recordBuf, pab->CharCount);
+    vdp_filesystem_memread(pab->VDPBuffer, recordBuf, pab->CharCount);
   }
 
   return result;
@@ -189,8 +221,8 @@ unsigned int dsr_write(struct DeviceServiceRoutine* dsr, struct PAB* pab, char* 
     pab->VDPBuffer = (int) record;
     pab->OpCode = pab->OpCode | 0x40;
   } else {
-    pab->VDPBuffer = FBUF; // in case we read with cpu buffer previously.
-    vdpmemcpy(pab->VDPBuffer, record, reclen);
+    pab->VDPBuffer = vdp_filesystem_buffer; // in case we read with cpu buffer previously.
+    vdp_filesystem_memcpy(pab->VDPBuffer, record, reclen);
   }
 
   unsigned char result = mds_lvl3_dsrlnk(dsr->crubase, pab, VPAB);
@@ -204,7 +236,9 @@ unsigned int dsr_status(struct DeviceServiceRoutine* dsr, struct PAB* pab) {
   if (result) {
     return result << 8;
   } else {
-    return vdpreadchar(VPAB+8);
+    unsigned char status;
+    vdp_filesystem_memread(VPAB + 8, (char*)&status, 1);
+    return status;
   }
 }
 

@@ -5,6 +5,7 @@
 // You can copy this file and use it at will if it's useful
 
 #include "vdp.h"
+#include "vdp_internal.h"
 
 // setting up standard screen modes - blanks the screen and returns the unblank command
 // interrupts are also disabled. Unblank will re-enable them, too, write it to VDP_REG_MODE1
@@ -40,4 +41,5 @@ void set_graphics(int sprite_mode) {
     int x = set_graphics_raw(sprite_mode);
     VDP_SET_REGISTER(VDP_REG_MODE1, x);
     VDP_REG1_KSCAN_MIRROR = x;
+    vdp_screen_mode_changed(VDP_SCREENMODE_GRAPHICS);
 }

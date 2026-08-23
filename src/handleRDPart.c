@@ -58,15 +58,15 @@ static int findCrubase() {
 
 static int call_part(int crubase, int ram, int disk, int spool) {
     // setup parameters -
-    // PADDR <- FBUF: (VDP) 04 "PART" B7 C8 02 33 32 B3 C8 03 34 30 30 B3 C8 02 38 30 B6
+    // PADDR <- vdp_filesystem_buffer: (VDP) 04 "PART" B7 C8 02 33 32 B3 C8 03 34 30 30 B3 C8 02 38 30 B6
     //                                PL NS   '3''2' PS NS   '4''0''0' PS NS   '8''0' PE
     // 0x834A <- "PART"
-    // 0x8356 <- FBUF + 5
-    PADDR = FBUF;
-    PARAMS = FBUF+5;
+    // 0x8356 <- vdp_filesystem_buffer + 5
+    PADDR = vdp_filesystem_buffer;
+    PARAMS = vdp_filesystem_buffer+5;
     bk_strncpy((char*)FACADDR, str2ram("PART"), 4);
 
-    // build FBUF up
+    // build vdp_filesystem_buffer up
     char command[30];
     bk_strset(command, 0, 30);
     int i = 0;
@@ -82,7 +82,7 @@ static int call_part(int crubase, int ram, int disk, int spool) {
     command[i++] = BTOK_PARAM_END;
 
     // copy command string to VDP as if tokenized in BASIC
-    vdpmemcpy(FBUF, command, 30);
+    bk_vdp_filesystem_memcpy(vdp_filesystem_buffer, command, 30);
 
     // call basic routine
     bk_call_basic_sub(crubase, str2ram("PART"));
@@ -91,15 +91,15 @@ static int call_part(int crubase, int ram, int disk, int spool) {
 
 static int call_emdk(int crubase, int drive) {
     // setup parameters -
-    // PADDR <- FBUF: (VDP) 04 "EMDK" B7 C8 01 32 B6
+    // PADDR <- vdp_filesystem_buffer: (VDP) 04 "EMDK" B7 C8 01 32 B6
     //                                PL NS   '2' PE
     // 0x834A <- "EMDK"
-    // 0x8356 <- FBUF + 5
-    PADDR = FBUF;
-    PARAMS = FBUF+5;
+    // 0x8356 <- vdp_filesystem_buffer + 5
+    PADDR = vdp_filesystem_buffer;
+    PARAMS = vdp_filesystem_buffer+5;
     bk_strncpy((char*)FACADDR, str2ram("EMDK"), 4);
 
-    // build FBUF up
+    // build vdp_filesystem_buffer up
     char command[30];
     bk_strset(command, 0, 30);
     int i = 0;
@@ -111,7 +111,7 @@ static int call_emdk(int crubase, int drive) {
     command[i++] = BTOK_PARAM_END;
 
     // copy command string to VDP as if tokenized in BASIC
-    vdpmemcpy(FBUF, command, 30);
+    bk_vdp_filesystem_memcpy(vdp_filesystem_buffer, command, 30);
 
     // call basic routine
     bk_call_basic_sub(crubase, str2ram("EMDK"));
@@ -120,15 +120,15 @@ static int call_emdk(int crubase, int drive) {
 
 static int call_vol(int crubase, char* name) {
     // setup parameters -
-    // PADDR <- FBUF: (VDP) 04 "VOL" B7 C8 01 32 B6
+    // PADDR <- vdp_filesystem_buffer: (VDP) 04 "VOL" B7 C8 01 32 B6
     //                               PL NS   '2' PE
     // 0x834A <- "VOL"
-    // 0x8356 <- FBUF + 4
-    PADDR = FBUF;
-    PARAMS = FBUF+4;
+    // 0x8356 <- vdp_filesystem_buffer + 4
+    PADDR = vdp_filesystem_buffer;
+    PARAMS = vdp_filesystem_buffer+4;
     bk_strncpy((char*)FACADDR, str2ram("VOL"), 3);
 
-    // build FBUF up
+    // build vdp_filesystem_buffer up
     char command[30];
     bk_strset(command, 0, 30);
     int i = 0;
@@ -143,7 +143,7 @@ static int call_vol(int crubase, char* name) {
     command[i++] = BTOK_PARAM_END;
 
     // copy command string to VDP as if tokenized in BASIC
-    vdpmemcpy(FBUF, command, 30);
+    bk_vdp_filesystem_memcpy(vdp_filesystem_buffer, command, 30);
 
     // call basic routine
     bk_call_basic_sub(crubase, str2ram("VOL"));

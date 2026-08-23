@@ -158,6 +158,96 @@ struct DisplayInformation {
   int spritePatternAddr;
 };
 
+/* High-level graphics modes. */
+#define GFX_MODE_GRAPHICS1       0
+#define GFX_MODE_TEXT40          1
+#define GFX_MODE_GRAPHICS2       2
+#define GFX_MODE_BITMAP          GFX_MODE_GRAPHICS2
+#define GFX_MODE_MULTICOLOR      3
+#define GFX_MODE_GRAPHICS3       4
+#define GFX_MODE_GRAPHICS4       5
+#define GFX_MODE_GRAPHICS5       6
+#define GFX_MODE_GRAPHICS6       7
+#define GFX_MODE_GRAPHICS7       8
+#define GFX_MODE_TEXT80          9
+#define GFX_MODE_YJK_YAE         10
+#define GFX_MODE_YJK_RGB         11
+#define GFX_MODE_YJK             12
+#define GFX_MODE_F18A_TEXT80X30  13
+
+#define GFX_SCREEN_INTERLACED    0x0001
+#define GFX_SPRITE_8X8           0x00
+#define GFX_SPRITE_8X8_MAG       0x01
+#define GFX_SPRITE_16X16         0x02
+#define GFX_SPRITE_16X16_MAG     0x03
+
+#define GFX_OK                   0
+#define GFX_ERR_INVALID          -1
+#define GFX_ERR_UNSUPPORTED      -2
+#define GFX_ERR_WRONG_MODE       -3
+#define GFX_ERR_RANGE            -4
+#define GFX_ERR_BUSY             -5
+#define GFX_ERR_NO_VRAM          -6
+
+#define GFX_CAP_TEXT             0x0001
+#define GFX_CAP_TILES            0x0002
+#define GFX_CAP_PIXELS           0x0004
+#define GFX_CAP_LINES            0x0008
+#define GFX_CAP_CIRCLES          0x0010
+#define GFX_CAP_PAINT            0x0020
+#define GFX_CAP_COPY             0x0040
+#define GFX_CAP_PAGES            0x0080
+#define GFX_CAP_PALETTE          0x0100
+#define GFX_CAP_SPRITES          0x0200
+#define GFX_CAP_SPRITE_STATUS    0x0400
+#define GFX_CAP_YJK              0x0800
+#define GFX_CAP_ATTRIBUTES       0x1000
+
+#define GFX_COLOR_INDEXED        0
+#define GFX_COLOR_DIRECT         1
+#define GFX_COLOR_YJK            2
+#define GFX_COLOR_ATTRIBUTES     3
+
+#define GFX_OP_PSET              0
+#define GFX_OP_PRESET            1
+#define GFX_OP_AND               2
+#define GFX_OP_OR                3
+#define GFX_OP_XOR               4
+#define GFX_LINE_NORMAL          0x00
+#define GFX_LINE_BOX             0x01
+#define GFX_LINE_FILL            0x02
+#define GFX_COLOR_DEFAULT        -1
+
+#define GFX_RGB(r, g, b) \
+    ((((r) & 0x0f) << 8) | (((g) & 0x0f) << 4) | ((b) & 0x0f))
+
+struct GfxInformation {
+    int vdp_type;
+    int mode;
+    int width;
+    int height;
+    int physical_width;
+    int physical_height;
+    int colors;
+    int color_model;
+    int sprite_count;
+    int display_page;
+    int draw_page;
+    int page_count;
+    int capabilities;
+    unsigned int image_addr;
+    unsigned int pattern_addr;
+    unsigned int color_addr;
+    unsigned int sprite_addr;
+    unsigned int sprite_pattern_addr;
+};
+
+struct GfxSpriteStatus {
+    int collision;
+    int fifth_sprite;
+    int overflow;
+};
+
 struct SamsInformation {
   int next_page;
   int total_pages;

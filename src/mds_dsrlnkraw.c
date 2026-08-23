@@ -8,10 +8,19 @@
 #include <vdp.h>
 #include <conio.h>
 #include "mds_dsrlnk.h"
+#include "detect_vdp.h"
 
 // uses: scratchpad >8322 >8340-8348, >8354, >8355, >8356, >83d0, >83d2, GPLWS
 
 #define DSR_NAME_LEN	*((volatile unsigned int*)0x8354)
+
+static void mds_raw_vdp_set_address(unsigned int address, int write) {
+	if (vdp_type == VDP_9938 || vdp_type == VDP_9958) {
+		VDP_SET_REGISTER(0x0e, address >> 14);
+	}
+	if (write) VDP_SET_ADDRESS_WRITE(address & 0x3fff);
+	else VDP_SET_ADDRESS(address & 0x3fff);
+}
 
 void mds_lvl3_dsrlnkraw(int crubase, unsigned int vdp) {
 	// modified version of the e/a DSRLNK, for data >8 (DSR) only
@@ -23,7 +32,7 @@ void mds_lvl3_dsrlnkraw(int crubase, unsigned int vdp) {
 	vdp+=9;
 	DSR_PAB_POINTER = vdp;
 
-	VDP_SET_ADDRESS(vdp);
+	mds_raw_vdp_set_address(vdp, 0);
 	__asm__("NOP");
 	unsigned char size = VDPRD;
 
@@ -38,7 +47,7 @@ void mds_lvl3_dsrlnkraw(int crubase, unsigned int vdp) {
 	}
 	if ((cnt == 0) || (cnt > 7)) {
 		// illegal device name length
-		VDP_SET_ADDRESS_WRITE(status);
+		mds_raw_vdp_set_address(status, 1);
 		VDPWD=DSR_ERR_FILEERROR;
 		return;
 	}

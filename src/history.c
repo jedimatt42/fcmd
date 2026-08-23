@@ -20,6 +20,14 @@ int history_on = 0;
 static void (*hist_handler)(char* buffer, int limit, int op);
 
 static int hist_page;
+static int vdp_history_text_mode;
+
+void history_screen_mode(int text_mode) {
+  if (!sams_total_pages && text_mode && !vdp_history_text_mode) {
+    vdpmemset(VDP_REDO_BUFFER, 0, VDP_BUFFER_LEN);
+  }
+  vdp_history_text_mode = text_mode;
+}
 
 
 void history_init() {
@@ -31,7 +39,6 @@ void history_init() {
     list_init(HISTORY, (char*)(SAMS_HIST_ADDR + 8), (char*)(SAMS_HIST_ADDR + 0x1FFF));
     hist_handler = sams_hist_handler;
   } else {
-    vdpmemset(VDP_REDO_BUFFER, 0, VDP_BUFFER_LEN);
     hist_handler = vdp_hist_handler;
   }
 }
@@ -42,6 +49,10 @@ inline static void ensure_sams() {
 }
 
 void history_redo(char* buffer, int limit, int op) {
+  if (!sams_total_pages && !vdp_history_text_mode) {
+    bk_strset(buffer, 0, limit);
+    return;
+  }
   if (op == HIST_STORE) {
     // never store the history command itself.
     if (!bk_strcmpi(str2ram("history"), buffer)) {
@@ -77,6 +88,10 @@ void history_indexed(char* buffer, int limit, int idx) {
 }
 
 void vdp_hist_handler(char* buffer, int limit, int op) {
+  if (!vdp_history_text_mode) {
+    bk_strset(buffer, 0, limit);
+    return;
+  }
   if (op == HIST_STORE) {
     int len = bk_strlen(buffer);
     if (len > 0) {

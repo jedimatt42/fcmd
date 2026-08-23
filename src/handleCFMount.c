@@ -127,14 +127,14 @@ static int listCurrentVolumes() {
 
 static int call_mount(int drive, int volume) {
     // setup parameters -
-    // PADDR <- FBUF: (VDP) 05 "MOUNT" B7 C8 01 <drive> B3 C8 <vlen> <volstr> B6
+    // PADDR <- vdp_filesystem_buffer: (VDP) 05 "MOUNT" B7 C8 01 <drive> B3 C8 <vlen> <volstr> B6
     // 0x834A <- "MOUNT"
-    // 0x8356 <- FBUF + 6
-    PADDR = FBUF;
-    PARAMS = FBUF+6;
+    // 0x8356 <- vdp_filesystem_buffer + 6
+    PADDR = vdp_filesystem_buffer;
+    PARAMS = vdp_filesystem_buffer+6;
     bk_strncpy((char*)FACADDR, str2ram("MOUNT"), 5);
 
-    // build FBUF up
+    // build vdp_filesystem_buffer up
     unsigned char command[30];
     int i = 0;
     command[i++] = 5;
@@ -149,7 +149,7 @@ static int call_mount(int drive, int volume) {
     char* vol = bk_uint2str(volume);
     command[i++] = bk_strlen(vol);
     bk_strcpy(command+(i++), vol);
-    vdpmemcpy(FBUF, command, 30);
+    bk_vdp_filesystem_memcpy(vdp_filesystem_buffer, (const char*)command, 30);
 
     // call persistent mount routine
     bk_call_basic_sub(CFNANO_CRUBASE, str2ram("MOUNT"));

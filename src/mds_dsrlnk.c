@@ -8,8 +8,27 @@
 #include <vdp.h>
 #include <string.h>
 #include "mds_dsrlnk.h"
+#include "detect_vdp.h"
 
 #define GPLWSR12	*((volatile unsigned int*)0x83F8)
+
+static void mds_vdp_set_address(unsigned int address, int write) {
+	if (vdp_type == VDP_9938 || vdp_type == VDP_9958) {
+		VDP_SET_REGISTER(0x0e, address >> 14);
+	}
+	if (write) VDP_SET_ADDRESS_WRITE(address & 0x3fff);
+	else VDP_SET_ADDRESS(address & 0x3fff);
+}
+
+static void mds_vdp_memcpy(unsigned int address, const char* source, int count) {
+	mds_vdp_set_address(address, 1);
+	while (count--) VDPWD = *(source++);
+}
+
+static void mds_vdp_memread(unsigned int address, char* dest, int count) {
+	mds_vdp_set_address(address, 0);
+	while (count--) *(dest++) = VDPRD;
+}
 
 
 // NOTE: because this does not return the entire PAB back to you,
@@ -22,7 +41,7 @@ unsigned int mds_lvl3_dsrlnk(int crubase, struct PAB *pab, unsigned int vdp) {
 	unsigned char x;
 
 	// copies your PAB to VDP and then executes the call through dsrlnkraw
-	vdpmemcpy(vdp, (const unsigned char*)pab, 9);
+	mds_vdp_memcpy(vdp, (const char*)pab, 9);
 	// assumes vdpmemcpy leaves the VDP address in the right place!
 	if (pab->NameLength == 0) {
 		x = bk_strlen(pab->pName);
@@ -45,9 +64,9 @@ unsigned int mds_lvl3_dsrlnk(int crubase, struct PAB *pab, unsigned int vdp) {
 		return 0xff;
 	}
 
-	vdpmemread(vdp, (unsigned char*)pab, 9);
+	mds_vdp_memread(vdp, (char*)pab, 9);
 
 	// now return the result
-	return GET_ERROR(vdpreadchar(vdp+1));
+	mds_vdp_set_address(vdp + 1, 0);
+	return GET_ERROR(VDPRD);
 }
-

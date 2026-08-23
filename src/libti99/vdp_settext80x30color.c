@@ -2,6 +2,7 @@
 #define MYBANK BANK(8)
 
 #include "vdp.h"
+#include "vdp_internal.h"
 #include "gpu_scroll.h"
 
 // TODO: text modes should not rely on conio support if possible...
@@ -35,6 +36,7 @@ void set_text80x30_color(void)
     int x = set_text80x30_color_raw();
     VDP_SET_REGISTER(VDP_REG_MODE1, x);
     VDP_REG1_KSCAN_MIRROR = x;
+    vdp_screen_mode_changed(VDP_SCREENMODE_TEXT80X30);
 }
 
 // requires F18A!!
@@ -79,5 +81,4 @@ int set_text80x30_color_raw() {
 	gUnblank = unblank;
 	return unblank;
 }
-
 

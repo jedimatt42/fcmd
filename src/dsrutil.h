@@ -3,8 +3,13 @@
 
 #include <files.h>
 
-#define VPAB 0x2160
-#define FBUF 0x2300
+/* VDP workspace used by DSR and level-2 calls. */
+extern unsigned int vdp_pab_buffer;
+extern unsigned int vdp_filesystem_buffer;
+extern unsigned int vdp_filesystem_file_buffer;
+extern unsigned int vdp_filesystem_file_buffer_size;
+
+#define VPAB vdp_pab_buffer
 
 // Casting rom locations to the next 3 structs should ease
 // reasoning about any code accessing the rom header and
@@ -96,11 +101,19 @@ void disableROM(int crubase);
 struct DeviceServiceRoutine* dsr_find(char* devicename, int crubase);
 
 void initPab(struct PAB* pab);
+void dsr_set_vdp_buffers(unsigned int pab, unsigned int buffer,
+                         unsigned int file_buffer,
+                         unsigned int file_buffer_size);
+void vdp_filesystem_memcpy(unsigned int address, const char* source, int count);
+void vdp_filesystem_memread(unsigned int address, char* dest, int count);
 
 #include "banking.h"
 
 DECLARE_BANKED_VOID(loadDriveDSRs, BANK(2), bk_loadDriveDSRs, (), ())
 DECLARE_BANKED_VOID(initPab, BANK(2), bk_initPab, (struct PAB* pab), (pab))
+DECLARE_BANKED_VOID(dsr_set_vdp_buffers, BANK(2), bk_dsr_set_vdp_buffers, (unsigned int pab, unsigned int buffer, unsigned int file_buffer, unsigned int file_buffer_size), (pab, buffer, file_buffer, file_buffer_size))
+DECLARE_BANKED_VOID(vdp_filesystem_memcpy, BANK(2), bk_vdp_filesystem_memcpy, (unsigned int address, const char* source, int count), (address, source, count))
+DECLARE_BANKED_VOID(vdp_filesystem_memread, BANK(2), bk_vdp_filesystem_memread, (unsigned int address, char* dest, int count), (address, dest, count))
 DECLARE_BANKED_VOID(enableROM, BANK(2), bk_enableROM, (int crubase), (crubase))
 DECLARE_BANKED_VOID(disableROM, BANK(2), bk_disableROM, (int crubase), (crubase))
 

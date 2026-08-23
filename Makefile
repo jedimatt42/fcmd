@@ -12,7 +12,7 @@ VER:=$(shell grep "\#define APP_VER" src/main.h | cut -d '"' -f2)
 
 SUPPORT=FC/BOOT FC/LOAD FC/FCMD FC/FCMDXB FC/BIN/DISKIMAGE FC/BIN/FCMENU FC/BIN/FTP FC/BIN/SAMPLE FC/BIN/SAY FC/BIN/TELNET FC/BIN/VIRGIL99 FC/BIN/FONT FC/MDOSANSI FC/MDOSFONT
 
-SUBDIRS=hello samshello charset diskimage fcmenu ftp say telnet virgil font tuidemo
+SUBDIRS=hello samshello charset diskimage fcmenu ftp say telnet virgil font tuidemo graphicsdemo
 
 CFLAGS=\
   -std=gnu99 -nostdlib -ffreestanding -Os -Wno-int-to-pointer-cast -Wno-pointer-to-int-cast -Werror --save-temps -I$(abspath src) -I$(abspath src/libti99)
