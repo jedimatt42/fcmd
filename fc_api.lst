@@ -128,7 +128,6 @@ var_get
 var_set
 
 vdp_cursor_addr
-vdp_screenmode
 vdp_setchar
 
 gfx_screen
