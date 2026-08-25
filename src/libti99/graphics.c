@@ -75,6 +75,7 @@ void gfx_set_mode_info(int mode, int width, int height, int physical_width,
                        int capabilities, int page_count) {
     if (vdp_type == VDP_F18A) capabilities |= GFX_CAP_PALETTE;
     gfx_info.vdp_type = vdp_type;
+    gfx_info.isPal = pal;
     gfx_info.mode = mode;
     gfx_info.width = width;
     gfx_info.height = height;
@@ -118,6 +119,7 @@ int gfx_get_info(struct GfxInformation* info) {
     if (!info) return GFX_ERR_INVALID;
     if (gfx_info.mode < 0) {
         gfx_info.vdp_type = vdp_type;
+        gfx_info.isPal = pal;
         gfx_info.mode = displayWidth == 40 ? GFX_MODE_TEXT40 :
                         (displayHeight == 30 ? GFX_MODE_F18A_TEXT80X30 :
                          GFX_MODE_TEXT80);
@@ -144,6 +146,7 @@ int gfx_get_info(struct GfxInformation* info) {
     }
     *info = gfx_info;
     info->vdp_type = vdp_type;
+    info->isPal = pal;
     return GFX_OK;
 }
 

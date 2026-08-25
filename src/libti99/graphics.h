@@ -74,6 +74,7 @@
     ((((r) & 0x0f) << 8) | (((g) & 0x0f) << 4) | ((b) & 0x0f))
 
 struct GfxInformation {
+    int isPal;
     int vdp_type;
     int mode;
     int width;

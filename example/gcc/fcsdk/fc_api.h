@@ -100,7 +100,7 @@ struct SystemInformation {
   unsigned int vdp_io_buf;
 };
 
-// Values for vdp_type in DisplayInformation
+// Values for vdp_type in GfxInformation
 #define VDP_F18A 0xF18A
 #define VDP_9938 0x9938
 #define VDP_9958 0x9958
@@ -143,20 +143,6 @@ struct SystemInformation {
 #define COLOR_MAGENTA 0x0D
 #define COLOR_GRAY 0x0E
 #define COLOR_WHITE 0x0F
-
-/*
-  Display parameter structure
-*/
-struct DisplayInformation {
-  int isPal;
-  int vdp_type;
-  int displayWidth;
-  int displayHeight;
-  int imageAddr;
-  int patternAddr;
-  int colorAddr;
-  int spritePatternAddr;
-};
 
 /* High-level graphics modes. */
 #define GFX_MODE_GRAPHICS1       0
@@ -222,6 +208,7 @@ struct DisplayInformation {
     ((((r) & 0x0f) << 8) | (((g) & 0x0f) << 4) | ((b) & 0x0f))
 
 struct GfxInformation {
+    int isPal;
     int vdp_type;
     int mode;
     int width;
@@ -566,127 +553,126 @@ typedef struct tui_widget tui_widget_t;
 #define FC_STR_TOKEN 0x4d
 #define FC_STR_TOKEN_NEXT 0x4e
 #define FC_STR_TOKEN_PEEK 0x4f
-#define FC_SYS_DISPLAY_INFO 0x50
-#define FC_SYS_INFO 0x51
-#define FC_SYS_SAMS_INFO 0x52
-#define FC_TCP_CLOSE 0x53
-#define FC_TCP_CONNECT 0x54
-#define FC_TCP_READ_SOCKET 0x55
-#define FC_TCP_SEND_CHARS 0x56
-#define FC_TERM_CLS 0x57
-#define FC_TERM_DROP_DOWN 0x58
-#define FC_TERM_GETS 0x59
-#define FC_TERM_GOTOXY 0x5a
-#define FC_TERM_KSCAN 0x5b
-#define FC_TERM_PUTC 0x5c
-#define FC_TERM_PUTS 0x5d
-#define FC_TERM_SET_BG_COLOR 0x5e
-#define FC_TERM_SET_BORDER_COLOR 0x5f
-#define FC_TERM_SET_IDENTIFY_HOOK 0x60
-#define FC_TERM_SET_TEXT_COLOR 0x61
-#define FC_TIME_GET 0x62
-#define FC_TIPI_LOG 0x63
-#define FC_TIPI_OFF 0x64
-#define FC_TIPI_ON 0x65
-#define FC_TIPI_RECVMSG 0x66
-#define FC_TIPI_SENDMSG 0x67
-#define FC_TLS_CLOSE 0x68
-#define FC_TLS_CONNECT 0x69
-#define FC_TLS_READ_SOCKET 0x6a
-#define FC_TLS_SEND_CHARS 0x6b
-#define FC_VAR_GET 0x6c
-#define FC_VAR_SET 0x6d
-#define FC_VDP_CURSOR_ADDR 0x6e
-#define FC_VDP_SCREENMODE 0x6f
-#define FC_VDP_SETCHAR 0x70
-#define FC_GFX_SCREEN 0x71
-#define FC_GFX_GET_INFO 0x72
-#define FC_GFX_COLOR 0x73
-#define FC_GFX_SET_PAGE 0x74
-#define FC_GFX_SET_CURSOR 0x75
-#define FC_GFX_GET_CURSOR 0x76
-#define FC_GFX_CLEAR 0x77
-#define FC_GFX_PSET 0x78
-#define FC_GFX_PRESET 0x79
-#define FC_GFX_POINT 0x7a
-#define FC_GFX_LINE 0x7b
-#define FC_GFX_CIRCLE 0x7c
-#define FC_GFX_PAINT 0x7d
-#define FC_GFX_DRAW 0x7e
-#define FC_GFX_COPY 0x7f
-#define FC_GFX_PATTERN_DEFINE 0x80
-#define FC_GFX_TILE 0x81
-#define FC_GFX_SPRITE_PATTERN 0x82
-#define FC_GFX_SPRITE 0x83
-#define FC_GFX_SPRITE_LOC 0x84
-#define FC_GFX_SPRITE_HIDE 0x85
-#define FC_GFX_SPRITE_ENABLE 0x86
-#define FC_GFX_SPRITE_STATUS 0x87
-#define FC_GFX_PALETTE_SET 0x88
-#define FC_TUI_BOX 0x89
-#define FC_TUI_BOX_TITLE 0x8a
-#define FC_TUI_BUTTON_CREATE 0x8b
-#define FC_TUI_BUTTON_SET_LABEL 0x8c
-#define FC_TUI_CHECKBOX_CREATE 0x8d
-#define FC_TUI_CHECKBOX_GET 0x8e
-#define FC_TUI_CHECKBOX_SET 0x8f
-#define FC_TUI_CONFIRM_BOX 0x90
-#define FC_TUI_DISPATCH_EVENT 0x91
-#define FC_TUI_DONE 0x92
-#define FC_TUI_FILL 0x93
-#define FC_TUI_GET_EVENT 0x94
-#define FC_TUI_GET_FOCUS 0x95
-#define FC_TUI_GOTOXY 0x96
-#define FC_TUI_HAS_COLOR 0x97
-#define FC_TUI_HLINE 0x98
-#define FC_TUI_INIT 0x99
-#define FC_TUI_INPUT_BOX 0x9a
-#define FC_TUI_LABEL_CREATE 0x9b
-#define FC_TUI_LABEL_SET_TEXT 0x9c
-#define FC_TUI_LIST_ADD 0x9d
-#define FC_TUI_LIST_CLEAR 0x9e
-#define FC_TUI_LIST_COUNT 0x9f
-#define FC_TUI_LIST_CREATE 0xa0
-#define FC_TUI_LIST_GET_SELECTED 0xa1
-#define FC_TUI_LIST_INSERT 0xa2
-#define FC_TUI_LIST_REMOVE 0xa3
-#define FC_TUI_LIST_SET_SELECTED 0xa4
-#define FC_TUI_MENU_CREATE 0xa5
-#define FC_TUI_MENU_DESTROY 0xa6
-#define FC_TUI_MENU_GET_SELECTED 0xa7
-#define FC_TUI_MESSAGE_BOX 0xa8
-#define FC_TUI_PROGRESSBAR_CREATE 0xa9
-#define FC_TUI_PROGRESSBAR_SET 0xaa
-#define FC_TUI_PUTC 0xab
-#define FC_TUI_PUTS 0xac
-#define FC_TUI_SCREEN_HEIGHT 0xad
-#define FC_TUI_SCREEN_WIDTH 0xae
-#define FC_TUI_SET_COLOR 0xaf
-#define FC_TUI_SET_FOCUS 0xb0
-#define FC_TUI_TEXTFIELD_CREATE 0xb1
-#define FC_TUI_TEXTFIELD_GET 0xb2
-#define FC_TUI_TEXTFIELD_SET 0xb3
-#define FC_TUI_TEXTFIELD_SET_CURSOR 0xb4
-#define FC_TUI_VLINE 0xb5
-#define FC_TUI_WIDGET_DESTROY 0xb6
-#define FC_TUI_WIDGET_DISABLE 0xb7
-#define FC_TUI_WIDGET_ENABLE 0xb8
-#define FC_TUI_WIDGET_FOCUS 0xb9
-#define FC_TUI_WIDGET_HIDE 0xba
-#define FC_TUI_WIDGET_SHOW 0xbb
-#define FC_TUI_WIN_CLOSE 0xbc
-#define FC_TUI_WIN_GOTOXY 0xbd
-#define FC_TUI_WIN_MOVE 0xbe
-#define FC_TUI_WIN_OPEN 0xbf
-#define FC_TUI_WIN_PRINTF 0xc0
-#define FC_TUI_WIN_PUTC 0xc1
-#define FC_TUI_WIN_PUTS 0xc2
-#define FC_TUI_WIN_RESIZE 0xc3
-#define FC_TUI_WIN_SCROLL 0xc4
-#define FC_TUI_WIN_SET_COLORS 0xc5
-#define FC_TUI_WIN_SET_TITLE 0xc6
-#define FC_TUI_WIN_SET_BORDER 0xc7
-#define FC_FC_EXIT 0xc8
+#define FC_SYS_INFO 0x50
+#define FC_SYS_SAMS_INFO 0x51
+#define FC_TCP_CLOSE 0x52
+#define FC_TCP_CONNECT 0x53
+#define FC_TCP_READ_SOCKET 0x54
+#define FC_TCP_SEND_CHARS 0x55
+#define FC_TERM_CLS 0x56
+#define FC_TERM_DROP_DOWN 0x57
+#define FC_TERM_GETS 0x58
+#define FC_TERM_GOTOXY 0x59
+#define FC_TERM_KSCAN 0x5a
+#define FC_TERM_PUTC 0x5b
+#define FC_TERM_PUTS 0x5c
+#define FC_TERM_SET_BG_COLOR 0x5d
+#define FC_TERM_SET_BORDER_COLOR 0x5e
+#define FC_TERM_SET_IDENTIFY_HOOK 0x5f
+#define FC_TERM_SET_TEXT_COLOR 0x60
+#define FC_TIME_GET 0x61
+#define FC_TIPI_LOG 0x62
+#define FC_TIPI_OFF 0x63
+#define FC_TIPI_ON 0x64
+#define FC_TIPI_RECVMSG 0x65
+#define FC_TIPI_SENDMSG 0x66
+#define FC_TLS_CLOSE 0x67
+#define FC_TLS_CONNECT 0x68
+#define FC_TLS_READ_SOCKET 0x69
+#define FC_TLS_SEND_CHARS 0x6a
+#define FC_VAR_GET 0x6b
+#define FC_VAR_SET 0x6c
+#define FC_VDP_CURSOR_ADDR 0x6d
+#define FC_VDP_SCREENMODE 0x6e
+#define FC_VDP_SETCHAR 0x6f
+#define FC_GFX_SCREEN 0x70
+#define FC_GFX_GET_INFO 0x71
+#define FC_GFX_COLOR 0x72
+#define FC_GFX_SET_PAGE 0x73
+#define FC_GFX_SET_CURSOR 0x74
+#define FC_GFX_GET_CURSOR 0x75
+#define FC_GFX_CLEAR 0x76
+#define FC_GFX_PSET 0x77
+#define FC_GFX_PRESET 0x78
+#define FC_GFX_POINT 0x79
+#define FC_GFX_LINE 0x7a
+#define FC_GFX_CIRCLE 0x7b
+#define FC_GFX_PAINT 0x7c
+#define FC_GFX_DRAW 0x7d
+#define FC_GFX_COPY 0x7e
+#define FC_GFX_PATTERN_DEFINE 0x7f
+#define FC_GFX_TILE 0x80
+#define FC_GFX_SPRITE_PATTERN 0x81
+#define FC_GFX_SPRITE 0x82
+#define FC_GFX_SPRITE_LOC 0x83
+#define FC_GFX_SPRITE_HIDE 0x84
+#define FC_GFX_SPRITE_ENABLE 0x85
+#define FC_GFX_SPRITE_STATUS 0x86
+#define FC_GFX_PALETTE_SET 0x87
+#define FC_TUI_BOX 0x88
+#define FC_TUI_BOX_TITLE 0x89
+#define FC_TUI_BUTTON_CREATE 0x8a
+#define FC_TUI_BUTTON_SET_LABEL 0x8b
+#define FC_TUI_CHECKBOX_CREATE 0x8c
+#define FC_TUI_CHECKBOX_GET 0x8d
+#define FC_TUI_CHECKBOX_SET 0x8e
+#define FC_TUI_CONFIRM_BOX 0x8f
+#define FC_TUI_DISPATCH_EVENT 0x90
+#define FC_TUI_DONE 0x91
+#define FC_TUI_FILL 0x92
+#define FC_TUI_GET_EVENT 0x93
+#define FC_TUI_GET_FOCUS 0x94
+#define FC_TUI_GOTOXY 0x95
+#define FC_TUI_HAS_COLOR 0x96
+#define FC_TUI_HLINE 0x97
+#define FC_TUI_INIT 0x98
+#define FC_TUI_INPUT_BOX 0x99
+#define FC_TUI_LABEL_CREATE 0x9a
+#define FC_TUI_LABEL_SET_TEXT 0x9b
+#define FC_TUI_LIST_ADD 0x9c
+#define FC_TUI_LIST_CLEAR 0x9d
+#define FC_TUI_LIST_COUNT 0x9e
+#define FC_TUI_LIST_CREATE 0x9f
+#define FC_TUI_LIST_GET_SELECTED 0xa0
+#define FC_TUI_LIST_INSERT 0xa1
+#define FC_TUI_LIST_REMOVE 0xa2
+#define FC_TUI_LIST_SET_SELECTED 0xa3
+#define FC_TUI_MENU_CREATE 0xa4
+#define FC_TUI_MENU_DESTROY 0xa5
+#define FC_TUI_MENU_GET_SELECTED 0xa6
+#define FC_TUI_MESSAGE_BOX 0xa7
+#define FC_TUI_PROGRESSBAR_CREATE 0xa8
+#define FC_TUI_PROGRESSBAR_SET 0xa9
+#define FC_TUI_PUTC 0xaa
+#define FC_TUI_PUTS 0xab
+#define FC_TUI_SCREEN_HEIGHT 0xac
+#define FC_TUI_SCREEN_WIDTH 0xad
+#define FC_TUI_SET_COLOR 0xae
+#define FC_TUI_SET_FOCUS 0xaf
+#define FC_TUI_TEXTFIELD_CREATE 0xb0
+#define FC_TUI_TEXTFIELD_GET 0xb1
+#define FC_TUI_TEXTFIELD_SET 0xb2
+#define FC_TUI_TEXTFIELD_SET_CURSOR 0xb3
+#define FC_TUI_VLINE 0xb4
+#define FC_TUI_WIDGET_DESTROY 0xb5
+#define FC_TUI_WIDGET_DISABLE 0xb6
+#define FC_TUI_WIDGET_ENABLE 0xb7
+#define FC_TUI_WIDGET_FOCUS 0xb8
+#define FC_TUI_WIDGET_HIDE 0xb9
+#define FC_TUI_WIDGET_SHOW 0xba
+#define FC_TUI_WIN_CLOSE 0xbb
+#define FC_TUI_WIN_GOTOXY 0xbc
+#define FC_TUI_WIN_MOVE 0xbd
+#define FC_TUI_WIN_OPEN 0xbe
+#define FC_TUI_WIN_PRINTF 0xbf
+#define FC_TUI_WIN_PUTC 0xc0
+#define FC_TUI_WIN_PUTS 0xc1
+#define FC_TUI_WIN_RESIZE 0xc2
+#define FC_TUI_WIN_SCROLL 0xc3
+#define FC_TUI_WIN_SET_COLORS 0xc4
+#define FC_TUI_WIN_SET_TITLE 0xc5
+#define FC_TUI_WIN_SET_BORDER 0xc6
+#define FC_FC_EXIT 0xc7
 
 // function: void audio_beep()
 DECL_FC_API_CALL(FC_AUDIO_BEEP, audio_beep, void, (), ())
@@ -927,9 +913,6 @@ DECL_FC_API_CALL(FC_STR_TOKEN_NEXT, str_token_next, char*, (char* dst, char* str
 
 // function: char * str_token_peek(char *str, int delim)
 DECL_FC_API_CALL(FC_STR_TOKEN_PEEK, str_token_peek, char *, (char *str, int delim), (str, delim))
-
-// function: void sys_display_info(struct DisplayInformation * info)
-DECL_FC_API_CALL(FC_SYS_DISPLAY_INFO, sys_display_info, void, (struct DisplayInformation * info), (info))
 
 // function: void sys_info(struct SystemInformation* info)
 DECL_FC_API_CALL(FC_SYS_INFO, sys_info, void, (struct SystemInformation* info), (info))

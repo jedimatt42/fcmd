@@ -3,22 +3,22 @@
 int load_offset = 0;
 
 void load_font(char* fname_buffer, struct DeviceServiceRoutine* dsr) {
-  struct DisplayInformation dInfo;
-  sys_display_info(&dInfo);
+  struct GfxInformation dInfo;
+  gfx_get_info(&dInfo);
 
   struct PAB pab;
-  int ferr = dsr_prg_load(dsr, &pab, fname_buffer, dInfo.patternAddr + load_offset, 256 * 8);
+  int ferr = dsr_prg_load(dsr, &pab, fname_buffer, dInfo.pattern_addr + load_offset, 256 * 8);
   if (ferr) {
     term_puts("error loading font file\n");
   }
 }
 
 void save_font(char* fname_buffer, struct DeviceServiceRoutine* dsr) {
-  struct DisplayInformation dInfo;
-  sys_display_info(&dInfo);
+  struct GfxInformation dInfo;
+  gfx_get_info(&dInfo);
 
   struct PAB pab;
-  int ferr = dsr_prg_save(dsr, &pab, fname_buffer, dInfo.patternAddr, 256 * 8);
+  int ferr = dsr_prg_save(dsr, &pab, fname_buffer, dInfo.pattern_addr, 256 * 8);
   if (ferr) {
     term_puts("error saving font file\n");
   }

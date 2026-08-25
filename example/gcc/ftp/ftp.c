@@ -76,9 +76,9 @@ inline void vdpmemcpy(int pAddr, const char* pSrc, int cnt)
 }
 
 void fetchInfo() {
-  struct DisplayInformation info;
-  sys_display_info(&info);
-  displayWidth = info.displayWidth;
+  struct GfxInformation info;
+  gfx_get_info(&info);
+  displayWidth = info.width;
   struct SystemInformation sysInfo;
   sys_info(&sysInfo);
   currentDsr = sysInfo.currentDsr;

@@ -1,21 +1,21 @@
 #include <fc_api.h>
 
 int main(char* args) {
-  struct DisplayInformation info;
+  struct GfxInformation info;
 
-  sys_display_info(&info);
+  gfx_get_info(&info);
 
   term_puts("Display: ");
-  if (info.displayWidth == 40) {
+  if (info.width == 40) {
     term_puts("40x");
   }
-  if (info.displayWidth == 80) {
+  if (info.width == 80) {
     term_puts("80x");
   }
-  if (info.displayHeight == 30) {
+  if (info.height == 30) {
     term_puts("30, ");
   }
-  if (info.displayHeight == 24) {
+  if (info.height == 24) {
     term_puts("24, ");
   }
 

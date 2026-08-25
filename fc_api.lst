@@ -91,7 +91,6 @@ str_token
 str_token_next
 str_token_peek
 
-sys_display_info
 sys_info
 sys_sams_info
 

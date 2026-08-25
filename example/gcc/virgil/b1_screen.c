@@ -30,10 +30,10 @@ void FC_SAMS(1,init_screen()) {
   exec_cmd("COLOR 14 1");
   exec_cmd("CLS");
 
-  struct DisplayInformation dinfo;
-  sys_display_info(&dinfo);
-  imageAddr = dinfo.imageAddr;
-  colorAddr = dinfo.colorAddr;
+  struct GfxInformation dinfo;
+  gfx_get_info(&dinfo);
+  imageAddr = dinfo.image_addr;
+  colorAddr = dinfo.color_addr;
 	  
   screen_status();
 }

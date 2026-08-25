@@ -5,13 +5,14 @@
 #include "terminal.h"
 #include "strutil.h"
 #include "sys_info.h"
+#include "graphics.h"
 #include "detect_vdp.h"
 #include "globals.h"
 #include "sams.h"
 
 int handleSysInfo() {
-  struct DisplayInformation di;
-  bk_display_info(&di);
+  struct GfxInformation di;
+  bk_gfx_get_info(&di);
 
   tputs_rom("Display: ");
   if (di.vdp_type == VDP_9918) {

@@ -286,8 +286,8 @@ void any_key() {
 }
 
 int check_requirements() {
-  struct DisplayInformation dinfo;
-  sys_display_info(&dinfo);
+  struct GfxInformation dinfo;
+  gfx_get_info(&dinfo);
   int res = 0;
   if (dinfo.vdp_type != VDP_F18A) {
     term_puts("F18A required\n");

@@ -134,17 +134,17 @@ void send_termtype() {
 }
 
 void send_window_size() {
-  struct DisplayInformation d_info;
-  sys_display_info(&d_info);
+  struct GfxInformation d_info;
+  gfx_get_info(&d_info);
 
   unsigned char window_size[9];
   window_size[0] = CMD;
   window_size[1] = SUB;
   window_size[2] = CMD_WINDOW_SIZE;
   window_size[3] = 0;
-  window_size[4] = d_info.displayWidth;
+  window_size[4] = d_info.width;
   window_size[5] = 0;
-  window_size[6] = d_info.displayHeight;
+  window_size[6] = d_info.height;
   window_size[7] = CMD;
   window_size[8] = SE;
   tcp_send_chars(SOCKET, (char*) window_size, 9);

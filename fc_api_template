@@ -100,7 +100,7 @@ struct SystemInformation {
   unsigned int vdp_io_buf;
 };
 
-// Values for vdp_type in DisplayInformation
+// Values for vdp_type in GfxInformation
 #define VDP_F18A 0xF18A
 #define VDP_9938 0x9938
 #define VDP_9958 0x9958
@@ -143,20 +143,6 @@ struct SystemInformation {
 #define COLOR_MAGENTA 0x0D
 #define COLOR_GRAY 0x0E
 #define COLOR_WHITE 0x0F
-
-/*
-  Display parameter structure
-*/
-struct DisplayInformation {
-  int isPal;
-  int vdp_type;
-  int displayWidth;
-  int displayHeight;
-  int imageAddr;
-  int patternAddr;
-  int colorAddr;
-  int spritePatternAddr;
-};
 
 /* High-level graphics modes. */
 #define GFX_MODE_GRAPHICS1       0
@@ -222,6 +208,7 @@ struct DisplayInformation {
     ((((r) & 0x0f) << 8) | (((g) & 0x0f) << 4) | ((b) & 0x0f))
 
 struct GfxInformation {
+    int isPal;
     int vdp_type;
     int mode;
     int width;

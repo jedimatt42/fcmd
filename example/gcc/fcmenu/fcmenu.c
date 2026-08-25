@@ -2,7 +2,7 @@
 #include <ioports.h>
 #include <kscan.h>
 
-struct DisplayInformation dinfo;
+struct GfxInformation dinfo;
 
 struct MenuEntry {
   char key;
@@ -46,8 +46,8 @@ int childWantsQuit();
 #define QUITVAR "FCM"
 
 int fcmain(char* args) {
-  sys_display_info(&dinfo);
-  disp_limit = dinfo.displayWidth == 40 ? 20 : 40;
+  gfx_get_info(&dinfo);
+  disp_limit = dinfo.width == 40 ? 20 : 40;
 
   entry_idx = 0;
   entry_max = 0;
@@ -130,7 +130,7 @@ int fcmain(char* args) {
 
     VDP_WAIT_VBLANK_CRU;
     cycles++;
-    term_gotoxy(1, dinfo.displayHeight - 1);
+    term_gotoxy(1, dinfo.height - 1);
 
     int buttons = updateMouse(&mouseData);
     if (buttons & MB_LEFT) {
@@ -311,11 +311,11 @@ void selectionRun(struct MenuEntry* entry) {
 }
 
 void drawBackdrop() {
-  vdp_memset(0, ' ', dinfo.displayWidth * dinfo.displayHeight);
+  vdp_memset(0, ' ', dinfo.width * dinfo.height);
   term_gotoxy(0,0);
-  vdp_memset(0, 0xB0, dinfo.displayWidth);
-  vdp_memset((dinfo.displayHeight - 1) * dinfo.displayWidth, 0xB0, dinfo.displayWidth);
-  term_gotoxy((dinfo.displayWidth / 2) - 7,0);
+  vdp_memset(0, 0xB0, dinfo.width);
+  vdp_memset((dinfo.height - 1) * dinfo.width, 0xB0, dinfo.width);
+  term_gotoxy((dinfo.width / 2) - 7,0);
   term_puts(" FCMenu v1.2 ");
   cycles = 0; // since we erased the clock, allow it to redraw on next attempt
 }
@@ -324,7 +324,7 @@ void drawClock() {
   struct DateTime dt;
   time_get(&dt);
   if (dt.hours != 0 && dt.minutes != 0) {
-    term_gotoxy(dinfo.displayWidth - 9, 0);
+    term_gotoxy(dinfo.width - 9, 0);
     term_putc(' ');
     term_puts(str_from_uint(dt.hours));
     term_putc(':');
@@ -407,13 +407,13 @@ void layoutMenu() {
   }
 
   // draw a page indicator
-  term_gotoxy(dinfo.displayWidth - 8, dinfo.displayHeight - 1);
+  term_gotoxy(dinfo.width - 8, dinfo.height - 1);
   term_puts("Page ");
   term_puts(str_from_uint(page));
   term_putc('/');
   term_puts(str_from_uint(page_total));
 
-  term_gotoxy(0, dinfo.displayHeight - 1);
+  term_gotoxy(0, dinfo.height - 1);
 }
 
 int readKeyboard() {

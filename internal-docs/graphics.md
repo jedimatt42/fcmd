@@ -154,6 +154,7 @@ The following structures are part of the public SDK header.
 
 ```c
 struct GfxInformation {
+    int isPal;
     int vdp_type;
     int mode;
     int width;
