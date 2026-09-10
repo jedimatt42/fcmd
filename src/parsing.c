@@ -110,7 +110,6 @@ int handleCommand(char *buffer) {
   else COMMAND("env", bk_handleEnv)
   else COMMAND("exit", bk_handleExit)
   else COMMAND("fg99", bk_handleFg99)
-  else COMMAND("format", bk_handleFormat)
   else COMMAND("goto", bk_handleGoto)
   else COMMAND("if", bk_handleIf)
   else COMMAND("help", bk_handleHelp)
