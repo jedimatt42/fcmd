@@ -11,7 +11,7 @@ int isPal() {
   int t;
 
   // Normalize: wait for next VDP interrupt
-  VDP_WAIT_VBLANK;
+  VDP_WAIT_VBLANK_CRU;
 
   // Start TMS9901 timer with max value (>3FFF = 16383)
   // Timer decrements every 64 PHI3* cycles = ~21.33 us
@@ -26,8 +26,8 @@ int isPal() {
     : : : "r12", "r1"
   );
 
-  // Wait for next VDP interrupt
-  VDP_WAIT_VBLANK;
+  // Let it run for 10 frames so the NTSC/PAL difference grows ~10x
+  for (int i = 0; i < 10; i++) VDP_WAIT_VBLANK_CRU;
 
   // Read timer and stop it
   __asm__(
@@ -48,10 +48,6 @@ int isPal() {
   tputs_rom("\n");
 */
 
-  // NTSC (60Hz): ~782 ticks elapsed, remaining ~15601
-  // PAL  (50Hz): ~939 ticks elapsed, remaining ~15444
-  // However in practice there is a delay gettting the timer started, so actual elapsed ticks will be less.
-  // On MAME with evpc 9938 set to PAL, I measure 15722 remaining, and in NTSC I measure 16300.
-  // On js99er, with F18A enabled, NTSC produces 16189, and TMS9918 produces 15804
-  return t < 15800;
+  // 10 frames: NTSC ~8563 remaining, PAL ~7003 remaining; threshold 7700
+  return t < 7700;
 }
