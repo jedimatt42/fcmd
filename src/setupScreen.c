@@ -11,6 +11,12 @@
 #include <conio.h>
 
 int isF18A() {
+  // Ensure a known locked state before unlocking. If the F18A is already
+  // unlocked (for example after a soft reset out of an 80x30 session), the
+  // unlock sequence does not behave deterministically and the GPU test below
+  // can fail. lock_f18a() writes VR50 bit 7, which reboots the F18A and
+  // re-locks it when it is unlocked, and is a no-op when already locked.
+  lock_f18a();
   unlock_f18a();
   char testcode[6] = { 0x04, 0xE0, 0x3F, 0x00, 0x03, 0x40 };
   vdpmemcpy(0x3F00, testcode, 6);
