@@ -303,9 +303,8 @@ int gfx_setup_mode(int mode, int sprite_mode, int flags) {
     if (vdp_type == VDP_9938 || vdp_type == VDP_9958) {
         VDP_SET_REGISTER(0x0e, 0);
     }
-    if (vdp_type == VDP_F18A && mode != GFX_MODE_F18A_TEXT80X30) {
-        bk_lock_f18a();
-    }
+    // The F18A is locked by gfx_screen() before dispatch; mode setup routines
+    // are responsible for unlocking it again if they need enhanced registers.
     if (mode == GFX_MODE_GRAPHICS1) return setup_graphics1();
     if (mode == GFX_MODE_TEXT40) return setup_text40();
     if (mode == GFX_MODE_GRAPHICS2) return setup_graphics2();

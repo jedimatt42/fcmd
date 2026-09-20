@@ -107,6 +107,13 @@ int gfx_screen(int mode, int sprite_mode, int flags) {
         return GFX_ERR_UNSUPPORTED;
     }
     GFX_VDP_GUARD();
+    // Lock the F18A before disabling the GPU scroll. Its VR54/VR55 writes
+    // load and trigger the GPU, so they must not land while the enhanced
+    // registers are unlocked (an unlocked GPU PC of 0 would start executing
+    // VRAM at >0000). Locking also guarantees set_text80x30_color_raw()'s
+    // unlock sequence starts from a known-locked state; calling the F18A
+    // unlock twice in a row re-locks it.
+    if (vdp_type == VDP_F18A) bk_lock_f18a();
     bk_disable_gpu_scroll();
     int previous_sprite_mode = gfx_sprite_mode;
     gfx_sprite_mode = sprite_mode;
