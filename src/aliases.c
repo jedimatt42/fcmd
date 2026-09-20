@@ -5,6 +5,7 @@
 #include "dictionary.h"
 #include "terminal.h"
 #include "string.h"
+#include "strutil.h"
 
 // There is one defined in b4_variables.c, same bank 4, so safe to link to
 void to_upper(char* name);
@@ -36,9 +37,14 @@ void alias_set(char* name, char* value) {
 }
 
 char* alias_get(char* name) {
-  to_upper(name);
+  // upcase on a copy so we do not mutate the caller's buffer. The caller may
+  // hand us a token that contains more than just the alias name (for example an
+  // assignment like NAME=value), and that value must keep its case.
+  char key[256];
+  bk_strncpy(key, name, 255);
+  to_upper(key);
 
-  char* val = (char*) dict_get(&system_dict, DE_TYPE_ALIAS, name) ;
+  char* val = (char*) dict_get(&system_dict, DE_TYPE_ALIAS, key) ;
   if (val) {
     return val;
   }
