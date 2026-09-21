@@ -1,0 +1,22 @@
+MEMORY
+{
+  upper_exp  (wx) : ORIGIN = 0xA000, LENGTH = 0x6000
+}
+
+SECTIONS
+{
+  header : {
+    objects/_header.o(.text)
+  } >upper_exp
+
+  .text : {
+  } >upper_exp
+
+  .data : {
+    * (.data);
+  } >upper_exp
+
+  .bss ALIGN(2) : {
+    *(.bss);
+  } >upper_exp
+}
