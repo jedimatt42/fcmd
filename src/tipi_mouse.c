@@ -32,6 +32,10 @@ void mouse_read(struct MouseData* mouseData) {
     // contract with TIPI is that this will always read 3 bytes.
     tipi_recvmsg(&readcount, (char*)mouseData);
     tipi_off();
+    // TIPI forwards the raw /dev/input/mice PS/2 packet. Its first byte holds
+    // the buttons plus an always-set bit and the dx/dy sign and overflow bits.
+    // Only the defined button bits belong in the public buttons field.
+    mouseData->buttons = mouseData->buttons & (MB_LEFT | MB_RIGHT | MB_MID);
   }
 }
 
