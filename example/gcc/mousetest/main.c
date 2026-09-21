@@ -10,9 +10,6 @@
  * no-ops, so the movement checks still hold.
  */
 
-/* MP_* constants are internal to tipi_mouse.h and not part of the SDK */
-#define MOUSE_PTR_BUSY 6
-
 static int bounds_ok;
 static unsigned int seen_buttons;
 
@@ -102,7 +99,7 @@ static void test_mouse(void) {
     }
     term_putc('\n');
 
-    mouse_set_pointer(MOUSE_PTR_BUSY);
+    mouse_set_pointer(MP_BUSY);
     FC_OBSERVE("the pointer should change to the busy style");
     FC_WAIT("press a key to continue");
     mouse_set_pointer(0);

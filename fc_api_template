@@ -357,6 +357,16 @@ struct MouseData {
 #define MB_MID 0x04
 
 /*
+  Mouse pointer styles for mouse_set_pointer
+ */
+#define MP_NORMAL       0
+#define MP_SCROLL_DOWN  2
+#define MP_SCROLL_UP    3
+#define MP_PAGE_DOWN    4
+#define MP_PAGE_UP      5
+#define MP_BUSY         6
+
+/*
   State for reentrant bufferedio socket api
  */
 struct SocketBuffer {
