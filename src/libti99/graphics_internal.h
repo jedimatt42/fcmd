@@ -29,9 +29,6 @@ int gfx_is_pixel_mode(int mode);
 int gfx_is_yjk_mode(int mode);
 int gfx_is_paged_mode(int mode);
 int gfx_color_valid(int color);
-void gfx_set_mode_info(int mode, int width, int height, int physical_width,
-                       int physical_height, int colors, int color_model,
-                       int capabilities, int page_count);
 
 int gfx_setup_mode(int mode, int sprite_mode, int flags);
 int gfx_clear_mode(int color);
@@ -39,12 +36,6 @@ int gfx_get_pixel_base(unsigned int base, int x, int y, int* color);
 int gfx_set_pixel_base(unsigned int base, int x, int y, int color, int op);
 
 #ifdef MYBANK
-DECLARE_BANKED_VOID(gfx_set_mode_info, BANK(14), bk_gfx_set_mode_info,
-               (int mode, int width, int height, int physical_width,
-                int physical_height, int colors, int color_model,
-                int capabilities, int page_count),
-               (mode, width, height, physical_width, physical_height, colors,
-                color_model, capabilities, page_count))
 DECLARE_BANKED(gfx_is_text_mode, BANK(14), int, bk_gfx_is_text_mode,
                (int mode), (mode))
 DECLARE_BANKED(gfx_is_yjk_mode, BANK(14), int, bk_gfx_is_yjk_mode,

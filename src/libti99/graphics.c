@@ -70,33 +70,6 @@ static int valid_sprite_mode(int mode) {
            mode == GFX_SPRITE_16X16 || mode == GFX_SPRITE_16X16_MAG;
 }
 
-void gfx_set_mode_info(int mode, int width, int height, int physical_width,
-                       int physical_height, int colors, int color_model,
-                       int capabilities, int page_count) {
-    if (vdp_type == VDP_F18A) capabilities |= GFX_CAP_PALETTE;
-    gfx_info.vdp_type = vdp_type;
-    gfx_info.isPal = pal;
-    gfx_info.mode = mode;
-    gfx_info.width = width;
-    gfx_info.height = height;
-    gfx_info.physical_width = physical_width;
-    gfx_info.physical_height = physical_height;
-    gfx_info.colors = colors;
-    gfx_info.color_model = color_model;
-    gfx_info.sprite_count = (capabilities & GFX_CAP_SPRITES) ? 32 : 0;
-    gfx_info.display_page = 0;
-    gfx_info.draw_page = 0;
-    gfx_info.page_count = page_count;
-    gfx_info.capabilities = capabilities;
-    gfx_info.image_addr = gImage;
-    gfx_info.pattern_addr = gPattern;
-    gfx_info.color_addr = gColor;
-    gfx_info.sprite_addr = gSprite;
-    gfx_info.sprite_pattern_addr = gSpritePat;
-    gfx_cursor_x = 0;
-    gfx_cursor_y = 0;
-}
-
 int gfx_screen(int mode, int sprite_mode, int flags) {
     if (!valid_sprite_mode(sprite_mode)) return GFX_ERR_INVALID;
     if (mode == GFX_MODE_F18A_TEXT80X30 &&

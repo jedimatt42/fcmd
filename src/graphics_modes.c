@@ -21,6 +21,39 @@ static void reload_charset(void) {
     }
 }
 
+/*
+ * Same-bank helper (this module runs in BANK(1)); it is called only from the
+ * mode setup routines below, so it does not need to be a banked call. Keeping
+ * it local avoids passing nine arguments through the bank trampoline, which
+ * cannot carry stack arguments (F7).
+ */
+static void gfx_set_mode_info(int mode, int width, int height, int physical_width,
+                              int physical_height, int colors, int color_model,
+                              int capabilities, int page_count) {
+    if (vdp_type == VDP_F18A) capabilities |= GFX_CAP_PALETTE;
+    gfx_info.vdp_type = vdp_type;
+    gfx_info.isPal = pal;
+    gfx_info.mode = mode;
+    gfx_info.width = width;
+    gfx_info.height = height;
+    gfx_info.physical_width = physical_width;
+    gfx_info.physical_height = physical_height;
+    gfx_info.colors = colors;
+    gfx_info.color_model = color_model;
+    gfx_info.sprite_count = (capabilities & GFX_CAP_SPRITES) ? 32 : 0;
+    gfx_info.display_page = 0;
+    gfx_info.draw_page = 0;
+    gfx_info.page_count = page_count;
+    gfx_info.capabilities = capabilities;
+    gfx_info.image_addr = gImage;
+    gfx_info.pattern_addr = gPattern;
+    gfx_info.color_addr = gColor;
+    gfx_info.sprite_addr = gSprite;
+    gfx_info.sprite_pattern_addr = gSpritePat;
+    gfx_cursor_x = 0;
+    gfx_cursor_y = 0;
+}
+
 static void set_resources(unsigned int pab, unsigned int buffer,
                           unsigned int file_buffer, unsigned int size) {
     bk_vdp_screen_mode_changed_ex(VDP_SCREENMODE_GRAPHICS, pab, buffer,
@@ -107,7 +140,7 @@ static int setup_graphics1(void) {
     displayHeight = 24;
     clear_graphics1();
     set_resources(0x3a00, 0x2800, 0x2900, 0x0c00);
-    bk_gfx_set_mode_info(GFX_MODE_GRAPHICS1, 32, 24, 256, 192, 16,
+    gfx_set_mode_info(GFX_MODE_GRAPHICS1, 32, 24, 256, 192, 16,
                          GFX_COLOR_INDEXED, GFX_CAP_TILES | GFX_CAP_SPRITES |
                          GFX_CAP_SPRITE_STATUS, 1);
     return GFX_OK;
@@ -117,7 +150,7 @@ static int setup_text40(void) {
     bk_vdp_screenmode(VDP_SCREENMODE_TEXT);
     displayWidth = 40;
     displayHeight = 24;
-    bk_gfx_set_mode_info(GFX_MODE_TEXT40, 40, 24, 40, 24, 16,
+    gfx_set_mode_info(GFX_MODE_TEXT40, 40, 24, 40, 24, 16,
                          GFX_COLOR_INDEXED, GFX_CAP_TEXT, 1);
     reload_charset();
     bk_term_cls();
@@ -140,7 +173,7 @@ static int setup_graphics2(void) {
     displayHeight = 192;
     clear_bitmap();
     set_resources(0x1d00, 0x1c00, 0x1e00, 0x0200);
-    bk_gfx_set_mode_info(GFX_MODE_GRAPHICS2, 256, 192, 256, 192, 16,
+    gfx_set_mode_info(GFX_MODE_GRAPHICS2, 256, 192, 256, 192, 16,
                          GFX_COLOR_INDEXED, GFX_CAP_PIXELS | GFX_CAP_LINES |
                          GFX_CAP_CIRCLES | GFX_CAP_PAINT | GFX_CAP_SPRITES |
                          GFX_CAP_SPRITE_STATUS, 1);
@@ -162,7 +195,7 @@ static int setup_multicolor(void) {
     displayHeight = 48;
     clear_multicolor();
     set_resources(0x3b00, 0x2800, 0x2900, 0x0c00);
-    bk_gfx_set_mode_info(GFX_MODE_MULTICOLOR, 64, 48, 256, 192, 16,
+    gfx_set_mode_info(GFX_MODE_MULTICOLOR, 64, 48, 256, 192, 16,
                          GFX_COLOR_INDEXED, GFX_CAP_PIXELS | GFX_CAP_LINES |
                          GFX_CAP_CIRCLES | GFX_CAP_PAINT | GFX_CAP_SPRITES |
                          GFX_CAP_SPRITE_STATUS, 1);
@@ -177,7 +210,7 @@ static int setup_text80(void) {
     displayHeight = 26;
 #endif
     displayWidth = 80;
-    bk_gfx_set_mode_info(GFX_MODE_TEXT80, displayWidth, displayHeight,
+    gfx_set_mode_info(GFX_MODE_TEXT80, displayWidth, displayHeight,
                          displayWidth, displayHeight, 16, GFX_COLOR_INDEXED,
                          GFX_CAP_TEXT, 1);
     reload_charset();
@@ -189,7 +222,7 @@ static int setup_text80x30(void) {
     bk_vdp_screenmode(VDP_SCREENMODE_TEXT80X30);
     displayWidth = 80;
     displayHeight = 30;
-    bk_gfx_set_mode_info(GFX_MODE_F18A_TEXT80X30, 80, 30, 80, 30, 16,
+    gfx_set_mode_info(GFX_MODE_F18A_TEXT80X30, 80, 30, 80, 30, 16,
                          GFX_COLOR_ATTRIBUTES, GFX_CAP_TEXT | GFX_CAP_ATTRIBUTES |
                          GFX_CAP_TILES | GFX_CAP_SPRITES | GFX_CAP_SPRITE_STATUS,
                          1);
@@ -291,7 +324,7 @@ static int setup_yamaha_bitmap(int mode, int flags) {
     nTextFlags = TEXT_FLAG_IS_BITMAPPED;
     displayWidth = width;
     displayHeight = height;
-    bk_gfx_set_mode_info(mode, width, height, width, height, colors,
+    gfx_set_mode_info(mode, width, height, width, height, colors,
                          color_model, capabilities, page_count);
     if (mode == GFX_MODE_GRAPHICS3) clear_bitmap();
     else clear_yamaha();
