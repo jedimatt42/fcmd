@@ -6,6 +6,20 @@
 #include "globals.h"
 #include "terminal.h"
 #include "vdp_internal.h"
+#include "loadFont.h"
+#include "oem.h"
+
+/*
+ * Graphics modes overwrite the VDP pattern/name tables that held the text
+ * character set, so the font must be reloaded when returning to a text mode.
+ * Mirrors ForceCommand's setupScreen(): try the configured font file, else fall
+ * back to the ROM character definitions.
+ */
+static void reload_charset(void) {
+    if (bk_load_font()) {
+        bk_defineChars();
+    }
+}
 
 static void set_resources(unsigned int pab, unsigned int buffer,
                           unsigned int file_buffer, unsigned int size) {
@@ -105,6 +119,7 @@ static int setup_text40(void) {
     displayHeight = 24;
     bk_gfx_set_mode_info(GFX_MODE_TEXT40, 40, 24, 40, 24, 16,
                          GFX_COLOR_INDEXED, GFX_CAP_TEXT, 1);
+    reload_charset();
     bk_term_cls();
     return GFX_OK;
 }
@@ -165,6 +180,7 @@ static int setup_text80(void) {
     bk_gfx_set_mode_info(GFX_MODE_TEXT80, displayWidth, displayHeight,
                          displayWidth, displayHeight, 16, GFX_COLOR_INDEXED,
                          GFX_CAP_TEXT, 1);
+    reload_charset();
     bk_term_cls();
     return GFX_OK;
 }
@@ -177,6 +193,7 @@ static int setup_text80x30(void) {
                          GFX_COLOR_ATTRIBUTES, GFX_CAP_TEXT | GFX_CAP_ATTRIBUTES |
                          GFX_CAP_TILES | GFX_CAP_SPRITES | GFX_CAP_SPRITE_STATUS,
                          1);
+    reload_charset();
     bk_term_cls();
     return GFX_OK;
 }

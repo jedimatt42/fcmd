@@ -59,21 +59,18 @@ A call therefore proceeds:
 1. The client stores the API index in `>2002` (`FC_API_INDEX`).
 2. The client loads the address in `>2000` (`FC_SYS`) and calls it, passing the
    function arguments per the C ABI.
-3. `fc_api()` (`src/fc_api.c`, bank 0) runs:
-   - makes room on the stack for a trampoline data structure,
-   - reads the API index from `@trampdata` (`>2002`),
-   - stores the stack address back into `@trampdata`,
-   - indexes the API table (each entry is two words: function address, bank
-     address) at `BASE_ADDR + 0x80 + index * 4`,
-   - loads the cartridge trampoline (`@trampoline`) with that data,
-   - returns the target function's return value.
-4. The cartridge trampoline (`src/trampoline.asm`) switches to the target bank,
-   calls the function, switches back to the return bank, and returns to
-   `fc_api()`.
+3. `fc_api()` (`src/fc_api.c`, bank 0) makes room on the stack for a trampoline
+   data structure, saves the caller's return address, reads the API index from
+   `@trampdata` (`>2002`), points `@trampdata` at the stack block, indexes the
+   API table (each entry is two words: function address, bank address) at
+   `BASE_ADDR + 0x80 + index * 4`, and calls the cartridge trampoline.
+4. The cartridge trampoline (`src/trampoline.asm`) makes its own 8 bytes of
+   stack space, switches to the target bank, calls the function, switches back,
+   restores its state, and returns to `fc_api()`.
 
-`fc_api()` clobbers `r0`, uses `r10`/`r11` as the stack/return, and uses `r12`
-as an index register. Argument registers `r1`-`r7` are preserved through the
-trampoline.
+`fc_api()` and the trampoline use `r0`, `r11`, and `r12`; argument registers
+`r1`-`r7` pass through untouched. The trampoline adjusts `r10`, which is why
+banked-callable functions must not use stack arguments (see below).
 
 ## Bank trampoline and trampdata
 
@@ -87,6 +84,15 @@ trampoline.
 
 For cartridge banking the bank number is latched by writing to an address in
 `>6000`..`>7FFE`, so `TAR_BANK`/`RET_BANK` are addresses, not numbers.
+
+The trampoline reserves 8 bytes below `r10` for its save data and calls the
+target with the adjusted `r10`. Target functions read arguments beyond the
+seventh from the stack relative to `r10`, so **a banked-callable function must
+use at most seven `int` arguments**. Eight or more silently read the wrong
+values; this corrupted `gfx_set_mode_info`'s capability bits and
+`gfx_circle`/`gfx_copy` arguments. Use a struct pointer for complex parameter
+sets instead of adding arguments. The SAMS `stramp` has the same limitation
+(shifting `r10` by 10).
 
 Two consequences:
 
@@ -117,19 +123,20 @@ API calls will dispatch incorrectly.
 ForceCommand API functions follow the tms9900-gcc C ABI:
 
 - The first seven `int`-sized arguments are passed in `r1`-`r7`.
-- Additional arguments are placed on the stack at `r10` and above, with the
-  return address after them.
-- `r0` is a scratch register and is not used for arguments or return values.
 - Return values are returned in `r1`.
-- `r10` is the stack pointer, `r11` the return address, and `r12` is used by the
-  bank trampolines (saved and restored around the target call).
+- `r0`-`r8` are caller-saved; `r9`, `r12`, `r13`, `r14`, `r15` are callee-saved.
+  `r10` is the stack pointer and `r11` the return address.
 
-Two practical rules:
+Rules:
 
 - Use `int` (16-bit) for parameters. Per the ForceCommand headers, **8-bit
   parameters do not pass or return correctly through the banked call ABI**.
-- No API function should be declared with 8 or more arguments without care; the
-  index fix makes them work, but they are still the most fragile case.
+- **Banked-callable functions must take at most seven arguments.** The bank
+  trampolines adjust `r10` before calling the target, so stack arguments are
+  misaligned. For more parameters, pass a pointer to a struct.
+- Variadic API functions have the same problem (variadic arguments land on the
+  stack); avoid exposing variadic functions through the API.
+- The API index does not travel in a register; see the section above.
 
 ## Calling between banks inside ForceCommand
 
@@ -164,6 +171,11 @@ They then call `FC_SAMS_TRAMP` (`>2004`), which is `stramp()`
 (`src/sams_tramp.asm`). `stramp` maps the target pages into `>A000`/`>B000`
 (relative to `procInfoPtr->base_page`), calls the function, and maps the caller
 pages back. SAMS page ids are relative to the process, not absolute.
+
+Unlike the cartridge/console `trampoline`, `stramp` still moves `r10` (by 10
+bytes) to hold its save data, so a SAMS-banked function with more than seven
+`int` arguments would read its stack arguments from the wrong place. Keep
+SAMS-banked functions to seven or fewer arguments.
 
 ## Non-local exit
 

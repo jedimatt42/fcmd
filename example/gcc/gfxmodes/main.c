@@ -178,20 +178,21 @@ static void show_demo(int mode, struct GfxInformation* info) {
     }
 
     if (info->capabilities & GFX_CAP_PIXELS) {
+        int r;
         if (!is_yjk(mode)) {
             gfx_clear(GFX_COLOR_DEFAULT);
         }
-        gfx_line(info->width / 6, info->height / 6,
-                 info->width * 5 / 6, info->height * 5 / 6,
-                 color, GFX_LINE_NORMAL, GFX_OP_PSET);
-        gfx_line(info->width * 5 / 6, info->height / 6,
-                 info->width / 6, info->height * 5 / 6,
-                 color, GFX_LINE_NORMAL, GFX_OP_PSET);
-        gfx_line(info->width / 8, info->height / 8,
-                 info->width * 7 / 8, info->height * 7 / 8,
-                 COLOR_CYAN, GFX_LINE_BOX, GFX_OP_PSET);
-        gfx_circle(info->width / 2, info->height / 2, info->width / 8,
+        /* Border box and a centered circle in the same color, so the Graphics
+           II color-group constraint cannot make the shapes ambiguous. */
+        gfx_line(2, 2, info->width - 3, info->height - 3,
+                 color, GFX_LINE_BOX, GFX_OP_PSET);
+        r = (info->width < info->height ? info->width : info->height) / 4;
+        gfx_circle(info->width / 2, info->height / 2, r,
                    color, 0, 360, 100, GFX_OP_PSET);
+        /* A filled rectangle in a corner shows a second color and fill. */
+        gfx_line(info->width / 16, info->height / 16,
+                 info->width * 3 / 8, info->height / 4,
+                 COLOR_CYAN, GFX_LINE_BOX | GFX_LINE_FILL, GFX_OP_PSET);
     }
 }
 
