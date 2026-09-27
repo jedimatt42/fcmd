@@ -17,9 +17,13 @@ void fc_api() {
         "ai r10,-8\n\t"
         // stash caller return address
         "mov r11,@6(r10)\n\t"
+        // The caller places the API index in the fixed word at >2002 (trampdata).
+        // Do NOT read it from r0: the C backend uses r0 as a scratch register
+        // when setting up calls with 8 or more arguments, which clobbers it.
+        "mov @trampdata,r0\n\t"
         // set trampdata to allocated struct on stack
         "mov r10,@trampdata\n\t"
-        // r0 is set by caller to index of api entry in api table, multiply by 2 as each entry is 2 words
+        // r0 is the index of the api entry, multiply by 2 as each entry is 2 words
         "sla r0,2\n\t"
         // add beginning of api table
         "ai  r0,>" STR(BASE_80_HEX_STR) "\n\t"

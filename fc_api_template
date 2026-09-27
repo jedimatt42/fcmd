@@ -13,12 +13,18 @@ int main(char* args);
 
 #define FC_SYS *(int *)0x2000
 
+/*
+ * Fixed word used to pass the API index into FC_SYS. On the TI the C backend
+ * uses r0 as a scratch register when setting up calls with 8 or more arguments,
+ * so the index cannot reliably travel in r0. fc_api() reads this word before
+ * overwriting it with its own trampoline data pointer.
+ */
+#define FC_API_INDEX (*(volatile int *)0x2002)
+
 #define DECL_FC_API_CALL(index, func, return_type, arg_sig, args)     \
     static inline return_type func arg_sig                            \
     {                                                                 \
-        __asm__("li r0,%0 ; " #func                                   \
-                :                                                     \
-                : "i"(index));                                        \
+        FC_API_INDEX = (index);                                       \
         return_type(*tramp) arg_sig = (return_type(*) arg_sig)FC_SYS; \
         return tramp args;                                            \
     }
