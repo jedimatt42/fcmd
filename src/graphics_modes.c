@@ -303,7 +303,7 @@ static int setup_yamaha_bitmap(int mode, int flags) {
         capabilities |= GFX_CAP_SPRITES | GFX_CAP_SPRITE_STATUS;
         break;
     case GFX_MODE_GRAPHICS6:
-        mode0 = 12; width = 512; colors = 16;
+        mode0 = 10; width = 512; colors = 16;
         color_model = GFX_COLOR_INDEXED;
         buffer = 0xd500; file_buffer = 0xd600; file_buffer_size = 0x2600;
         sprite_attr = 0xf8; sprite_pattern = 0x1e;
