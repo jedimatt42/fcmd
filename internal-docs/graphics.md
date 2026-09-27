@@ -341,13 +341,16 @@ its color argument is `-1`.
 `style`. A normal line uses the two endpoints directly. Box and fill styles
 interpret the endpoints as opposite corners.
 
-`gfx_circle` draws a full circle of the given `radius`. `gfx_ellipse` draws a
-full ellipse with semi-axes `radius_x` and `radius_y`; a circle is the
-`radius_x == radius_y` case. Both use `bk_gfx_pset` (so they need
-`GFX_CAP_CIRCLES`) and return `GFX_ERR_INVALID` for non-positive radii,
-`GFX_ERR_RANGE` if the shape would fall outside the display, or
-`GFX_ERR_WRONG_MODE` when the mode has no pixel representation. There is no
-arc/partial-angle form: banked calls cannot carry more than seven arguments.
+`gfx_circle` draws a full circle of the given `radius`. In the 512-wide modes
+(GRAPHICS5/GRAPHICS6) the VDP uses half-width pixels, so `gfx_circle` doubles
+the horizontal radius to keep the shape round on screen. `gfx_ellipse` draws a
+full ellipse with semi-axes `radius_x` and `radius_y` (a circle is the
+`radius_x == radius_y` case) using the exact pixel radii. Both use
+`bk_gfx_pset` (so they need `GFX_CAP_CIRCLES`) and return `GFX_ERR_INVALID` for
+non-positive radii, `GFX_ERR_RANGE` if the shape would fall outside the
+display, or `GFX_ERR_WRONG_MODE` when the mode has no pixel representation.
+There is no arc/partial-angle form: banked calls cannot carry more than seven
+arguments.
 
 `gfx_paint` flood-fills the contiguous region containing `(x, y)` until the
 specified border color is reached. It may use a software implementation on

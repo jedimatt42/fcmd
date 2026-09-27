@@ -65,6 +65,19 @@ static void gfx_vdp_memset(unsigned int address, int value, int count) {
     while (count--) VDPWD = value;
 }
 
+/*
+ * Graphics II / Multicolor need a unique pattern (name table) entry per screen
+ * cell. The name table is filled with 0..255 repeated, matching the VDP's
+ * automatic selection of the three 2K pattern banks (the "three repeats" trick).
+ */
+static void init_bitmap_names(unsigned int address) {
+    int i;
+    gfx_vdp_set_address(address, 1);
+    for (i = 0; i < 768; i++) {
+        VDPWD = (unsigned char)i;
+    }
+}
+
 static void set_tms_registers(int mode1, int mode0, int sit, int ct,
                               int pdt, int sal, int sdt) {
     VDP_SET_REGISTER(VDP_REG_MODE1, VDP_MODE1_16K);
@@ -85,16 +98,32 @@ static void clear_graphics1(void) {
     vdpmemset(gSprite, 208, 128);
 }
 
+/*
+ * Multicolor uses a different scheme from Graphics II. A pattern name selects an
+ * 8-byte pattern, and only bytes (char_row & 3)*2 and +1 are displayed for that
+ * row; so each pattern serves four rows and names are made unique per four-row
+ * group with ((char_row>>2)<<5 | char_col).
+ */
+static void init_multicolor_names(unsigned int address) {
+    int i;
+    gfx_vdp_set_address(address, 1);
+    for (i = 0; i < 768; i++) {
+        int row = i >> 5;
+        int col = i & 31;
+        VDPWD = (unsigned char)(((row >> 2) << 5) | col);
+    }
+}
+
 static void clear_bitmap(void) {
     vdpmemset(gPattern, 0, 0x1800);
-    vdpmemset(gImage, 0, 768);
+    init_bitmap_names(gImage);
     vdpmemset(gColor, (gfx_foreground << 4) | gfx_background, 0x1800);
     if (gSprite) vdpmemset(gSprite, 208, 128);
 }
 
 static void clear_multicolor(void) {
     vdpmemset(gPattern, (gfx_background << 4) | gfx_background, 0x800);
-    vdpmemset(gImage, 0, 768);
+    init_multicolor_names(gImage);
     vdpmemset(gSprite, 208, 128);
 }
 
@@ -103,9 +132,9 @@ static unsigned int bitmap_bytes(void) {
         return (unsigned int)gfx_info.width * gfx_info.height;
     }
     if (gfx_info.mode == GFX_MODE_GRAPHICS5) {
-        return ((unsigned int)gfx_info.width * gfx_info.height) >> 2;
+        return (unsigned int)(gfx_info.width >> 2) * gfx_info.height;
     }
-    return ((unsigned int)gfx_info.width * gfx_info.height) >> 1;
+    return (unsigned int)(gfx_info.width >> 1) * gfx_info.height;
 }
 
 static unsigned char packed_color(int color) {
@@ -274,17 +303,15 @@ static int setup_yamaha_bitmap(int mode, int flags) {
         capabilities |= GFX_CAP_SPRITES | GFX_CAP_SPRITE_STATUS;
         break;
     case GFX_MODE_GRAPHICS6:
-        mode0 = 10; width = 512; colors = 16;
+        mode0 = 12; width = 512; colors = 16;
         color_model = GFX_COLOR_INDEXED;
         buffer = 0xd500; file_buffer = 0xd600; file_buffer_size = 0x2600;
-        sit = 0x3f;
         sprite_attr = 0xf8; sprite_pattern = 0x1e;
         break;
     case GFX_MODE_GRAPHICS7:
         mode0 = 14; width = 256; colors = 256;
         color_model = GFX_COLOR_DIRECT;
         buffer = 0xd500; file_buffer = 0xd600; file_buffer_size = 0x2600;
-        sit = 0x3f;
         sprite_attr = 0xf8; sprite_pattern = 0x1e;
         break;
     default:

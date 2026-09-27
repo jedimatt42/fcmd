@@ -179,6 +179,15 @@ static void show_demo(int mode, struct GfxInformation* info) {
 
     if (info->capabilities & GFX_CAP_PIXELS) {
         int r;
+        /* A second color that is valid for the active mode's palette. */
+        int color2 = color;
+        if (!is_yjk(mode)) {
+            color2 = (info->colors >= 16) ? COLOR_CYAN
+                                          : (info->colors > 1 ? info->colors - 1 : 0);
+            if (color2 == color) {
+                color2 = (color == 0) ? 1 : 0;
+            }
+        }
         if (!is_yjk(mode)) {
             gfx_clear(GFX_COLOR_DEFAULT);
         }
@@ -191,11 +200,11 @@ static void show_demo(int mode, struct GfxInformation* info) {
                    color, GFX_OP_PSET);
         /* An ellipse in the opposite corner shows the rx/ry form. */
         gfx_ellipse(info->width * 3 / 4, info->height * 3 / 4, r, r / 2,
-                    COLOR_CYAN, GFX_OP_PSET);
+                    color2, GFX_OP_PSET);
         /* A filled rectangle in a corner shows a second color and fill. */
         gfx_line(info->width / 16, info->height / 16,
                  info->width * 3 / 8, info->height / 4,
-                 COLOR_CYAN, GFX_LINE_BOX | GFX_LINE_FILL, GFX_OP_PSET);
+                 color2, GFX_LINE_BOX | GFX_LINE_FILL, GFX_OP_PSET);
     }
 }
 
@@ -224,7 +233,12 @@ static void run_mode(int mode, int vdp, int supported) {
         gfx_get_info(&mi);
         got_mode = mi.mode;
         caps = mi.capabilities;
-        color_ok = (gfx_color(COLOR_WHITE, COLOR_BLACK, COLOR_BLACK) == GFX_OK);
+        {
+            int fg = (mi.colors > 15) ? COLOR_WHITE
+                                      : (mi.colors > 1 ? mi.colors - 1
+                                                       : GFX_COLOR_DEFAULT);
+            color_ok = (gfx_color(fg, GFX_COLOR_DEFAULT, 0) == GFX_OK);
+        }
         clear_result = gfx_clear(GFX_COLOR_DEFAULT);
         show_demo(mode, &mi);
         if (is_text(mode)) {

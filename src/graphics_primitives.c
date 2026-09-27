@@ -71,10 +71,11 @@ static int gfx_ellipse_raw(int center_x, int center_y, int radius_x,
         int x = radius_x;
         int y = 0;
         int error = 1 - radius_x;
-        int k100 = (radius_y * 100) / radius_x;
+        /* Unsigned division: signed variable division is miscompiled here. */
+        unsigned int k100 = ((unsigned int)radius_y * 100u) / (unsigned int)radius_x;
         while (x >= y) {
-            int ys = (y * k100) / 100;
-            int xs = (x * k100) / 100;
+            int ys = (int)(((unsigned int)y * k100) / 100u);
+            int xs = (int)(((unsigned int)x * k100) / 100u);
             int result;
             result = bk_gfx_pset(center_x + x, center_y + ys, color, op); if (result) return result;
             result = bk_gfx_pset(center_x + y, center_y + xs, color, op); if (result) return result;
@@ -97,7 +98,10 @@ static int gfx_ellipse_raw(int center_x, int center_y, int radius_x,
 }
 
 int gfx_circle(int center_x, int center_y, int radius, int color, int op) {
-    return gfx_ellipse_raw(center_x, center_y, radius, radius, color, op);
+    /* The 512-wide modes (GRAPHICS5/GRAPHICS6) use half-width pixels, so the
+       horizontal pixel radius is doubled to keep the shape round on screen. */
+    int radius_x = (gfx_info.width == 512) ? radius * 2 : radius;
+    return gfx_ellipse_raw(center_x, center_y, radius_x, radius, color, op);
 }
 
 int gfx_ellipse(int center_x, int center_y, int radius_x, int radius_y,

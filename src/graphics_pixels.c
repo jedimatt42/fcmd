@@ -21,7 +21,7 @@ static int pixel_address(unsigned int base, int x, int y,
     if (mode == GFX_MODE_GRAPHICS2 || mode == GFX_MODE_GRAPHICS3) {
         unsigned int name = gImage + (unsigned int)(y >> 3) * 32 + (x >> 3);
         unsigned int pattern = vram_read(name);
-        unsigned int offset = ((unsigned int)(y >> 6) << 8) +
+        unsigned int offset = ((unsigned int)(y >> 6) << 11) +
                               (pattern << 3) + (y & 7);
         *address = gPattern + offset;
         *mask = (unsigned char)(0x80 >> (x & 7));
@@ -29,13 +29,13 @@ static int pixel_address(unsigned int base, int x, int y,
         return GFX_OK;
     }
     if (mode == GFX_MODE_MULTICOLOR) {
-        int row = y >> 1;
-        int col = x >> 1;
-        int pattern_row = row >> 2;
-        unsigned int name = gImage + (unsigned int)pattern_row * 32 + col;
+        int char_row = y >> 1;
+        int char_col = x >> 1;
+        int dot_row = y & 1;
+        unsigned int name = gImage + (unsigned int)char_row * 32 + char_col;
         unsigned int pattern = vram_read(name);
-        *address = gPattern + (pattern << 3) + ((row & 3) << 1) + (y & 1);
-        *mask = 0xf0;
+        *address = gPattern + (pattern << 3) + ((char_row & 3) << 1) + dot_row;
+        *mask = (unsigned char)((x & 1) ? 0x0f : 0xf0);
         *shift = (x & 1) ? 0 : 4;
         return GFX_OK;
     }
