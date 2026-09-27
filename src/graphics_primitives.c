@@ -52,39 +52,57 @@ int gfx_line(int x1, int y1, int x2, int y2, int color, int style, int op) {
     return GFX_OK;
 }
 
-int gfx_circle(int center_x, int center_y, int radius, int color,
-               int start_angle, int end_angle, int aspect, int op) {
+/*
+ * Shared midpoint-circle algorithm with the vertical component scaled to
+ * radius_y / radius_x, which draws an ellipse. A circle is the radius_x ==
+ * radius_y case. Only full (0..360) shapes are supported.
+ */
+static int gfx_ellipse_raw(int center_x, int center_y, int radius_x,
+                           int radius_y, int color, int op) {
     if (!(gfx_info.capabilities & GFX_CAP_CIRCLES)) return GFX_ERR_WRONG_MODE;
-    if (radius < 0 || aspect <= 0 || start_angle < 0 || end_angle < 0 ||
-        start_angle > 360 || end_angle > 360) return GFX_ERR_INVALID;
-    if (start_angle != 0 || end_angle != 360) return GFX_ERR_UNSUPPORTED;
+    if (radius_x <= 0 || radius_y <= 0) return GFX_ERR_INVALID;
     if (color == GFX_COLOR_DEFAULT) color = gfx_foreground;
     if (!bk_gfx_color_valid(color)) return GFX_ERR_RANGE;
-    if (center_x - radius < 0 || center_x + radius >= gfx_info.width ||
-        center_y - (radius * aspect) / 100 < 0 ||
-        center_y + (radius * aspect) / 100 >= gfx_info.height) {
+    if (center_x - radius_x < 0 || center_x + radius_x >= gfx_info.width ||
+        center_y - radius_y < 0 || center_y + radius_y >= gfx_info.height) {
         return GFX_ERR_RANGE;
     }
-    int x = radius;
-    int y = 0;
-    int error = 1 - radius;
-    while (x >= y) {
-        int ys = (y * aspect) / 100;
-        int xs = (x * aspect) / 100;
-        int result;
-        result = bk_gfx_pset(center_x + x, center_y + ys, color, op); if (result) return result;
-        result = bk_gfx_pset(center_x + y, center_y + xs, color, op); if (result) return result;
-        result = bk_gfx_pset(center_x - y, center_y + xs, color, op); if (result) return result;
-        result = bk_gfx_pset(center_x - x, center_y + ys, color, op); if (result) return result;
-        result = bk_gfx_pset(center_x - x, center_y - ys, color, op); if (result) return result;
-        result = bk_gfx_pset(center_x - y, center_y - xs, color, op); if (result) return result;
-        result = bk_gfx_pset(center_x + y, center_y - xs, color, op); if (result) return result;
-        result = bk_gfx_pset(center_x + x, center_y - ys, color, op); if (result) return result;
-        y++;
-        if (error <= 0) error += 2 * y + 1;
-        else { x--; error += 2 * (y - x) + 1; }
+    {
+        int x = radius_x;
+        int y = 0;
+        int error = 1 - radius_x;
+        int k100 = (radius_y * 100) / radius_x;
+        while (x >= y) {
+            int ys = (y * k100) / 100;
+            int xs = (x * k100) / 100;
+            int result;
+            result = bk_gfx_pset(center_x + x, center_y + ys, color, op); if (result) return result;
+            result = bk_gfx_pset(center_x + y, center_y + xs, color, op); if (result) return result;
+            result = bk_gfx_pset(center_x - y, center_y + xs, color, op); if (result) return result;
+            result = bk_gfx_pset(center_x - x, center_y + ys, color, op); if (result) return result;
+            result = bk_gfx_pset(center_x - x, center_y - ys, color, op); if (result) return result;
+            result = bk_gfx_pset(center_x - y, center_y - xs, color, op); if (result) return result;
+            result = bk_gfx_pset(center_x + y, center_y - xs, color, op); if (result) return result;
+            result = bk_gfx_pset(center_x + x, center_y - ys, color, op); if (result) return result;
+            y++;
+            if (error <= 0) {
+                error += 2 * y + 1;
+            } else {
+                x--;
+                error += 2 * (y - x) + 1;
+            }
+        }
     }
     return GFX_OK;
+}
+
+int gfx_circle(int center_x, int center_y, int radius, int color, int op) {
+    return gfx_ellipse_raw(center_x, center_y, radius, radius, color, op);
+}
+
+int gfx_ellipse(int center_x, int center_y, int radius_x, int radius_y,
+                int color, int op) {
+    return gfx_ellipse_raw(center_x, center_y, radius_x, radius_y, color, op);
 }
 
 struct PaintPoint {

@@ -79,8 +79,17 @@ int gfx_draw(const char* commands, int color, int op) {
     return GFX_OK;
 }
 
-int gfx_copy(int source_page, int destination_page, int x1, int y1,
-             int x2, int y2, int destination_x, int destination_y, int op) {
+int gfx_copy(const struct GfxCopy* args) {
+    if (!args) return GFX_ERR_INVALID;
+    int source_page = args->source_page;
+    int destination_page = args->destination_page;
+    int x1 = args->x1;
+    int y1 = args->y1;
+    int x2 = args->x2;
+    int y2 = args->y2;
+    int destination_x = args->destination_x;
+    int destination_y = args->destination_y;
+    int op = args->op;
     if (!(gfx_info.capabilities & GFX_CAP_COPY)) return GFX_ERR_UNSUPPORTED;
     if (source_page < 0 || destination_page < 0 ||
         source_page >= gfx_info.page_count ||

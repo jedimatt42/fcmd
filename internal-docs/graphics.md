@@ -323,9 +323,9 @@ int gfx_preset(int x, int y, int color, int op);
 int gfx_point(int x, int y, int *color);
 int gfx_line(int x1, int y1, int x2, int y2,
              int color, int style, int op);
-int gfx_circle(int center_x, int center_y, int radius,
-               int color, int start_angle, int end_angle,
-               int aspect, int op);
+int gfx_circle(int center_x, int center_y, int radius, int color, int op);
+int gfx_ellipse(int center_x, int center_y, int radius_x, int radius_y,
+                int color, int op);
 int gfx_paint(int x, int y, int color, int border_color, int op);
 int gfx_draw(const char *commands, int color, int op);
 ```
@@ -341,10 +341,13 @@ its color argument is `-1`.
 `style`. A normal line uses the two endpoints directly. Box and fill styles
 interpret the endpoints as opposite corners.
 
-`gfx_circle` uses integer degrees for `start_angle` and `end_angle`, measured
-clockwise from the positive X axis. A full circle is requested with `0` and
-`360`. `aspect` is a percentage, where `100` is circular. A negative radius,
-invalid angle, or non-positive aspect returns `GFX_ERR_INVALID`.
+`gfx_circle` draws a full circle of the given `radius`. `gfx_ellipse` draws a
+full ellipse with semi-axes `radius_x` and `radius_y`; a circle is the
+`radius_x == radius_y` case. Both use `bk_gfx_pset` (so they need
+`GFX_CAP_CIRCLES`) and return `GFX_ERR_INVALID` for non-positive radii,
+`GFX_ERR_RANGE` if the shape would fall outside the display, or
+`GFX_ERR_WRONG_MODE` when the mode has no pixel representation. There is no
+arc/partial-angle form: banked calls cannot carry more than seven arguments.
 
 `gfx_paint` flood-fills the contiguous region containing `(x, y)` until the
 specified border color is reached. It may use a software implementation on
@@ -370,15 +373,21 @@ silently wrap coordinates at the screen boundary.
 ### Copy and Pages
 
 ```c
-int gfx_copy(int source_page, int destination_page,
-             int x1, int y1, int x2, int y2,
-             int destination_x, int destination_y, int op);
+struct GfxCopy {
+    int source_page;
+    int destination_page;
+    int x1, y1, x2, y2;
+    int destination_x, destination_y;
+    int op;
+};
+int gfx_copy(const struct GfxCopy* args);
 ```
 
 `gfx_copy` copies the inclusive rectangle `(x1, y1)` through `(x2, y2)` to
 `(destination_x, destination_y)` using the requested logical operator. It is
 available only in bitmap modes with page support and returns
-`GFX_ERR_UNSUPPORTED` otherwise.
+`GFX_ERR_UNSUPPORTED` otherwise. The parameters are passed in a `struct GfxCopy`
+because a banked call supports at most seven register arguments.
 
 The implementation may use the V9958 command engine. It must correctly handle
 overlapping source and destination regions and must wait for command completion

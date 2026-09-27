@@ -101,6 +101,22 @@ struct GfxSpriteStatus {
     int overflow;
 };
 
+/*
+ * Parameter block for gfx_copy. Passed by pointer so the call stays within
+ * the seven register arguments the banked-call ABI supports.
+ */
+struct GfxCopy {
+    int source_page;
+    int destination_page;
+    int x1;
+    int y1;
+    int x2;
+    int y2;
+    int destination_x;
+    int destination_y;
+    int op;
+};
+
 int gfx_screen(int mode, int sprite_mode, int flags);
 int gfx_get_info(struct GfxInformation* info);
 int gfx_color(int foreground, int background, int border);
@@ -112,12 +128,12 @@ int gfx_pset(int x, int y, int color, int op);
 int gfx_preset(int x, int y, int color, int op);
 int gfx_point(int x, int y, int* color);
 int gfx_line(int x1, int y1, int x2, int y2, int color, int style, int op);
-int gfx_circle(int center_x, int center_y, int radius, int color,
-              int start_angle, int end_angle, int aspect, int op);
+int gfx_circle(int center_x, int center_y, int radius, int color, int op);
+int gfx_ellipse(int center_x, int center_y, int radius_x, int radius_y,
+                int color, int op);
 int gfx_paint(int x, int y, int color, int border_color, int op);
 int gfx_draw(const char* commands, int color, int op);
-int gfx_copy(int source_page, int destination_page, int x1, int y1,
-             int x2, int y2, int destination_x, int destination_y, int op);
+int gfx_copy(const struct GfxCopy* args);
 int gfx_pattern_define(int pattern, const unsigned char* data, int bytes);
 int gfx_tile(int x, int y, int pattern, int color);
 int gfx_sprite_pattern(int pattern, const unsigned char* data, int bytes);
@@ -139,10 +155,11 @@ DECLARE_BANKED(gfx_pset, BANK(10), int, bk_gfx_pset, (int x, int y, int color, i
 DECLARE_BANKED(gfx_preset, BANK(10), int, bk_gfx_preset, (int x, int y, int color, int op), (x, y, color, op))
 DECLARE_BANKED(gfx_point, BANK(10), int, bk_gfx_point, (int x, int y, int* color), (x, y, color))
 DECLARE_BANKED(gfx_line, BANK(13), int, bk_gfx_line, (int x1, int y1, int x2, int y2, int color, int style, int op), (x1, y1, x2, y2, color, style, op))
-DECLARE_BANKED(gfx_circle, BANK(13), int, bk_gfx_circle, (int center_x, int center_y, int radius, int color, int start_angle, int end_angle, int aspect, int op), (center_x, center_y, radius, color, start_angle, end_angle, aspect, op))
+DECLARE_BANKED(gfx_circle, BANK(13), int, bk_gfx_circle, (int center_x, int center_y, int radius, int color, int op), (center_x, center_y, radius, color, op))
+DECLARE_BANKED(gfx_ellipse, BANK(13), int, bk_gfx_ellipse, (int center_x, int center_y, int radius_x, int radius_y, int color, int op), (center_x, center_y, radius_x, radius_y, color, op))
 DECLARE_BANKED(gfx_paint, BANK(13), int, bk_gfx_paint, (int x, int y, int color, int border_color, int op), (x, y, color, border_color, op))
 DECLARE_BANKED(gfx_draw, BANK(6), int, bk_gfx_draw, (const char* commands, int color, int op), (commands, color, op))
-DECLARE_BANKED(gfx_copy, BANK(6), int, bk_gfx_copy, (int source_page, int destination_page, int x1, int y1, int x2, int y2, int destination_x, int destination_y, int op), (source_page, destination_page, x1, y1, x2, y2, destination_x, destination_y, op))
+DECLARE_BANKED(gfx_copy, BANK(6), int, bk_gfx_copy, (const struct GfxCopy* args), (args))
 DECLARE_BANKED(gfx_pattern_define, BANK(9), int, bk_gfx_pattern_define, (int pattern, const unsigned char* data, int bytes), (pattern, data, bytes))
 DECLARE_BANKED(gfx_tile, BANK(9), int, bk_gfx_tile, (int x, int y, int pattern, int color), (x, y, pattern, color))
 DECLARE_BANKED(gfx_sprite_pattern, BANK(9), int, bk_gfx_sprite_pattern, (int pattern, const unsigned char* data, int bytes), (pattern, data, bytes))

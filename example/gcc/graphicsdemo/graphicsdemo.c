@@ -12,7 +12,8 @@ static void draw_bitmap_demo(void) {
     gfx_line(247, 8, 8, 183, COLOR_LTYELLOW, GFX_LINE_NORMAL, GFX_OP_PSET);
     gfx_line(24, 20, 232, 172, COLOR_CYAN,
              GFX_LINE_BOX | GFX_LINE_FILL, GFX_OP_PSET);
-    gfx_circle(128, 96, 48, COLOR_LTRED, 0, 360, 100, GFX_OP_PSET);
+    gfx_circle(128, 96, 48, COLOR_LTRED, GFX_OP_PSET);
+    gfx_ellipse(128, 96, 64, 24, COLOR_LTRED, GFX_OP_PSET);
     gfx_sprite_pattern(0, ball_pattern, 8);
     gfx_sprite(0, 0, COLOR_WHITE, 124, 92);
 }

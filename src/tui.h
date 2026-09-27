@@ -95,7 +95,8 @@ void tui_win_set_colors(tui_win_t* win, int fg, int bg);
 void tui_win_gotoxy(tui_win_t* win, int x, int y);
 void tui_win_putc(tui_win_t* win, int c);
 void tui_win_puts(tui_win_t* win, const char* s);
-void tui_win_printf(tui_win_t* win, const char* fmt, ...);
+void tui_win_put_int(tui_win_t* win, int value);
+void tui_win_put_uint(tui_win_t* win, unsigned int value);
 void tui_win_scroll(tui_win_t* win, int lines);
 void tui_widget_destroy(tui_widget_t* w);
 void tui_widget_show(tui_widget_t* w);
@@ -173,7 +174,8 @@ DECLARE_BANKED_VOID(tui_win_set_colors, BANK(11), bk_tui_win_set_colors, (tui_wi
 DECLARE_BANKED_VOID(tui_win_gotoxy, BANK(11), bk_tui_win_gotoxy, (tui_win_t* win, int x, int y), (win, x, y))
 DECLARE_BANKED_VOID(tui_win_putc, BANK(11), bk_tui_win_putc, (tui_win_t* win, int c), (win, c))
 DECLARE_BANKED_VOID(tui_win_puts, BANK(11), bk_tui_win_puts, (tui_win_t* win, const char* s), (win, s))
-DECLARE_BANKED_VOID(tui_win_printf, BANK(11), bk_tui_win_printf, (tui_win_t* win, const char* fmt, ...), (win, fmt))
+DECLARE_BANKED_VOID(tui_win_put_int, BANK(11), bk_tui_win_put_int, (tui_win_t* win, int value), (win, value))
+DECLARE_BANKED_VOID(tui_win_put_uint, BANK(11), bk_tui_win_put_uint, (tui_win_t* win, unsigned int value), (win, value))
 DECLARE_BANKED_VOID(tui_win_scroll, BANK(11), bk_tui_win_scroll, (tui_win_t* win, int lines), (win, lines))
 DECLARE_BANKED_VOID(tui_widget_destroy, BANK(11), bk_tui_widget_destroy, (tui_widget_t* w), (w))
 DECLARE_BANKED_VOID(tui_widget_show, BANK(11), bk_tui_widget_show, (tui_widget_t* w), (w))

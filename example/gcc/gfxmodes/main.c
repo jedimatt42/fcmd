@@ -188,7 +188,10 @@ static void show_demo(int mode, struct GfxInformation* info) {
                  color, GFX_LINE_BOX, GFX_OP_PSET);
         r = (info->width < info->height ? info->width : info->height) / 4;
         gfx_circle(info->width / 2, info->height / 2, r,
-                   color, 0, 360, 100, GFX_OP_PSET);
+                   color, GFX_OP_PSET);
+        /* An ellipse in the opposite corner shows the rx/ry form. */
+        gfx_ellipse(info->width * 3 / 4, info->height * 3 / 4, r, r / 2,
+                    COLOR_CYAN, GFX_OP_PSET);
         /* A filled rectangle in a corner shows a second color and fill. */
         gfx_line(info->width / 16, info->height / 16,
                  info->width * 3 / 8, info->height / 4,

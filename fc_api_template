@@ -241,6 +241,22 @@ struct GfxSpriteStatus {
     int overflow;
 };
 
+/*
+ * Parameter block for gfx_copy. Passed by pointer so the call stays within the
+ * seven register arguments the banked-call ABI supports.
+ */
+struct GfxCopy {
+    int source_page;
+    int destination_page;
+    int x1;
+    int y1;
+    int x2;
+    int y2;
+    int destination_x;
+    int destination_y;
+    int op;
+};
+
 struct SamsInformation {
   int next_page;
   int total_pages;

@@ -112,7 +112,7 @@ static void draw_mode(int mode) {
     if (draw_circle) {
         int r = (info.width < info.height ? info.width : info.height) / 4;
         gfx_circle(info.width / 2, info.height / 2, r,
-                   COLOR_LTYELLOW, 0, 360, 100, GFX_OP_PSET);
+                   COLOR_LTYELLOW, GFX_OP_PSET);
     }
     if (draw_box) {
         gfx_line(info.width / 16, info.height / 16,
