@@ -75,8 +75,14 @@ int gfx_screen(int mode, int sprite_mode, int flags) {
     if (mode == GFX_MODE_F18A_TEXT80X30 &&
         !(sprite_mode & GFX_SPRITE_16X16)) return GFX_ERR_UNSUPPORTED;
     if (!mode_supported(mode)) return GFX_ERR_UNSUPPORTED;
-    if (flags & ~GFX_SCREEN_INTERLACED) return GFX_ERR_UNSUPPORTED;
-    if (flags && !(mode >= GFX_MODE_GRAPHICS3 && mode <= GFX_MODE_YJK)) {
+    if (flags & ~(GFX_SCREEN_INTERLACED | GFX_SCREEN_LOAD_FONT)) {
+        return GFX_ERR_UNSUPPORTED;
+    }
+    if ((flags & GFX_SCREEN_INTERLACED) &&
+        !(mode >= GFX_MODE_GRAPHICS3 && mode <= GFX_MODE_YJK)) {
+        return GFX_ERR_UNSUPPORTED;
+    }
+    if ((flags & GFX_SCREEN_LOAD_FONT) && mode != GFX_MODE_GRAPHICS1) {
         return GFX_ERR_UNSUPPORTED;
     }
     GFX_VDP_GUARD();

@@ -294,14 +294,19 @@ flags before changing the display. It initializes the mode tables, clears the
 mode's visible data, resets the graphics cursor to `(0, 0)`, and updates
 `GfxInformation`.
 
-`flags` is reserved for mode options. The first defined flag is:
+`flags` is reserved for mode options:
 
 ```c
 #define GFX_SCREEN_INTERLACED    0x0001
+#define GFX_SCREEN_LOAD_FONT     0x0002  /* GRAPHICS1: load the ROM font */
 ```
 
 Interlaced mode is supported only where the active Yamaha VDP and selected
-mode support it. Unsupported flags return `GFX_ERR_UNSUPPORTED`.
+mode support it. `GFX_SCREEN_LOAD_FONT` is valid only for GRAPHICS1: it loads
+the standard character set into the pattern table so `term_puts()`/`tui_*`
+can write uppercase text using the character tiles. Programs that provide
+their own tile set omit the flag. Unsupported flags return
+`GFX_ERR_UNSUPPORTED`.
 
 `gfx_color` sets the current foreground, background, and border colors. It
 validates each value against the active mode. A color of `-1` in drawing calls
@@ -473,6 +478,26 @@ VDP address and data-port sequences must be atomic. Graphics routines must
 prevent interrupt or nested-call interleaving during multi-byte VDP
 transactions. V9958 command routines must not return while the command engine
 is busy.
+
+### Terminal and Input in Graphics Modes
+
+`term_*` output is a text-mode facility. On entering a graphics mode,
+`gfx_setup_mode` resets the console hooks so they cannot corrupt the display:
+
+- `vdpchar = vdpchar_default` writes the character code to the name table. This
+  is meaningful for GRAPHICS1 (tile patterns), so strings can be written with
+  `term_puts`/`tui_*` when the caller has defined the character tiles.
+- `scrn_scroll = scrn_scroll_none`: graphics modes never scroll; `inc_row`
+  clamps at the last row instead.
+- `term_putc` is a no-op in bitmap and multicolor modes, where the name table is
+  not a character map.
+
+Keyboard/joystick input via `term_kscan` stays available in graphics modes:
+`term_kscan` runs with interrupts disabled, so the console ISR (screen timeout,
+sound list, sprite motion) never executes during a scan. KSCAN's debounce and
+repeat are busy-loop based and do not need the interrupt counter.
+`gfx_setup_mode` also keeps `VDP_REG1_KSCAN_MIRROR` in sync and disables the
+console screen-blank timeout (`VDP_SCREEN_TIMEOUT` odd) in every mode.
 
 ## ForceCommand API Integration
 

@@ -22,6 +22,7 @@
 
 /* Screen setup flags. */
 #define GFX_SCREEN_INTERLACED    0x0001
+#define GFX_SCREEN_LOAD_FONT     0x0002  /* GRAPHICS1: load the ROM font into the pattern table */
 
 /* Sprite setup values. */
 #define GFX_SPRITE_8X8           0x00

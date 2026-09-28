@@ -168,6 +168,7 @@ struct SystemInformation {
 #define GFX_MODE_F18A_TEXT80X30  13
 
 #define GFX_SCREEN_INTERLACED    0x0001
+#define GFX_SCREEN_LOAD_FONT     0x0002  /* GRAPHICS1: load the ROM font into the pattern table */
 #define GFX_SPRITE_8X8           0x00
 #define GFX_SPRITE_8X8_MAG       0x01
 #define GFX_SPRITE_16X16         0x02

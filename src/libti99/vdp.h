@@ -254,6 +254,7 @@ inline unsigned char vdpreadchar(int pAddr)
 // scrn_scroll - scrolls the screen upwards one line - works in 32x24, 40x24 and 80x24 modes
 // the pointer let you replace it, particularly with fast_scrn_scroll
 void scrn_scroll_default();
+void scrn_scroll_none();		// no-op used in graphics modes (no incidental scrolling)
 extern void (*scrn_scroll)();
 
 // sprite - set up an entry in the sprite attribute list, similar to CALL SPRITE

@@ -154,7 +154,7 @@ static void clear_yamaha(void) {
     gfx_vdp_memset(gImage, packed_color(gfx_background), bitmap_bytes());
 }
 
-static int setup_graphics1(void) {
+static int setup_graphics1(int flags) {
     set_tms_registers(VDP_MODE1_16K | VDP_MODE1_UNBLANK |
                       VDP_MODE1_INT | gfx_sprite_mode, 0, 0, 0x0e, 1, 6, 1);
     gUnblank = VDP_MODE1_16K | VDP_MODE1_UNBLANK |
@@ -168,6 +168,12 @@ static int setup_graphics1(void) {
     displayWidth = 32;
     displayHeight = 24;
     clear_graphics1();
+    // Optional: load the standard character set into the pattern table so
+    // term_puts()/tui_* can write uppercase text using the character tiles.
+    // Games with their own font pass flags without GFX_SCREEN_LOAD_FONT.
+    if (flags & GFX_SCREEN_LOAD_FONT) {
+        reload_charset();
+    }
     set_resources(0x3a00, 0x2800, 0x2900, 0x0c00);
     gfx_set_mode_info(GFX_MODE_GRAPHICS1, 32, 24, 256, 192, 16,
                          GFX_COLOR_INDEXED, GFX_CAP_TILES | GFX_CAP_SPRITES |
@@ -322,6 +328,9 @@ static int setup_yamaha_bitmap(int mode, int flags) {
     int mode1 = VDP_MODE1_UNBLANK | VDP_MODE1_INT |
                 (gfx_sprite_mode & (VDP_MODE1_SPRMODE16x16 | VDP_MODE1_SPRMAG));
     VDP_SET_REGISTER(VDP_REG_MODE1, mode1);
+    // KSCAN restores VDP register 1 from here on keypress; keep it in sync so a
+    // keypress in a graphics mode cannot switch the mode back.
+    VDP_REG1_KSCAN_MIRROR = mode1;
     if (mode == GFX_MODE_GRAPHICS3) {
         VDP_SET_REGISTER(VDP_REG_SIT, 6);
         VDP_SET_REGISTER(VDP_REG_CT, 0xff);
@@ -377,17 +386,30 @@ static int setup_yjk(int mode, int flags) {
 int gfx_setup_mode(int mode, int sprite_mode, int flags) {
     (void)sprite_mode;
     GFX_VDP_GUARD();
+    // The console screen-blank timeout (counted by the console ISR) is not a
+    // feature we want in any mode; an odd value can never reach zero.
+    VDP_SCREEN_TIMEOUT = 1;
     if (vdp_type == VDP_9938 || vdp_type == VDP_9958) {
         VDP_SET_REGISTER(0x0e, 0);
     }
     // The F18A is locked by gfx_screen() before dispatch; mode setup routines
     // are responsible for unlocking it again if they need enhanced registers.
-    if (mode == GFX_MODE_GRAPHICS1) return setup_graphics1();
-    if (mode == GFX_MODE_TEXT40) return setup_text40();
+    if (mode == GFX_MODE_TEXT40 || mode == GFX_MODE_TEXT80 ||
+        mode == GFX_MODE_F18A_TEXT80X30) {
+        // text setups install their own vdpchar/scrn_scroll
+        if (mode == GFX_MODE_TEXT40) return setup_text40();
+        if (mode == GFX_MODE_TEXT80) return setup_text80();
+        return setup_text80x30();
+    }
+    // Graphics modes: use the default character writer (GRAPHICS1 displays tile
+    // text through it), disable scrolling, and keep the console ISR from doing
+    // screen timeout / sprite motion / sound-list processing.
+    vdpchar = vdpchar_default;
+    scrn_scroll = scrn_scroll_none;
+    VDP_INT_CTRL = VDP_INT_CTRL_DISABLE_ALL;
+    if (mode == GFX_MODE_GRAPHICS1) return setup_graphics1(flags);
     if (mode == GFX_MODE_GRAPHICS2) return setup_graphics2();
     if (mode == GFX_MODE_MULTICOLOR) return setup_multicolor();
-    if (mode == GFX_MODE_TEXT80) return setup_text80();
-    if (mode == GFX_MODE_F18A_TEXT80X30) return setup_text80x30();
     if (bk_gfx_is_yjk_mode(mode)) return setup_yjk(mode, flags);
     return setup_yamaha_bitmap(mode, flags);
 }

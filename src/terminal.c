@@ -479,6 +479,10 @@ void charout(unsigned char ch) {
 }
 
 void term_putc(int c) {
+  // Character output is only meaningful where there is a character generator
+  // (text modes and GRAPHICS1 tiles). In bitmap/multicolor modes the name table
+  // is not a character map, so ignore the output rather than corrupt VRAM.
+  if (nTextFlags & (TEXT_FLAG_IS_BITMAPPED | TEXT_FLAG_IS_MULTICOLOR)) return;
   if (stage == STAGE_OPEN) {
     if (c == 27) {
       stage = STAGE_ESC;

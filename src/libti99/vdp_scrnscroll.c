@@ -47,3 +47,8 @@ void scrn_scroll_default() {
 }
 
 void (*scrn_scroll)() = scrn_scroll_default;
+
+// Installed in graphics modes: scrolling is not meaningful there and incidental
+// scrolls would corrupt the display, so inc_row() just clamps the cursor.
+void scrn_scroll_none() {
+}

@@ -174,6 +174,10 @@ static void show_demo(int mode, struct GfxInformation* info) {
             gfx_tile(13 + i, 10, 1, COLOR_CYAN);
             gfx_tile(13 + i, 11, 1, COLOR_LTYELLOW);
         }
+        /* FU2: GFX_SCREEN_LOAD_FONT loaded the ROM font into the pattern
+           table, so term_puts() can write text using the character tiles. */
+        term_gotoxy(0, 0);
+        term_puts("GRAPHICS1 TILE TEXT");
         return;
     }
 
@@ -214,6 +218,10 @@ static void run_mode(int mode, int vdp, int supported) {
     int got_mode = -1;
     int color_ok = 0;
     int clear_result = 0;
+    int fu2_before = -1;
+    int fu2_after = -1;
+    int fu2_mode = -1;
+    unsigned int fu2_key = 0;
     int r;
 
     /* in TEXT40 here */
@@ -227,7 +235,11 @@ static void run_mode(int mode, int vdp, int supported) {
     }
     FC_WAIT("press a key to enter");
 
-    r = gfx_screen(mode, sprite_for(mode), 0);
+    {
+        /* GRAPHICS1: load the ROM font so term_puts() writes tile text. */
+        int flags = (mode == GFX_MODE_GRAPHICS1) ? GFX_SCREEN_LOAD_FONT : 0;
+        r = gfx_screen(mode, sprite_for(mode), flags);
+    }
 
     if (supported && r == GFX_OK) {
         gfx_get_info(&mi);
@@ -241,11 +253,23 @@ static void run_mode(int mode, int vdp, int supported) {
         }
         clear_result = gfx_clear(GFX_COLOR_DEFAULT);
         show_demo(mode, &mi);
+        if (mode == GFX_MODE_GRAPHICS2) {
+            /* FU2: terminal output is inert in bitmap modes and KSCAN is safe
+               (no console ISR). Verify neither disturbs the mode or the image. */
+            struct GfxInformation after;
+            gfx_point(2, 2, &fu2_before);
+            term_puts("this text is ignored in bitmap mode");
+            fu2_key = term_kscan(KSCAN_MODE_BASIC);
+            gfx_get_info(&after);
+            fu2_mode = after.mode;
+            gfx_point(2, 2, &fu2_after);
+        }
         if (is_text(mode)) {
             term_puts("[OBSERVE] press a key to return to TEXT40\n");
             FC_WAIT("press a key");
         } else {
-            /* console KSCAN is not safe while a graphics mode is active */
+            /* FU2: KSCAN is safe in graphics modes (interrupts disabled); the
+               console ISR (screen timeout/sound/sprites) never runs. */
             wait_frames(180);
         }
     }
@@ -263,6 +287,16 @@ static void run_mode(int mode, int vdp, int supported) {
                 FC_CHECK_EQ(clear_result, GFX_ERR_UNSUPPORTED);
             } else {
                 FC_CHECK_EQ(clear_result, GFX_OK);
+            }
+            if (mode == GFX_MODE_GRAPHICS2) {
+                /* FU2: terminal output ignored and KSCAN safe in a bitmap mode */
+                FC_CHECK_EQ(fu2_mode, mode);
+                FC_CHECK_EQ(fu2_after, fu2_before);
+                FC_CHECK(fu2_key <= 255);
+                FC_OBSERVE("bitmap term_puts ignored; KSCAN did not disturb it");
+            }
+            if (mode == GFX_MODE_GRAPHICS1) {
+                FC_OBSERVE("GRAPHICS1 shows 'GRAPHICS1 TILE TEXT' at the top-left");
             }
         }
     } else {
