@@ -210,25 +210,60 @@ static int tui_utoa(unsigned int n, char* buf) {
 }
 
 /*
- * Fixed-arity output helpers. A variadic function cannot be a banked call:
+ * Fixed-arity formatted output. A variadic function cannot be a banked call:
  * variadic arguments are passed on the stack, and the bank trampoline shifts
- * the stack pointer before the target runs.
+ * the stack pointer before the target runs. Instead the caller passes the
+ * argument count and an array of int-sized arguments (pointers cast to int).
+ * Supported conversions: %s (char*), %d (int), %u (unsigned int), and %%.
  */
-void tui_win_put_int(tui_win_t* win, int value) {
-    char buf[8];
-    if (value < 0) {
-        tui_win_putc(win, '-');
-        tui_utoa((unsigned int)(0 - value), buf);
-    } else {
-        tui_utoa((unsigned int)value, buf);
+void tui_win_printf(tui_win_t* win, const char* fmt, int count, const int* args) {
+    char buf[80];
+    int idx = 0;
+    while (*fmt) {
+        if (*fmt != '%') {
+            buf[0] = *fmt;
+            buf[1] = 0;
+            tui_win_puts(win, buf);
+            fmt++;
+            continue;
+        }
+        fmt++;
+        switch (*fmt) {
+            case 's': {
+                const char* s = (idx < count) ? (const char*)args[idx]
+                                              : (const char*)0;
+                idx++;
+                tui_win_puts(win, s ? s : "(null)");
+                break;
+            }
+            case 'd': {
+                int n = (idx < count) ? args[idx] : 0;
+                idx++;
+                if (n < 0) {
+                    tui_win_putc(win, '-');
+                    n = 0 - n;
+                }
+                tui_utoa((unsigned int)n, buf);
+                tui_win_puts(win, buf);
+                break;
+            }
+            case 'u': {
+                unsigned int n = (idx < count) ? (unsigned int)args[idx] : 0u;
+                idx++;
+                tui_utoa(n, buf);
+                tui_win_puts(win, buf);
+                break;
+            }
+            case '%':
+                tui_win_putc(win, '%');
+                break;
+            default:
+                tui_win_putc(win, '%');
+                tui_win_putc(win, *fmt);
+                break;
+        }
+        if (*fmt) fmt++;
     }
-    tui_win_puts(win, buf);
-}
-
-void tui_win_put_uint(tui_win_t* win, unsigned int value) {
-    char buf[8];
-    tui_utoa(value, buf);
-    tui_win_puts(win, buf);
 }
 
 void tui_win_scroll(tui_win_t* win, int lines) {

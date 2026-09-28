@@ -211,8 +211,7 @@ tui_win_close
 tui_win_gotoxy
 tui_win_move
 tui_win_open
-tui_win_put_int
-tui_win_put_uint
+tui_win_printf
 tui_win_putc
 tui_win_puts
 tui_win_resize

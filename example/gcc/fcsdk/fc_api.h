@@ -696,16 +696,15 @@ typedef struct tui_widget tui_widget_t;
 #define FC_TUI_WIN_GOTOXY 0xbc
 #define FC_TUI_WIN_MOVE 0xbd
 #define FC_TUI_WIN_OPEN 0xbe
-#define FC_TUI_WIN_PUT_INT 0xbf
-#define FC_TUI_WIN_PUT_UINT 0xc0
-#define FC_TUI_WIN_PUTC 0xc1
-#define FC_TUI_WIN_PUTS 0xc2
-#define FC_TUI_WIN_RESIZE 0xc3
-#define FC_TUI_WIN_SCROLL 0xc4
-#define FC_TUI_WIN_SET_COLORS 0xc5
-#define FC_TUI_WIN_SET_TITLE 0xc6
-#define FC_TUI_WIN_SET_BORDER 0xc7
-#define FC_FC_EXIT 0xc8
+#define FC_TUI_WIN_PRINTF 0xbf
+#define FC_TUI_WIN_PUTC 0xc0
+#define FC_TUI_WIN_PUTS 0xc1
+#define FC_TUI_WIN_RESIZE 0xc2
+#define FC_TUI_WIN_SCROLL 0xc3
+#define FC_TUI_WIN_SET_COLORS 0xc4
+#define FC_TUI_WIN_SET_TITLE 0xc5
+#define FC_TUI_WIN_SET_BORDER 0xc6
+#define FC_FC_EXIT 0xc7
 
 // function: void audio_beep()
 DECL_FC_API_CALL(FC_AUDIO_BEEP, audio_beep, void, (), ())
@@ -1280,11 +1279,8 @@ DECL_FC_API_CALL(FC_TUI_WIN_MOVE, tui_win_move, void, (tui_win_t* win, int x, in
 // function: tui_win_t* tui_win_open(int x, int y, int w, int h)
 DECL_FC_API_CALL(FC_TUI_WIN_OPEN, tui_win_open, tui_win_t*, (int x, int y, int w, int h), (x, y, w, h))
 
-// function: void tui_win_put_int(tui_win_t* win, int value)
-DECL_FC_API_CALL(FC_TUI_WIN_PUT_INT, tui_win_put_int, void, (tui_win_t* win, int value), (win, value))
-
-// function: void tui_win_put_uint(tui_win_t* win, unsigned int value)
-DECL_FC_API_CALL(FC_TUI_WIN_PUT_UINT, tui_win_put_uint, void, (tui_win_t* win, unsigned int value), (win, value))
+// function: void tui_win_printf(tui_win_t* win, const char* fmt, int count, const int* args)
+DECL_FC_API_CALL(FC_TUI_WIN_PRINTF, tui_win_printf, void, (tui_win_t* win, const char* fmt, int count, const int* args), (win, fmt, count, args))
 
 // function: void tui_win_putc(tui_win_t* win, int c)
 DECL_FC_API_CALL(FC_TUI_WIN_PUTC, tui_win_putc, void, (tui_win_t* win, int c), (win, c))

@@ -159,15 +159,25 @@ void       tui_win_set_colors(tui_win_t* win, int fg, int bg);
 void       tui_win_gotoxy(tui_win_t* win, int x, int y);  // client-relative
 void       tui_win_putc(tui_win_t* win, int c);
 void       tui_win_puts(tui_win_t* win, const char* s);
-void       tui_win_put_int(tui_win_t* win, int value);           // signed decimal
-void       tui_win_put_uint(tui_win_t* win, unsigned int value); // unsigned decimal
+void       tui_win_printf(tui_win_t* win, const char* fmt, int count,
+                          const int* args);  // %s %d %u %%
 void       tui_win_scroll(tui_win_t* win, int lines);  // +N = up, -N = down
 ```
 
-`tui_win_put_int` / `tui_win_put_uint` replace the former variadic
-`tui_win_printf`: variadic arguments are passed on the stack and a banked call
-cannot carry them (the bank trampoline shifts `r10`). Compose strings with
-`tui_win_puts` plus these helpers.
+`tui_win_printf` is a fixed-arity replacement for the former variadic version:
+variadic arguments are passed on the stack and a banked call cannot carry them
+(the bank trampoline shifts `r10`). The caller passes `count` and an array of
+int-sized arguments (`args`), with pointers cast to `int`. Supported
+conversions are `%s` (`const char*`), `%d` (`int`), `%u` (`unsigned int`), and
+`%%`. Reads beyond `count` yield a null pointer / zero rather than reading the
+array out of bounds. Example:
+
+```c
+int a[2];
+a[0] = (int)name;   /* %s */
+a[1] = value;       /* %d */
+tui_win_printf(win, "%s: %d", 2, a);
+```
 
 `tui_win_set_border` sets the border flags and updates the client area.
 To make the change visible, call `tui_win_set_title` (which redraws the border)
@@ -385,7 +395,7 @@ wrapper (e.g., `bk_tui_button_render`).
 
 ## fc_api Integration
 
-All 64 TUI functions have entries in `fc_api.lst` (indices 135–198). The build
+All 63 TUI functions have entries in `fc_api.lst` (indices 136–198). The build
 system auto-generates both the assembly jump table and the SDK header
 (`fcsdk/fc_api.h`). External applications include `fc_api.h` for function calls
 and `tui.h` for struct/enum definitions.
