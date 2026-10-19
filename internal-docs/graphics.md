@@ -360,7 +360,14 @@ arguments.
 `gfx_paint` flood-fills the contiguous region containing `(x, y)` until the
 specified border color is reached. It may use a software implementation on
 all bitmap modes. It returns `GFX_ERR_BUSY` if the implementation cannot
-obtain the temporary work area required by the selected mode.
+obtain the temporary work area required by the selected mode (the software
+fill uses a fixed 256-entry stack, so large regions may exceed it).
+
+On TMS9918A-compatible Graphics II (GRAPHICS2/GRAPHICS3) the foreground color is
+selected per 8x8 group, so a fill that enters the border's group also recolors
+the border pixels; the fill still stops at the border, but the border no longer
+keeps its own color. This is a limitation of the mode, not of `gfx_paint`.
+Per-pixel modes (MULTICOLOR, GRAPHICS4-GRAPHICS7) preserve the border color.
 
 `gfx_draw` accepts a null-terminated MSX-inspired vector command string. The
 initial grammar is:

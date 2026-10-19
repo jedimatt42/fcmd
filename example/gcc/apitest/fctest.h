@@ -26,6 +26,20 @@ static int fc_pass_count = 0;
 static int fc_fail_count = 0;
 static int fc_skip_count = 0;
 
+/* Remember failed check labels so the summary can list them on the final
+ * screen (earlier output may have scrolled away or been cleared by a mode
+ * change). */
+#define FC_MAX_FAILS 48
+static const char* fc_fail_labels[FC_MAX_FAILS];
+static int fc_fail_recorded = 0;
+
+static inline void fc_record_fail(const char* label) {
+    if (fc_fail_recorded < FC_MAX_FAILS) {
+        fc_fail_labels[fc_fail_recorded] = label;
+    }
+    fc_fail_recorded++;
+}
+
 /* str_from_uint shares one static buffer, so format and print one value at a
  * time rather than composing several calls in a single expression. */
 static inline void fc_puts_int(int v) {
@@ -48,6 +62,7 @@ static inline void fc_fail_line(const char* label) {
     term_puts("[FAIL] ");
     term_puts(label);
     term_putc('\n');
+    fc_record_fail(label);
     fc_fail_count++;
 }
 
@@ -70,6 +85,7 @@ static inline void fc_check_eq_int(const char* label, int got, int want) {
         term_puts(" want=");
         fc_puts_int(want);
         term_putc('\n');
+        fc_record_fail(label);
         fc_fail_count++;
     }
 }
@@ -99,6 +115,20 @@ static inline void fc_wait(const char* prompt) {
 }
 
 static inline int fc_summary(void) {
+    if (fc_fail_recorded) {
+        int i;
+        int n = fc_fail_recorded < FC_MAX_FAILS ? fc_fail_recorded
+                                                : FC_MAX_FAILS;
+        term_puts("failed:\n");
+        for (i = 0; i < n; i++) {
+            term_puts("  ");
+            term_puts(fc_fail_labels[i]);
+            term_putc('\n');
+        }
+        if (fc_fail_recorded > FC_MAX_FAILS) {
+            term_puts("  ...\n");
+        }
+    }
     term_puts("pass=");
     term_puts(str_from_uint((unsigned int)fc_pass_count));
     term_puts(" fail=");
