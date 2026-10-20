@@ -193,16 +193,18 @@ static int setup_text40(void) {
 }
 
 static int setup_graphics2(void) {
+    // Pattern 0x0000-0x17FF, name 0x1800-0x1AFF, sprite attributes 0x1B00,
+    // color 0x2000-0x37FF, sprite patterns 0x3800-0x3FFF.
     set_tms_registers(VDP_MODE1_16K | VDP_MODE1_UNBLANK |
                       VDP_MODE1_INT | gfx_sprite_mode, VDP_MODE0_BITMAP,
-                      6, 0xff, 3, 0x36, 0);
+                      6, 0xff, 3, 0x36, 7);
     gUnblank = VDP_MODE1_16K | VDP_MODE1_UNBLANK |
                VDP_MODE1_INT | gfx_sprite_mode;
     gImage = 0x1800;
     gColor = 0x2000;
     gPattern = 0;
     gSprite = 0x1b00;
-    gSpritePat = 0;
+    gSpritePat = 0x3800;
     nTextFlags = TEXT_FLAG_IS_BITMAPPED;
     displayWidth = 256;
     displayHeight = 192;
@@ -216,15 +218,17 @@ static int setup_graphics2(void) {
 }
 
 static int setup_multicolor(void) {
+    // Pattern 0x0000-0x07FF, name 0x0800-0x0AFF, sprite attributes 0x1B00,
+    // sprite patterns 0x1000-0x17FF (color table unused).
     set_tms_registers(VDP_MODE1_16K | VDP_MODE1_UNBLANK | VDP_MODE1_INT |
-                      VDP_MODE1_MULTI | gfx_sprite_mode, 0, 2, 0, 0, 0x36, 0);
+                      VDP_MODE1_MULTI | gfx_sprite_mode, 0, 2, 0, 0, 0x36, 2);
     gUnblank = VDP_MODE1_16K | VDP_MODE1_UNBLANK | VDP_MODE1_INT |
                VDP_MODE1_MULTI | gfx_sprite_mode;
     gImage = 0x800;
     gColor = 0;
     gPattern = 0;
     gSprite = 0x1b00;
-    gSpritePat = 0;
+    gSpritePat = 0x1000;
     nTextFlags = TEXT_FLAG_IS_MULTICOLOR;
     displayWidth = 64;
     displayHeight = 48;

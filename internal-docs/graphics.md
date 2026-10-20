@@ -467,6 +467,16 @@ as required by the current mode without disrupting the active text display.
 selected table addresses are returned by `gfx_get_info`; applications must not
 assume fixed addresses.
 
+TMS9918A-compatible tables are laid out without overlap:
+
+- GRAPHICS2: pattern `0x0000-0x17FF`, name `0x1800-0x1AFF`, sprite attributes
+  `0x1B00`, color `0x2000-0x37FF`, sprite patterns `0x3800-0x3FFF`.
+- MULTICOLOR: pattern `0x0000-0x07FF`, name `0x0800-0x0AFF`, sprite attributes
+  `0x1B00`, sprite patterns `0x1000-0x17FF` (color table unused).
+- GRAPHICS1: character patterns and sprite patterns intentionally share the
+  table at `0x0800`, so sprites can reuse character tiles (and defining a
+  sprite pattern overwrites the same-numbered character pattern).
+
 The implementation must account for ForceCommand's existing reserved VRAM,
 including command/history storage and the F18A GPU scroll area. ForceCommand
 filesystem calls also use VDP-resident PAB, parameter, and file-data buffers.
