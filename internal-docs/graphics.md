@@ -458,8 +458,12 @@ interface, so they also return `GFX_ERR_UNSUPPORTED` until that mapping is
 provided.
 
 Palette writes validate the active VDP and index before touching VDP registers.
-The F18A implementation must unlock and relock the extended palette interface
-as required by the current mode without disrupting the active text display.
+The F18A implementation unlocks the extended registers (two `0x1C` writes to
+VR57), writes the affected 16-entry palette bank through VR47, then re-locks by
+writing `0x00` to VR57. It must **not** use `lock_f18a()` for this: that writes
+VR50 bit 7, which reboots the F18A (and clears VR2), destroying the active
+graphics mode. `F18A_TEXT80X30` is left unlocked because its attributes and GPU
+scroll need the enhanced registers.
 
 ## VRAM and Runtime Ownership
 

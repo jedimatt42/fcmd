@@ -233,6 +233,11 @@ int gfx_palette_set(int index, int red, int green, int blue) {
     int i;
     for (i = 0; i < 32; i++) VDPWD = gfx_f18a_palette[offset + i];
     VDP_SET_REGISTER(47, 0);
-    if (gfx_info.mode != GFX_MODE_F18A_TEXT80X30) bk_lock_f18a();
+    // Re-lock without rebooting. lock_f18a() writes VR50 bit 7, which reboots
+    // the F18A and destroys the active mode. Writing a non-0x1C value to VR57
+    // clears the unlock bit (per the F18A HDL) without a reset.
+    if (gfx_info.mode != GFX_MODE_F18A_TEXT80X30) {
+        VDP_SET_REGISTER(0x39, 0x00);
+    }
     return GFX_OK;
 }
