@@ -1,3 +1,10 @@
 *.bin
 *.elf
 mapfile
+
+# TIFILES executables are the uppercase program name in each example directory.
+# Keep the source/documentation files that also start with an uppercase letter.
+[A-Z]*
+!README.md
+!Makefile
+!*.a99
