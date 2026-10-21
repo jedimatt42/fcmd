@@ -114,6 +114,15 @@ static inline void fc_wait(const char* prompt) {
     term_kscan(5);
 }
 
+/* Like fc_wait, but place the prompt on the second-to-last screen row so it
+ * does not overwrite a window/drawing under evaluation. */
+static inline void fc_wait_bottom(const char* prompt) {
+    int y = tui_screen_height() - 2;
+    if (y < 0) y = 0;
+    tui_gotoxy(0, y);
+    fc_wait(prompt);
+}
+
 static inline int fc_summary(void) {
     if (fc_fail_recorded) {
         int i;
@@ -144,5 +153,6 @@ static inline int fc_summary(void) {
 #define FC_SKIP(reason) fc_skip(reason)
 #define FC_OBSERVE(what) fc_observe(what)
 #define FC_WAIT(prompt) fc_wait(prompt)
+#define FC_WAIT_BOTTOM(prompt) fc_wait_bottom(prompt)
 
 #endif

@@ -150,28 +150,91 @@ void tui_win_set_colors(tui_win_t* win, int fg, int bg) {
     win->bg = bg;
 }
 
+static void tui_win_clear_border(tui_win_t* win, int flags) {
+    int rs = displayWidth;
+    int lastcol = win->x + win->w - 1;
+    int lastrow = win->y + win->h - 1;
+    int attrs = (nTextFlags & TEXT_FLAG_HAS_ATTRIBUTES) ? 1 : 0;
+    conio_scrnCol = (unsigned int)((win->fg << 4) | (win->bg & 0x0F));
+    if (flags & TUI_BF_TOP) {
+        vdpmemset(gImage + win->y * rs + win->x, ' ', win->w);
+        if (attrs) vdpmemset(gColor + win->y * rs + win->x, conio_scrnCol, win->w);
+    }
+    if (flags & TUI_BF_BOTTOM) {
+        vdpmemset(gImage + lastrow * rs + win->x, ' ', win->w);
+        if (attrs) vdpmemset(gColor + lastrow * rs + win->x, conio_scrnCol, win->w);
+    }
+    if (flags & TUI_BF_SIDES) {
+        int bs = win->y + ((flags & TUI_BF_TOP) ? 1 : 0);
+        int be = win->y + win->h - ((flags & TUI_BF_BOTTOM) ? 1 : 0);
+        for (int r = bs; r < be; r++) {
+            tui_vdpchar(gImage + r * rs + win->x, ' ');
+            tui_vdpchar(gImage + r * rs + lastcol, ' ');
+        }
+    }
+}
+
 void tui_win_set_border(tui_win_t* win, int flags) {
     if (!win) return;
+    /* Remove the previous border first, otherwise a style change leaves stale
+       horizontal/vertical pieces behind (e.g. the old bottom line). */
+    tui_win_clear_border(win, win->border_flags);
     win->border_flags = (unsigned char)flags;
     win->cx = win->x + ((flags & TUI_BF_SIDES) ? 1 : 0);
     win->cy = win->y + ((flags & TUI_BF_TOP) ? 1 : 0);
     win->cw = win->w - ((flags & TUI_BF_SIDES) ? 2 : 0);
     win->ch = win->h - ((flags & TUI_BF_TOP) ? 1 : 0) - ((flags & TUI_BF_BOTTOM) ? 1 : 0);
+    tui_win_draw_box(win);
+}
+
+/*
+ * Window-bounded character output. Unlike the screen-wide tui_putc, this wraps
+ * at the window's right content edge and stops at its bottom edge, so text
+ * never spills over the border. `conio_x`/`conio_y` hold the content cursor.
+ */
+static void tui_win_outchar(tui_win_t* win, int c) {
+    if (!win || win->cw <= 0 || win->ch <= 0) return;
+    int right = win->cx + win->cw;
+    int bottom = win->cy + win->ch;
+    if (c == '\n') {
+        conio_x = win->cx;
+        if (conio_y + 1 < bottom) conio_y++;
+        return;
+    }
+    if (c == '\r') {
+        conio_x = win->cx;
+        return;
+    }
+    if (conio_x < win->cx || conio_x >= right ||
+        conio_y < win->cy || conio_y >= bottom) {
+        return;
+    }
+    tui_vdpchar(gImage + conio_y * displayWidth + conio_x, c);
+    if (conio_x + 1 >= right) {
+        conio_x = win->cx;
+        if (conio_y + 1 < bottom) conio_y++;
+    } else {
+        conio_x++;
+    }
 }
 
 void tui_win_gotoxy(tui_win_t* win, int x, int y) {
-    if (!win) return;
-    gotoxy(win->cx + x, win->cy + y);
+    if (!win || win->cw <= 0 || win->ch <= 0) return;
+    int px = win->cx + x;
+    int py = win->cy + y;
+    if (px < win->cx) px = win->cx;
+    if (px >= win->cx + win->cw) px = win->cx + win->cw - 1;
+    if (py < win->cy) py = win->cy;
+    if (py >= win->cy + win->ch) py = win->cy + win->ch - 1;
+    gotoxy(px, py);
 }
 
 void tui_win_putc(tui_win_t* win, int c) {
-    (void)win;
-    cputc(c);
+    tui_win_outchar(win, c);
 }
 
 void tui_win_puts(tui_win_t* win, const char* s) {
-    (void)win;
-    cputs(s);
+    while (*s) tui_win_outchar(win, *s++);
 }
 
 static const char* tui_parse_int(const char* fmt, int* val) {
@@ -267,38 +330,54 @@ void tui_win_printf(tui_win_t* win, const char* fmt, int count, const int* args)
 }
 
 void tui_win_scroll(tui_win_t* win, int lines) {
-    if (!win || lines == 0 || win->ch <= 0) return;
+    if (!win || lines == 0 || win->ch <= 0 || win->cw <= 0) return;
     int rowstride = displayWidth;
-    int src_line, dst_line, count;
+    int width = win->cw;
+    char buf[80];
+    int attrs = (nTextFlags & TEXT_FLAG_HAS_ATTRIBUTES) ? 1 : 0;
+    if (width > (int)sizeof(buf)) width = sizeof(buf);
+
     if (lines > 0) {
-        src_line = win->cy + lines;
-        dst_line = win->cy;
-        count = win->ch - lines;
-    } else {
-        src_line = win->cy;
-        dst_line = win->cy - lines;
-        count = win->ch + lines;
-        lines = -lines;
-    }
-    int src_addr = gImage + src_line * rowstride + win->cx;
-    int dst_addr = gImage + dst_line * rowstride + win->cx;
-    int bytes = count * rowstride;
-    vdpmemcpy(dst_addr, (const char*)src_addr, bytes);
-    if (nTextFlags & TEXT_FLAG_HAS_ATTRIBUTES) {
-        bytes = count * rowstride;
-        vdpmemcpy(gColor + (dst_addr - gImage), (const char*)(gColor + (src_addr - gImage)), bytes);
-    }
-    if (lines > 0) {
-        int clear_addr = gImage + (win->cy + win->ch - lines) * rowstride + win->cx;
-        vdpmemset(clear_addr, ' ', lines * rowstride);
-        if (nTextFlags & TEXT_FLAG_HAS_ATTRIBUTES) {
-            vdpmemset(gColor + (clear_addr - gImage), conio_scrnCol, lines * rowstride);
+        int rows;
+        if (lines > win->ch) lines = win->ch;
+        rows = win->ch - lines;
+        /* Move the surviving rows up, using a CPU buffer (the VDP has a single
+           address port, so a read followed by a write per row). */
+        for (int r = 0; r < rows; r++) {
+            unsigned int src = gImage + (win->cy + lines + r) * rowstride + win->cx;
+            unsigned int dst = gImage + (win->cy + r) * rowstride + win->cx;
+            vdpmemread(src, buf, width);
+            vdpmemcpy(dst, buf, width);
+            if (attrs) {
+                vdpmemread(gColor + (src - gImage), buf, width);
+                vdpmemcpy(gColor + (dst - gImage), buf, width);
+            }
+        }
+        /* Clear the exposed rows at the bottom of the window. */
+        for (int r = rows; r < win->ch; r++) {
+            unsigned int dst = gImage + (win->cy + r) * rowstride + win->cx;
+            vdpmemset(dst, ' ', width);
+            if (attrs) vdpmemset(gColor + (dst - gImage), conio_scrnCol, width);
         }
     } else {
-        int clear_addr = gImage + win->cy * rowstride + win->cx;
-        vdpmemset(clear_addr, ' ', (-lines) * rowstride);
-        if (nTextFlags & TEXT_FLAG_HAS_ATTRIBUTES) {
-            vdpmemset(gColor + (clear_addr - gImage), conio_scrnCol, (-lines) * rowstride);
+        int n = -lines;
+        int rows;
+        if (n > win->ch) n = win->ch;
+        rows = win->ch - n;
+        for (int r = rows - 1; r >= 0; r--) {
+            unsigned int src = gImage + (win->cy + r) * rowstride + win->cx;
+            unsigned int dst = gImage + (win->cy + n + r) * rowstride + win->cx;
+            vdpmemread(src, buf, width);
+            vdpmemcpy(dst, buf, width);
+            if (attrs) {
+                vdpmemread(gColor + (src - gImage), buf, width);
+                vdpmemcpy(gColor + (dst - gImage), buf, width);
+            }
+        }
+        for (int r = 0; r < n; r++) {
+            unsigned int dst = gImage + (win->cy + r) * rowstride + win->cx;
+            vdpmemset(dst, ' ', width);
+            if (attrs) vdpmemset(gColor + (dst - gImage), conio_scrnCol, width);
         }
     }
 }
