@@ -401,9 +401,18 @@ int gfx_setup_mode(int mode, int sprite_mode, int flags) {
     if (mode == GFX_MODE_TEXT40 || mode == GFX_MODE_TEXT80 ||
         mode == GFX_MODE_F18A_TEXT80X30) {
         // text setups install their own vdpchar/scrn_scroll
-        if (mode == GFX_MODE_TEXT40) return setup_text40();
-        if (mode == GFX_MODE_TEXT80) return setup_text80();
-        return setup_text80x30();
+        int result;
+        if (mode == GFX_MODE_TEXT40) result = setup_text40();
+        else if (mode == GFX_MODE_TEXT80) result = setup_text80();
+        else result = setup_text80x30();
+        if (result == GFX_OK) {
+            // The F18A lock/reboot at gfx_screen entry resets VR7; re-apply the
+            // active text colors so the mode is visible before gfx_color is
+            // called (TEXT80 was blank on the F18A without this).
+            VDP_SET_REGISTER(VDP_REG_COL,
+                             (gfx_foreground << 4) | gfx_background);
+        }
+        return result;
     }
     // Graphics modes: use the default character writer (GRAPHICS1 displays tile
     // text through it), disable scrolling, and keep the console ISR from doing
