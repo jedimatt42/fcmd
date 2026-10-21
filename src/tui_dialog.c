@@ -27,7 +27,7 @@ int tui_message_box(const char* title, const char* msg) {
 
     int btn_w = 6;
     int btn_x = (win_w - 2 - btn_w) / 2;
-    tui_widget_t* ok = bk_tui_button_create(win, btn_x, 3, btn_w, "  OK  ");
+    tui_widget_t* ok = bk_tui_button_create(win, btn_x, 3, btn_w, "OK");
     bk_tui_widget_focus(ok);
 
     int result = 0;
@@ -71,8 +71,8 @@ int tui_confirm_box(const char* title, const char* msg) {
     int btn_w = 6;
     int total_btns = btn_w * 2 + 2;
     int btn_start = (win_w - 2 - total_btns) / 2;
-    tui_widget_t* yes = bk_tui_button_create(win, btn_start, 3, btn_w, "  Yes ");
-    tui_widget_t* no  = bk_tui_button_create(win, btn_start + btn_w + 2, 3, btn_w, "  No  ");
+    tui_widget_t* yes = bk_tui_button_create(win, btn_start, 3, btn_w, "Yes");
+    tui_widget_t* no  = bk_tui_button_create(win, btn_start + btn_w + 2, 3, btn_w, "No");
     bk_tui_widget_focus(yes);
 
     int result = 0;
@@ -120,7 +120,7 @@ int tui_input_box(const char* title, const char* prompt, char* buf, int len) {
 
     int btn_w = 6;
     int btn_x = (win_w - 2 - btn_w) / 2;
-    tui_widget_t* ok = bk_tui_button_create(win, btn_x, 4, btn_w, "  OK  ");
+    tui_widget_t* ok = bk_tui_button_create(win, btn_x, 4, btn_w, "OK");
     bk_tui_widget_focus(ok);
     bk_tui_widget_focus(tf);
 

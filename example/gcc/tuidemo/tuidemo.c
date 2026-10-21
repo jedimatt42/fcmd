@@ -28,7 +28,7 @@ static void demo_widgets() {
 
     tui_widget_t* pb = tui_progressbar_create(win, 1, 12, 46);
 
-    tui_widget_t* ok = tui_button_create(win, 20, 13, 10, "   OK   ");
+    tui_widget_t* ok = tui_button_create(win, 20, 13, 10, "OK");
     tui_widget_focus(list);
 
     int running = 1;
@@ -96,8 +96,8 @@ int main(char* args) {
     tui_list_add(demo_list, "5. Quit");
     tui_list_set_selected(demo_list, 0);
 
-    tui_widget_t* run_btn = tui_button_create(menu, 30, 1, 8, "  Run  ");
-    tui_widget_t* quit_btn = tui_button_create(menu, 30, 3, 8, " Quit ");
+    tui_widget_t* run_btn = tui_button_create(menu, 30, 1, 8, "Run");
+    tui_widget_t* quit_btn = tui_button_create(menu, 30, 3, 8, "Quit");
 
     tui_widget_t* auto_cb = tui_checkbox_create(menu, 1, 8, "Run after selection");
     tui_checkbox_set(auto_cb, 1);

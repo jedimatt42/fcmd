@@ -47,14 +47,18 @@ void tui_button_render(tui_widget_t* w) {
     }
     int label_len = tui_strlen(d->label);
     int text_w = w->w - 2;
-    int pad = (text_w - label_len) / 2;
+    if (text_w < 0) text_w = 0;
+    /* Draw what fits (truncate) rather than silently dropping the label when
+       the caller's label is wider than the inner area. */
+    int draw_len = label_len < text_w ? label_len : text_w;
+    int pad = (text_w - draw_len) / 2;
     if (pad < 0) pad = 0;
     int addr = gImage + sy * displayWidth + sx;
     bk_tui_vdpchar(addr, lb);
     vdpmemset(addr + 1, ' ', w->w - 2);
     bk_tui_vdpchar(addr + w->w - 1, rb);
-    if (label_len > 0 && label_len <= text_w) {
-        for (int i = 0; i < label_len; i++) {
+    if (draw_len > 0) {
+        for (int i = 0; i < draw_len; i++) {
             bk_tui_vdpchar(addr + 1 + pad + i, d->label[i]);
         }
     }

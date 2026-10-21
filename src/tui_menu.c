@@ -20,7 +20,9 @@ tui_win_t* tui_menu_create(int x, int y, const char** items, int count) {
     tui_win_t* win = bk_tui_win_open(x, y, win_w, win_h);
     if (!win) return 0;
 
-    tui_widget_t* list = bk_tui_list_create(win, 1, 1, win_w - 2, win_h - 2);
+    // Widget coordinates are relative to the window's content origin (x+1,
+    // y+1), so (0,0) fills the interior; (1,1) would shift it a row/column in.
+    tui_widget_t* list = bk_tui_list_create(win, 0, 0, win_w - 2, win_h - 2);
     for (int i = 0; i < count; i++) {
         bk_tui_list_add(list, items[i] ? items[i] : "");
     }
