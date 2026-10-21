@@ -16,5 +16,6 @@ compile_commands.json
 .vscode
 copyToPc.sh
 FCMD.DSK
+APITEST.DSK
 execplan-*.md
 *.zip

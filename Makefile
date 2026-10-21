@@ -14,6 +14,10 @@ SUPPORT=FC/BOOT FC/LOAD FC/FCMD FC/FCMDXB FC/BIN/DISKIMAGE FC/BIN/FCMENU FC/BIN/
 
 SUBDIRS=hello samshello charset diskimage fcmenu ftp say telnet virgil font tuidemo graphicsdemo apitest sysinfo strtest strfmt listtest vartest exectest termtest termread vdptool audio sndtest exittest samstest dsrtest dsrcat lvl2file lvl2dir lvl2sector mousetest tipitest socktest tlstest speechtest gfxmodes gfxbitmap gfxpixels gfxlines gfxcircle gfxpaint gfxpages gfxtiles gfxpal gfxattr tuidraw tuiwin tuiwidgets tuievents tuidialogs
 
+# I0-I37 API test programs (plus the gfxbitmap transition probe), collected on
+# APITEST.DSK. The test programs are validated but are not part of the release.
+APITEST_DIRS=apitest sysinfo strtest strfmt listtest vartest exectest termtest termread vdptool audio sndtest exittest samstest dsrtest dsrcat lvl2file lvl2dir lvl2sector mousetest tipitest socktest tlstest speechtest gfxmodes gfxbitmap gfxpixels gfxlines gfxcircle gfxpaint gfxpages gfxtiles gfxpal gfxattr tuidraw tuiwin tuiwidgets tuievents tuidialogs
+
 CFLAGS=\
   -std=gnu99 -nostdlib -ffreestanding -Os -Wno-int-to-pointer-cast -Wno-pointer-to-int-cast -Werror --save-temps -I$(abspath src) -I$(abspath src/libti99)
 
@@ -26,7 +30,7 @@ ifeq ($(ONE_TARGET),)
 # TOP-LEVEL DISPATCH (ONE_TARGET not set)
 # ======================================================================
 
-.PHONY: all build_0x6000 build_0x0000 subdirs support clean
+.PHONY: all build_0x6000 build_0x0000 subdirs support clean apitest-dsk
 
 all: src/fcbanner.asm linkfile.m4 forcecmd_$(VER).zip
 
@@ -51,6 +55,18 @@ support:
 
 $(FNAME).DSK: subdirs support
 	python3 $(XDM99) $(FNAME).DSK -X 360 -t -a FC/BIN/DISKIMAGE FC/BIN/FCMENU FC/BIN/FTP FC/BIN/TELNET FC/BIN/SAY FC/BIN/SAMPLE FC/BIN/VIRGIL99 FC/BIN/FONT FC/MDOSANSI FC/MDOSFONT
+
+# Collect the API test programs (the I-series FIADs) on a separate disk.
+APITEST.DSK: subdirs
+	rm -f $@
+	files=""; \
+	for d in $(APITEST_DIRS); do \
+	  f=$$(sed -n 's/^FNAME=//p' example/gcc/$$d/Makefile); \
+	  files="$$files example/gcc/$$d/$$f"; \
+	done; \
+	python3 $(XDM99) $@ -X 1440 -t -a $$files
+
+apitest-dsk: APITEST.DSK
 
 fcsdk: subdirs
 	rm -fr ./fcsdk
