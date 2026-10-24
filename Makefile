@@ -10,7 +10,7 @@ FNAME=FCMD
 
 VER:=$(shell grep "\#define APP_VER" src/main.h | cut -d '"' -f2)
 
-SUPPORT=FC/BOOT FC/LOAD FC/FCMD FC/FCMDXB FC/BIN/DISKIMAGE FC/BIN/FCMENU FC/BIN/FTP FC/BIN/SAMPLE FC/BIN/SAY FC/BIN/TELNET FC/BIN/VIRGIL99 FC/BIN/FONT FC/BIN/MDOSANSI FC/BIN/MDOSFONT FC/BIN/FCMDANSI FC/BIN/CHARSET
+SUPPORT=FC/BOOT FC/LOAD FC/FCMD FC/FCMDXB FC/BIN/DISKIMAGE FC/BIN/FCMENU FC/BIN/FTP FC/BIN/SAMPLE FC/BIN/SAY FC/BIN/TELNET FC/BIN/VIRGIL99 FC/BIN/FONT FC/BIN/MDOSANSI FC/BIN/MDOSFONT FC/BIN/MSXFONT FC/BIN/FCMDANSI FC/BIN/CHARSET
 
 SUBDIRS=hello samshello charset diskimage fcmenu ftp say telnet virgil font tuidemo graphicsdemo apitest sysinfo strtest strfmt listtest vartest exectest termtest termread vdptool audio sndtest exittest samstest dsrtest dsrcat lvl2file lvl2dir lvl2sector mousetest tipitest socktest tlstest speechtest gfxmodes gfxbitmap gfxpixels gfxlines gfxcircle gfxpaint gfxpages gfxtiles gfxpal gfxattr tuidraw tuiwin tuiwidgets tuievents tuidialogs
 

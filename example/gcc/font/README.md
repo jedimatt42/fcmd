@@ -24,8 +24,14 @@ Save all 256 character pattern definitions to PROGRAM image file.
 
 The `/w` option uses the Wilhelm format which simply starts at the space ` ` character.
 
-## Bundled Font
+## Bundled Fonts
 
-`FCMDANSI` is the default ANSI font for Force Command and is included in `FC/BIN`.
-Load it with `FONT FC.BIN.FCMDANSI`.
+These font files are included in `FC/BIN`:
+
+- `FCMDANSI` - default ANSI font for Force Command
+- `MDOSANSI` - ANSI font from MDOS
+- `MDOSFONT` - MDOS character set
+- `MSXFONT` - MSX character set
+
+Load one with `FONT FC.BIN.<name>`.
 

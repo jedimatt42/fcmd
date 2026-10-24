@@ -22,7 +22,7 @@ OBJECT_LIST:=$(sort $(C_SRCS:.c=.o) $(ASM_SRCS:.asm=.o))
 
 LINK_OBJECTS:=$(addprefix objects/,$(OBJECT_LIST))
 
-all: $(FNAME) MDOSANSI MDOSFONT ../../../FC/BIN/FCMDANSI
+all: $(FNAME) MDOSANSI MDOSFONT MSXFONT ../../../FC/BIN/FCMDANSI
 
 $(FNAME).elf: $(LINK_OBJECTS)
 	$(LD) $(LINK_OBJECTS) $(LDFLAGS) -o $(FNAME).elf -Map=mapfile
@@ -37,7 +37,7 @@ $(FNAME): $(FNAME).bin
 .phony clean:
 	rm -fr objects
 	rm -f *.elf *.bin mapfile
-	rm -f MDOSFONT MDOSANSI
+	rm -f MDOSFONT MDOSANSI MSXFONT
 
 objects/%.o: %.asm
 	mkdir -p objects; cd objects; $(GAS) $(abspath $<) -o $(notdir $@)
@@ -55,6 +55,12 @@ MDOSFONT: mdos-font/CHARSETS.a99
 	mkdir -p objects
 	python3 $(XAS99) -b -R -a 0xA000 $< -o objects/MDOSFONT.bin
 	python3 $(XDM99) -t -T objects/MDOSFONT.bin -n MDOSFONT -f PROGRAM -o $@
+	mkdir -p ../../../FC/BIN && cp $@ ../../../FC/BIN/
+
+MSXFONT: mdos-font/msx.a99
+	mkdir -p objects
+	python3 $(XAS99) -b -R -a 0xA000 $< -o objects/MSXFONT.bin
+	python3 $(XDM99) -t -T objects/MSXFONT.bin -n MSXFONT -f PROGRAM -o $@
 	mkdir -p ../../../FC/BIN && cp $@ ../../../FC/BIN/
 
 ../../../FC/BIN/FCMDANSI: FCMDANSI
