@@ -79,7 +79,7 @@ int handleDir() {
   bk_parsePathParam(0, &dsr, path, PR_OPTIONAL | PR_WILDCARD);
   if (dsr == 0) {
     tputs_rom("error, no device found.\n");
-  return 0;
+  return 1;
   }
   if (path[bk_strlen(path)-1] != '.') {
     bk_strcat(path, str2ram("."));
@@ -90,20 +90,21 @@ int handleDir() {
     tputs_rom("error, device/folder not found: ");
     bk_tputs_ram(path);
     bk_tputc('\n');
-  return 0;
+  return 1;
   }
 
+  unsigned int catalog_err;
   if (wideFormat) {
     col = 0;
     linepos = 0;
     colstart = 0;
-    dsr_catalog(dsr, path, onWideVolInfo, onWideDirEntry);
+    catalog_err = dsr_catalog(dsr, path, onWideVolInfo, onWideDirEntry);
     bk_tputc('\n');
   } else {
-    dsr_catalog(dsr, path, onLongVolInfo, onLongDirEntry);
+    catalog_err = dsr_catalog(dsr, path, onLongVolInfo, onLongDirEntry);
   }
   bk_tputc('\n');
-  return 0;
+  return catalog_err ? 1 : 0;
 }
 
 static int timestamps;

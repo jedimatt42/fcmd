@@ -34,8 +34,18 @@ struct RedirectState {
 
 extern struct RedirectState redirect_state;
 
-/* bank 10 - called directly from parsing.c */
+/* bank 5 - called through the trampoline from parsing.c */
 int redirect_prepare(char* command);
+DECLARE_BANKED(redirect_prepare, BANK(5), int, bk_redirect_prepare,
+               (char* command), (command))
+
+int redirect_force(const char* path, int append);
+DECLARE_BANKED(redirect_force, BANK(5), int, bk_redirect_force,
+               (const char* path, int append), (path, append))
+
+void redirect_unescape(char* command);
+DECLARE_BANKED_VOID(redirect_unescape, BANK(5), bk_redirect_unescape,
+                    (char* command), (command))
 
 /* bank 8 - used by the bank 9 finish routine */
 int redirect_flush(int allow_empty);

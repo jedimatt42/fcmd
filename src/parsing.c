@@ -5,6 +5,7 @@
 #include "main.h"
 #include "globals.h"
 #include "redirect.h"
+#include "pipeline.h"
 #include "commands.h"
 #include "dsrutil.h"
 #include "strutil.h"
@@ -88,19 +89,57 @@ static void set_command_status(int status) {
   }
 }
 
-// NOTE command handle functions in bank 0 do not need bk_ banking stub
+static int command_depth;
+static int pipeline_depth;
 
-int handleCommand(char *buffer) {
+static char* find_pipe(char* s) {
+  int escaped = 0;
+  while (*s) {
+    if (!escaped && *s == '\\') {
+      escaped = 1;
+      s++;
+      continue;
+    }
+    if (!escaped && *s == '|') {
+      return s;
+    }
+    escaped = 0;
+    s++;
+  }
+  return 0;
+}
+
+static void unescape_pipes(char* s) {
+  char* read = s;
+  char* write = s;
+  while (*read) {
+    if (*read == '\\' && read[1] == '|') {
+      *write++ = '|';
+      read += 2;
+    } else {
+      *write++ = *read++;
+    }
+  }
+  *write = 0;
+}
+
+static int executeSingle(char* buffer, const char* forced_path, int* redirect_failed) {
   result = 0;
+  *redirect_failed = 0;
   if (buffer[0] == 0) {
     return 0;
   }
-  request_break = 0;
 
-  // Remove and open any > or >> redirection before preprocessing the command.
-  int owns_redirect = redirect_prepare(buffer);
+  int owns_redirect;
+  if (forced_path != 0) {
+    bk_redirect_unescape(buffer);
+    owns_redirect = bk_redirect_force(forced_path, 0);
+  } else {
+    owns_redirect = bk_redirect_prepare(buffer);
+  }
   if (owns_redirect < 0) {
     result = 1;
+    *redirect_failed = 1;
     set_command_status(result);
     return result;
   }
@@ -172,6 +211,9 @@ int handleCommand(char *buffer) {
 
   if (owns_redirect) {
     int finish_status = bk_redirect_finish();
+    if (finish_status != 0) {
+      *redirect_failed = 1;
+    }
     if (result == 0) {
       result = finish_status;
     }
@@ -179,6 +221,53 @@ int handleCommand(char *buffer) {
 
   set_command_status(result);
   return result;
+}
+
+int executeStage(char* buffer, const char* forced_path, int* redirect_failed) {
+  return executeSingle(buffer, forced_path, redirect_failed);
+}
+
+void setCommandStatus(int status) {
+  set_command_status(status);
+}
+
+static int runCommandLine(char* buffer) {
+  char* pipe = find_pipe(buffer);
+
+  if (pipe == 0) {
+    unescape_pipes(buffer);
+    int fatal = 0;
+    return executeSingle(buffer, 0, &fatal);
+  }
+
+  if (pipeline_depth > 0) {
+    tputs_rom("error, nested pipelines are not supported\n");
+    set_command_status(1);
+    return 1;
+  }
+
+  pipeline_depth++;
+  int status = bk_runPipeline(buffer);
+  pipeline_depth--;
+  return status;
+}
+
+// NOTE command handle functions in bank 0 do not need bk_ banking stub
+
+int handleCommand(char *buffer) {
+  if (buffer[0] == 0) {
+    return 0;
+  }
+
+  if (command_depth == 0) {
+    request_break = 0;
+  }
+  command_depth++;
+
+  int status = runCommandLine(buffer);
+
+  command_depth--;
+  return status;
 }
 
 int parsePath(char* path, char* devicename) {

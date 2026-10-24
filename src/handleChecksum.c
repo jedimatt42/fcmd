@@ -18,7 +18,7 @@ int handleChecksum() {
   if (dsr == 0)
   {
     tputs_rom("no file path name specified\n");
-  return 0;
+  return 1;
   }
 
   unsigned int iocode = bk_path2iocode(path);
@@ -44,7 +44,7 @@ int handleChecksum() {
     tputs_rom("error reading file: ");
     bk_tputs_ram(bk_uint2hex(err));
     bk_tputc('\n');
-  return 0;
+  return 1;
   }
 
   unsigned char eof_offset = addInfoPtr->eof_offset;
@@ -69,7 +69,7 @@ int handleChecksum() {
       tputs_rom("error reading file: ");
       bk_tputs_ram(bk_uint2hex(err));
       bk_tputc('\n');
-  return 0;
+  return 1;
     }
 
     unsigned int maxByte = 0;

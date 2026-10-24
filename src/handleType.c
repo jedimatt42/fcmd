@@ -26,7 +26,7 @@ int handleType() {
   bk_parsePathParam(0, &dsr, namebuf, PR_REQUIRED);
   if (dsr == 0) {
     tputs_rom("error, no file specified\n");
-  return 0;
+  return 1;
   }
 
   struct PAB pab;
@@ -42,13 +42,18 @@ int handleType() {
     tputs_rom("could not open ");
     bk_tputs_ram(namebuf);
     bk_tputc('\n');
-  return 0;
+  return 1;
   }
+  int failed = 0;
   int rec = 0;
   char linebuf[256];
   while(!err && request_break == 0) {
     err = bk_dsr_read_cpu(dsr, &pab, rec++, linebuf);
-    if (!err) {
+    if (err) {
+      if (err != DSR_ERR_PASTEOF) {
+        failed = 1;
+      }
+    } else {
       int i = 0;
       while(i<pab.CharCount) {
         if (ansi) {
@@ -69,5 +74,5 @@ int handleType() {
     }
   }
   bk_dsr_close(dsr, &pab);
-  return 0;
+  return failed;
 }

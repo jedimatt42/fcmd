@@ -24,7 +24,44 @@ Supports:
 * AUTOCMD script on first drive is run on startup.
 * ANSI display
 * Output redirection with `>` (replace) and `>>` (append) to DISPLAY/VARIABLE 80 files
+* `|` pipelines with temporary DV80 handoff files
 * TIPIMAP to control DSKx, URIx, and AUTO mapping
+
+### Redirection and pipelines
+
+`>` and `>>` redirect terminal output to a DISPLAY/VARIABLE 80 file. Records
+break at 80 characters, line feed, carriage return, or CRLF.
+
+```text
+dir >DSK1.DIR
+echo hello >>DSK1.LOG
+```
+
+Pipelines run each stage to completion. A non-final stage's output is written to
+a temporary DV80 file; the next stage reads it through `$PIPEIN`. Set `FCTMP` to
+a writable directory path prefix (the current path is used by default):
+
+```text
+FCTMP=TIPI.TMP.
+dir | type $PIPEIN
+dir | type $PIPEIN >DSK1.LIST
+```
+
+Temporary files are named `FCPIPE0` and `FCPIPE1` and are removed when consumed
+or when the pipeline ends. Stages alternate between the two slots (stage 0 uses
+`FCPIPE0`, stage 1 uses `FCPIPE1`, stage 2 uses `FCPIPE0` again); the previous
+slot has already been consumed and deleted before it is reused. Only the final
+stage may use `>` or `>>`. Use `\|` for a literal pipe. Nested pipelines are
+rejected, and pipelines cannot run inside an already-active redirection.
+`STATUS` holds the first nonzero stage status. The resolved temp path must fit
+in a variable value (81 characters).
+
+Some older built-ins (notably `copy` and scripts) still return 0 after printing
+an error, so pipeline status is most meaningful with external programs and the
+commands that report failures.
+
+Only output written through the ForceCommand terminal layer is captured. Direct
+screen writes, TUI, graphics, and raw VDP output are outside redirection.
 
 ## End Users Wiki
 

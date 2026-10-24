@@ -124,5 +124,9 @@ unsigned int dsr_catalog(struct DeviceServiceRoutine* dsr, const char* pathname,
     }
   }
 
-  return bk_dsr_close(dsr, &pab);
+  unsigned int close_err = bk_dsr_close(dsr, &pab);
+  if (ferr != DSR_ERR_NONE && ferr != DSR_ERR_PASTEOF) {
+    return ferr;
+  }
+  return close_err;
 }

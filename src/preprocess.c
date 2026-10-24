@@ -39,11 +39,15 @@ char* alias_preprocess(char* buf) {
 }
 
 void replace_alias(char* command, char* resolved) {
-  int cmdlen = bk_strlen(command);
-
   char* alias_name = bk_strtok(command, ' ');
+  if (alias_name == 0) {
+    resolved[0] = 0;
+    return;
+  }
 
-  int name_len = bk_strlen(alias_name);
+  // The tokenizer leaves lasts at the first argument (or at the terminator).
+  char* args = lasts;
+
   char* alias_value = alias_get(alias_name);
   // if the alias is not defined, use the name to rebuild the command
   if ((int)alias_value == -1) {
@@ -53,12 +57,10 @@ void replace_alias(char* command, char* resolved) {
   
   bk_strncpy(resolved, alias_value, 256);
 
-  if (cmdlen > name_len) {
-    // append the rest of the command (the tokenizer nulled out the leading space, so there is a
-    // +1 to get to the args.
-    // we also have to put the space back in between the alias value and the additional args
+  if (args != 0 && *args != 0) {
+    // Put the space back in between the alias value and the additional args.
     resolved[value_len] = ' ';
-    bk_strncpy(resolved + value_len + 1, command + name_len + 1, 256);
+    bk_strncpy(resolved + value_len + 1, args, 256);
   }
 }
 

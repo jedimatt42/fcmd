@@ -62,7 +62,8 @@ int handleHelp() {
     "rdemdk rdpart rdvol "
     "rmdir sysinfo tipibeeps tipihalt tipimap "
     "tipireboot type unprotect ver width xb\n\n"
-    "Redirection: command >file or command >>file\n");
+    "other:\n\n"
+    "pipeline redirect\n");
   return 0;
   }
 
@@ -260,6 +261,12 @@ int handleHelp() {
     "F18A VDP will provide 80x30 with colors per character.\n"
     "9938/9958 VDPs will provide 80x26 with single foreground/background colors.\n"
     "Other VDPs will fall back on 40x24 with single foreground/background colors.\n");
+  } else if (matchcmd(tok,"pipeline")) {
+    wraptext("==Pipelines==\n\n"
+    "command1 | command2 | command3\n\n"
+    "Stages run in order. Non-final output goes to a temporary DV80 file; use $PIPEIN in the next stage. "
+    "FCTMP selects the temp path. Only the last stage may redirect. Use \\| for a literal pipe. "
+    "Nested pipelines are rejected.\n");
   } else {
     bk_b14Help(tok);
   }

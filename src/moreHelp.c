@@ -128,7 +128,7 @@ void b14Help(char* tok) {
       "Configure Myarc EXP-1 Ramdisk volume name.\n"
       "<name> - upto 10 character volume label.\n"
     );
-  } else if (matchcmd(tok, "redirect") || matchcmd(tok, "redirection")) {
+  } else if (matchcmd(tok, "redirect")) {
     wraptext("==Output Redirection==\n\n"
       "command >filepath\n"
       "command >>filepath\n\n"
@@ -138,6 +138,7 @@ void b14Help(char* tok) {
       "Use \\> for a literal > character.\n"
       "Only output written through the ForceCommand terminal layer is captured.\n"
       "The STATUS variable is set to the command exit status.\n"
+      "See 'help pipeline' for | pipelines.\n"
     );
   } else {
     wraptext("no help for command: ");
