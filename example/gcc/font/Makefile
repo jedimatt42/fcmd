@@ -49,11 +49,11 @@ MDOSANSI: mdos-font/ANSI.a99
 	mkdir -p objects
 	python3 $(XAS99) -b -R -a 0xA000 $< -o objects/ANSI.bin
 	python3 $(XDM99) -t -T objects/ANSI.bin -n MDOSANSI -f PROGRAM -o $@
-	mkdir -p ../../../FC; cp $@ ../../../FC/
+	mkdir -p ../../../FC/BIN && cp $@ ../../../FC/BIN/
 
 MDOSFONT: mdos-font/CHARSETS.a99
 	mkdir -p objects
 	python3 $(XAS99) -b -R -a 0xA000 $< -o objects/MDOSFONT.bin
 	python3 $(XDM99) -t -T objects/MDOSFONT.bin -n MDOSFONT -f PROGRAM -o $@
-	mkdir -p ../../../FC; cp $@ ../../../FC/
+	mkdir -p ../../../FC/BIN && cp $@ ../../../FC/BIN/
 

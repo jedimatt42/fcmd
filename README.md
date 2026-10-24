@@ -69,11 +69,18 @@ bear -- make
 ## Installation on real hardware
 
 The FCMDG.bin and FCMDC.bin go on a FinalGROM99 - or if you know what you are doing, an UberGROM
-The FC directory goes on your TIPI as TIPI.FC. It contains LOAD and FCMD
 
-- LOAD - shim for the XB command, requires FinalGROM99 and TIPI
-- FCMD - EA5 utility for FinalGROM99 to reload FCMDG.bin
-- FCMDXB - XB INT/VAR 254 program for FinalGROM99 to reload FCMDG.bin
+The FC directory goes on your TIPI as TIPI.FC, preserving its subdirectories:
+
+- FC/LOAD - shim for the XB command, requires FinalGROM99 and TIPI
+- FC/FCMD - EA5 utility for FinalGROM99 to reload FCMDG.bin
+- FC/FCMDXB - XB INT/VAR 254 program for FinalGROM99 to reload FCMDG.bin
+- FC/BOOT - EA5 program for console ROM replacement builds to switch back to FCMD
+- FC/BIN - command utilities: DISKIMAGE, FCMENU, FONT, FTP, MDOSANSI, MDOSFONT, SAMPLE, SAY, TELNET, VIRGIL99
+
+Copy the FC directory, including the FC/BIN subdirectory, to TIPI.FC without flattening it:
+the utilities are expected in TIPI.FC.BIN. `deploy.sh` does this when `TIPI_DIR` points at
+the TIPI disk (for example `/media/tipi/tipi_disk`).
 
 ### Emulators
 
@@ -106,7 +113,7 @@ make -j 12
 export PYWIZ_DIR=$HOME/github/python_wizard
 make -C example/gcc/say sample.spc
 
-export TIPI_HOST_NAME=tipi.local
+export TIPI_DIR=/media/tipi/tipi_disk
 export CLASSIC99_DSK1_DIR=~/Documents/data/retro/TI99/classic99/DSK1/
 export CART_DEPLOY_DIR=~/Documents/data/retro/TI99/
 ./deploy.sh

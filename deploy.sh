@@ -12,48 +12,14 @@ SCRIPT_DIR=$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )
 cd $SCRIPT_DIR
 
 
-if [ -z ${CART_DEPLOY_DIR:-} ]; then
-  echo "export CART_DEPLOY_DIR to directory you want to copy .bin and .rpk files to"
+if [ -z ${TIPI_DIR:-} ]; then
+  echo "export TIPI_DIR to the path of your TIPI disk (for example /media/tipi/tipi_disk) to copy the FC support files to \$TIPI_DIR/FC"
 else
-  # Copy cartridge binaries to a place Classic99.ini can reference them
-  # that is convenient for also fetching for deployment to my FinalGROM99 cartridge
-  cp build_0x6000/FCMDC.bin $CART_DEPLOY_DIR 2>/dev/null || true
-  cp build_0x6000/FCMD_6000.bin $CART_DEPLOY_DIR 2>/dev/null || true
-  # Copy the RPK cartridge binary somewhere convenient to upload to JS99ER
-  cp build_0x6000/FCMD.RPK $CART_DEPLOY_DIR 2>/dev/null || true
-fi
-
-if [ -z ${CLASSIC99_DSK1_DIR:-} ]; then
-  echo "export CLASSIC99_DSK1_DIR to copy utlities for emulator use"
-else
-  # Copy stuff to DSK1 for use with CLASSIC99 FIAD storage
-  cp example/gcc/diskimage/DISKIMAGE $CLASSIC99_DSK1_DIR
-  cp example/gcc/fcmenu/FCMENU $CLASSIC99_DSK1_DIR
-  cp example/gcc/ftp/FTP $CLASSIC99_DSK1_DIR
-  cp example/gcc/font/FONT $CLASSIC99_DSK1_DIR
-  cp example/gcc/telnet/TELNET $CLASSIC99_DSK1_DIR
-  cp example/gcc/hello/HELLO $CLASSIC99_DSK1_DIR
-  cp example/gcc/charset/CHARSET $CLASSIC99_DSK1_DIR
-  cp example/gcc/say/SAY $CLASSIC99_DSK1_DIR
-  cp example/gcc/say/SAMPLE $CLASSIC99_DSK1_DIR
-  cp example/gcc/virgil/VIRGIL99 $CLASSIC99_DSK1_DIR
-fi
-
-if [ -z ${TIPI_HOST_NAME:-} ]; then
-  echo "export TIPI_HOST_NAME to tipi.local or your appropriate host to copy support files to tipi disk"
-else
-  # Copy the support files onto my 4A's TIPI where they are expected to be.
+  # Copy the support files onto the TIPI where they are expected to be.
   # some functionality depends on them being in the FC folder.
-  scp FC/LOAD tipi@${TIPI_HOST_NAME}:/home/tipi/tipi_disk/FC/LOAD
-  scp FC/FCMD tipi@${TIPI_HOST_NAME}:/home/tipi/tipi_disk/FC/FCMD
-  scp FC/FCMDXB tipi@${TIPI_HOST_NAME}:/home/tipi/tipi_disk/FC/FCMDXB
-  scp example/gcc/diskimage/DISKIMAGE tipi@${TIPI_HOST_NAME}:/home/tipi/tipi_disk/FC/BIN/
-  scp example/gcc/fcmenu/FCMENU tipi@${TIPI_HOST_NAME}:/home/tipi/tipi_disk/FC/BIN/
-  scp example/gcc/ftp/FTP tipi@${TIPI_HOST_NAME}:/home/tipi/tipi_disk/FC/BIN/
-  scp example/gcc/font/FONT tipi@${TIPI_HOST_NAME}:/home/tipi/tipi_disk/FC/BIN/
-  scp example/gcc/telnet/TELNET tipi@${TIPI_HOST_NAME}:/home/tipi/tipi_disk/FC/BIN/
-  scp example/gcc/say/SAY tipi@${TIPI_HOST_NAME}:/home/tipi/tipi_disk/FC/BIN/
-  scp example/gcc/say/SAMPLE tipi@${TIPI_HOST_NAME}:/home/tipi/tipi_disk/FC/BIN/
-  scp example/gcc/virgil/VIRGIL99 tipi@${TIPI_HOST_NAME}:/home/tipi/tipi_disk/FC/BIN/
+  mkdir -p "$TIPI_DIR/FC/BIN"
+  cp -a FC/BOOT FC/LOAD FC/FCMD FC/FCMDXB "$TIPI_DIR/FC/"
+  cp -a FC/BIN/. "$TIPI_DIR/FC/BIN/"
+  echo "Copied FC support files to $TIPI_DIR/FC"
 fi
 
