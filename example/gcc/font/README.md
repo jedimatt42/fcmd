@@ -1,5 +1,9 @@
 # FONT load and save tool
 
+`FONT`
+
+Display the available options.
+
 `FONT <filename>`
 
 Load PROGRAM image font upto 2K into VDP character pattern table
@@ -19,4 +23,9 @@ Save all 256 character pattern definitions to PROGRAM image file.
 ## Wilhelm Format
 
 The `/w` option uses the Wilhelm format which simply starts at the space ` ` character.
+
+## Bundled Font
+
+`FCMDANSI` is the default ANSI font for Force Command and is included in `FC/BIN`.
+Load it with `FONT FC.BIN.FCMDANSI`.
 

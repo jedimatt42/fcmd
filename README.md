@@ -76,7 +76,7 @@ The FC directory goes on your TIPI as TIPI.FC, preserving its subdirectories:
 - FC/FCMD - EA5 utility for FinalGROM99 to reload FCMDG.bin
 - FC/FCMDXB - XB INT/VAR 254 program for FinalGROM99 to reload FCMDG.bin
 - FC/BOOT - EA5 program for console ROM replacement builds to switch back to FCMD
-- FC/BIN - command utilities: DISKIMAGE, FCMENU, FONT, FTP, MDOSANSI, MDOSFONT, SAMPLE, SAY, TELNET, VIRGIL99
+- FC/BIN - command utilities and fonts: CHARSET, DISKIMAGE, FCMDANSI, FCMENU, FONT, FTP, MDOSANSI, MDOSFONT, SAMPLE, SAY, TELNET, VIRGIL99
 
 Copy the FC directory, including the FC/BIN subdirectory, to TIPI.FC without flattening it:
 the utilities are expected in TIPI.FC.BIN. `deploy.sh` does this when `TIPI_DIR` points at

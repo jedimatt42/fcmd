@@ -31,6 +31,7 @@ $(FNAME).bin: $(FNAME).elf
 
 $(FNAME): $(FNAME).bin
 	python3 $(XDM99) -T $< -t -f PROGRAM -n $(FNAME) -o $(FNAME)
+	mkdir -p ../../../FC/BIN && cp $(FNAME) ../../../FC/BIN/
 
 .phony clean:
 	rm -fr objects

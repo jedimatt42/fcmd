@@ -22,7 +22,7 @@ OBJECT_LIST:=$(sort $(C_SRCS:.c=.o) $(ASM_SRCS:.asm=.o))
 
 LINK_OBJECTS:=$(addprefix objects/,$(OBJECT_LIST))
 
-all: $(FNAME) MDOSANSI MDOSFONT
+all: $(FNAME) MDOSANSI MDOSFONT ../../../FC/BIN/FCMDANSI
 
 $(FNAME).elf: $(LINK_OBJECTS)
 	$(LD) $(LINK_OBJECTS) $(LDFLAGS) -o $(FNAME).elf -Map=mapfile
@@ -56,4 +56,7 @@ MDOSFONT: mdos-font/CHARSETS.a99
 	python3 $(XAS99) -b -R -a 0xA000 $< -o objects/MDOSFONT.bin
 	python3 $(XDM99) -t -T objects/MDOSFONT.bin -n MDOSFONT -f PROGRAM -o $@
 	mkdir -p ../../../FC/BIN && cp $@ ../../../FC/BIN/
+
+../../../FC/BIN/FCMDANSI: FCMDANSI
+	mkdir -p ../../../FC/BIN && cp $< $@
 
