@@ -55,15 +55,15 @@ int handleHelp() {
     wraptext("==Help==\n\n"
     "help <command>\n\n"
     "Commands:\n\n"
-    "alias autocmd bar cd cfmount checksum cls color copy date "
+    "alias bar cd cfmount checksum cls color copy date "
     "delete drives echo ed env exit fg99 goto help "
     "history if "
-    "label load lvl2 mkdir palette path protect pwd readkey rename "
+    "load lvl2 mkdir palette protect pwd readkey rename "
     "rdemdk rdpart rdvol "
     "rmdir sysinfo tipibeeps tipihalt tipimap "
     "tipireboot type unprotect ver width xb\n\n"
     "other:\n\n"
-    "pipeline redirect\n");
+    "autocmd label path pipeline redirect\n");
   return 0;
   }
 
