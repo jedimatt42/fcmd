@@ -9,7 +9,8 @@
 #include "strutil.h"
 #include "terminal.h"
 
-static char pipe_prefix[REDIR_PATH_MAX];
+#define PIPE_SUFFIX_LEN 7
+#define PIPE_PREFIX_MAX (MAX_VAR_VAL - PIPE_SUFFIX_LEN)
 
 static char* find_pipe(char* s) {
   int escaped = 0;
@@ -66,68 +67,72 @@ static int is_blank_stage(const char* s) {
   return *s == 0;
 }
 
-static int prepare_pipe_prefix(void) {
+static int prepare_pipe_prefix(char* prefix) {
+  char raw[REDIR_PATH_MAX];
+  char resolved[REDIR_PATH_MAX];
+  struct DeviceServiceRoutine* dsr;
+
   char* env = bk_vars_get(str2ram("FCTMP"));
   if ((int) env == -1 || env[0] == 0) {
-    bk_strcpy(pipe_prefix, currentPath);
+    bk_strcpy(raw, currentPath);
   } else {
-    bk_strcpy(pipe_prefix, env);
+    bk_strcpy(raw, env);
   }
 
-  int len = bk_strlen(pipe_prefix);
-  while (len > 0 && pipe_prefix[len - 1] == ' ') {
+  int len = bk_strlen(raw);
+  while (len > 0 && raw[len - 1] == ' ') {
     len--;
-    pipe_prefix[len] = 0;
+    raw[len] = 0;
   }
   if (len == 0) {
-    bk_strcpy(pipe_prefix, currentPath);
-    len = bk_strlen(pipe_prefix);
+    bk_strcpy(raw, currentPath);
+    len = bk_strlen(raw);
   }
   if (len >= REDIR_PATH_MAX - 1) {
     return -1;
   }
-  if (len == 0 || pipe_prefix[len - 1] != '.') {
-    pipe_prefix[len] = '.';
-    pipe_prefix[len + 1] = 0;
+  if (len == 0 || raw[len - 1] != '.') {
+    raw[len] = '.';
+    raw[len + 1] = 0;
+    len++;
+  }
+  if (len + PIPE_SUFFIX_LEN >= REDIR_PATH_MAX) {
+    return -1;
   }
 
   /*
    * Resolve the prefix now, so a cd performed by an earlier stage cannot move
    * later temporary files. Use a dummy filename and strip it afterwards.
    */
-  char probe[REDIR_PATH_MAX];
-  char resolved[REDIR_PATH_MAX];
-  struct DeviceServiceRoutine* dsr;
-
-  if (bk_strlen(pipe_prefix) + 7 >= REDIR_PATH_MAX) {
-    return -1;
-  }
-  bk_strcpy(probe, pipe_prefix);
-  bk_strcat(probe, str2ram("FCPIPEX"));
-  bk_parsePathParam(probe, &dsr, resolved, PR_REQUIRED);
+  bk_strcat(raw, str2ram("FCPIPEX"));
+  bk_parsePathParam(raw, &dsr, resolved, PR_REQUIRED);
   if (dsr == 0) {
     return -1;
   }
+
   len = bk_strlen(resolved);
-  if (len < 7) {
+  if (len < PIPE_SUFFIX_LEN) {
     return -1;
   }
-  len -= 7;
+  len -= PIPE_SUFFIX_LEN;
   resolved[len] = 0;
-  bk_strcpy(pipe_prefix, resolved);
+  if (len > PIPE_PREFIX_MAX) {
+    return -1;
+  }
 
+  bk_strcpy(prefix, resolved);
   return 0;
 }
 
-static int build_temp_path(char* out, int slot) {
+static int build_temp_path(char* out, const char* prefix, int slot) {
   char suffix[8] = "FCPIPE0";
   suffix[6] = slot ? '1' : '0';
 
-  int plen = bk_strlen(pipe_prefix);
-  if (plen + 7 > MAX_VAR_VAL) {
+  int plen = bk_strlen((char*) prefix);
+  if (plen + PIPE_SUFFIX_LEN > MAX_VAR_VAL) {
     return -1;
   }
-  bk_strcpy(out, pipe_prefix);
+  bk_strcpy(out, (char*) prefix);
   bk_strcat(out, suffix);
   return 0;
 }
@@ -176,6 +181,7 @@ static int delete_pipe_temp(const char* path) {
 int runPipeline(char* buffer) {
   char pipe_in[MAX_VAR_VAL + 1];
   char pipe_out[MAX_VAR_VAL + 1];
+  char pipe_prefix[PIPE_PREFIX_MAX + 1];
   int first_error = 0;
   int stage_no = 0;
   char* stage = buffer;
@@ -198,18 +204,8 @@ int runPipeline(char* buffer) {
     return 1;
   }
 
-  if (prepare_pipe_prefix() < 0) {
-    tputs_rom("error, invalid or too-long temporary path: ");
-    bk_tputs_ram(pipe_prefix);
-    bk_tputc('\n');
-    setstrtok(0);
-    bk_setCommandStatus(1);
-    return 1;
-  }
-  if (bk_strlen(pipe_prefix) + 7 > MAX_VAR_VAL) {
-    tputs_rom("error, temporary path is too long for PIPEIN: ");
-    bk_tputs_ram(pipe_prefix);
-    bk_tputc('\n');
+  if (prepare_pipe_prefix(pipe_prefix) < 0) {
+    tputs_rom("error, invalid or too-long temporary path (check FCTMP)\n");
     setstrtok(0);
     bk_setCommandStatus(1);
     return 1;
@@ -252,7 +248,7 @@ int runPipeline(char* buffer) {
        * stage reuses the slot. Stage 0 uses FCPIPE0, stage 1 FCPIPE1, stage 2
        * FCPIPE0 again, and so on.
        */
-      if (build_temp_path(pipe_out, stage_no & 1) < 0) {
+      if (build_temp_path(pipe_out, pipe_prefix, stage_no & 1) < 0) {
         tputs_rom("error, temporary path is too long\n");
         if (first_error == 0) {
           first_error = 1;
