@@ -128,6 +128,17 @@ void b14Help(char* tok) {
       "Configure Myarc EXP-1 Ramdisk volume name.\n"
       "<name> - upto 10 character volume label.\n"
     );
+  } else if (matchcmd(tok, "redirect") || matchcmd(tok, "redirection")) {
+    wraptext("==Output Redirection==\n\n"
+      "command >filepath\n"
+      "command >>filepath\n\n"
+      "Write terminal output to a DISPLAY/VARIABLE 80 file.\n"
+      "Records break at 80 characters, line feed, carriage return, or CRLF.\n"
+      "> replaces an existing file. >> appends; an existing file must already be DISPLAY/VARIABLE 80.\n"
+      "Use \\> for a literal > character.\n"
+      "Only output written through the ForceCommand terminal layer is captured.\n"
+      "The STATUS variable is set to the command exit status.\n"
+    );
   } else {
     wraptext("no help for command: ");
     bk_tputs_ram(tok);

@@ -86,6 +86,11 @@ void cartmain()
 
   bk_dict_init(&system_dict, heap_end);
 
+  char zero_status[2];
+  zero_status[0] = '0';
+  zero_status[1] = 0;
+  bk_vars_set(str2ram("STATUS"), zero_status);
+
   bk_history_init();
 
   bk_detectClock();

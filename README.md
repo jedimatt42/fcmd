@@ -23,6 +23,7 @@ Supports:
 * 'call' to run scripts.
 * AUTOCMD script on first drive is run on startup.
 * ANSI display
+* Output redirection with `>` (replace) and `>>` (append) to DISPLAY/VARIABLE 80 files
 * TIPIMAP to control DSKx, URIx, and AUTO mapping
 
 ## End Users Wiki

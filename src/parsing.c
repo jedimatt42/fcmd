@@ -4,6 +4,7 @@
 #include "parsing.h"
 #include "main.h"
 #include "globals.h"
+#include "redirect.h"
 #include "commands.h"
 #include "dsrutil.h"
 #include "strutil.h"
@@ -79,6 +80,14 @@ int must_close_command(char* buffer) {
   return 1;
 }
 
+static void set_command_status(int status) {
+  char* value = bk_uint2str((unsigned int) status);
+  char* current = bk_vars_get(str2ram("STATUS"));
+  if ((int) current == -1 || 0 != bk_strcmp(current, value)) {
+    bk_vars_set(str2ram("STATUS"), value);
+  }
+}
+
 // NOTE command handle functions in bank 0 do not need bk_ banking stub
 
 int handleCommand(char *buffer) {
@@ -88,70 +97,87 @@ int handleCommand(char *buffer) {
   }
   request_break = 0;
 
+  // Remove and open any > or >> redirection before preprocessing the command.
+  int owns_redirect = redirect_prepare(buffer);
+  if (owns_redirect < 0) {
+    result = 1;
+    set_command_status(result);
+    return result;
+  }
+
   // perform any escaping, variable substitutions, etc...
   char* procbuf = bk_preprocess(buffer);
 
   char* tok = bk_strtok(procbuf, ' ');
-  COMMAND("alias", bk_handleAlias)
-  else COMMAND("bar", bk_handleBar)
-  else COMMAND("cls", bk_handleCls)
-  else COMMAND("cd", bk_handleCd)
-  else COMMAND("cfmount", bk_handleCFMount)
-  else COMMAND("checksum", bk_handleChecksum)
-  else COMMAND("color", bk_handleColor)
-  else COMMAND("copy", bk_handleCopy)
-  else COMMAND("date", bk_handleDate)
-  else COMMAND("debug", bk_handleDebug)
-  else COMMAND("delete", bk_handleDelete)
-  else COMMAND("dir", bk_handleDir)
-  else COMMAND("drives", bk_handleDrives)
-  else COMMAND("echo", bk_handleEcho)
-  else COMMAND("ed", bk_handleEd)
-  else COMMAND("env", bk_handleEnv)
-  else COMMAND("exit", bk_handleExit)
-  else COMMAND("fg99", bk_handleFg99)
-  else COMMAND("goto", bk_handleGoto)
-  else COMMAND("if", bk_handleIf)
-  else COMMAND("help", bk_handleHelp)
-  else COMMAND("history", bk_handleHistory)
-  else COMMAND("load", bk_handleLoad)
-  else COMMAND("lvl2", bk_handleLvl2)
-  else COMMAND("mkdir", bk_handleMkdir)
-  else COMMAND("palette", bk_handlePalette)
-  else COMMAND("protect", bk_handleProtect)
-  else COMMAND("pwd", bk_handlePwd)
-  else COMMAND("readkey", bk_handleReadkey)
-  else COMMAND("rename", bk_handleRename)
-  else COMMAND("rdemdk", bk_handleRDEmdk)
-  else COMMAND("rdpart", bk_handleRDPart)
-  else COMMAND("rdvol", bk_handleRDVol)
-  else COMMAND("rmdir", bk_handleRmdir)
-  else COMMAND("sysinfo", bk_handleSysInfo)
-  else COMMAND("tipibeeps", bk_handleTipiBeeps)
-  else COMMAND("tipihalt", bk_handleTipiHalt)
-  else COMMAND("tipimap", bk_handleTipimap)
-  else COMMAND("tipireboot", bk_handleTipiReboot)
-  else COMMAND("type", bk_handleType)
-  else COMMAND("unprotect", bk_handleUnprotect)
-  else COMMAND("ver", bk_handleVer)
-  else COMMAND("width", bk_handleWidth)
-  else COMMAND("xb", bk_handleXb)
-  else if (tok[bk_strlen(tok)-1] == ':') {
-    if (scripton) {
-      tok[bk_strlen(tok)-1] = 0; // shorten to just the name
-      bk_labels_add(tok, *goto_line_ref);
+  if (tok) {
+    COMMAND("alias", bk_handleAlias)
+    else COMMAND("bar", bk_handleBar)
+    else COMMAND("cls", bk_handleCls)
+    else COMMAND("cd", bk_handleCd)
+    else COMMAND("cfmount", bk_handleCFMount)
+    else COMMAND("checksum", bk_handleChecksum)
+    else COMMAND("color", bk_handleColor)
+    else COMMAND("copy", bk_handleCopy)
+    else COMMAND("date", bk_handleDate)
+    else COMMAND("debug", bk_handleDebug)
+    else COMMAND("delete", bk_handleDelete)
+    else COMMAND("dir", bk_handleDir)
+    else COMMAND("drives", bk_handleDrives)
+    else COMMAND("echo", bk_handleEcho)
+    else COMMAND("ed", bk_handleEd)
+    else COMMAND("env", bk_handleEnv)
+    else COMMAND("exit", bk_handleExit)
+    else COMMAND("fg99", bk_handleFg99)
+    else COMMAND("goto", bk_handleGoto)
+    else COMMAND("if", bk_handleIf)
+    else COMMAND("help", bk_handleHelp)
+    else COMMAND("history", bk_handleHistory)
+    else COMMAND("load", bk_handleLoad)
+    else COMMAND("lvl2", bk_handleLvl2)
+    else COMMAND("mkdir", bk_handleMkdir)
+    else COMMAND("palette", bk_handlePalette)
+    else COMMAND("protect", bk_handleProtect)
+    else COMMAND("pwd", bk_handlePwd)
+    else COMMAND("readkey", bk_handleReadkey)
+    else COMMAND("rename", bk_handleRename)
+    else COMMAND("rdemdk", bk_handleRDEmdk)
+    else COMMAND("rdpart", bk_handleRDPart)
+    else COMMAND("rdvol", bk_handleRDVol)
+    else COMMAND("rmdir", bk_handleRmdir)
+    else COMMAND("sysinfo", bk_handleSysInfo)
+    else COMMAND("tipibeeps", bk_handleTipiBeeps)
+    else COMMAND("tipihalt", bk_handleTipiHalt)
+    else COMMAND("tipimap", bk_handleTipimap)
+    else COMMAND("tipireboot", bk_handleTipiReboot)
+    else COMMAND("type", bk_handleType)
+    else COMMAND("unprotect", bk_handleUnprotect)
+    else COMMAND("ver", bk_handleVer)
+    else COMMAND("width", bk_handleWidth)
+    else COMMAND("xb", bk_handleXb)
+    else if (tok[bk_strlen(tok)-1] == ':') {
+      if (scripton) {
+        tok[bk_strlen(tok)-1] = 0; // shorten to just the name
+        bk_labels_add(tok, *goto_line_ref);
+      } else {
+        tputs_rom("error, label only supported in script\n");
+      }
+    } else if (isAssignment(procbuf)) {
+      char* name = bk_strtok(procbuf, '=');
+      char* value = bk_strtokpeek(0, 0); // to end of line
+      bk_vars_set(name, value);
     } else {
-      tputs_rom("error, label only supported in script\n");
-    }
-  } else if (isAssignment(procbuf)) {
-    char* name = bk_strtok(procbuf, '=');
-    char* value = bk_strtokpeek(0, 0); // to end of line
-    bk_vars_set(name, value);
-  } else {
-    if (tok) {
       result = bk_handleExecutable(tok);
     }
   }
+
+  if (owns_redirect) {
+    int finish_status = bk_redirect_finish();
+    if (result == 0) {
+      result = finish_status;
+    }
+  }
+
+  set_command_status(result);
   return result;
 }
 

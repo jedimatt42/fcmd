@@ -2,6 +2,7 @@
 #define MYBANK BANK(8)
 
 #include "terminal.h"
+#include "redirect.h"
 #include "getstr.h"
 #include "globals.h"
 #include "detect_vdp.h"
@@ -178,6 +179,11 @@ void cursorLeft(int cols) {
 }
 
 void term_cls() {
+  if (redirect_state.active) {
+    conio_x = 0;
+    conio_y = nTitleLine;
+    return;
+  }
   clrscr();
   tgotoxy(0, 0);
 }
@@ -492,6 +498,11 @@ void charout(unsigned char ch) {
 }
 
 void term_putc(int c) {
+  if (redirect_state.active) {
+    redirect_putc(c);
+    return;
+  }
+
   // Character output is only meaningful where there is a character generator
   // (text modes and GRAPHICS1 tiles). In bitmap/multicolor modes the name table
   // is not a character map, so ignore the output rather than corrupt VRAM.

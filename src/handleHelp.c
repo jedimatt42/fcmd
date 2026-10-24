@@ -61,7 +61,8 @@ int handleHelp() {
     "label load lvl2 mkdir palette path protect pwd readkey rename "
     "rdemdk rdpart rdvol "
     "rmdir sysinfo tipibeeps tipihalt tipimap "
-    "tipireboot type unprotect ver width xb\n");
+    "tipireboot type unprotect ver width xb\n\n"
+    "Redirection: command >file or command >>file\n");
   return 0;
   }
 

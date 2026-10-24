@@ -1,0 +1,181 @@
+#include "banks.h"
+#define MYBANK BANK(10)
+
+#include "redirect.h"
+#include "parsing.h"
+#include "preprocess.h"
+#include "globals.h"
+#include "strutil.h"
+#include "terminal.h"
+#include <string.h>
+#include <conio.h>
+
+struct RedirectState redirect_state;
+
+static char* find_operator(char* s) {
+  int escaped = 0;
+  while (*s) {
+    if (!escaped && *s == '\\') {
+      escaped = 1;
+      s++;
+      continue;
+    }
+    if (!escaped && *s == '>') {
+      return s;
+    }
+    escaped = 0;
+    s++;
+  }
+  return 0;
+}
+
+/* Turn an escaped \> into a literal > so commands such as echo can print it. */
+static void unescape_redirects(char* s) {
+  char* read = s;
+  char* write = s;
+  while (*read) {
+    if (*read == '\\' && read[1] == '>') {
+      *write++ = '>';
+      read += 2;
+    } else {
+      *write++ = *read++;
+    }
+  }
+  *write = 0;
+}
+
+static void report_open_error(int err) {
+  tputs_rom("error, could not open ");
+  bk_tputs_ram(redirect_state.path);
+  tputs_rom(" (");
+  bk_tputs_ram(bk_uint2hex((unsigned int)err));
+  tputs_rom(")\n");
+}
+
+static int open_target(int append) {
+  struct DeviceServiceRoutine* dsr;
+  char* expanded = bk_phase2_preprocess(redirect_state.path);
+
+  path_parse(expanded, &dsr, redirect_state.path, PR_REQUIRED);
+  if (dsr == 0) {
+    tputs_rom("error, no device found for ");
+    bk_tputs_ram(redirect_state.path);
+    bk_tputc('\n');
+    return -1;
+  }
+
+  redirect_state.dsr = dsr;
+
+  if (append) {
+    redirect_state.error = bk_dsr_open(dsr, &redirect_state.pab, redirect_state.path,
+        DSR_TYPE_APPEND | DSR_TYPE_DISPLAY | DSR_TYPE_VARIABLE | DSR_TYPE_SEQUENTIAL, 80);
+    if (redirect_state.error && !bk_existsFile(dsr, redirect_state.path)) {
+      redirect_state.error = bk_dsr_open(dsr, &redirect_state.pab, redirect_state.path,
+          DSR_TYPE_OUTPUT | DSR_TYPE_DISPLAY | DSR_TYPE_VARIABLE | DSR_TYPE_SEQUENTIAL, 80);
+    }
+  } else {
+    struct PAB delpab;
+    bk_initPab(&delpab);
+    delpab.pName = (unsigned char*) redirect_state.path;
+    bk_dsr_delete(dsr, &delpab);
+    redirect_state.error = bk_dsr_open(dsr, &redirect_state.pab, redirect_state.path,
+        DSR_TYPE_OUTPUT | DSR_TYPE_DISPLAY | DSR_TYPE_VARIABLE | DSR_TYPE_SEQUENTIAL, 80);
+  }
+
+  if (redirect_state.error) {
+    report_open_error((int)redirect_state.error);
+    return -1;
+  }
+
+  redirect_state.active = 1;
+  redirect_state.open = 1;
+  redirect_state.append = append;
+  redirect_state.empty_unsupported = 0;
+  redirect_state.linelen = 0;
+  redirect_state.last_cr = 0;
+  redirect_state.esc_state = REDIR_ESC_NONE;
+  redirect_state.saved_x = conio_x;
+  redirect_state.saved_y = conio_y;
+  return 1;
+}
+
+/*
+ * Parse a > or >> redirection from the raw command line, remove it from the
+ * command, resolve/open the target, and enable the terminal sink.
+ *
+ * Returns 0 when there is no redirection, 1 when a redirect was started, and
+ * -1 on a parsing or open error.
+ */
+int redirect_prepare(char* command) {
+  char* op = find_operator(command);
+
+  if (op == 0) {
+    unescape_redirects(command);
+    return 0;
+  }
+
+  if (redirect_state.open) {
+    tputs_rom("error, nested redirection is not supported\n");
+    return -1;
+  }
+
+  redirect_state.error = 0;
+
+  int append = 0;
+  char* scan = op + 1;
+  if (*scan == '>') {
+    append = 1;
+    scan++;
+  }
+
+  while (*scan == ' ') {
+    scan++;
+  }
+  if (*scan == 0) {
+    tputs_rom("error, missing file for redirection\n");
+    return -1;
+  }
+
+  char* target = scan;
+  while (*scan != 0 && *scan != ' ') {
+    scan++;
+  }
+  char* target_end = scan;
+
+  int target_len = target_end - target;
+  if (target_len > REDIR_PATH_MAX - 1) {
+    target_len = REDIR_PATH_MAX - 1;
+  }
+  for (int i = 0; i < target_len; i++) {
+    redirect_state.path[i] = target[i];
+  }
+  redirect_state.path[target_len] = 0;
+
+  /*
+   * Remove the operator and its target token. Drop one preceding space, and
+   * drop a following space only when it is trailing; otherwise keep it so a
+   * following argument remains separated from the command.
+   */
+  char* remove_start = op;
+  if (remove_start > command && remove_start[-1] == ' ') {
+    remove_start--;
+  }
+  char* remove_end = target_end;
+  if (*remove_end == ' ' && remove_end[1] == 0) {
+    remove_end++;
+  }
+  char* dst = remove_start;
+  char* src = remove_end;
+  while ((*dst++ = *src++) != 0) {
+    ;
+  }
+
+  if (find_operator(command) != 0) {
+    tputs_rom("error, multiple redirections are not supported\n");
+    return -1;
+  }
+
+  unescape_redirects(command);
+
+  return open_target(append);
+}
