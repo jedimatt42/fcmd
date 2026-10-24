@@ -7,6 +7,14 @@
 extern void* trampoline();
 extern int trampdata;
 
+/*
+ * Executable programs (and therefore user callbacks) live in upper expansion
+ * RAM; ForceCommand ROM code is below this address. External callbacks are
+ * invoked with bank 0 mapped so they can call fc_api; ROM callbacks are called
+ * directly in the caller's bank.
+ */
+#define EXTERNAL_CODE_START 0xA000
+
 /* -- Thanks PeteE! - suggested alternative by PeteE
  * realname - the function you want to be able to call
  * bank - the bank switch address for this function

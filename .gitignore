@@ -18,4 +18,5 @@ copyToPc.sh
 FCMD.DSK
 APITEST.DSK
 execplan-*.md
+exec-plan-*.md
 *.zip

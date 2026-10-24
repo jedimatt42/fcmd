@@ -8,13 +8,19 @@
 
 static volatile unsigned int identify_calls = 0;
 static volatile unsigned int identify_flag = 0;
+static volatile int identify_api_ok = 0;
 
 static void on_identify(int flag) {
+    /* Executable callbacks run with bank 0 mapped; API calls are supported. */
+    const char* s = hex_from_uint(0xABCD);
+    identify_api_ok = (s[0] == 'A' && s[1] == 'B' && s[2] == 'C' &&
+                       s[3] == 'D' && s[4] == 0);
     identify_calls++;
     identify_flag = (unsigned int)flag;
 }
 
 static void test_identify_hook(void) {
+    identify_api_ok = 0;
     term_set_identify_hook(on_identify);
 
     /* CSI 6n asks the terminal to report the cursor position; ForceCommand
@@ -26,6 +32,7 @@ static void test_identify_hook(void) {
 
     FC_CHECK_EQ(identify_calls, 1);
     FC_CHECK((identify_flag & 0x8000) != 0);
+    FC_CHECK(identify_api_ok);
     term_putc('\n');
 
     term_set_identify_hook(0);

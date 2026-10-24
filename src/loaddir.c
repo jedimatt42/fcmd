@@ -12,6 +12,40 @@
 #include <vdp.h>
 #include <string.h>
 
+/*
+ * Invoke a catalog callback. The ROM's own callbacks (DIR/COPY/DELETE) live in
+ * this bank and are called directly. An executable's callback lives in upper
+ * RAM and needs bank 0 mapped so that API calls made inside it work; the common
+ * trampoline enters it that way and returns here.
+ */
+static void call_vol_cb(vol_entry_cb cb, struct VolInfo* v) {
+    if (!cb) return;
+    if ((unsigned int)cb >= EXTERNAL_CODE_START) {
+        int data[3];
+        data[0] = (int)BANK(0);
+        data[1] = (int)MYBANK;
+        data[2] = (int)cb;
+        trampdata = (int)data;
+        trampoline(v);
+    } else {
+        cb(v);
+    }
+}
+
+static void call_dir_cb(dir_entry_cb cb, struct DirEntry* d) {
+    if (!cb) return;
+    if ((unsigned int)cb >= EXTERNAL_CODE_START) {
+        int data[3];
+        data[0] = (int)BANK(0);
+        data[1] = (int)MYBANK;
+        data[2] = (int)cb;
+        trampdata = (int)data;
+        trampoline(d);
+    } else {
+        cb(d);
+    }
+}
+
 unsigned int dsr_catalog(struct DeviceServiceRoutine* dsr, const char* pathname, vol_entry_cb vol_cb, dir_entry_cb dir_cb) {
   struct PAB pab;
 
@@ -44,7 +78,7 @@ unsigned int dsr_catalog(struct DeviceServiceRoutine* dsr, const char* pathname,
         volInfo.total = j;
         volInfo.available = k;
         volInfo.timestamps = (pab.CharCount > 38);
-        vol_cb(&volInfo);
+        call_vol_cb(vol_cb, &volInfo);
       } else {
         int namlen = bk_basicToCstr(cbuf, dirEntry.name);
         if (namlen == 0) {
@@ -81,7 +115,7 @@ unsigned int dsr_catalog(struct DeviceServiceRoutine* dsr, const char* pathname,
         }
 
         if (dirEntry.name[0] != 0) {
-          dir_cb(&dirEntry);
+          call_dir_cb(dir_cb, &dirEntry);
         }
       }
       recNo++;

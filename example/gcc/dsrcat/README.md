@@ -16,7 +16,8 @@ scratch file or does not support catalog the test skips.
 - `dsr_catalog` lists the directory.
 - The volume callback fires exactly once.
 - The file callback fires at least once and sees `ZZCATFIL`.
-- The first listed entry name and the entry count are printed.
+- The first listed entry name is printed from inside the directory callback, and
+  the entry count is printed afterwards.
 - The scratch file is deleted afterwards.
 
 ## Opt-in: dsr_ea5_load
@@ -28,19 +29,18 @@ the default test. To exercise it deliberately:
 DSRCAT /ea5 <file>
 ```
 
-## Callback rule
+## Callbacks and API calls
 
-Callbacks passed into ForceCommand APIs that run in a banked routine (such as
-`dsr_catalog`, which runs in bank 9) **must not call any other ForceCommand API
-function**. The external API trampoline always returns to cartridge bank 0, so
-an API call from inside a callback leaves bank 0 mapped and the subsequent
-return into the banked caller crashes. Keep such callbacks as leaf functions and
-use plain C only.
+Executable callbacks are entered with bank 0 mapped (through the common bank
+trampoline), so they can call ForceCommand API functions normally. Both
+callbacks here call `hex_from_uint` and check the result, and `on_dir` prints
+the first directory entry directly with `term_puts`/`term_putc` instead of
+copying it into a global.
 
-The callbacks here do their own case-insensitive compare and copy for that
-reason. Any pre-existing `ZZCATFIL` is deleted first, and the file is deleted at
-the end. If the test is interrupted, the leftover file can be deleted with
-`delete ZZCATFIL`.
+Callback signatures are still limited to seven arguments, the same as any
+banked-callable function. Any pre-existing `ZZCATFIL` is deleted first, and the
+file is deleted at the end. If the test is interrupted, the leftover file can be
+deleted with `delete ZZCATFIL`.
 
 ## Expected result
 

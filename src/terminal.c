@@ -70,6 +70,25 @@ identify_callback get_identify_hook() {
   return identify_cb;
 }
 
+/*
+ * Invoke the identify hook. Executable hooks live in upper RAM and are entered
+ * with bank 0 mapped (via the common trampoline) so they can call fc_api;
+ * a ROM hook (if ever installed) is called directly in this bank.
+ */
+static void notify_identify(int flag) {
+  if (!identify_cb) return;
+  if ((unsigned int)identify_cb >= EXTERNAL_CODE_START) {
+    int data[3];
+    data[0] = (int)BANK(0);
+    data[1] = (int)MYBANK;
+    data[2] = (int)identify_cb;
+    trampdata = (int)data;
+    trampoline(flag);
+  } else {
+    identify_cb(flag);
+  }
+}
+
 #define STAGE_OPEN 0
 #define STAGE_ESC 1
 #define STAGE_CSI 2
@@ -374,9 +393,7 @@ void doCsiCommand(unsigned char c) {
       break;
     case 'n': // some introspection
       if (getParamA(0) == 6) {
-        if (identify_cb) {
-          identify_cb(0x8000 | wherex() << 8 | wherey());
-        }
+        notify_identify(0x8000 | wherex() << 8 | wherey());
       }
       break;
     case 's': // store cursor, no params
@@ -387,9 +404,7 @@ void doCsiCommand(unsigned char c) {
       tgotoxy(cursor_store_x, cursor_store_y);
       break;
     case 'c': // identify term type.
-      if (identify_cb) {
-        identify_cb(0);
-      }
+      notify_identify(0);
       break;
   }
 }
@@ -420,9 +435,7 @@ int doEscCommand(unsigned char c) {
         esc_state = ESC_SIX;
         break;
       case 'Z': // vt52 ident
-        if (identify_cb) {
-          identify_cb(52);
-        }
+        notify_identify(52);
         break;
       case 'Y': // vt52 goto
         esc_state = ESC_Y;

@@ -99,10 +99,18 @@ Two consequences:
 - **The external trampoline always returns to bank 0.** `fc_api()` hardcodes
   `RET_BANK = BASE_ADDR` because an executable runs with bank 0 mapped. Internal
   callers (see below) use their own bank instead.
-- Because of that, an **external callback invoked from a banked routine must not
-  call any API function**. The callback would return to bank 0 and then return
-  into the banked caller's code with the wrong bank mapped, crashing. Keep such
-  callbacks as leaf functions. (`example/gcc/dsrcat` is the worked example.)
+- **Callbacks from banked routines have to be entered in a bank-0 context.**
+  A banked routine such as `dsr_catalog` (bank 9) or the terminal identify hook
+  (bank 8) invokes an executable callback through the same common trampoline,
+  with `TAR_BANK = BANK(0)` and `RET_BANK = MYBANK`. The callback therefore runs
+  exactly like the executable's `main`, with bank 0 mapped, and may call API
+  functions normally; the trampoline restores the ROM routine's bank on return.
+
+  ROM callbacks (the static callbacks that `DIR`/`COPY`/`DELETE` pass to
+  `dsr_catalog`) live below `0xA000` and are called directly in the caller's
+  bank. Executable code starts at `0xA000` (`EXTERNAL_CODE_START` in
+  `src/banking.h`). Keep callback signatures to seven arguments or fewer, the
+  same limit as any banked call.
 
 ## The API index and why it is not in `r0`
 
@@ -186,8 +194,9 @@ with the status. `exit(x)` in `fc_api.h` is an alias for `fc_exit(x)`.
 ## Gotchas checklist
 
 - Rebuild the ROM and all executables together after any ABI change.
-- Do not call API functions from a callback that ForceCommand invokes out of a
-  banked routine (see the `trampdata` return-bank note).
+- Executable callbacks run with bank 0 mapped and may call APIs; ROM callbacks
+  are invoked directly in the caller's bank. Keep callback signatures to seven
+  arguments or fewer.
 - Keep API parameters `int`-sized.
 - Terminal output (`term_*`) and the console keyboard scan (`term_kscan`) are
   not safe while a graphics mode is active.

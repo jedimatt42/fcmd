@@ -19,15 +19,16 @@
 static int vol_calls;
 static int dir_calls;
 static int found_scratch;
-static char first_entry[11];
+static int cb_api_ok;
 
-/*
- * IMPORTANT: callbacks invoked from ForceCommand's banked code (dsr_catalog
- * runs in bank 9) must not call any other ForceCommand API function. The
- * external API trampoline always returns to cartridge bank 0, so an API call
- * from inside a callback leaves bank 0 mapped and the return into bank 9
- * crashes. Keep these callbacks leaf functions and use plain C only.
- */
+/* Executable callbacks are entered with bank 0 mapped, so API calls from here
+ * are supported. Verify that with a deterministic call in each callback. */
+static void check_callback_api(unsigned int value, const char* want) {
+    const char* s = hex_from_uint(value);
+    int i = 0;
+    while (want[i] != 0 && s[i] == want[i]) i++;
+    if (want[i] != 0 || s[i] != 0) cb_api_ok = 0;
+}
 
 static int name_equals(const char* name, const char* want) {
     int i = 0;
@@ -50,18 +51,19 @@ static int name_equals(const char* name, const char* want) {
 
 static void on_vol(struct VolInfo* v) {
     (void)v;
+    check_callback_api(0x1234, "1234");
     vol_calls++;
 }
 
 static void on_dir(struct DirEntry* d) {
-    int i;
-
+    check_callback_api(0xABCD, "ABCD");
     dir_calls++;
     if (dir_calls == 1) {
-        for (i = 0; i < 10 && d->name[i] != 0; i++) {
-            first_entry[i] = d->name[i];
-        }
-        first_entry[i] = 0;
+        /* Print the first entry straight from the callback, through the
+         * terminal API, instead of copying it into executable globals. */
+        term_puts("first entry: ");
+        term_puts(d->name);
+        term_putc('\n');
     }
     if (name_equals(d->name, SCRATCH)) {
         found_scratch = 1;
@@ -126,7 +128,7 @@ static void test_catalog(void) {
     vol_calls = 0;
     dir_calls = 0;
     found_scratch = 0;
-    first_entry[0] = 0;
+    cb_api_ok = 1;
 
     r = dsr_catalog(dsr, path, on_vol, on_dir);
     if (r != 0) {
@@ -136,10 +138,8 @@ static void test_catalog(void) {
         FC_CHECK_EQ(vol_calls, 1);
         FC_CHECK(dir_calls >= 1);
         FC_CHECK_EQ(found_scratch, 1);
+        FC_CHECK(cb_api_ok);
 
-        term_puts("first entry: ");
-        term_puts(first_entry);
-        term_putc('\n');
         term_puts("entries listed: ");
         term_puts(str_from_uint((unsigned int)dir_calls));
         term_putc('\n');
