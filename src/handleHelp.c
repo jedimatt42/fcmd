@@ -119,9 +119,11 @@ int handleHelp() {
     "examples: DSK1.*BAS, DSK1.MUNCHM*, TELN*, *S\n");
   } else if (matchcmd(tok, "dir")) {
     wraptext("==List Directory==\n\n"
-    "dir [/w] [path]\n\n"
+    "dir [/w] [/d] [path]\n\n"
     "List current directory or directory for path\n\n"
-    "/w - optional. Output a simplified listing in multiple columns\n\n"
+    "/w - optional. Output a simplified listing in multiple columns\n"
+    "/d - optional. List directory entries only\n\n"
+    "Options may be combined, for example /wd\n\n"
     "path - full or relative path to directory or file pattern. Wildcard * may be at beginning or end of name but not both\n\n"
     "examples: DSK1.*BAS, DSK1.MUNCHM*, TELN*, *S\n");
   } else if (matchcmd(tok, "drives")) {

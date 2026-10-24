@@ -18,6 +18,36 @@ void onWideVolInfo(struct VolInfo* volInfo);
 void onWideDirEntry(struct DirEntry* dirEntry);
 
 static int col = 0;
+static int linepos = 0;
+static int colstart = 0;
+static int dirsOnly = 0;
+
+// Parse a dir option token like /w, /d, or /wd. Returns non-zero if the
+// token was a valid option and updates the requested flags.
+static int parseDirOptions(char* token, int* wide, int* dirs) {
+  if (token[0] != '/') {
+    return 0;
+  }
+  char* cursor = token + 1;
+  if (*cursor == 0) {
+    return 0;
+  }
+  int w = 0;
+  int d = 0;
+  while (*cursor) {
+    char c = *cursor++;
+    if (c == 'w' || c == 'W') {
+      w = 1;
+    } else if (c == 'd' || c == 'D') {
+      d = 1;
+    } else {
+      return 0;
+    }
+  }
+  *wide |= w;
+  *dirs |= d;
+  return 1;
+}
 
 /*
  want to be able to handle:
@@ -25,15 +55,25 @@ static int col = 0;
    dir
    dir F*
    dir TIPI.GAMES.P*
+   dir /w
+   dir /d
+   dir /wd TIPI.GAMES.P*
 */
 int handleDir() {
   struct DeviceServiceRoutine* dsr = 0;
 
+  int wideFormat = 0;
+  int onlyDirs = 0;
+  int wide = 0;
+  int dirs = 0;
   char* peek = bk_strtokpeek(0, ' ');
-  int wideFormat = bk_strcmpi(str2ram("/w"), peek) == 0 ? 1 : 0;
-  if (wideFormat) {
+  while (parseDirOptions(peek, &wide, &dirs)) {
+    wideFormat |= wide;
+    onlyDirs |= dirs;
     bk_strtok(0, ' '); // consume the option token.
+    peek = bk_strtokpeek(0, ' ');
   }
+  dirsOnly = onlyDirs;
 
   char path[256];
   bk_parsePathParam(0, &dsr, path, PR_OPTIONAL | PR_WILDCARD);
@@ -55,6 +95,8 @@ int handleDir() {
 
   if (wideFormat) {
     col = 0;
+    linepos = 0;
+    colstart = 0;
     dsr_catalog(dsr, path, onWideVolInfo, onWideDirEntry);
     bk_tputc('\n');
   } else {
@@ -148,11 +190,13 @@ void onLongDirEntry(struct DirEntry* dirEntry) {
   if (!bk_globMatches(dirEntry->name)) {
   return;
   }
-  bk_tputs_ram(dirEntry->name);
-  cputpad(11, dirEntry->name);
-
   int de_type = dirEntry->type < 0 ? -1 * dirEntry->type : dirEntry->type;
   de_type--;
+  if (dirsOnly && de_type != 5) {
+  return;
+  }
+  bk_tputs_ram(dirEntry->name);
+  cputpad(11, dirEntry->name);
 
   char* ftype = (char*) file_types[de_type];
 
@@ -204,13 +248,38 @@ void onWideDirEntry(struct DirEntry* dirEntry) {
   if (!bk_globMatches(dirEntry->name)) {
   return;
   }
-  int collimit = displayWidth / 11;
-  bk_tputs_ram(dirEntry->name);
-  col++;
-  if (col < collimit) {
-    cputpad(11, dirEntry->name);
-  } else {
-    col = 0;
-    bk_tputc('\n');
+  int de_type = dirEntry->type < 0 ? -1 * dirEntry->type : dirEntry->type;
+  de_type--;
+  int isDir = de_type == 5;
+  if (dirsOnly && !isDir) {
+  return;
   }
+
+  int nameLen = bk_strlen(dirEntry->name);
+  int width = nameLen + (isDir ? 2 : 0);
+  int slot = width + 1 > 11 ? width + 1 : 11;
+
+  if (col > 0) {
+    while (linepos < colstart) {
+      bk_tputc(' ');
+      linepos++;
+    }
+    if (linepos + width > displayWidth) {
+      bk_tputc('\n');
+      linepos = 0;
+      col = 0;
+      colstart = 0;
+    }
+  }
+
+  if (isDir) {
+    bk_tputc('[');
+  }
+  bk_tputs_ram(dirEntry->name);
+  if (isDir) {
+    bk_tputc(']');
+  }
+  linepos += width;
+  colstart = linepos + (slot - width);
+  col++;
 }
