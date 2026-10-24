@@ -22,11 +22,17 @@ static void test_len_cmp(void) {
     FC_CHECK(str_cmp("abc", "abd") != 0);
     FC_CHECK(str_cmp("abc", "ab") != 0);
     FC_CHECK(str_cmp("ab", "abc") != 0);
+    FC_CHECK(str_cmp("abc", "xbc") != 0);
+    FC_CHECK(str_cmp("xbc", "abc") != 0);
+    FC_CHECK(str_cmp("a", "b") != 0);
+    FC_CHECK(str_cmp("", "a") != 0);
+    FC_CHECK(str_cmp("a", "") != 0);
     FC_CHECK_EQ(str_cmp("", ""), 0);
 
     FC_CHECK_EQ(str_cmp_icase("Hello", "hELLo"), 0);
     FC_CHECK(str_cmp_icase("abc", "abd") != 0);
     FC_CHECK(str_cmp_icase("abc", "ab") != 0);
+    FC_CHECK(str_cmp_icase("abc", "xbc") != 0);
     FC_CHECK_EQ(str_cmp_icase("", ""), 0);
 }
 

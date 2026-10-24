@@ -17,6 +17,8 @@ Covers: `str_len`, `str_cmp`, `str_cmp_icase`, `str_copy`, `str_ncopy`,
 - `str_token` mutates its input in place, so mutable buffers are used.
 - `str_set` does not null terminate; the test verifies a sentinel past the limit
   is left untouched.
+- `str_cmp` compares every character, including the first; the test includes
+  strings that differ only in the first character.
 
 ## Expected result
 

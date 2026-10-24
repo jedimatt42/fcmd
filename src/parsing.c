@@ -338,8 +338,13 @@ void path_parse(char* str_in, struct DeviceServiceRoutine** dsr, char* buffer, i
     int len = bk_strlen(buffer);
     int dotidx = bk_lindexof(buffer, '.', len);
 
-    bk_strcpy(filterglob, buffer+dotidx+1);
-    buffer[dotidx] = 0;
+    if (dotidx >= 0) {
+      bk_strcpy(filterglob, buffer+dotidx+1);
+      buffer[dotidx] = 0;
+    } else {
+      /* Device-only path; there is no filename component. */
+      filterglob[0] = 0;
+    }
   }
 }
 

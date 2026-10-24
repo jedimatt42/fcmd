@@ -54,7 +54,12 @@ int handleDelete() {
   if (srcdsr == 0)
   {
     tputs_rom("error, no device found.\n");
-  return 0;
+  return 1;
+  }
+
+  if (filterglob[0] == 0) {
+    tputs_rom("error, no file specified\n");
+  return 1;
   }
 
   // ensure devices are a device path

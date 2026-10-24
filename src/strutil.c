@@ -8,14 +8,11 @@
 char str2ram_buf[128]; // for the inlined str2ram function
 
 int str_cmp(const char* a, const char* b) {
-  int i=0;
-  do {
-    if (a[i] == '\0') {
-      return a[i] - b[i];
-    }
-    i++;
-  } while(a[i] == b[i]);
-  return a[i] - b[i];
+  while (*a != 0 && *a == *b) {
+    a++;
+    b++;
+  }
+  return (unsigned char) *a - (unsigned char) *b;
 }
 
 int str_equals(char* a, char* b) {
