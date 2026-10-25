@@ -166,6 +166,7 @@ static int executeSingle(char* buffer, const char* forced_path, int* redirect_fa
     else COMMAND("ed", bk_handleEd)
     else COMMAND("env", bk_handleEnv)
     else COMMAND("exit", bk_handleExit)
+    else COMMAND("f18a", bk_handleF18A)
     else COMMAND("fg99", bk_handleFg99)
     else COMMAND("goto", bk_handleGoto)
     else COMMAND("if", bk_handleIf)

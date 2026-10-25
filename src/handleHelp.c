@@ -56,7 +56,7 @@ int handleHelp() {
     "help <command>\n\n"
     "Commands:\n\n"
     "alias bar cd cfmount checksum cls color copy date "
-    "delete drives echo ed env exit fg99 goto help "
+    "delete drives echo ed env exit f18a fg99 goto help "
     "history if "
     "load lvl2 mkdir palette protect pwd readkey rename "
     "rdemdk rdpart rdvol "
@@ -72,7 +72,8 @@ int handleHelp() {
     "Special file: AUTOCMD - First drive will be scanned for existance of script AUTOCMD. If present it will run.\n\n"
     "Changes when AUTOCMD is found:\n"
     "- startup banner is suppressed.\n"
-    "- initial tipibeeps sound is suppressed.\n");
+    "- initial tipibeeps sound is suppressed.\n\n"
+    "Use 'f18a' in the script to select F18A mode on a V9938/F18A hybrid.\n");
   } else if (matchcmd(tok, "cd")) {
     wraptext("==Change Directory==\n\n"
     "cd <path>|..\n\n"

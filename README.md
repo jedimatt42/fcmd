@@ -17,7 +17,8 @@ Supports:
 * Directories
   * Tested against TIPI, SCSI 1.6, IDE (Fred Kaal DSR), Myarc HFDC
 * F18A 80 column with an ANSI font, and fast scrolling.
-* 40 column mode is used by default if F18A is not detected.
+* `f18a` command to switch a V9938/F18A hybrid to F18A mode from a script.
+* 80 column on V9938/V9958/F18A; 40 column on TMS9918A.
 * FinalGROM cartridge switching (limited)
 * EA5 load command
 * 'call' to run scripts.
