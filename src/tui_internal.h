@@ -5,6 +5,7 @@
 #include "globals.h"
 #include "vdp.h"
 #include "conio.h"
+#include "tipi_mouse.h"
 
 #define TUI_WF_VISIBLE  0x01
 #define TUI_WF_ENABLED  0x02
@@ -17,6 +18,12 @@ struct tui_state {
     unsigned char* pool_start;
     unsigned char* pool_end;
     unsigned char* pool_cur;
+    struct MouseData mouse;     /* pointer position and buttons (TIPI mouse) */
+    unsigned char mouse_on;     /* pointer sprite is owned by the TUI */
+    unsigned char mouse_depth;  /* nested tui_mouse_enable/disable calls */
+    unsigned char mouse_prev;   /* button mask from the previous poll */
+    unsigned char mouse_col;    /* last reported character cell */
+    unsigned char mouse_row;
 };
 
 struct tui_button_data {

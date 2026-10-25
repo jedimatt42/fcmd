@@ -31,6 +31,7 @@ int tui_message_box(const char* title, const char* msg) {
     bk_tui_widget_focus(ok);
 
     int result = 0;
+    bk_tui_mouse_enable();
     while (1) {
         struct tui_event ev;
         if (bk_tui_get_event(&ev)) {
@@ -43,6 +44,7 @@ int tui_message_box(const char* title, const char* msg) {
             }
         }
     }
+    bk_tui_mouse_disable();
 
     bk_tui_win_close(win);
     return result;
@@ -76,6 +78,7 @@ int tui_confirm_box(const char* title, const char* msg) {
     bk_tui_widget_focus(yes);
 
     int result = 0;
+    bk_tui_mouse_enable();
     while (1) {
         struct tui_event ev;
         if (bk_tui_get_event(&ev)) {
@@ -88,6 +91,7 @@ int tui_confirm_box(const char* title, const char* msg) {
             }
         }
     }
+    bk_tui_mouse_disable();
 
     bk_tui_win_close(win);
     return result;
@@ -125,6 +129,7 @@ int tui_input_box(const char* title, const char* prompt, char* buf, int len) {
     bk_tui_widget_focus(tf);
 
     int result = 0;
+    bk_tui_mouse_enable();
     while (1) {
         struct tui_event ev;
         if (bk_tui_get_event(&ev)) {
@@ -147,6 +152,7 @@ int tui_input_box(const char* title, const char* prompt, char* buf, int len) {
             }
         }
     }
+    bk_tui_mouse_disable();
 
     bk_tui_win_close(win);
     return result;

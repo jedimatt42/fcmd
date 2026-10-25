@@ -78,6 +78,7 @@ int main(char* args) {
 
     term_cls();
     if (tui_init(tui_pool, sizeof(tui_pool)) != 0) return 1;
+    tui_mouse_enable();
 
     int sw = tui_screen_width();
     int sh = tui_screen_height();
@@ -133,6 +134,7 @@ int main(char* args) {
     }
 
     tui_win_close(menu);
+    tui_mouse_disable();
     tui_done();
     term_cls();
     term_puts("TUI Demo finished.\n");

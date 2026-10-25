@@ -290,11 +290,19 @@ int tui_get_event(struct tui_event* ev);         // → 1 if event, 0 if none
 int tui_dispatch_event(struct tui_event* ev);    // → 1 if handled
 void tui_set_focus(tui_widget_t* w);
 tui_widget_t* tui_get_focus(void);
+int tui_mouse_enable(void);                      // → 1 if the pointer is available
+void tui_mouse_disable(void);
 ```
 
 `tui_get_event` is non-blocking. It polls `term_kscan(5)` for a key and returns
 immediately. If no key is pressed, `ev->type` is `TUI_EV_NONE` and the function
 returns 0.
+
+When the TIPI mouse has been enabled with `tui_mouse_enable`, each call also
+polls the pointer and turns clicks into widget activations. Enable/disable calls
+nest: a dialog can enable the mouse without hiding a pointer that the
+application had already turned on. `tui_mouse_enable` returns 0 (and does
+nothing) unless the display is an F18A in 80x30 mode.
 
 ```c
 struct tui_event {
@@ -305,6 +313,23 @@ struct tui_event {
     int buttons;                // button mask (for MOUSE_*)
 };
 ```
+
+Event precedence on a single call: keyboard first, then mouse. With the mouse
+enabled:
+
+- Pointer movement over a new character cell → `TUI_EV_MOUSE_MOVE`.
+- Left button press on a button, checkbox, or list item → the widget is focused
+  and activated, reported as `TUI_EV_WIDGET_ACTIVATED` with `ev.widget` set
+  (a list reports the clicked row through `tui_list_get_selected`).
+- Left button press on a text field → the field is focused and the cursor moves
+  to the clicked column; the event is `TUI_EV_MOUSE_CLICK`.
+- Left button press elsewhere (window border or empty area) → `TUI_EV_MOUSE_CLICK`.
+- Other button presses → `TUI_EV_MOUSE_CLICK` only; they do not activate widgets.
+
+Buttons are edge-triggered, so holding a button produces one event. Dialog
+helpers (`tui_message_box`, `tui_confirm_box`, `tui_input_box`) enable the mouse
+for their modal loop and restore the previous state on return, so applications
+only need to enable the mouse if they run their own event loop.
 
 Global navigation keys are handled inside `tui_get_event` before widget dispatch:
 - **REDO** (6) → advance focus ring to next widget
@@ -367,15 +392,39 @@ when the current widget does not consume them.
 
 ## Mouse Support
 
-Mouse polling is handled inside `tui_get_event`. Mouse is only available on
-F18A hardware (per `tipi_mouse.c` limitations). Mouse pixel coordinates are
-converted to character-cell coordinates based on the current font metrics.
+Mouse support is built into the event loop but must be turned on:
 
-Button 1 → focus and activate widget under pointer
-Button 2 → cancel / close window
+```c
+if (tui_mouse_enable()) {
+    /* pointer is now visible and clicks are reported by tui_get_event */
+}
+...
+tui_mouse_disable();
+```
 
-Mouse hit-testing traverses windows in reverse stack order (topmost first),
-then widget children, and dispatches to the first matching widget.
+The pointer itself is the TIPI mouse (`mouse_show` / `mouse_hide`, bank 7).
+Mouse is only available on F18A hardware in 80x30 mode; on other display types
+`tui_mouse_enable` returns 0 and `tui_get_event` never produces mouse events.
+
+Pointer pixel coordinates are converted to character cells using the current
+screen size (cells are `240 / displayWidth` pixels wide and
+`240 / displayHeight` pixels high, with the text area starting 8 pixels from the
+left).
+
+Click handling traverses windows from the top of the stack down, and widgets in
+draw order within a window, so the topmost widget under the pointer wins:
+
+| Click target        | Result                                                        |
+|---------------------|---------------------------------------------------------------|
+| Button              | Focus + activate (`TUI_EV_WIDGET_ACTIVATED`)                  |
+| Checkbox            | Focus + toggle (`TUI_EV_WIDGET_ACTIVATED`)                    |
+| List / menu item    | Focus + select clicked row + activate                         |
+| Text field          | Focus + place cursor at the clicked column                    |
+| Window border/empty | `TUI_EV_MOUSE_CLICK` with `mx`/`my` set                       |
+| Right/middle button | `TUI_EV_MOUSE_CLICK` only                                     |
+
+Only the left button activates widgets. Buttons are edge-triggered, and holding
+a button does not repeat the activation.
 
 ---
 
@@ -395,7 +444,8 @@ wrapper (e.g., `bk_tui_button_render`).
 
 ## fc_api Integration
 
-All 63 TUI functions have entries in `fc_api.lst` (indices 136–198). The build
+All 65 TUI functions have entries in `fc_api.lst` (indices 136–198, plus 202–203
+for `tui_mouse_enable` / `tui_mouse_disable`). The build
 system auto-generates both the assembly jump table and the SDK header
 (`fcsdk/fc_api.h`). External applications include `fc_api.h` for function calls
 and `tui.h` for struct/enum definitions.

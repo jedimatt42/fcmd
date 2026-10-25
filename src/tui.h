@@ -105,6 +105,8 @@ void tui_widget_enable(tui_widget_t* w);
 void tui_widget_disable(tui_widget_t* w);
 void tui_set_focus(tui_widget_t* w);
 tui_widget_t* tui_get_focus(void);
+int tui_mouse_enable(void);
+void tui_mouse_disable(void);
 int tui_get_event(struct tui_event* ev);
 int tui_dispatch_event(struct tui_event* ev);
 tui_widget_t* tui_button_create(tui_win_t* win, int x, int y, int w, const char* label);
@@ -183,6 +185,8 @@ DECLARE_BANKED_VOID(tui_widget_enable, BANK(11), bk_tui_widget_enable, (tui_widg
 DECLARE_BANKED_VOID(tui_widget_disable, BANK(11), bk_tui_widget_disable, (tui_widget_t* w), (w))
 DECLARE_BANKED_VOID(tui_set_focus, BANK(11), bk_tui_set_focus, (tui_widget_t* w), (w))
 DECLARE_BANKED(tui_get_focus, BANK(11), tui_widget_t*, bk_tui_get_focus, (), ())
+DECLARE_BANKED(tui_mouse_enable, BANK(11), int, bk_tui_mouse_enable, (), ())
+DECLARE_BANKED_VOID(tui_mouse_disable, BANK(11), bk_tui_mouse_disable, (), ())
 DECLARE_BANKED(tui_get_event, BANK(11), int, bk_tui_get_event, (struct tui_event* ev), (ev))
 DECLARE_BANKED(tui_dispatch_event, BANK(11), int, bk_tui_dispatch_event, (struct tui_event* ev), (ev))
 DECLARE_BANKED_VOID(tui_render_widget, BANK(11), bk_tui_render_widget, (tui_widget_t* w), (w))

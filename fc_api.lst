@@ -224,3 +224,6 @@ fc_exit
 
 gfx_sprite_color
 gfx_sprite_pattern_index
+
+tui_mouse_disable
+tui_mouse_enable

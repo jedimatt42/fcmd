@@ -15,7 +15,14 @@ static unsigned char tui_pool[2048];
 static const char* menu_items[3] = { "One", "Two", "Three" };
 
 static void to_text(void) {
-    gfx_screen(GFX_MODE_TEXT40, GFX_SPRITE_8X8, 0);
+    struct GfxInformation info;
+    if (gfx_get_info(&info) == GFX_OK && info.vdp_type == VDP_F18A) {
+        /* 80x30 is the only mode that supports the TIPI mouse pointer, so run
+           the dialogs there when the hardware allows it. */
+        gfx_screen(GFX_MODE_F18A_TEXT80X30, GFX_SPRITE_16X16, 0);
+    } else {
+        gfx_screen(GFX_MODE_TEXT40, GFX_SPRITE_8X8, 0);
+    }
     gfx_color(COLOR_WHITE, COLOR_BLACK, COLOR_BLACK);
     term_cls();
 }
@@ -49,11 +56,13 @@ int main(char* args) {
 
     tui_gotoxy(0, 20);
     term_puts("Menu: UP/DOWN select; Q to continue\n");
+    tui_mouse_enable();
     for (;;) {
         if (tui_get_event(&ev)) {
-            if (ev.key == 'Q') break;
+            if (ev.type == TUI_EV_KEY && ev.key == 'Q') break;
         }
     }
+    tui_mouse_disable();
     menu_sel = tui_menu_get_selected(menu);
 
     tui_menu_destroy(menu);

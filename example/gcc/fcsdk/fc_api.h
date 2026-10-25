@@ -708,6 +708,8 @@ typedef struct tui_widget tui_widget_t;
 #define FC_FC_EXIT 0xc7
 #define FC_GFX_SPRITE_COLOR 0xc8
 #define FC_GFX_SPRITE_PATTERN_INDEX 0xc9
+#define FC_TUI_MOUSE_DISABLE 0xca
+#define FC_TUI_MOUSE_ENABLE 0xcb
 
 // function: void audio_beep()
 DECL_FC_API_CALL(FC_AUDIO_BEEP, audio_beep, void, (), ())
@@ -1314,5 +1316,11 @@ DECL_FC_API_CALL(FC_GFX_SPRITE_COLOR, gfx_sprite_color, int, (int number, int co
 
 // function: int gfx_sprite_pattern_index(int number, int pattern)
 DECL_FC_API_CALL(FC_GFX_SPRITE_PATTERN_INDEX, gfx_sprite_pattern_index, int, (int number, int pattern), (number, pattern))
+
+// function: void tui_mouse_disable()
+DECL_FC_API_CALL(FC_TUI_MOUSE_DISABLE, tui_mouse_disable, void, (), ())
+
+// function: int tui_mouse_enable()
+DECL_FC_API_CALL(FC_TUI_MOUSE_ENABLE, tui_mouse_enable, int, (), ())
 
 #endif

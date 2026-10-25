@@ -16,6 +16,11 @@ Interactive test for the TUI dialogs and menus.
    - UP/DOWN move the menu selection (via the focused list and
      `tui_get_event`); **Q** continues. The final selection must be 0–2;
    - `tui_menu_destroy` (and a null destroy) close it.
+
+   On an F18A with a TIPI mouse, menu rows can also be clicked to select
+   them. The same applies to the dialog buttons and the input field below:
+   dialogs enable the mouse for their modal loop automatically.
+
 2. **Message box:** ENTER on OK (or BREAK). Always returns 0.
 3. **Confirm box:** ENTER on Yes returns 1; FCTN-8 then ENTER on No, or BREAK,
    returns 0.
