@@ -140,6 +140,8 @@ int gfx_tile(int x, int y, int pattern, int color);
 int gfx_sprite_pattern(int pattern, const unsigned char* data, int bytes);
 int gfx_sprite(int number, int pattern, int color, int x, int y);
 int gfx_sprite_loc(int number, int x, int y);
+int gfx_sprite_color(int number, int color);
+int gfx_sprite_pattern_set(int number, int pattern);
 int gfx_sprite_hide(int number);
 int gfx_sprite_enable(int enabled);
 int gfx_sprite_status(struct GfxSpriteStatus* status);
@@ -166,6 +168,8 @@ DECLARE_BANKED(gfx_tile, BANK(9), int, bk_gfx_tile, (int x, int y, int pattern, 
 DECLARE_BANKED(gfx_sprite_pattern, BANK(9), int, bk_gfx_sprite_pattern, (int pattern, const unsigned char* data, int bytes), (pattern, data, bytes))
 DECLARE_BANKED(gfx_sprite, BANK(9), int, bk_gfx_sprite, (int number, int pattern, int color, int x, int y), (number, pattern, color, x, y))
 DECLARE_BANKED(gfx_sprite_loc, BANK(9), int, bk_gfx_sprite_loc, (int number, int x, int y), (number, x, y))
+DECLARE_BANKED(gfx_sprite_color, BANK(14), int, bk_gfx_sprite_color, (int number, int color), (number, color))
+DECLARE_BANKED(gfx_sprite_pattern_set, BANK(14), int, bk_gfx_sprite_pattern_set, (int number, int pattern), (number, pattern))
 DECLARE_BANKED(gfx_sprite_hide, BANK(9), int, bk_gfx_sprite_hide, (int number), (number))
 DECLARE_BANKED(gfx_sprite_enable, BANK(9), int, bk_gfx_sprite_enable, (int enabled), (enabled))
 DECLARE_BANKED(gfx_sprite_status, BANK(9), int, bk_gfx_sprite_status, (struct GfxSpriteStatus* status), (status))

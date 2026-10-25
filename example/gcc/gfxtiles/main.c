@@ -4,8 +4,8 @@
  * I30 - tiles and sprites (AUTO + OBSERVE).
  *
  * Covers gfx_pattern_define, gfx_tile, gfx_sprite_pattern, gfx_sprite,
- * gfx_sprite_loc, gfx_sprite_hide, gfx_sprite_enable, gfx_sprite_status,
- * and their error codes.
+ * gfx_sprite_loc, gfx_sprite_color, gfx_sprite_pattern_set, gfx_sprite_hide,
+ * gfx_sprite_enable, gfx_sprite_status, and their error codes.
  *
  * Each mode is shown interactively: in TEXT40 the test says what to look for
  * and waits for a key; then it enters the mode and draws; a second key returns
@@ -42,12 +42,15 @@ static void test_graphics1(void) {
     struct GfxSpriteStatus st;
     int rc_pat, rc_tile, rc_spat, rc_sprite, rc_loc, rc_enable, rc_status;
     int rc_hide, rc_disable;
+    int rc_spr_set_color, rc_spr_set_pattern;
     int rc_bad_bytes, rc_null_data, rc_pat_range;
     int rc_tile_range, rc_tile_color;
     int rc_spr_num, rc_spr_xy, rc_spr_pat, rc_spr_color, rc_hide_range;
+    int rc_spr_set_color_range, rc_spr_set_pattern_range;
+    int rc_spr_set_color_num, rc_spr_set_pattern_num;
     int i;
 
-    announce("GRAPHICS1", "a row of hollow-square tiles and one red sprite");
+    announce("GRAPHICS1", "a row of hollow-square tiles and one cyan sprite");
 
     gfx_screen(GFX_MODE_GRAPHICS1, GFX_SPRITE_8X8, 0);
     gfx_color(COLOR_CYAN, COLOR_BLACK, COLOR_BLACK);
@@ -60,6 +63,8 @@ static void test_graphics1(void) {
     }
     rc_spat = gfx_sprite_pattern(0, ball_data, 8);
     rc_sprite = gfx_sprite(0, 0, COLOR_LTRED, 120, 80);
+    rc_spr_set_color = gfx_sprite_color(0, COLOR_CYAN);
+    rc_spr_set_pattern = gfx_sprite_pattern_set(0, 0);
     rc_loc = gfx_sprite_loc(0, 150, 90);
     rc_enable = gfx_sprite_enable(1);
     rc_status = gfx_sprite_status(&st);
@@ -73,6 +78,10 @@ static void test_graphics1(void) {
     rc_spr_xy = gfx_sprite(0, 0, 1, 256, 10);
     rc_spr_pat = gfx_sprite(0, 256, 1, 10, 10);
     rc_spr_color = gfx_sprite(0, 0, 16, 10, 10);
+    rc_spr_set_color_range = gfx_sprite_color(0, 16);
+    rc_spr_set_pattern_range = gfx_sprite_pattern_set(0, 256);
+    rc_spr_set_color_num = gfx_sprite_color(32, COLOR_WHITE);
+    rc_spr_set_pattern_num = gfx_sprite_pattern_set(32, 0);
     rc_hide = gfx_sprite_hide(1);
     rc_hide_range = gfx_sprite_hide(32);
 
@@ -84,6 +93,8 @@ static void test_graphics1(void) {
     FC_CHECK_EQ(rc_tile, GFX_OK);
     FC_CHECK_EQ(rc_spat, GFX_OK);
     FC_CHECK_EQ(rc_sprite, GFX_OK);
+    FC_CHECK_EQ(rc_spr_set_color, GFX_OK);
+    FC_CHECK_EQ(rc_spr_set_pattern, GFX_OK);
     FC_CHECK_EQ(rc_loc, GFX_OK);
     FC_CHECK_EQ(rc_enable, GFX_OK);
     FC_CHECK_EQ(rc_status, GFX_OK);
@@ -98,6 +109,10 @@ static void test_graphics1(void) {
     FC_CHECK_EQ(rc_spr_xy, GFX_ERR_RANGE);
     FC_CHECK_EQ(rc_spr_pat, GFX_ERR_RANGE);
     FC_CHECK_EQ(rc_spr_color, GFX_ERR_RANGE);
+    FC_CHECK_EQ(rc_spr_set_color_range, GFX_ERR_RANGE);
+    FC_CHECK_EQ(rc_spr_set_pattern_range, GFX_ERR_RANGE);
+    FC_CHECK_EQ(rc_spr_set_color_num, GFX_ERR_RANGE);
+    FC_CHECK_EQ(rc_spr_set_pattern_num, GFX_ERR_RANGE);
     FC_CHECK_EQ(rc_hide_range, GFX_ERR_RANGE);
 }
 
@@ -139,6 +154,7 @@ int main(char* args) {
     struct GfxInformation info;
     struct GfxSpriteStatus st;
     int text_pat, text_tile, text_sprite, text_status, text_null_status;
+    int text_sprite_color, text_sprite_pattern;
     int result;
 
     (void)args;
@@ -151,6 +167,8 @@ int main(char* args) {
     text_pat = gfx_pattern_define(0, tile_data, 8);
     text_tile = gfx_tile(0, 0, 0, 0);
     text_sprite = gfx_sprite(0, 0, 0, 0, 0);
+    text_sprite_color = gfx_sprite_color(0, COLOR_WHITE);
+    text_sprite_pattern = gfx_sprite_pattern_set(0, 0);
     text_status = gfx_sprite_status(&st);
     text_null_status = gfx_sprite_status(0);
 
@@ -160,6 +178,8 @@ int main(char* args) {
     FC_CHECK_EQ(text_pat, GFX_ERR_WRONG_MODE);
     FC_CHECK_EQ(text_tile, GFX_ERR_WRONG_MODE);
     FC_CHECK_EQ(text_sprite, GFX_ERR_WRONG_MODE);
+    FC_CHECK_EQ(text_sprite_color, GFX_ERR_WRONG_MODE);
+    FC_CHECK_EQ(text_sprite_pattern, GFX_ERR_WRONG_MODE);
     FC_CHECK_EQ(text_status, GFX_ERR_WRONG_MODE);
     FC_CHECK_EQ(text_null_status, GFX_ERR_INVALID);
 

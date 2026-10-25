@@ -16,9 +16,11 @@ returning to TEXT40.
    waits for a key, enters the mode and draws, waits for a key, then returns to
    TEXT40 and prints that mode's AUTO checks:
    - **GRAPHICS1** (every VDP): define a tile pattern and draw a row of tiles;
-     define a sprite pattern, place/move the sprite, enable sprites and read the
-     status; error codes for bad data size/null data/pattern range, tile
-     range/color, sprite number/coordinates/pattern/color, and hide range.
+     define a sprite pattern, place/move the sprite, change only its
+     color/pattern with `gfx_sprite_color`/`gfx_sprite_pattern_set`, enable
+     sprites and read the status; error codes for bad data size/null
+     data/pattern range, tile range/color, sprite
+     number/coordinates/pattern/color, partial-update ranges, and hide range.
    - **GRAPHICS2** (every VDP): `gfx_pattern_define`/`gfx_tile` return
      `GFX_ERR_WRONG_MODE`; a sprite is defined and shown.
 3. Prints the summary and waits for a key before returning.

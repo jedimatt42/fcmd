@@ -416,6 +416,8 @@ int gfx_tile(int x, int y, int pattern, int color);
 int gfx_sprite_pattern(int pattern, const unsigned char *data, int bytes);
 int gfx_sprite(int number, int pattern, int color, int x, int y);
 int gfx_sprite_loc(int number, int x, int y);
+int gfx_sprite_color(int number, int color);
+int gfx_sprite_pattern_set(int number, int pattern);
 int gfx_sprite_hide(int number);
 int gfx_sprite_enable(int enabled);
 int gfx_sprite_status(struct GfxSpriteStatus *status);
@@ -432,9 +434,12 @@ the active sprite size and magnification rules. The API does not silently
 truncate pattern data.
 
 `gfx_sprite` sets the complete sprite attribute entry. `gfx_sprite_loc` changes
-only its position. `gfx_sprite_hide` hides one sprite without changing its
-pattern. `gfx_sprite_enable` enables or disables sprite display for the active
-mode.
+only its position, `gfx_sprite_color` changes only its color, and
+`gfx_sprite_pattern_set` changes only its pattern number, leaving the other
+fields untouched. The color range is 0 through 15; the pattern range is the
+same as for `gfx_sprite` in the active sprite mode. `gfx_sprite_hide` hides one
+sprite without changing its pattern. `gfx_sprite_enable` enables or disables
+sprite display for the active mode.
 
 `gfx_sprite_status` reads the hardware sprite status. `collision` is nonzero
 when a sprite coincidence was detected, `fifth_sprite` reports the hardware's

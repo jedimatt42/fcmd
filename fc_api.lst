@@ -221,3 +221,6 @@ tui_win_set_title
 tui_win_set_border
 
 fc_exit
+
+gfx_sprite_color
+gfx_sprite_pattern_set
