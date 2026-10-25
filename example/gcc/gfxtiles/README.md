@@ -17,7 +17,7 @@ returning to TEXT40.
    TEXT40 and prints that mode's AUTO checks:
    - **GRAPHICS1** (every VDP): define a tile pattern and draw a row of tiles;
      define a sprite pattern, place/move the sprite, change only its
-     color/pattern with `gfx_sprite_color`/`gfx_sprite_pattern_set`, enable
+     color/pattern with `gfx_sprite_color`/`gfx_sprite_pattern_index`, enable
      sprites and read the status; error codes for bad data size/null
      data/pattern range, tile range/color, sprite
      number/coordinates/pattern/color, partial-update ranges, and hide range.

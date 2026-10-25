@@ -417,7 +417,7 @@ int gfx_sprite_pattern(int pattern, const unsigned char *data, int bytes);
 int gfx_sprite(int number, int pattern, int color, int x, int y);
 int gfx_sprite_loc(int number, int x, int y);
 int gfx_sprite_color(int number, int color);
-int gfx_sprite_pattern_set(int number, int pattern);
+int gfx_sprite_pattern_index(int number, int pattern);
 int gfx_sprite_hide(int number);
 int gfx_sprite_enable(int enabled);
 int gfx_sprite_status(struct GfxSpriteStatus *status);
@@ -435,9 +435,9 @@ truncate pattern data.
 
 `gfx_sprite` sets the complete sprite attribute entry. `gfx_sprite_loc` changes
 only its position, `gfx_sprite_color` changes only its color, and
-`gfx_sprite_pattern_set` changes only its pattern number, leaving the other
-fields untouched. The color range is 0 through 15; the pattern range is the
-same as for `gfx_sprite` in the active sprite mode. `gfx_sprite_hide` hides one
+`gfx_sprite_pattern_index` changes only its pattern index, leaving the other
+fields untouched. The color range is 0 through 15; the pattern index range is
+the same as for `gfx_sprite` in the active sprite mode. `gfx_sprite_hide` hides one
 sprite without changing its pattern. `gfx_sprite_enable` enables or disables
 sprite display for the active mode.
 

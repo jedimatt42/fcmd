@@ -707,7 +707,7 @@ typedef struct tui_widget tui_widget_t;
 #define FC_TUI_WIN_SET_BORDER 0xc6
 #define FC_FC_EXIT 0xc7
 #define FC_GFX_SPRITE_COLOR 0xc8
-#define FC_GFX_SPRITE_PATTERN_SET 0xc9
+#define FC_GFX_SPRITE_PATTERN_INDEX 0xc9
 
 // function: void audio_beep()
 DECL_FC_API_CALL(FC_AUDIO_BEEP, audio_beep, void, (), ())
@@ -1312,7 +1312,7 @@ DECL_FC_API_CALL(FC_FC_EXIT, fc_exit, void, (int status), (status))
 // function: int gfx_sprite_color(int number, int color)
 DECL_FC_API_CALL(FC_GFX_SPRITE_COLOR, gfx_sprite_color, int, (int number, int color), (number, color))
 
-// function: int gfx_sprite_pattern_set(int number, int pattern)
-DECL_FC_API_CALL(FC_GFX_SPRITE_PATTERN_SET, gfx_sprite_pattern_set, int, (int number, int pattern), (number, pattern))
+// function: int gfx_sprite_pattern_index(int number, int pattern)
+DECL_FC_API_CALL(FC_GFX_SPRITE_PATTERN_INDEX, gfx_sprite_pattern_index, int, (int number, int pattern), (number, pattern))
 
 #endif

@@ -223,4 +223,4 @@ tui_win_set_border
 fc_exit
 
 gfx_sprite_color
-gfx_sprite_pattern_set
+gfx_sprite_pattern_index

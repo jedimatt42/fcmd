@@ -25,7 +25,7 @@ int gfx_sprite_color(int number, int color) {
     return GFX_OK;
 }
 
-int gfx_sprite_pattern_set(int number, int pattern) {
+int gfx_sprite_pattern_index(int number, int pattern) {
     GFX_VDP_GUARD();
     int result = sprite_number_valid(number);
     if (result != GFX_OK) return result;
