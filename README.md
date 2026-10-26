@@ -64,6 +64,30 @@ commands that report failures.
 Only output written through the ForceCommand terminal layer is captured. Direct
 screen writes, TUI, graphics, and raw VDP output are outside redirection.
 
+### Archives
+
+`FCARC` packages files with optional internal directories. It is an external
+utility installed as `FC/BIN/FCARC`:
+
+```text
+FCARC c /r MYARCH TIPI.PROJECT     create an archive with directories
+FCARC l MYARCH                     list
+FCARC x MYARCH                     extract into the current directory
+FCARC t MYARCH                     verify
+FCARC c /ti OLDARC TIPI.FILE1 ...  create a legacy TI Archiver archive
+```
+
+`FCARC` reads both the new FCARC format and the legacy TI Archiver ARC/ARK
+format. The legacy format is a flat archive compressed with the LZW variant
+documented by Ninerpedia and implemented by TIImageTool. `FCARC c /ti` writes
+legacy-compatible archives; `/ti` rejects directory sources because the
+legacy format has no path names.
+
+A dependency-free Python implementation is included as `scripts/fcarc.py`
+for creating, listing, extracting, and testing both formats on a modern
+computer. See `example/gcc/fcarc/README.md` for the format specification and
+usage details.
+
 ## End Users Wiki
 
 The following wiki contains documentation for how to use, and where to find the pre-built binaries:
@@ -93,6 +117,12 @@ make
 
 This will compile all the binaries.
 
+The host-side archive tool tests can be run with:
+
+```bash
+make test-fcarc
+```
+
 ### Visual Studio Code
 
 The clangd extension works well, but you need to use `bear` to generate info on how it compiles, what include dirs are 
@@ -115,7 +145,7 @@ The FC directory goes on your TIPI as TIPI.FC, preserving its subdirectories:
 - FC/FCMD - EA5 utility for FinalGROM99 to reload FCMDG.bin
 - FC/FCMDXB - XB INT/VAR 254 program for FinalGROM99 to reload FCMDG.bin
 - FC/BOOT - EA5 program for console ROM replacement builds to switch back to FCMD
-- FC/BIN - command utilities and fonts: CHARSET, DISKIMAGE, FCMDANSI, FCMENU, FONT, FTP, MDOSANSI, MDOSFONT, MSXFONT, SAMPLE, SAY, TELNET, VIRGIL99
+- FC/BIN - command utilities and fonts: CHARSET, DISKIMAGE, FCARC, FCMDANSI, FCMENU, FONT, FTP, MDOSANSI, MDOSFONT, MSXFONT, SAMPLE, SAY, TELNET, VIRGIL99
 
 Copy the FC directory, including the FC/BIN subdirectory, to TIPI.FC without flattening it:
 the utilities are expected in TIPI.FC.BIN. `deploy.sh` does this when `TIPI_DIR` points at

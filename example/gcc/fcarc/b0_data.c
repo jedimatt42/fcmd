@@ -1,0 +1,80 @@
+#include <fc_api.h>
+#include "fcarc.h"
+#include "fcarc_msg.h"
+
+union Workspace g_ws;
+
+struct CatalogEntry g_catalog[CATALOG_MAX];
+int g_catalog_count;
+int g_catalog_overflow;
+int g_catalog_skip;
+int g_catalog_seen;
+int g_quiet;
+
+char msg_error[] = "error: ";
+char msg_warning[] = "warning: ";
+char msg_newline[] = "\n";
+char msg_space[] = " ";
+char msg_no_sams[] = "FCARC requires SAMS memory\n";
+char msg_open[] = "cannot open ";
+char msg_create[] = "cannot create ";
+char msg_read[] = "read error ";
+char msg_write[] = "write error ";
+char msg_bad_format[] = "unknown or corrupt archive\n";
+char msg_not_fcarc[] = "not an FCARC archive\n";
+char msg_truncated[] = "truncated archive\n";
+char msg_crc[] = "checksum error: ";
+char msg_ok[] = "ok\n";
+char msg_extracting[] = "extracting ";
+char msg_creating[] = "creating ";
+char msg_testing[] = "testing ";
+char msg_listing[] = "listing ";
+char msg_dir[] = "DIR   ";
+char msg_lzw[] = "LZW   ";
+char msg_store[] = "STORE ";
+char msg_sectors[] = " sectors ";
+char msg_entries[] = " entries";
+char msg_size[] = "size ";
+char msg_path_too_long[] = "path too long: ";
+char msg_name_invalid[] = "invalid path: ";
+char msg_dir_needs_r[] = "directory source requires /r\n";
+char msg_ti_no_dir[] = "create-ti does not accept directories\n";
+char msg_exists[] = "exists: ";
+char msg_no_space[] = "archive entry area full\n";
+char msg_too_many[] = "too many entries\n";
+char msg_not_implemented[] = "not implemented\n";
+char msg_archive[] = "archive ";
+char msg_done[] = "done\n";
+char msg_skipping[] = "skipping ";
+char msg_mkdir[] = "mkdir ";
+char msg_not_found[] = "not found: ";
+char msg_empty[] = "empty archive\n";
+char msg_created[] = "created ";
+char msg_deleted[] = "deleted ";
+char msg_comment[] = "comment: ";
+char msg_version[] = "version ";
+char msg_method[] = "method ";
+char msg_flags[] = "flags ";
+char msg_reading[] = "reading ";
+char msg_writing[] = "writing ";
+char msg_file[] = "file ";
+char msg_dir_source[] = "directory source ";
+char msg_no_entries[] = "no entries\n";
+
+char msg_fcarc_v1[] = "FCARC v1 ";
+char msg_ti_archiver[] = "TI Archiver ";
+char msg_missing_archive[] = "missing archive name\n";
+char msg_no_sources[] = "no source files\n";
+char msg_no_device[] = "no current device\n";
+char msg_unknown_option[] = "unknown option ";
+char msg_file_size[] = "cannot determine file size\n";
+char msg_directory[] = "directory\n";
+char msg_program[] = "PROGRAM ";
+char msg_var[] = "VAR     ";
+char msg_fix[] = "FIX     ";
+char msg_dot[] = ".";
+char opt_r[] = "/r";
+char opt_s[] = "/s";
+char opt_q[] = "/q";
+char opt_u[] = "/u";
+char opt_ti[] = "/ti";

@@ -1,0 +1,74 @@
+#ifndef _FCARC_MSG_H
+#define _FCARC_MSG_H 1
+
+/* Shared message fragments. These are defined as non-const arrays in
+ * b0_data.c so they live in the loaded .data area and remain addressable
+ * while any code bank is mapped. */
+extern char msg_error[];
+extern char msg_warning[];
+extern char msg_newline[];
+extern char msg_space[];
+extern char msg_no_sams[];
+extern char msg_open[];
+extern char msg_create[];
+extern char msg_read[];
+extern char msg_write[];
+extern char msg_bad_format[];
+extern char msg_not_fcarc[];
+extern char msg_truncated[];
+extern char msg_crc[];
+extern char msg_ok[];
+extern char msg_extracting[];
+extern char msg_creating[];
+extern char msg_testing[];
+extern char msg_listing[];
+extern char msg_dir[];
+extern char msg_lzw[];
+extern char msg_store[];
+extern char msg_sectors[];
+extern char msg_entries[];
+extern char msg_size[];
+extern char msg_path_too_long[];
+extern char msg_name_invalid[];
+extern char msg_dir_needs_r[];
+extern char msg_ti_no_dir[];
+extern char msg_exists[];
+extern char msg_no_space[];
+extern char msg_too_many[];
+extern char msg_not_implemented[];
+extern char msg_archive[];
+extern char msg_done[];
+extern char msg_skipping[];
+extern char msg_mkdir[];
+extern char msg_not_found[];
+extern char msg_empty[];
+extern char msg_created[];
+extern char msg_deleted[];
+extern char msg_comment[];
+extern char msg_version[];
+extern char msg_method[];
+extern char msg_flags[];
+extern char msg_reading[];
+extern char msg_writing[];
+extern char msg_file[];
+extern char msg_dir_source[];
+extern char msg_no_entries[];
+
+extern char msg_fcarc_v1[];
+extern char msg_ti_archiver[];
+extern char msg_missing_archive[];
+extern char msg_no_sources[];
+extern char msg_no_device[];
+extern char msg_unknown_option[];
+extern char msg_file_size[];
+extern char msg_directory[];
+extern char msg_program[];
+extern char msg_var[];
+extern char msg_fix[];
+extern char msg_dot[];
+extern char opt_r[];
+extern char opt_s[];
+extern char opt_q[];
+extern char opt_u[];
+extern char opt_ti[];
+#endif
