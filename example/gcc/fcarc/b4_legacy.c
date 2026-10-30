@@ -7,11 +7,6 @@
 #include "fcarc_file.h"
 #include "fcarc_msg.h"
 
-#ifdef HOST_TEST
-unsigned char host_inbuf[1024];
-#define inbuf host_inbuf
-#endif
-
 
 static void delete_partial(struct DeviceServiceRoutine* dsr, const char* path) {
   struct PAB pab;
@@ -34,7 +29,7 @@ static int legacy_name_ok(const char* name) {
   int i;
   for (i = 0; i < len; i++) {
     char c = name[i];
-    if (c == ' ' || c == '.' || c == '/' || c == '\\' || c < 32) {
+    if (c == ' ' || c == '.' || c < 32) {
       return 0;
     }
   }
@@ -104,8 +99,8 @@ static int finish_legacy_dir(unsigned char* area, int* pos) {
   return 0;
 }
 
-int FC_SAMS(4, fc_do_create_ti(char* args)) {
-  char tok[256];
+int FCARC_SAMS(B_LEGACY_CREATE, fc_do_create_ti(char* args)) {
+  char tok[128];
   char* rest = args;
   int uncompressed = 0;
 
@@ -134,7 +129,7 @@ int FC_SAMS(4, fc_do_create_ti(char* args)) {
     return 1;
   }
   rest = str_token_next(tok, rest, ' ');
-  char arc[256];
+  char arc[128];
   struct DeviceServiceRoutine* dsr = 0;
   path_parse(tok, &dsr, arc, PR_REQUIRED);
   if (dsr == 0) {
@@ -158,7 +153,7 @@ int FC_SAMS(4, fc_do_create_ti(char* args)) {
   char* scan = sources;
   while (scan && scan[0]) {
     char* next = str_token_next(tok, scan, ' ');
-    char src[256];
+    char src[128];
     struct DeviceServiceRoutine* sdsr = 0;
     path_parse(tok, &sdsr, src, PR_REQUIRED);
     if (sdsr == 0) {
@@ -173,7 +168,7 @@ int FC_SAMS(4, fc_do_create_ti(char* args)) {
       term_puts(msg_ti_no_dir);
       return 1;
     }
-    char parent[256];
+    char parent[128];
     char name[16];
     path_split(src, parent, name);
     unsigned int iocode = path_to_iocode(src);
@@ -253,15 +248,12 @@ int FC_SAMS(4, fc_do_create_ti(char* args)) {
 
   /* Second pass: stream the file data in the same order. */
   scan = sources;
-#ifndef HOST_TEST
-  unsigned char inbuf[1024];
-#endif
   while (scan && scan[0]) {
     char* next = str_token_next(tok, scan, ' ');
-    char src[256];
+    char src[128];
     struct DeviceServiceRoutine* sdsr = 0;
     path_parse(tok, &sdsr, src, PR_REQUIRED);
-    char parent[256];
+    char parent[128];
     char name[16];
     path_split(src, parent, name);
     unsigned int iocode = path_to_iocode(src);
@@ -288,12 +280,9 @@ int FC_SAMS(4, fc_do_create_ti(char* args)) {
     unsigned int blocks = ADDINFO->first_sector;
     unsigned int block = 0;
     while (block < blocks) {
-      unsigned int n = blocks - block;
-      if (n > 4) {
-        n = 4;
-      }
+      unsigned int n = 1;
       ADDINFO->first_sector = block;
-      SET_ADDINFO_BUFFER(inbuf);
+      SET_ADDINFO_BUFFER(g_filebuf);
       err = lvl2_input_cpu(sdsr->crubase, iocode, bare, n, ADDINFO);
       if (err) {
         fail_partial(&w, dsr, arc);
@@ -301,12 +290,12 @@ int FC_SAMS(4, fc_do_create_ti(char* args)) {
       }
       int bytes = (int)n * SECTOR_SIZE;
       if (uncompressed) {
-        if (aw_write(&w, inbuf, bytes)) {
+        if (aw_write(&w, g_filebuf, bytes)) {
           fail_partial(&w, dsr, arc);
           return 1;
         }
       } else {
-        enc_bytes(&enc, &w, &st, inbuf, bytes);
+        enc_bytes(&enc, &w, &st, g_filebuf, bytes);
       }
       block += n;
     }
@@ -334,7 +323,7 @@ int FC_SAMS(4, fc_do_create_ti(char* args)) {
 
   if (uncompressed) {
     /* Archiver writes uncompressed archives as protected DIS/FIX 128 files. */
-    char parent[256];
+    char parent[128];
     char name[16];
     path_split(arc, parent, name);
     unsigned int iocode = path_to_iocode(arc);

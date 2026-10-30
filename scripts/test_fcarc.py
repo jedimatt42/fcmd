@@ -112,6 +112,29 @@ class LegacyTests(unittest.TestCase):
             self.assertFalse((out / "ONE").exists())
             self.assertTrue((out / "TWO").exists())
 
+    def test_slash_in_ti_name(self):
+        # '/' is a TI filename character, not a host separator.
+        files = [ti_program("A/B", b"slash name" * 10)]
+        payload = fcarc.legacy_create(files, compressed=True)
+        raw = fcarc.lzw_decompress(payload)
+        entries, _ = fcarc.legacy_parse(raw)
+        self.assertEqual(entries[0].name, "A/B")
+        with tempfile.TemporaryDirectory() as td:
+            out = Path(td)
+            written = fcarc.legacy_extract(raw, out, raw_mode=True, force=True)
+            self.assertEqual(written, [str(out / "A%2FB")])
+            self.assertTrue((out / "A%2FB").exists())
+
+    def test_slash_in_fcarc_path(self):
+        files = [("DIR.A/B", ti_program("A/B", b"slash name" * 10))]
+        payload = fcarc.fcarc_create(files, [])
+        _, entries = fcarc.fcarc_parse(payload)
+        self.assertEqual(entries[0].path, "DIR.A/B")
+        with tempfile.TemporaryDirectory() as td:
+            out = Path(td)
+            fcarc.fcarc_extract(payload, entries, out, [], False, True)
+            self.assertTrue((out / "DIR" / "A%2FB").exists())
+
     def test_real_samples(self):
         samples = [
             Path("/tmp/opencode/dsr.ark"),
@@ -207,13 +230,17 @@ class FcarcTests(unittest.TestCase):
             fcarc.fcarc_parse(bytes(bad))
 
     def test_path_validation(self):
-        for path in ("..", "A..B", "A.", ".A", "A.B/C", "A" * 11,
+        for path in ("..", "A..B", "A.", ".A", "A" * 11,
                      "A" * 10 + "." + "B" * 10 + "." + "C" * 10 + "." + "D" * 10,
                      "A B"):
             with self.subTest(path=path):
                 with self.assertRaises(ValueError):
                     fcarc.validate_ti_path(path)
         fcarc.validate_ti_path("GAMES.LEVEL1.FILE")
+        # '/' is a legal TI filename character, not a host path separator.
+        fcarc.validate_ti_path("DIR.A/B")
+        self.assertEqual(fcarc.host_component("A/B"), "A%2FB")
+        self.assertEqual(str(fcarc.host_path("DIR.A/B")), "DIR/A%2FB")
 
     def test_create_ti_rejects_directory(self):
         with tempfile.TemporaryDirectory() as td:

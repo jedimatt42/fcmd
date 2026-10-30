@@ -7,11 +7,6 @@
 #include "fcarc_file.h"
 #include "fcarc_msg.h"
 
-#ifdef HOST_TEST
-unsigned char host_inbuf[1024];
-#define inbuf host_inbuf
-#endif
-
 
 static int add_entry(struct ArcWriter* w, const char* path, int kind, int method,
                      const struct FileMeta* m, unsigned long data_offset,
@@ -102,8 +97,8 @@ static int add_entry(struct ArcWriter* w, const char* path, int kind, int method
 static int add_file(struct ArcWriter* w, struct DeviceServiceRoutine* dsr,
                     const char* fullpath, const char* archpath,
                     int* area_pos, int* count, int store) {
-  char parent[256];
-  char name[16];
+  char* parent = g_ws.scratch.parent;
+  char* name = g_ws.scratch.name;
   path_split(fullpath, parent, name);
 
   unsigned int iocode = path_to_iocode(fullpath);
@@ -153,9 +148,6 @@ static int add_file(struct ArcWriter* w, struct DeviceServiceRoutine* dsr,
 
   int method = 0;
   unsigned int crc = 0xFFFF;
-#ifndef HOST_TEST
-  unsigned char inbuf[1024];
-#endif
 
   if (!store && blocks > 0) {
     method = 1;
@@ -164,12 +156,9 @@ static int add_file(struct ArcWriter* w, struct DeviceServiceRoutine* dsr,
     enc_init(&enc, w, &st);
     unsigned int block = 0;
     while (block < blocks) {
-      unsigned int n = blocks - block;
-      if (n > 4) {
-        n = 4;
-      }
+      unsigned int n = 1;
       ADDINFO->first_sector = block;
-      SET_ADDINFO_BUFFER(inbuf);
+      SET_ADDINFO_BUFFER(g_filebuf);
       unsigned int e = lvl2_input_cpu(dsr->crubase, iocode, bare, n, ADDINFO);
       if (e) {
         term_puts(msg_error);
@@ -181,9 +170,9 @@ static int add_file(struct ArcWriter* w, struct DeviceServiceRoutine* dsr,
       int bytes = (int)n * SECTOR_SIZE;
       int i;
       for (i = 0; i < bytes; i++) {
-        crc = crc16_byte(crc, inbuf[i]);
+        crc = crc16_byte(crc, g_filebuf[i]);
       }
-      enc_bytes(&enc, w, &st, inbuf, bytes);
+      enc_bytes(&enc, w, &st, g_filebuf, bytes);
       block += n;
     }
     enc_finish(&enc, w, &st);
@@ -191,12 +180,9 @@ static int add_file(struct ArcWriter* w, struct DeviceServiceRoutine* dsr,
     method = 0;
     unsigned int block = 0;
     while (block < blocks) {
-      unsigned int n = blocks - block;
-      if (n > 4) {
-        n = 4;
-      }
+      unsigned int n = 1;
       ADDINFO->first_sector = block;
-      SET_ADDINFO_BUFFER(inbuf);
+      SET_ADDINFO_BUFFER(g_filebuf);
       unsigned int e = lvl2_input_cpu(dsr->crubase, iocode, bare, n, ADDINFO);
       if (e) {
         term_puts(msg_error);
@@ -208,9 +194,9 @@ static int add_file(struct ArcWriter* w, struct DeviceServiceRoutine* dsr,
       int bytes = (int)n * SECTOR_SIZE;
       int i;
       for (i = 0; i < bytes; i++) {
-        crc = crc16_byte(crc, inbuf[i]);
+        crc = crc16_byte(crc, g_filebuf[i]);
       }
-      if (aw_write(w, inbuf, bytes)) {
+      if (aw_write(w, g_filebuf, bytes)) {
         return 1;
       }
       block += n;
@@ -245,12 +231,12 @@ static int add_dir(struct ArcWriter* w, const char* archpath,
 }
 
 
-int FC_SAMS(7, create_add_dir(struct ArcWriter* w, const char* archpath,
+int FCARC_SAMS(B_WRITER, create_add_dir(struct ArcWriter* w, const char* archpath,
                               int* area_pos, int* count)) {
   return add_dir(w, archpath, area_pos, count);
 }
 
-int FC_SAMS(7, create_add_file(struct ArcWriter* w, struct DeviceServiceRoutine* dsr,
+int FCARC_SAMS(B_WRITER, create_add_file(struct ArcWriter* w, struct DeviceServiceRoutine* dsr,
                                const char* fullpath, const char* archpath,
                                int* area_pos, int* count, int store)) {
   return add_file(w, dsr, fullpath, archpath, area_pos, count, store);

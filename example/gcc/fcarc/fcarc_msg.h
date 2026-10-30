@@ -18,6 +18,8 @@ extern char msg_not_fcarc[];
 extern char msg_truncated[];
 extern char msg_crc[];
 extern char msg_ok[];
+extern char msg_ok_line[];
+extern char msg_error_line[];
 extern char msg_extracting[];
 extern char msg_creating[];
 extern char msg_testing[];
@@ -53,6 +55,9 @@ extern char msg_writing[];
 extern char msg_file[];
 extern char msg_dir_source[];
 extern char msg_no_entries[];
+extern char msg_err[];
+extern char msg_reclen[];
+extern char msg_close[];
 
 extern char msg_fcarc_v1[];
 extern char msg_ti_archiver[];

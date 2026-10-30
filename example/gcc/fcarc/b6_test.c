@@ -30,44 +30,53 @@ static int magic_eq(const unsigned char* a, const unsigned char* b, int n) {
 static int fc_read_trailer(struct ArcReader* r, struct DeviceServiceRoutine* dsr,
                            const char* path, struct FcInfo* info) {
   unsigned long size;
-  if (fc_file_size(dsr, path, &size)) {
+  if (ar_size(r, &size)) {
     term_puts(msg_error);
     term_puts(msg_file_size);
     return 1;
   }
-  if (size < 256 || (size & 0xFF) != 0) {
+  if (size < FCARC_TRAILER_SIZE) {
     term_puts(msg_error);
     term_puts(msg_truncated);
     return 1;
   }
+
   unsigned char t[FCARC_TRAILER_SIZE];
-  if (ar_seek(r, size - FCARC_TRAILER_SIZE)) {
-    term_puts(msg_error);
-    term_puts(msg_truncated);
-    return 1;
+  unsigned long off = size - FCARC_TRAILER_SIZE;
+  int found = 0;
+  int tries;
+  for (tries = 0; tries < 8 && off >= FCARC_TRAILER_SIZE; tries++) {
+    r->error = 0;
+    r->eof = 0;
+    if (ar_seek(r, off) == 0
+        && ar_read(r, t, FCARC_TRAILER_SIZE) == FCARC_TRAILER_SIZE
+        && magic_eq(t, fcarc_trailer_magic, 8)) {
+      found = 1;
+      break;
+    }
+    off -= FCARC_TRAILER_SIZE;
   }
-  if (ar_read(r, t, FCARC_TRAILER_SIZE) != FCARC_TRAILER_SIZE) {
-    term_puts(msg_error);
-    term_puts(msg_truncated);
-    return 1;
-  }
-  if (!magic_eq(t, fcarc_trailer_magic, 8)) {
+  if (!found) {
     term_puts(msg_error);
     term_puts(msg_not_fcarc);
     return 1;
   }
+
+  unsigned long actual_size = off + FCARC_TRAILER_SIZE;
   info->version = le16(t + 8);
   info->dir_offset = le32(t + 12);
   info->dir_size = le32(t + 16);
   info->count = le16(t + 20);
   unsigned long psize = le32(t + 24);
   info->dir_crc = le16(t + 28);
-  info->size = size;
-  if (info->version != FCARC_VERSION || psize != size) {
+  info->size = actual_size;
+  if (info->version != FCARC_VERSION || psize != actual_size) {
     term_puts(msg_error);
     term_puts(msg_bad_format);
     return 1;
   }
+  r->error = 0;
+  r->eof = 0;
   unsigned char hv[12];
   if (ar_seek(r, 0) || ar_read(r, hv, 12) != 12
       || !magic_eq(hv, fcarc_magic, 8)
@@ -82,7 +91,7 @@ static int fc_read_trailer(struct ArcReader* r, struct DeviceServiceRoutine* dsr
     return 1;
   }
   if (info->dir_offset < FCARC_HEADER_SIZE
-      || info->dir_offset + info->dir_size > size - FCARC_TRAILER_SIZE) {
+      || info->dir_offset + info->dir_size > actual_size - FCARC_TRAILER_SIZE) {
     term_puts(msg_error);
     term_puts(msg_bad_format);
     return 1;
@@ -183,70 +192,73 @@ static int fc_test(struct ArcReader* r, struct DeviceServiceRoutine* dsr,
   if (ar_seek(r, info.dir_offset)) {
     return 1;
   }
+  unsigned int bad = 0;
   unsigned int i;
   for (i = 0; i < info.count; i++) {
     struct ArcEntry e;
     if (fc_read_entry(r, &e)) {
-      term_puts(msg_error);
+      term_puts(msg_error_line);
       term_puts(msg_bad_format);
-      return 1;
+      return (int)bad + 1;
     }
     if (e.kind == 1) {
       continue;
     }
-    if (e.original_size != (unsigned long)e.sectors * SECTOR_SIZE) {
-      term_puts(msg_error);
-      term_puts(msg_bad_format);
-      return 1;
-    }
     unsigned long saved = ar_tell(r);
-    if (e.data_offset + e.stored_size > info.dir_offset
-        || ar_seek(r, e.data_offset)) {
-      term_puts(msg_error);
-      term_puts(msg_truncated);
-      return 1;
+    int ok = 1;
+    if (e.original_size != (unsigned long)e.sectors * SECTOR_SIZE) {
+      ok = 0;
     }
-    struct NullSink ns;
-    ns.remaining = e.original_size;
-    ns.crc = 0xFFFF;
-    ns.error = 0;
-    if (e.method == 1) {
-      if (lzw_decode(r, null_sink, &ns) != 0) {
-        term_puts(msg_error);
-        term_puts(msg_crc);
-        term_puts(e.path);
-        term_putc('\n');
-        return 1;
+    if (ok && (e.data_offset + e.stored_size > info.dir_offset
+               || ar_seek(r, e.data_offset))) {
+      ok = 0;
+    }
+    if (ok) {
+      struct NullSink ns;
+      ns.remaining = e.original_size;
+      ns.crc = 0xFFFF;
+      ns.error = 0;
+      if (e.method == 1) {
+        if (lzw_decode(r, null_sink, &ns) != 0) {
+          ok = 0;
+        }
+      } else {
+        unsigned long n = e.stored_size;
+        while (n > 0) {
+          int chunk = n > 128 ? 128 : (int)n;
+          if (ar_read(r, buf, chunk) != chunk) {
+            ok = 0;
+            break;
+          }
+          if (null_sink(&ns, buf, chunk)) {
+            ok = 0;
+            break;
+          }
+          n -= chunk;
+        }
       }
+      if (ok && (ns.remaining != 0 || ns.error || ns.crc != e.crc)) {
+        ok = 0;
+      }
+    }
+    if (ok) {
+      term_puts(msg_ok_line);
     } else {
-      unsigned long n = e.stored_size;
-      while (n > 0) {
-        int chunk = n > 128 ? 128 : (int)n;
-        if (ar_read(r, buf, chunk) != chunk) {
-          return 1;
-        }
-        if (null_sink(&ns, buf, chunk)) {
-          return 1;
-        }
-        n -= chunk;
-      }
+      term_puts(msg_error_line);
+      bad++;
     }
-    if (ns.remaining != 0 || ns.error || ns.crc != e.crc) {
-      term_puts(msg_error);
-      term_puts(msg_crc);
-      term_puts(e.path);
-      term_putc('\n');
-      return 1;
-    }
+    term_puts(e.path);
+    term_putc('\n');
     if (ar_seek(r, saved)) {
-      return 1;
+      term_puts(msg_error_line);
+      term_puts(msg_bad_format);
+      return (int)bad + 1;
     }
   }
-  term_puts(msg_ok);
-  return 0;
+  return (int)bad;
 }
 
-int FC_SAMS(6, fc_fcarc_test(struct ArcReader* r, struct DeviceServiceRoutine* dsr,
+int FCARC_SAMS(B_TEST, fc_fcarc_test(struct ArcReader* r, struct DeviceServiceRoutine* dsr,
                              const char* path)) {
   return fc_test(r, dsr, path);
 }

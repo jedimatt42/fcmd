@@ -131,7 +131,7 @@ static int legacy_name_valid(const char* name) {
   int i;
   for (i = 0; i < len; i++) {
     char c = name[i];
-    if (c == ' ' || c == '.' || c == '/' || c == '\\' || c < 32) {
+    if (c == ' ' || c == '.' || c < 32) {
       return 0;
     }
   }
@@ -428,11 +428,11 @@ static int legacy_extract_plain(struct ArcReader* r, struct SelSet* sel,
   return 0;
 }
 
-int FC_SAMS(2, fc_legacy_list(struct ArcReader* r)) {
+int FCARC_SAMS(B_LEGACY_READ, fc_legacy_list(struct ArcReader* r)) {
   return legacy_list(r);
 }
 
-int FC_SAMS(2, fc_legacy_extract(struct ArcReader* r, struct SelSet* sel,
+int FCARC_SAMS(B_LEGACY_READ, fc_legacy_extract(struct ArcReader* r, struct SelSet* sel,
                                 struct DeviceServiceRoutine* dsr,
                                 unsigned int iocode, const char* curpath,
                                 int extract)) {
@@ -452,7 +452,7 @@ int FC_SAMS(2, fc_legacy_extract(struct ArcReader* r, struct SelSet* sel,
   return legacy_extract_plain(r, sel, dsr, iocode, curpath, extract);
 }
 
-int FC_SAMS(2, fc_legacy_test(struct ArcReader* r, struct DeviceServiceRoutine* dsr,
+int FCARC_SAMS(B_LEGACY_READ, fc_legacy_test(struct ArcReader* r, struct DeviceServiceRoutine* dsr,
                               const char* path)) {
   if (ar_seek(r, 0)) {
     return 1;
@@ -495,9 +495,11 @@ int FC_SAMS(2, fc_legacy_test(struct ArcReader* r, struct DeviceServiceRoutine* 
     total += sectors;
   }
   unsigned long size;
-  if (fc_file_size(dsr, path, &size)) {
+  if (ar_size(r, &size)) {
     return 1;
   }
+  (void)dsr;
+  (void)path;
   if (total * SECTOR_SIZE > size) {
     return 1;
   }

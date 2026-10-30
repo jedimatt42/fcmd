@@ -7,18 +7,6 @@
 #include "fcarc_file.h"
 #include "fcarc_msg.h"
 
-static int catalog(struct DeviceServiceRoutine* dsr, const char* path, int skip) {
-  g_catalog_count = 0;
-  g_catalog_overflow = 0;
-  g_catalog_skip = skip;
-  g_catalog_seen = 0;
-  unsigned int err = dsr_catalog(dsr, path, catalog_vol, catalog_dir);
-  if (err) {
-    return 1;
-  }
-  return 0;
-}
-
 static int add_dir_recursive(struct ArcWriter* w, struct DeviceServiceRoutine* dsr,
                              const char* full_dir, const char* arch_prefix,
                              int* area_pos, int* count, int store, int depth) {
@@ -31,7 +19,7 @@ static int add_dir_recursive(struct ArcWriter* w, struct DeviceServiceRoutine* d
   }
   int skip = 0;
   for (;;) {
-    if (catalog(dsr, full_dir, skip)) {
+    if (catalog_entries(dsr, full_dir, skip)) {
       term_puts(msg_error);
       term_puts(msg_read);
       term_puts(full_dir);
@@ -98,8 +86,8 @@ static void fail_partial(struct ArcWriter* w, struct DeviceServiceRoutine* dsr,
   delete_partial(dsr, path);
 }
 
-int FC_SAMS(3, fc_do_create(char* args)) {
-  char tok[256];
+int FCARC_SAMS(B_CREATE, fc_do_create(char* args)) {
+  char tok[128];
   char* rest = args;
   int recursive = 0;
   int store = 0;
@@ -125,7 +113,7 @@ int FC_SAMS(3, fc_do_create(char* args)) {
     }
   }
 
-  char arc[256];
+  char arc[128];
   if (!rest || rest[0] == 0) {
     term_puts(msg_error);
     term_puts(msg_missing_archive);
@@ -173,7 +161,7 @@ int FC_SAMS(3, fc_do_create(char* args)) {
   int count = 0;
 
   while (rest && rest[0]) {
-    char src[256];
+    char src[128];
     char* next = str_token_next(tok, rest, ' ');
     struct DeviceServiceRoutine* sdsr = 0;
     path_parse(tok, &sdsr, src, PR_REQUIRED);
@@ -185,7 +173,13 @@ int FC_SAMS(3, fc_do_create(char* args)) {
       fail_partial(&w, dsr, arc);
       return 1;
     }
-    int isdir = (catalog(sdsr, src, 0) == 0);
+    char catpath[128];
+    str_copy(catpath, src);
+    int clen = str_len(catpath);
+    if (clen == 0 || catpath[clen - 1] != '.') {
+      str_cat(catpath, msg_dot);
+    }
+    int isdir = (catalog_entries(sdsr, catpath, 0) == 0);
     if (isdir) {
       if (!recursive) {
         term_puts(msg_error);
@@ -202,7 +196,7 @@ int FC_SAMS(3, fc_do_create(char* args)) {
         fail_partial(&w, dsr, arc);
         return 1;
       }
-      char full[256];
+      char full[128];
       str_copy(full, src);
       int len = str_len(full);
       if (len == 0 || full[len - 1] != '.') {

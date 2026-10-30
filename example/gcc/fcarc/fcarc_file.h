@@ -27,27 +27,31 @@ struct OutFile {
   unsigned int crc;
 };
 
+#ifndef FCARC_CREATE_BUILD
+extern struct OutFile g_outfile;
+#endif
+
 /* Bank 0 provides these so every reader/create bank can share one copy. */
-FC_SAMS_BANKED(0, int, out_open,
+FCARC_BANKED(B_FILE, int, out_open,
   (struct OutFile* o, struct DeviceServiceRoutine* dsr, unsigned int iocode,
    const char* parent, const char* name, const struct FileMeta* m),
   (o, dsr, iocode, parent, name, m))
 
-FC_SAMS_BANKED(0, int, out_write_block,
+FCARC_BANKED(B_FILE, int, out_write_block,
   (struct OutFile* o, const unsigned char* data, int len),
   (o, data, len))
 
-FC_SAMS_BANKED(0, int, out_close, (struct OutFile* o), (o))
+FCARC_BANKED(B_FILE, int, out_close, (struct OutFile* o), (o))
 
-FC_SAMS_BANKED(0, int, dir_exists,
+FCARC_BANKED(B_FILE, int, dir_exists,
   (struct DeviceServiceRoutine* dsr, const char* path),
   (dsr, path))
 
-FC_SAMS_BANKED(0, int, ensure_dir_path,
+FCARC_BANKED(B_FILE, int, ensure_dir_path,
   (struct DeviceServiceRoutine* dsr, const char* path),
   (dsr, path))
 
-FC_SAMS_BANKED(0, int, ensure_parent_dirs,
+FCARC_BANKED(B_FILE, int, ensure_parent_dirs,
   (struct DeviceServiceRoutine* dsr, const char* fullpath),
   (dsr, fullpath))
 

@@ -48,44 +48,53 @@ static int magic_eq(const unsigned char* a, const unsigned char* b, int n) {
 static int fc_read_trailer(struct ArcReader* r, struct DeviceServiceRoutine* dsr,
                            const char* path, struct FcInfo* info) {
   unsigned long size;
-  if (fc_file_size(dsr, path, &size)) {
+  if (ar_size(r, &size)) {
     term_puts(msg_error);
     term_puts(msg_file_size);
     return 1;
   }
-  if (size < 256 || (size & 0xFF) != 0) {
+  if (size < FCARC_TRAILER_SIZE) {
     term_puts(msg_error);
     term_puts(msg_truncated);
     return 1;
   }
+
   unsigned char t[FCARC_TRAILER_SIZE];
-  if (ar_seek(r, size - FCARC_TRAILER_SIZE)) {
-    term_puts(msg_error);
-    term_puts(msg_truncated);
-    return 1;
+  unsigned long off = size - FCARC_TRAILER_SIZE;
+  int found = 0;
+  int tries;
+  for (tries = 0; tries < 8 && off >= FCARC_TRAILER_SIZE; tries++) {
+    r->error = 0;
+    r->eof = 0;
+    if (ar_seek(r, off) == 0
+        && ar_read(r, t, FCARC_TRAILER_SIZE) == FCARC_TRAILER_SIZE
+        && magic_eq(t, fcarc_trailer_magic, 8)) {
+      found = 1;
+      break;
+    }
+    off -= FCARC_TRAILER_SIZE;
   }
-  if (ar_read(r, t, FCARC_TRAILER_SIZE) != FCARC_TRAILER_SIZE) {
-    term_puts(msg_error);
-    term_puts(msg_truncated);
-    return 1;
-  }
-  if (!magic_eq(t, fcarc_trailer_magic, 8)) {
+  if (!found) {
     term_puts(msg_error);
     term_puts(msg_not_fcarc);
     return 1;
   }
+
+  unsigned long actual_size = off + FCARC_TRAILER_SIZE;
   info->version = le16(t + 8);
   info->dir_offset = le32(t + 12);
   info->dir_size = le32(t + 16);
   info->count = le16(t + 20);
   unsigned long psize = le32(t + 24);
   info->dir_crc = le16(t + 28);
-  info->size = size;
-  if (info->version != FCARC_VERSION || psize != size) {
+  info->size = actual_size;
+  if (info->version != FCARC_VERSION || psize != actual_size) {
     term_puts(msg_error);
     term_puts(msg_bad_format);
     return 1;
   }
+  r->error = 0;
+  r->eof = 0;
   unsigned char hv[12];
   if (ar_seek(r, 0) || ar_read(r, hv, 12) != 12
       || !magic_eq(hv, fcarc_magic, 8)
@@ -100,7 +109,7 @@ static int fc_read_trailer(struct ArcReader* r, struct DeviceServiceRoutine* dsr
     return 1;
   }
   if (info->dir_offset < FCARC_HEADER_SIZE
-      || info->dir_offset + info->dir_size > size - FCARC_TRAILER_SIZE) {
+      || info->dir_offset + info->dir_size > actual_size - FCARC_TRAILER_SIZE) {
     term_puts(msg_error);
     term_puts(msg_bad_format);
     return 1;
@@ -157,8 +166,8 @@ static int fc_extract_file(struct ArcReader* r, struct DeviceServiceRoutine* dsr
   m.original_size = e->original_size;
   m.crc = e->crc;
 
-  struct OutFile of;
-  if (out_open(&of, dsr, iocode, parent, name, &m)) {
+  struct OutFile* of = &g_outfile;
+  if (out_open(of, dsr, iocode, parent, name, &m)) {
     term_puts(msg_error);
     term_puts(msg_create);
     term_puts(name);
@@ -167,7 +176,7 @@ static int fc_extract_file(struct ArcReader* r, struct DeviceServiceRoutine* dsr
   }
 
   if (e->method == 1) {
-    if (lzw_decode(r, out_sink, &of) != 0) {
+    if (lzw_decode(r, out_sink, of) != 0) {
       term_puts(msg_error);
       term_puts(msg_crc);
       term_puts(e->path);
@@ -182,21 +191,28 @@ static int fc_extract_file(struct ArcReader* r, struct DeviceServiceRoutine* dsr
       if (ar_read(r, buf, chunk) != chunk) {
         return 1;
       }
-      if (out_sink(&of, buf, chunk)) {
+      if (out_sink(of, buf, chunk)) {
         return 1;
       }
       n -= chunk;
     }
   }
 
-  if (of.remaining != 0 || of.error || of.crc != e->crc) {
+  if (of->remaining != 0 || of->error || of->crc != e->crc) {
     term_puts(msg_error);
     term_puts(msg_crc);
     term_puts(e->path);
     term_putc('\n');
     return 1;
   }
-  return out_close(&of);
+  if (out_close(of)) {
+    term_puts(msg_error);
+    term_puts(msg_write);
+    term_puts(e->path);
+    term_putc('\n');
+    return 1;
+  }
+  return 0;
 }
 
 static int fc_extract(struct ArcReader* r, struct DeviceServiceRoutine* dsr,
@@ -218,8 +234,8 @@ static int fc_extract(struct ArcReader* r, struct DeviceServiceRoutine* dsr,
       term_puts(msg_bad_format);
       return 1;
     }
-    char full[256];
-    if (path_join_rel(full, curpath, e.path, 256)) {
+    char* full = g_ws.scratch.full;
+    if (path_join_rel(full, curpath, e.path, 128)) {
       term_puts(msg_error);
       term_puts(msg_path_too_long);
       term_puts(e.path);
@@ -248,8 +264,8 @@ static int fc_extract(struct ArcReader* r, struct DeviceServiceRoutine* dsr,
       term_putc('\n');
       return 1;
     }
-    char parent[256];
-    char name[16];
+    char* parent = g_ws.scratch.parent;
+    char* name = g_ws.scratch.name;
     path_split(full, parent, name);
     unsigned long saved = ar_tell(r);
     if (e.data_offset + e.stored_size > info.dir_offset
@@ -257,11 +273,6 @@ static int fc_extract(struct ArcReader* r, struct DeviceServiceRoutine* dsr,
       term_puts(msg_error);
       term_puts(msg_truncated);
       return 1;
-    }
-    if (!g_quiet) {
-      term_puts(msg_extracting);
-      term_puts(e.path);
-      term_putc('\n');
     }
     if (fc_extract_file(r, odsr, oiocode, parent, name, &e)) {
       return 1;
@@ -273,7 +284,7 @@ static int fc_extract(struct ArcReader* r, struct DeviceServiceRoutine* dsr,
   return 0;
 }
 
-int FC_SAMS(5, fc_fcarc_extract(struct ArcReader* r, struct DeviceServiceRoutine* dsr,
+int FCARC_SAMS(B_EXTRACT, fc_fcarc_extract(struct ArcReader* r, struct DeviceServiceRoutine* dsr,
                                 const char* path, struct SelSet* sel,
                                 struct DeviceServiceRoutine* odsr,
                                 unsigned int oiocode, const char* curpath)) {

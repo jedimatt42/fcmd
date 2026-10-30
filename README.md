@@ -66,18 +66,22 @@ screen writes, TUI, graphics, and raw VDP output are outside redirection.
 
 ### Archives
 
-`FCARC` packages files with optional internal directories. It is an external
-utility installed as `FC/BIN/FCARC`:
+`FCARC` creates archives and `FCUNARC` reads them. They are external utilities
+installed as `FC/BIN/FCARC` and `FC/BIN/FCUNARC`:
 
 ```text
 FCARC c /r MYARCH TIPI.PROJECT     create an archive with directories
-FCARC l MYARCH                     list
-FCARC x MYARCH                     extract into the current directory
-FCARC t MYARCH                     verify
+FCUNARC l MYARCH                   list
+FCUNARC x MYARCH                   extract into the current directory
+FCUNARC t MYARCH                   verify
 FCARC c /ti OLDARC TIPI.FILE1 ...  create a legacy TI Archiver archive
 ```
 
-`FCARC` reads both the new FCARC format and the legacy TI Archiver ARC/ARK
+`FCUNARC t` prints an `OK` or `ERROR` line for each file and returns the
+number of bad entries as its exit code. Extracted files are written as
+TIFILES FIAD files.
+
+`FCUNARC` reads both the new FCARC format and the legacy TI Archiver ARC/ARK
 format. The legacy format is a flat archive compressed with the LZW variant
 documented by Ninerpedia and implemented by TIImageTool. `FCARC c /ti` writes
 legacy-compatible archives; `/ti` rejects directory sources because the
@@ -145,7 +149,7 @@ The FC directory goes on your TIPI as TIPI.FC, preserving its subdirectories:
 - FC/FCMD - EA5 utility for FinalGROM99 to reload FCMDG.bin
 - FC/FCMDXB - XB INT/VAR 254 program for FinalGROM99 to reload FCMDG.bin
 - FC/BOOT - EA5 program for console ROM replacement builds to switch back to FCMD
-- FC/BIN - command utilities and fonts: CHARSET, DISKIMAGE, FCARC, FCMDANSI, FCMENU, FONT, FTP, MDOSANSI, MDOSFONT, MSXFONT, SAMPLE, SAY, TELNET, VIRGIL99
+- FC/BIN - command utilities and fonts: CHARSET, DISKIMAGE, FCARC, FCUNARC, FCMDANSI, FCMENU, FONT, FTP, MDOSANSI, MDOSFONT, MSXFONT, SAMPLE, SAY, TELNET, VIRGIL99
 
 Copy the FC directory, including the FC/BIN subdirectory, to TIPI.FC without flattening it:
 the utilities are expected in TIPI.FC.BIN. `deploy.sh` does this when `TIPI_DIR` points at

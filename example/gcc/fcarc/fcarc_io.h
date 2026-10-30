@@ -34,6 +34,7 @@ struct ArcReader {
   int record_len;
   int error;
   int eof;
+  int open_error;
   unsigned long record;
 };
 
@@ -120,15 +121,36 @@ static inline int ar_open(struct ArcReader* r, struct DeviceServiceRoutine* dsr,
   r->len = 0;
   r->error = 0;
   r->eof = 0;
+  r->open_error = 0;
+  r->record_len = 0;
   r->record = 0;
-  unsigned int err = dsr_open(dsr, &r->pab, path, DSR_TYPE_INPUT, 0);
+  /* Fixed-record files are opened RELATIVE so the DSR honors the PAB
+   * record number on every read.  This is true random access; no rewind or
+   * sequential fallback is needed.  Try INT/FIX first, then DIS/FIX if the
+   * DSR reports a data-type attribute mismatch. */
+  static const int open_flags[2] = {
+    DSR_TYPE_INPUT | DSR_TYPE_INTERNAL | DSR_TYPE_RELATIVE,
+    DSR_TYPE_INPUT | DSR_TYPE_RELATIVE
+  };
+  unsigned int err = dsr_open(dsr, &r->pab, path, open_flags[0], RECORD_SIZE);
+  if (err == 0x40) {
+    err = dsr_open(dsr, &r->pab, path, open_flags[1], RECORD_SIZE);
+  }
   if (err) {
+    r->open_error = (int)err;
     r->error = (int)err;
     return -1;
   }
   r->record_len = (int)r->pab.RecordLength;
+  if (r->record_len == 0) {
+    /* Some DSRs do not report the record length on open.  Archives are
+     * always 128-byte fixed files, so force it for the subsequent reads. */
+    r->record_len = RECORD_SIZE;
+    r->pab.RecordLength = RECORD_SIZE;
+  }
   if (r->record_len != RECORD_SIZE) {
-    r->error = 1;
+    r->open_error = 2; /* opened, but not a 128-byte fixed file */
+    r->error = 2;
     dsr_close(dsr, &r->pab);
     return -1;
   }
@@ -139,6 +161,11 @@ static inline int ar_fill(struct ArcReader* r) {
   if (r->error || r->eof) {
     return -1;
   }
+  /* Clear stale DSR error bits (the top three bits) but keep the file
+   * attribute flags.  Some DSRs leave the EOF error from the size scan in
+   * the PAB status, which otherwise makes every later successful read look
+   * like an error. */
+  r->pab.Status &= 0x1F;
   unsigned int err = dsr_read_cpu(r->dsr, &r->pab, (int)r->record, (char*)r->buf);
   if (err) {
     r->error = (int)err;
@@ -185,14 +212,14 @@ static inline unsigned long ar_tell(struct ArcReader* r) {
   return r->record * (unsigned long)r->record_len;
 }
 
+/* Fixed-record files are opened RELATIVE, so the DSR uses the PAB record
+ * number directly.  No rewind or forward scan is required. */
 static inline int ar_seek(struct ArcReader* r, unsigned long offset) {
-  if (r->error) {
-    return -1;
-  }
+  r->error = 0;
+  r->eof = 0;
   r->record = offset >> 7;
   r->pos = 0;
   r->len = 0;
-  r->eof = 0;
   int skip = (int)(offset & 0x7F);
   if (skip) {
     if (ar_fill(r)) {
@@ -212,32 +239,31 @@ static inline int ar_close(struct ArcReader* r) {
   return 0;
 }
 
-/* Determine the size of a TI file with Level 2 direct input metadata. */
-static inline int fc_file_size(struct DeviceServiceRoutine* dsr, const char* path,
-                               unsigned long* size) {
-  char parent[256];
-  char name[16];
-  path_split(path, parent, name);
-  unsigned int iocode = path_to_iocode(path);
-  unsigned int err = lvl2_setdir(dsr->crubase, iocode, parent);
-  if (err) {
-    return -1;
+/* Determine the archive payload size using only 128-byte record reads.
+ * Archives are fixed 128-byte-record files.  This avoids Level 2 direct
+ * input, which can report block counts that include the FIAD header. */
+static inline int ar_size(struct ArcReader* r, unsigned long* size) {
+  unsigned long rec = 0;
+  r->error = 0;
+  r->eof = 0;
+  while (rec < 65536UL) {
+    r->pab.Status &= 0x1F;
+    unsigned int err = dsr_read_cpu(r->dsr, &r->pab, (int)rec, (char*)r->buf);
+    if (err) {
+      break;
+    }
+    if (r->pab.CharCount == 0) {
+      break;
+    }
+    rec++;
   }
-  char bare[16];
-  str_ncopy(bare, name, 15);
-  bare[15] = 0;
-  ADDINFO->first_sector = 0;
-  ADDINFO->buffer = 0;
-  ADDINFO->flags = 0;
-  ADDINFO->recs_per_sec = 0;
-  ADDINFO->eof_offset = 0;
-  ADDINFO->rec_length = 0;
-  ADDINFO->records = 0;
-  err = lvl2_input(dsr->crubase, iocode, bare, 0, ADDINFO);
-  if (err) {
-    return -1;
-  }
-  *size = (unsigned long)ADDINFO->first_sector * SECTOR_SIZE;
+  r->pab.Status &= 0x1F;
+  r->error = 0;
+  r->eof = 0;
+  r->record = 0;
+  r->len = 0;
+  r->pos = 0;
+  *size = rec * (unsigned long)RECORD_SIZE;
   return 0;
 }
 

@@ -4,11 +4,14 @@
 
 union Workspace g_ws;
 
+#ifdef FCARC_CREATE_BUILD
 struct CatalogEntry g_catalog[CATALOG_MAX];
 int g_catalog_count;
 int g_catalog_overflow;
 int g_catalog_skip;
 int g_catalog_seen;
+unsigned char g_filebuf[256];
+#endif
 int g_quiet;
 
 char msg_error[] = "error: ";
@@ -25,6 +28,8 @@ char msg_not_fcarc[] = "not an FCARC archive\n";
 char msg_truncated[] = "truncated archive\n";
 char msg_crc[] = "checksum error: ";
 char msg_ok[] = "ok\n";
+char msg_ok_line[] = "OK    ";
+char msg_error_line[] = "ERROR ";
 char msg_extracting[] = "extracting ";
 char msg_creating[] = "creating ";
 char msg_testing[] = "testing ";
@@ -60,6 +65,9 @@ char msg_writing[] = "writing ";
 char msg_file[] = "file ";
 char msg_dir_source[] = "directory source ";
 char msg_no_entries[] = "no entries\n";
+char msg_err[] = " (err ";
+char msg_reclen[] = ", reclen ";
+char msg_close[] = ")\n";
 
 char msg_fcarc_v1[] = "FCARC v1 ";
 char msg_ti_archiver[] = "TI Archiver ";

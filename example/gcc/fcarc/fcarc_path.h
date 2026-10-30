@@ -120,9 +120,7 @@ static inline int path_validate(const char* p) {
       }
       comp = 0;
     } else {
-      if (c == ' ' || c == '/' || c == '\\' || c == ':' || c == '*'
-          || c == '?' || c == '"' || c == '<' || c == '>' || c == '|'
-          || c < 32) {
+      if (c == ' ' || c < 32) {
         return 0;
       }
       comp++;

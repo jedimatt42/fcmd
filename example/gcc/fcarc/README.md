@@ -1,7 +1,7 @@
 # FCARC — Force Command Archive
 
-`FCARC` is an external Force Command executable for creating and extracting
-archives. It supports:
+`FCARC` (create) and `FCUNARC` (list/extract/test) are external Force Command
+executables. They support:
 
 - a new FCARC v1 format with internal directories
 - the legacy TI Archiver (ARC/ARK) format, compressed and uncompressed
@@ -15,11 +15,12 @@ The legacy TI Archiver format is **LZW**, not LZH. It uses variable-width
 
 ## Requirements
 
-- SAMS memory. `FCARC` is a paged SAMS executable (8 code banks, 16 code
-  pages plus 4 data pages; allow at least 20 free SAMS pages / 80 KB).
+- SAMS memory. Both are paged SAMS executables: `FCARC` uses 4 code banks
+  (8 code pages + 4 data pages), `FCUNARC` uses 5 code banks (10 code pages
+  + 4 data pages). Allow at least 14 free SAMS pages / 56 KB.
 - TIPI, SCSI, IDE/HFDC, or a disk controller that supports Level 2 direct
   file I/O for the raw-sector paths.
-- A Force Command build that includes `FC/BIN/FCARC`.
+- A Force Command build that includes `FC/BIN/FCARC` and `FC/BIN/FCUNARC`.
 
 ## Usage
 
@@ -29,18 +30,19 @@ FCARC c /r <archive> <dir>...            create a FCARC archive with directories
 FCARC c /s <archive> <source>...         store without compression
 FCARC c /ti <archive> <file>...          create a legacy TI Archiver archive
 FCARC c /ti /u <archive> <file>...       create an uncompressed legacy archive
-FCARC l <archive>                        list
-FCARC x <archive> [<path>...]            extract all or selected paths
-FCARC t <archive>                        test integrity
+
+FCUNARC l <archive>                      list
+FCUNARC x <archive> [<path>...]          extract all or selected paths
+FCUNARC t <archive>                      test integrity
 ```
 
 Examples:
 
 ```text
 FCARC c /r TIPI.MYARCH TIPI.PROJECT
-FCARC l TIPI.MYARCH
-FCARC x TIPI.MYARCH
-FCARC x TIPI.MYARCH PROJECT.DOCS
+FCUNARC l TIPI.MYARCH
+FCUNARC x TIPI.MYARCH
+FCUNARC x TIPI.MYARCH PROJECT.DOCS
 FCARC c /ti TIPI.OLDARC TIPI.FILE1 TIPI.FILE2
 ```
 
@@ -48,6 +50,10 @@ FCARC c /ti TIPI.OLDARC TIPI.FILE1 TIPI.FILE2
 - `c /ti` always rejects directory sources; the legacy format is flat.
 - `x` extracts into the current Force Command directory. Archive paths are
   dot-separated, e.g. `PROJECT.DOCS.README`.
+- Extracted files are written as TIFILES FIAD files, so a native text file
+  that the DSR presented as `DIS/FIX 128` is extracted in that form.
+- `t` prints one line per file, prefixed with `OK    ` or `ERROR `, and exits
+  with the number of bad file entries.
 - `/s` stores file sectors without compression.
 - `/q` suppresses per-file progress.
 
@@ -158,6 +164,11 @@ When copying a host-created archive to TIPI or an emulator, use `--tifiles` so
 the file is wrapped as a proper TI `INT/FIX 128` or `DIS/FIX 128` file. On the
 4A, `FCARC` creates the correct TI file type directly through the DSR.
 
+TI permits printable characters such as `/` in file names. The 4A tool
+preserves them exactly. A host filesystem cannot represent `/` in a file name,
+so host extraction percent-escapes host-illegal characters: a TI file
+`A/B` is extracted as `A%2FB`. The archive itself always stores `A/B`.
+
 Run the tests with:
 
 ```text
@@ -170,4 +181,4 @@ python3 scripts/test_fcarc.py
 make -C example/gcc/fcarc
 ```
 
-The build produces `FCARC` and copies it to `FC/BIN/FCARC`.
+The build produces `FCARC` and `FCUNARC` and copies both to `FC/BIN/`.

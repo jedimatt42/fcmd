@@ -21,13 +21,7 @@ static const unsigned char fcarc_magic[8] = {'F','C','A','R','C','1',0,0};
 static const unsigned char fcarc_trailer_magic[8] = {'F','C','A','R','C','E','O','F'};
 #define FCARC_VERSION 1
 
-/* Decoder tables.
- *
- * prefix[] holds 12-bit prefix+1 values packed into 1.5 bytes. 0 means
- * "no prefix". suffix[] holds one byte per dictionary code. stack[] is the
- * largest LZW string we are willing to materialize; real TI archives are far
- * below this, but a corrupt stream is rejected rather than overrunning.
- */
+/* Decoder tables. */
 #define DEC_PREFIX_BYTES 6144
 #define DEC_SUFFIX_BYTES 4096
 #define DEC_STACK_BYTES  4096
@@ -47,9 +41,23 @@ struct CreateWork {
   unsigned char area[CREATE_AREA_BYTES];
 };
 
+/* Path scratch that is only needed before a file is decoded.  It shares
+ * storage with the decoder/create workspaces so it costs no additional
+ * program data space.  Do not use these fields while lzw_decode() is
+ * running. */
+struct ArcScratch {
+  char arc[128];
+  char full[128];
+  char parent[128];
+  char work[128];
+  char dir[128];
+  char name[16];
+};
+
 union Workspace {
   struct DecoderWork dec;
   struct CreateWork create;
+  struct ArcScratch scratch;
 };
 
 extern union Workspace g_ws;
@@ -66,11 +74,14 @@ struct CatalogEntry {
 
 #define CATALOG_MAX 32
 
+#ifdef FCARC_CREATE_BUILD
 extern struct CatalogEntry g_catalog[CATALOG_MAX];
 extern int g_catalog_count;
 extern int g_catalog_overflow;
 extern int g_catalog_skip;
 extern int g_catalog_seen;
+extern unsigned char g_filebuf[256];
+#endif
 extern int g_quiet;
 
 struct ArcEntry {
@@ -97,38 +108,92 @@ struct SelSet {
   char item[MAX_SELECT][SELECT_LEN];
 };
 
-/* Banked entry points. The actual definitions live in b1_/b2_/b3_/b4_ files. */
-FC_SAMS_BANKED(1, int, fc_do_list, (char* args), (args))
-FC_SAMS_BANKED(1, int, fc_do_extract, (char* args), (args))
-FC_SAMS_BANKED(1, int, fc_do_test, (char* args), (args))
-FC_SAMS_BANKED(2, int, fc_legacy_list, (struct ArcReader* r), (r))
-FC_SAMS_BANKED(2, int, fc_legacy_extract,
+/* ------------------------------------------------------------------ */
+/* Bank map and banked-call helpers                                   */
+/* ------------------------------------------------------------------ */
+
+#ifdef FCARC_CREATE_BUILD
+#define B_MAIN 0
+#define B_FILE 0
+#define B_CATALOG 0
+#define B_CREATE 1
+#define B_LEGACY_CREATE 2
+#define B_WRITER 3
+#else
+#define B_MAIN 0
+#define B_FILE 0
+#define B_READ 1
+#define B_LEGACY_READ 2
+#define B_EXTRACT 3
+#define B_TEST 4
+#endif
+
+/* The extra CAT indirection lets B_* expand to a numeric literal before
+ * token pasting, unlike the fixed-number FC_SAMS_BANKED macro. */
+#define FCARC_CAT2(a,b) a##b
+#define FCARC_CAT(a,b) FCARC_CAT2(a,b)
+
+#ifdef HOST_TEST
+#define FCARC_BANKED(bank_id, return_type, function_name, param_signature, param_list) \
+  return_type FCARC_CAT(FCARC_CAT(b, bank_id), FCARC_CAT(_, function_name)) param_signature; \
+  static inline return_type function_name param_signature { \
+    return FCARC_CAT(FCARC_CAT(b, bank_id), FCARC_CAT(_, function_name)) param_list; \
+  }
+#else
+#define FCARC_BANKED(bank_id, return_type, function_name, param_signature, param_list) \
+  return_type FCARC_CAT(FCARC_CAT(b, bank_id), FCARC_CAT(_, function_name)) param_signature; \
+  static inline return_type function_name param_signature { \
+    if ((bank_id) == SAMS_CURRENT_BANK) { \
+      return FCARC_CAT(FCARC_CAT(b, bank_id), FCARC_CAT(_, function_name)) param_list; \
+    } \
+    static const int fcsams_data_##function_name[] = { \
+      (int)(bank_id), (int)SAMS_CURRENT_BANK, \
+      (int)FCARC_CAT(FCARC_CAT(b, bank_id), FCARC_CAT(_, function_name)) \
+    }; \
+    FC_SAMS_TRAMP_DATA = (int)fcsams_data_##function_name; \
+    return_type (*fcstramp) param_signature = (return_type (*) param_signature) FC_SAMS_TRAMP; \
+    return fcstramp param_list; \
+  }
+#endif
+
+#define FCARC_SAMS(bank_id, name) FCARC_CAT(FCARC_CAT(b, bank_id), FCARC_CAT(_, name))
+
+#ifdef FCARC_CREATE_BUILD
+FCARC_BANKED(B_CATALOG, int, catalog_entries,
+  (struct DeviceServiceRoutine* dsr, const char* path, int skip),
+  (dsr, path, skip))
+FCARC_BANKED(B_CREATE, int, fc_do_create, (char* args), (args))
+FCARC_BANKED(B_LEGACY_CREATE, int, fc_do_create_ti, (char* args), (args))
+FCARC_BANKED(B_WRITER, int, create_add_dir,
+  (struct ArcWriter* w, const char* archpath, int* area_pos, int* count),
+  (w, archpath, area_pos, count))
+FCARC_BANKED(B_WRITER, int, create_add_file,
+  (struct ArcWriter* w, struct DeviceServiceRoutine* dsr, const char* fullpath,
+   const char* archpath, int* area_pos, int* count, int store),
+  (w, dsr, fullpath, archpath, area_pos, count, store))
+#else
+FCARC_BANKED(B_READ, int, fc_do_list, (char* args), (args))
+FCARC_BANKED(B_READ, int, fc_do_extract, (char* args), (args))
+FCARC_BANKED(B_READ, int, fc_do_test, (char* args), (args))
+FCARC_BANKED(B_LEGACY_READ, int, fc_legacy_list, (struct ArcReader* r), (r))
+FCARC_BANKED(B_LEGACY_READ, int, fc_legacy_extract,
   (struct ArcReader* r, struct SelSet* sel, struct DeviceServiceRoutine* dsr,
    unsigned int iocode, const char* curpath, int extract),
   (r, sel, dsr, iocode, curpath, extract))
-FC_SAMS_BANKED(2, int, fc_legacy_test,
+FCARC_BANKED(B_LEGACY_READ, int, fc_legacy_test,
   (struct ArcReader* r, struct DeviceServiceRoutine* dsr, const char* path),
   (r, dsr, path))
-FC_SAMS_BANKED(3, int, fc_do_create, (char* args), (args))
-FC_SAMS_BANKED(4, int, fc_do_create_ti, (char* args), (args))
-FC_SAMS_BANKED(5, int, fc_fcarc_extract,
+FCARC_BANKED(B_EXTRACT, int, fc_fcarc_extract,
   (struct ArcReader* r, struct DeviceServiceRoutine* dsr, const char* path,
    struct SelSet* sel, struct DeviceServiceRoutine* odsr, unsigned int oiocode,
    const char* curpath),
   (r, dsr, path, sel, odsr, oiocode, curpath))
-FC_SAMS_BANKED(6, int, fc_fcarc_test,
+FCARC_BANKED(B_TEST, int, fc_fcarc_test,
   (struct ArcReader* r, struct DeviceServiceRoutine* dsr, const char* path),
   (r, dsr, path))
-FC_SAMS_BANKED(7, int, create_add_dir,
-  (struct ArcWriter* w, const char* archpath, int* area_pos, int* count),
-  (w, archpath, area_pos, count))
-FC_SAMS_BANKED(7, int, create_add_file,
-  (struct ArcWriter* w, struct DeviceServiceRoutine* dsr, const char* fullpath,
-   const char* archpath, int* area_pos, int* count, int store),
-  (w, dsr, fullpath, archpath, area_pos, count, store))
+#endif
 
-/* Callbacks must live in bank 0: Force Command invokes external callbacks with
- * bank 0 mapped. */
+/* Callbacks must live in bank 0. */
 void catalog_vol(struct VolInfo* v);
 void catalog_dir(struct DirEntry* d);
 

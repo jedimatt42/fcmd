@@ -117,6 +117,26 @@ def ensure_ti_component(name: str, sanitize: bool, warn) -> str:
     return text
 
 
+def host_component(component: str) -> str:
+    """Escape TI filename characters that are illegal on host filesystems.
+
+    TI allows printable characters such as '/' in file names.  A host
+    filesystem does not, so extraction percent-escapes them.  The archive
+    itself always stores the original TI name.
+    """
+    out = []
+    for ch in component:
+        if ch == '%' or ch in '/\\:*?"<>|' or ord(ch) < 32:
+            out.append(f"%{ord(ch):02X}")
+        else:
+            out.append(ch)
+    return "".join(out)
+
+
+def host_path(path: str) -> Path:
+    return Path(*(host_component(p) for p in path.split(".")))
+
+
 def validate_ti_path(path: str) -> None:
     if not path:
         raise ValueError("empty archive path")
@@ -132,7 +152,7 @@ def validate_ti_path(path: str) -> None:
             raise ValueError(f"path component too long in {path!r}")
         if " " in part:
             raise ValueError(f"space in archive path component: {path!r}")
-        if any(ch in part for ch in '/\\:*?"<>|') or any(ord(ch) < 32 for ch in part):
+        if any(ch == ' ' or ord(ch) < 32 for ch in part):
             raise ValueError(f"invalid character in archive path component: {path!r}")
 
 
@@ -575,7 +595,7 @@ def legacy_build_directory(entries: list[LegacyEntry]) -> bytes:
         name = e.name
         if not name or len(name) > 10:
             raise ValueError(f"invalid legacy file name {name!r}")
-        if any(ch in name for ch in "/\\ .") or any(ord(ch) < 32 or ord(ch) > 126 for ch in name):
+        if any(ch in " ." or ord(ch) < 32 or ord(ch) > 126 for ch in name):
             raise ValueError(f"invalid legacy file name {name!r}")
         name = name.encode("latin-1", "replace").ljust(10)
         if len(out) % SECTOR == 252:
@@ -627,11 +647,11 @@ def legacy_extract(raw: bytes, outdir: Path, raw_mode: bool,
         name = e.name
         if name in ("", ".", ".."):
             raise ValueError("invalid legacy file name")
-        if any(ch in name for ch in '/\\') or any(ord(ch) < 32 for ch in name):
+        if any(ord(ch) < 32 for ch in name):
             raise ValueError(f"invalid legacy file name {name!r}")
         if len(name) > 10:
             raise ValueError(f"legacy file name too long: {name!r}")
-        out = outdir / name
+        out = outdir / host_component(name)
         if out.exists() and not force:
             raise FileExistsError(str(out))
         out.parent.mkdir(parents=True, exist_ok=True)
@@ -884,7 +904,7 @@ def fcarc_extract(payload: bytes, entries: list[FcarcEntry], outdir: Path,
                   selected: list[str], raw_mode: bool, force: bool) -> list[str]:
     written = []
     for e in entries:
-        target = outdir / Path(*e.path.split("."))
+        target = outdir / host_path(e.path)
         if e.kind == 1:
             if _selected_match(e.path, selected) or any(
                     s.upper().startswith(e.path.upper() + ".") for s in selected):
