@@ -152,7 +152,10 @@ int fcmain(char* args) {
 }
 
 int childWantsQuit() {
-  char* value = var_get(QUITVAR);
+  char value[82];
+  if (!var_get(QUITVAR, value, sizeof(value))) {
+    return 0;
+  }
   return !str_cmp("QUIT", value);
 }
 

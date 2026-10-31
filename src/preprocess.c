@@ -48,9 +48,10 @@ void replace_alias(char* command, char* resolved) {
   // The tokenizer leaves lasts at the first argument (or at the terminator).
   char* args = lasts;
 
-  char* alias_value = alias_get(alias_name);
+  char alias_buf[MAX_ALIAS_VAL + 1];
+  char* alias_value = alias_buf;
   // if the alias is not defined, use the name to rebuild the command
-  if ((int)alias_value == -1) {
+  if (!alias_get(alias_name, alias_buf, sizeof(alias_buf))) {
     alias_value = alias_name;
   }
   int value_len = bk_strlen(alias_value);
@@ -114,8 +115,8 @@ char* phase2_preprocess(char* buf) {
           vn++;
         }
       }
-      char* val = var_get(varname);
-      if ((int) val != -1) {
+      char val[MAX_VAR_VAL + 1];
+      if (var_get(varname, val, sizeof(val))) {
         bk_strcpy(&procbuf[pi], val);
         i = ve - 1;
         pi += bk_strlen(val) - 1;

@@ -109,8 +109,8 @@ int handleXb() {
     bk_strcpy(fg99_msg + 1, str2ram("OKFG99"));
     fg99_msg[7] = 0x99;
     bk_strcpy(namebuf, str2ram("XBMOD"));
-    char* xb_module = bk_vars_get(namebuf);
-    if (-1 == (int)xb_module) {
+    char xb_module[MAX_VAR_VAL + 1];
+    if (!bk_vars_get(namebuf, xb_module, sizeof(xb_module))) {
         bk_strcpy(fg99_msg+8, str2ram("TIXB_G"));
     } else {
         // Force module name to all caps for final grom
@@ -121,15 +121,15 @@ int handleXb() {
 	          }
 	          up++;
 	      }
-        bk_strcpy(fg99_msg+8, xb_module);
+        bk_strncpy(fg99_msg+8, xb_module, 11);
     }
 
     // 0x6372 - grom start address of standard TI XB version 110
     bk_strcpy(namebuf, str2ram("XBADDR"));
-    char* xb_addr = bk_vars_get(namebuf);
+    char xb_addr[MAX_VAR_VAL + 1];
 
     int fg99_addr = 0;
-    if (-1 == (int)xb_addr) {
+    if (!bk_vars_get(namebuf, xb_addr, sizeof(xb_addr))) {
         fg99_addr = 0x6372;
     } else {
         fg99_addr = bk_atoi(xb_addr);

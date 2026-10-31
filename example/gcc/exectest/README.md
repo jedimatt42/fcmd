@@ -14,7 +14,7 @@ output and the unknown-command error.
 - `exec_cmd("echo ...")` runs the built-in and returns 0.
 - `exec_cmd("")` returns 0 and does nothing.
 - `exec_cmd("NAME=value")` performs a variable assignment; the value is then
-  readable with `var_get`.
+  readable with the copy-out `var_get(name, buf, limit)` API.
 - `exec_cmd("unknown")` returns non-zero and prints an error.
 
 ## Notes

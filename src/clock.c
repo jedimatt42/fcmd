@@ -57,8 +57,9 @@ void time_get(struct DateTime* dt) {
   dt->year = 0;
   dt->pm = 0;
 
-  char* clock_type = bk_vars_get(str2ram("CLOCK"));
-  if (clock_type == (char*) -1 || 0 == bk_strcmpi(clock_type, str2ram("PI.CLOCK"))) {
+  char clock_type[MAX_VAR_VAL + 1];
+  int has_clock = bk_vars_get(str2ram("CLOCK"), clock_type, sizeof(clock_type));
+  if (!has_clock || 0 == bk_strcmpi(clock_type, str2ram("PI.CLOCK"))) {
     char clock[] = "PI.CLOCK";
     corcomp_clock(dt, clock);
   } else if (0 == bk_strcmpi(clock_type, str2ram("CLOCK"))) {

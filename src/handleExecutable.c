@@ -157,8 +157,8 @@ int loadExecutable(const char* ext, int* cmd_type) {
     return 0;
   }
 
-  char* path = bk_vars_get(str2ram("PATH"));
-  if (path != (char*)-1) {
+  char path[MAX_VAR_VAL + 1];
+  if (bk_vars_get(str2ram("PATH"), path, sizeof(path))) {
     char entry[64];
     char *cursor = str_token_next(entry, path, ';');
     // ensure '.' at end of path entry

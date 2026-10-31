@@ -185,6 +185,18 @@ bytes) to hold its save data, so a SAMS-banked function with more than seven
 `int` arguments would read its stack arguments from the wrong place. Keep
 SAMS-banked functions to seven or fewer arguments.
 
+## Environment variables
+
+`var_get(name, buf, limit)` copies the variable value into the caller's buffer
+and returns 1 when found, 0 when not found. `limit` is the buffer size including
+the trailing NUL; long values are truncated safely. The API never returns a
+pointer into ForceCommand's dictionary, so callers cannot mutate FC storage and
+do not have to worry about dictionary compaction invalidating a pointer.
+
+`var_set(name, value)` copies both strings into the dictionary. It copies the
+name before uppercasing it, so the caller's buffer is not modified and string
+literals are safe. An empty or NULL value removes the variable.
+
 ## Non-local exit
 
 `fc_exit(status)` (`src/fc_exit.asm`) does not return through this convention.

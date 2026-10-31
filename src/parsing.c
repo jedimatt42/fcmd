@@ -83,8 +83,9 @@ int must_close_command(char* buffer) {
 
 static void set_command_status(int status) {
   char* value = bk_uint2str((unsigned int) status);
-  char* current = bk_vars_get(str2ram("STATUS"));
-  if ((int) current == -1 || 0 != bk_strcmp(current, value)) {
+  char current[MAX_VAR_VAL + 1];
+  if (!bk_vars_get(str2ram("STATUS"), current, sizeof(current))
+      || 0 != bk_strcmp(current, value)) {
     bk_vars_set(str2ram("STATUS"), value);
   }
 }

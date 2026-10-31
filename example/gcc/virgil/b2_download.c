@@ -64,9 +64,9 @@ void set_download_filename(char* filename) {
 }
 
 struct DeviceServiceRoutine* get_downloads_dir(char* pathname) {
-  char* dls = var_get("DOWNLOADS");
-  if (dls == 0 || dls[0] == 0) {
-    dls = "TIPI.DOWNLOADS.";
+  char dls[82];
+  if (!var_get("DOWNLOADS", dls, sizeof(dls)) || dls[0] == 0) {
+    str_copy(dls, "TIPI.DOWNLOADS.");
   }
   struct DeviceServiceRoutine* dsr;
   path_parse(dls, &dsr, pathname, PR_REQUIRED);

@@ -11,7 +11,11 @@
 void to_upper(char* name);
 
 
-void alias_set(char* name, char* value) {
+void alias_set(const char* name, const char* value) {
+  if (name == 0) {
+    return;
+  }
+
   if (bk_strlen(name) > MAX_ALIAS_NAME) {
     tputs_rom("Error, alias name too long, limit is ");
     bk_tputs_ram(bk_uint2str(MAX_ALIAS_NAME));
@@ -19,10 +23,12 @@ void alias_set(char* name, char* value) {
     return;
   }
 
-  to_upper(name);
+  char key[MAX_ALIAS_NAME + 1];
+  bk_strcpy(key, name);
+  to_upper(key);
 
   if (value == 0 || value[0] == 0) {
-    dict_remove(&system_dict, DE_TYPE_ALIAS, name);
+    dict_remove(&system_dict, DE_TYPE_ALIAS, key);
     return;
   }
 
@@ -33,20 +39,36 @@ void alias_set(char* name, char* value) {
     return;
   }
 
-  dict_put(&system_dict, DE_TYPE_ALIAS, name, value);
+  dict_put(&system_dict, DE_TYPE_ALIAS, key, value);
 }
 
-char* alias_get(char* name) {
-  // upcase on a copy so we do not mutate the caller's buffer. The caller may
-  // hand us a token that contains more than just the alias name (for example an
-  // assignment like NAME=value), and that value must keep its case.
-  char key[256];
-  bk_strncpy(key, name, 255);
+int alias_get(const char* name, char* buf, int limit) {
+  if (buf == 0 || limit <= 0) {
+    return 0;
+  }
+  buf[0] = 0;
+
+  if (name == 0 || bk_strlen(name) > MAX_ALIAS_NAME) {
+    return 0;
+  }
+
+  // Upcase on a copy so we do not mutate the caller's buffer. The caller may
+  // hand us a token that contains more than just the alias name (for example
+  // an assignment like NAME=value), and that value must keep its case.
+  char key[MAX_ALIAS_NAME + 1];
+  bk_strcpy(key, name);
   to_upper(key);
 
-  char* val = (char*) dict_get(&system_dict, DE_TYPE_ALIAS, key) ;
-  if (val) {
-    return val;
+  const char* val = dict_get(&system_dict, DE_TYPE_ALIAS, key);
+  if (val == 0) {
+    return 0;
   }
-  return (char*) -1;
+
+  int i = 0;
+  while (val[i] != 0 && i < limit - 1) {
+    buf[i] = val[i];
+    i++;
+  }
+  buf[i] = 0;
+  return 1;
 }

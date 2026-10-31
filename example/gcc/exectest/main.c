@@ -27,15 +27,12 @@ static void test_empty(void) {
 static void test_assignment(void) {
     char cmd[] = "EXECTEST9=hello";
     char name[] = "EXECTEST9";
-    char* v;
+    char value[82];
 
     FC_CHECK_EQ(exec_cmd(cmd), 0);
 
-    v = var_get(name);
-    FC_CHECK(v != (char*) -1);
-    if (v != (char*) -1) {
-        FC_CHECK_EQ(str_cmp(v, "hello"), 0);
-    }
+    FC_CHECK(var_get(name, value, sizeof(value)));
+    FC_CHECK_EQ(str_cmp(value, "hello"), 0);
 
     /* clean up the variable created by the assignment */
     var_set(name, "");

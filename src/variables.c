@@ -18,7 +18,11 @@ void to_upper(char* name) {
   }
 }
 
-void var_set(char* name, char* value) {
+void var_set(const char* name, const char* value) {
+  if (name == 0) {
+    return;
+  }
+
   if (bk_strlen(name) > MAX_VAR_NAME) {
     tputs_rom("Error, variable name too long, limit is ");
     bk_tputs_ram(bk_uint2str(MAX_VAR_NAME));
@@ -26,10 +30,12 @@ void var_set(char* name, char* value) {
     return;
   }
 
-  to_upper(name);
+  char key[MAX_VAR_NAME + 1];
+  bk_strcpy(key, name);
+  to_upper(key);
 
   if (value == 0 || value[0] == 0) {
-    dict_remove(&system_dict, DE_TYPE_VAR, name);
+    dict_remove(&system_dict, DE_TYPE_VAR, key);
     return;
   }
 
@@ -40,17 +46,35 @@ void var_set(char* name, char* value) {
     return;
   }
 
-  dict_put(&system_dict, DE_TYPE_VAR, name, value);
+  dict_put(&system_dict, DE_TYPE_VAR, key, value);
 }
 
-char* var_get(char* name) {
-  to_upper(name);
-
-  char* val = (char*) dict_get(&system_dict, DE_TYPE_VAR, name) ;
-  if (val) {
-    return val;
+int var_get(const char* name, char* buf, int limit) {
+  if (buf == 0 || limit <= 0) {
+    return 0;
   }
-  return (char*) -1;
+  buf[0] = 0;
+
+  if (name == 0 || bk_strlen(name) > MAX_VAR_NAME) {
+    return 0;
+  }
+
+  char key[MAX_VAR_NAME + 1];
+  bk_strcpy(key, name);
+  to_upper(key);
+
+  const char* val = dict_get(&system_dict, DE_TYPE_VAR, key);
+  if (val == 0) {
+    return 0;
+  }
+
+  int i = 0;
+  while (val[i] != 0 && i < limit - 1) {
+    buf[i] = val[i];
+    i++;
+  }
+  buf[i] = 0;
+  return 1;
 }
 
 int onVarEntry(struct DictEntry* entry) {

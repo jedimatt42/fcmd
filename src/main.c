@@ -46,8 +46,8 @@ void titleScreen() {
 }
 
 void prompt() {
-  char* prompt_pattern = bk_vars_get(str2ram("PROMPT"));
-  if (prompt_pattern != (char*) -1) {
+  char prompt_pattern[MAX_VAR_VAL + 1];
+  if (bk_vars_get(str2ram("PROMPT"), prompt_pattern, sizeof(prompt_pattern))) {
     bk_print_prompt(prompt_pattern);
   } else {
     bk_print_prompt(str2ram("[\\c\\p]\\n$\\s"));
@@ -55,8 +55,8 @@ void prompt() {
 }
 
 void checkBackspaceVar() {
-  char* bs_var = bk_vars_get(str2ram("BACKSPACE"));
-  if (bs_var != (char*) -1) {
+  char bs_var[MAX_VAR_VAL + 1];
+  if (bk_vars_get(str2ram("BACKSPACE"), bs_var, sizeof(bs_var))) {
     if (0 == bk_strcmpi(str2ram("true"), bs_var)) {
       backspace = 1;
     } else if (0 == bk_strcmpi(str2ram("false"), bs_var)) {

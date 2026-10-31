@@ -1032,11 +1032,11 @@ DECL_FC_API_CALL(FC_TLS_READ_SOCKET, tls_read_socket, int, (unsigned int socketI
 // function: int tls_send_chars(unsigned int socketId, char* buf, int size)
 DECL_FC_API_CALL(FC_TLS_SEND_CHARS, tls_send_chars, int, (unsigned int socketId, char* buf, int size), (socketId, buf, size))
 
-// function: char* var_get(char* name)
-DECL_FC_API_CALL(FC_VAR_GET, var_get, char*, (char* name), (name))
+// function: int var_get(const char* name, char* buf, int limit)
+DECL_FC_API_CALL(FC_VAR_GET, var_get, int, (const char* name, char* buf, int limit), (name, buf, limit))
 
-// function: void var_set(char* name, char* value)
-DECL_FC_API_CALL(FC_VAR_SET, var_set, void, (char* name, char* value), (name, value))
+// function: void var_set(const char* name, const char* value)
+DECL_FC_API_CALL(FC_VAR_SET, var_set, void, (const char* name, const char* value), (name, value))
 
 // function: unsigned int vdp_cursor_addr()
 DECL_FC_API_CALL(FC_VDP_CURSOR_ADDR, vdp_cursor_addr, unsigned int, (), ())

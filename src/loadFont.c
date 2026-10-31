@@ -12,8 +12,8 @@
 
 int load_font() {
   char default_font[256];
-  char* env_font = bk_vars_get(str2ram("FONT"));
-  if (env_font) {
+  char env_font[MAX_VAR_VAL + 1];
+  if (bk_vars_get(str2ram("FONT"), env_font, sizeof(env_font))) {
     bk_strcpy(default_font, env_font);
   } else {
     bk_strcpy(default_font, str2ram("TIPI.FC.FCFONT"));

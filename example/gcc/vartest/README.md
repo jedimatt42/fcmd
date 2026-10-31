@@ -11,11 +11,14 @@ Covers: `var_set`, `var_get`.
 ## Semantics exercised
 
 - `var_set` then `var_get` round-trips a value.
-- Names are case-insensitive; `var_set` and `var_get` uppercase the name in
-  place, so only mutable name buffers are used.
+- Names are case-insensitive. `var_get` and `var_set` copy the name before
+  uppercasing it, so string literals and mutable buffers are both safe.
+- `var_get(name, buf, limit)` copies into the caller's buffer and returns 1
+  when found, 0 when not found. It never returns a pointer into the dictionary.
+- A small buffer is truncated safely and NUL-terminated.
 - Setting an existing variable overwrites its value.
 - An empty or `NULL` value removes the variable.
-- An unset variable reads back as `(char*) -1`.
+- An unset variable returns 0 and leaves the destination empty.
 - Values up to 81 characters are accepted; longer values are rejected and the
   previous value is kept.
 - Names longer than 11 characters are rejected and not stored.

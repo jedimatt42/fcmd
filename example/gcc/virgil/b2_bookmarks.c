@@ -7,9 +7,9 @@
 #include "debug.h"
 
 static struct DeviceServiceRoutine* get_bookmark_filename(char* filename) {
-  char* favs = var_get("VIRGIL_FAVS");
-  if (favs == 0 || favs[0] == 0) {
-    favs = "TIPI.FC.VIRGIL.BOOKMARKS";
+  char favs[82];
+  if (!var_get("VIRGIL_FAVS", favs, sizeof(favs)) || favs[0] == 0) {
+    str_copy(favs, "TIPI.FC.VIRGIL.BOOKMARKS");
   }
   struct DeviceServiceRoutine* dsr;
   path_parse(favs, &dsr, filename, PR_REQUIRED);

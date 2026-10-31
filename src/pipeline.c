@@ -72,8 +72,8 @@ static int prepare_pipe_prefix(char* prefix) {
   char resolved[REDIR_PATH_MAX];
   struct DeviceServiceRoutine* dsr;
 
-  char* env = bk_vars_get(str2ram("FCTMP"));
-  if ((int) env == -1 || env[0] == 0) {
+  char env[MAX_VAR_VAL + 1];
+  if (!bk_vars_get(str2ram("FCTMP"), env, sizeof(env)) || env[0] == 0) {
     bk_strcpy(raw, currentPath);
   } else {
     bk_strcpy(raw, env);
