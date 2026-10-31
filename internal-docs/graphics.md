@@ -359,9 +359,11 @@ arguments.
 
 `gfx_paint` flood-fills the contiguous region containing `(x, y)` until the
 specified border color is reached. It may use a software implementation on
-all bitmap modes. It returns `GFX_ERR_BUSY` if the implementation cannot
-obtain the temporary work area required by the selected mode (the software
-fill uses a fixed 256-entry stack, so large regions may exceed it).
+all bitmap modes. The software fill is scanline-based: it fills a horizontal
+span and queues one seed per contiguous run on the adjacent rows. It uses a
+fixed 64-entry seed stack (256 bytes) on the C stack and returns
+`GFX_ERR_BUSY` if a complex region needs more than 64 queued runs. A solid
+full-screen fill fits easily.
 
 On TMS9918A-compatible Graphics II (GRAPHICS2/GRAPHICS3) the foreground color is
 selected per 8x8 group, so a fill that enters the border's group also recolors

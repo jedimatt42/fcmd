@@ -109,14 +109,19 @@ int gfx_ellipse(int center_x, int center_y, int radius_x, int radius_y,
     return gfx_ellipse_raw(center_x, center_y, radius_x, radius_y, color, op);
 }
 
-struct PaintPoint {
+struct PaintSeed {
     int x;
     int y;
 };
 
-static struct PaintPoint paint_stack[256];
+#define PAINT_STACK_ENTRIES 64
 
 int gfx_paint(int x, int y, int color, int border_color, int op) {
+    // Transient scanline flood-fill seed stack. One entry is pushed per
+    // contiguous run on the rows above and below the span being filled.
+    // 64 entries x 4 bytes = 256 bytes, allocated only while gfx_paint runs.
+    struct PaintSeed paint_stack[PAINT_STACK_ENTRIES];
+
     if (!(gfx_info.capabilities & GFX_CAP_PAINT)) return GFX_ERR_WRONG_MODE;
     if (color == GFX_COLOR_DEFAULT) color = gfx_foreground;
     if (border_color == GFX_COLOR_DEFAULT) border_color = gfx_foreground;
@@ -127,22 +132,66 @@ int gfx_paint(int x, int y, int color, int border_color, int op) {
     int result = bk_gfx_point(x, y, &target);
     if (result != GFX_OK) return result;
     if (target == border_color || target == color) return GFX_OK;
+
     int top = 0;
-    paint_stack[top++] = (struct PaintPoint){x, y};
+    paint_stack[top].x = x;
+    paint_stack[top].y = y;
+    top++;
+
     while (top) {
-        struct PaintPoint point = paint_stack[--top];
+        top--;
+        int px = paint_stack[top].x;
+        int py = paint_stack[top].y;
+
+        if (px < 0 || py < 0 || px >= gfx_info.width ||
+            py >= gfx_info.height) continue;
+
         int current;
-        if (point.x < 0 || point.y < 0 || point.x >= gfx_info.width ||
-            point.y >= gfx_info.height) continue;
-        if (bk_gfx_point(point.x, point.y, &current) != GFX_OK ||
+        if (bk_gfx_point(px, py, &current) != GFX_OK ||
             current != target) continue;
-        result = bk_gfx_pset(point.x, point.y, color, op);
-        if (result != GFX_OK) return result;
-        if (top + 4 > 256) return GFX_ERR_BUSY;
-        paint_stack[top++] = (struct PaintPoint){point.x + 1, point.y};
-        paint_stack[top++] = (struct PaintPoint){point.x - 1, point.y};
-        paint_stack[top++] = (struct PaintPoint){point.x, point.y + 1};
-        paint_stack[top++] = (struct PaintPoint){point.x, point.y - 1};
+
+        // Expand the target run left and right.
+        int x1 = px;
+        while (x1 > 0) {
+            int c;
+            if (bk_gfx_point(x1 - 1, py, &c) != GFX_OK || c != target) break;
+            x1--;
+        }
+
+        int x2 = px;
+        while (x2 + 1 < gfx_info.width) {
+            int c;
+            if (bk_gfx_point(x2 + 1, py, &c) != GFX_OK || c != target) break;
+            x2++;
+        }
+
+        // Fill the span.
+        for (int sx = x1; sx <= x2; sx++) {
+            result = bk_gfx_pset(sx, py, color, op);
+            if (result != GFX_OK) return result;
+        }
+
+        // Seed one entry for each target run on the adjacent rows.
+        for (int dy = -1; dy <= 1; dy += 2) {
+            int ny = py + dy;
+            if (ny < 0 || ny >= gfx_info.height) continue;
+
+            int in_run = 0;
+            for (int sx = x1; sx <= x2; sx++) {
+                int c;
+                int is_target = (bk_gfx_point(sx, ny, &c) == GFX_OK &&
+                                 c == target);
+                if (is_target && !in_run) {
+                    if (top >= PAINT_STACK_ENTRIES) return GFX_ERR_BUSY;
+                    paint_stack[top].x = sx;
+                    paint_stack[top].y = ny;
+                    top++;
+                    in_run = 1;
+                } else if (!is_target) {
+                    in_run = 0;
+                }
+            }
+        }
     }
     return GFX_OK;
 }

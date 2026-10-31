@@ -19,7 +19,8 @@ waits again before returning to TEXT40.
      interior/outside samples; repeat fill is a no-op; vector commands
      `M x,y`, `R`, `D`, `E`, `B` (move) and a default distance of 1; invalid
      command/`M` without coordinates/null string → `GFX_ERR_INVALID`; invalid
-     color → `GFX_ERR_RANGE`; unbounded fill → `GFX_ERR_BUSY`.
+     color → `GFX_ERR_RANGE`; full-screen fill succeeds with the scanline
+     algorithm.
    - **MULTICOLOR** (every VDP): paint with the border preserved (per-dot
      colors) and a vector line.
    - **GRAPHICS4** on V9958/V9938 (skipped otherwise): paint with preserved
@@ -28,9 +29,9 @@ waits again before returning to TEXT40.
 
 In GRAPHICS2 the color is per 8x8 group, so the fill also sets the border
 pixels' group color; the border-keeps-color assertions are only made in the
-per-pixel modes. `gfx_paint` uses a fixed 256-entry stack, so the "successful"
-fill regions are deliberately small; the `GFX_ERR_BUSY` case is an unbounded
-fill.
+per-pixel modes. `gfx_paint` now uses a scanline span algorithm with a small
+seed stack. A solid full-screen fill succeeds; `GFX_ERR_BUSY` is reserved for
+complex regions whose span-seed stack overflows.
 
 Any failed checks are listed again just before the `pass=/fail=` summary, so
 they remain visible on the final screen.

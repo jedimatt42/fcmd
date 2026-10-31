@@ -47,7 +47,8 @@ static void test_graphics2(void) {
     int p_in1, p_in2, p_out;
     int d_on, d_off, d_vert, d_diag, d_move, d_after, d_def_a, d_def_b;
     int rc_bad_cmd, rc_missing, rc_null, rc_bad_color;
-    int rc_paint_color, rc_paint_border, rc_busy;
+    int rc_paint_color, rc_paint_border, rc_full;
+    int p_full;
 
     announce("GRAPHICS2",
              "a hollow box filled with color, then lines drawn by vector "
@@ -57,8 +58,7 @@ static void test_graphics2(void) {
     gfx_color(1, 0, 0);
     gfx_get_info(&info);
 
-    /* Flood fill: border 7, fill 5. Keep the region small enough for the
-       fixed 256-entry paint stack. */
+    /* Flood fill: border 7, fill 5. */
     gfx_clear(GFX_COLOR_DEFAULT);
     gfx_line(20, 20, 26, 26, 7, GFX_LINE_BOX, GFX_OP_PSET);
     rc_paint = gfx_paint(23, 23, 5, 7, GFX_OP_PSET);
@@ -94,9 +94,10 @@ static void test_graphics2(void) {
     rc_paint_color = gfx_paint(0, 0, 99, 7, GFX_OP_PSET);
     rc_paint_border = gfx_paint(0, 0, 5, 99, GFX_OP_PSET);
 
-    /* An unbounded fill exhausts the paint stack. */
+    /* A full-screen fill is supported by the scanline algorithm. */
     gfx_clear(GFX_COLOR_DEFAULT);
-    rc_busy = gfx_paint(128, 96, 5, 6, GFX_OP_PSET);
+    rc_full = gfx_paint(128, 96, 5, 6, GFX_OP_PSET);
+    p_full = sample(0, 0);
 
     FC_WAIT("press a key to return to TEXT40");
     to_text();
@@ -121,7 +122,8 @@ static void test_graphics2(void) {
     FC_CHECK_EQ(rc_bad_color, GFX_ERR_RANGE);
     FC_CHECK_EQ(rc_paint_color, GFX_ERR_RANGE);
     FC_CHECK_EQ(rc_paint_border, GFX_ERR_RANGE);
-    FC_CHECK_EQ(rc_busy, GFX_ERR_BUSY);
+    FC_CHECK_EQ(rc_full, GFX_OK);
+    FC_CHECK_EQ(p_full, 5);
     (void)info;
 }
 
