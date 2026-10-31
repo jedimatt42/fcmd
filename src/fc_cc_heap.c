@@ -21,10 +21,6 @@ static struct {
 } page_table[MAX_HEAP_PAGES];
 static int page_count;
 
-// Local pool of pages returned by free() that are entirely empty
-static int free_page_pool[MAX_HEAP_PAGES];
-static int free_page_count;
-
 // Find page table index for a given page_id, or -1 if not found
 static int find_page(int page_id) {
     for (int i = 0; i < page_count; i++) {
@@ -99,14 +95,9 @@ int fc_cc_malloc(int size, int* out) {
     }
 
     // Phase 2: allocate a new page
-    int page_id;
-    if (free_page_count > 0) {
-        page_id = free_page_pool[--free_page_count];
-    } else {
-        page_id = sams_alloc_pages(1);
-        if (page_id < 0)
-            return 2;
-    }
+    int page_id = sams_alloc_pages(1);
+    if (page_id < 0)
+        return 2;
 
     sams_map_page(page_id, 0xE000);
 
