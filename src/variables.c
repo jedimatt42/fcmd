@@ -46,7 +46,9 @@ void var_set(const char* name, const char* value) {
     return;
   }
 
-  dict_put(&system_dict, DE_TYPE_VAR, key, value);
+  if (!dict_put(&system_dict, DE_TYPE_VAR, key, value)) {
+    tputs_rom("Error, environment full\n");
+  }
 }
 
 int var_get(const char* name, char* buf, int limit) {

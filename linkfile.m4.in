@@ -46,9 +46,15 @@ SECTIONS
   } >lower_exp
 
   __STACK_TOP = 0x4000;
+  __STACK_BOTTOM = 0x3000;
+
+  /* Lower page 1 is stack-only. Persistent data, dictionary, and heap must
+   * stay below this limit. The 0x2F00-0x2FFF range is unused cushion; it is
+   * not checked at runtime. */
+  __LOWER_LIMIT = 0x2F00;
 
   __STATS_DATA_BSS = SIZEOF(.data) + SIZEOF(.bss);
-  __STATS_STACK = __STACK_TOP - __BSS_END;
+  __STATS_STACK = __STACK_TOP - __STACK_BOTTOM;
 
   __STATS_HEAD = SIZEOF(.text);
   BANKSUMMARIES(TOP_BANK,0)

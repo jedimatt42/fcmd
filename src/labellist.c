@@ -6,28 +6,43 @@
 #include "strutil.h"
 #include "string.h"
 
-struct LabelEntry {
-  char name[12]; // room for 11 characters
-  unsigned int lineno;
-};
+static struct LabelPool* label_pool = 0;
 
-struct LabelEntry labels[50];
-int label_next = 0;
+void labels_enter(struct LabelPool* pool) {
+  pool->next = 0;
+  pool->prev = label_pool;
+  label_pool = pool;
+}
+
+void labels_leave(void) {
+  if (label_pool) {
+    label_pool = label_pool->prev;
+  }
+}
 
 void labels_clear() {
-  label_next = 0;
+  if (label_pool) {
+    label_pool->next = 0;
+  }
 }
 
 int labels_get(char* name) {
-  for(int i = 0; i < label_next; i++) {
-    if (bk_str_equals(name, labels[i].name)) {
-      return labels[i].lineno;
+  if (label_pool == 0) {
+    return -1;
+  }
+  for(int i = 0; i < label_pool->next; i++) {
+    if (bk_str_equals(name, label_pool->entries[i].name)) {
+      return label_pool->entries[i].lineno;
     }
   }
   return -1;
 }
 
 void labels_add(char* name, int gotoline) {
+  if (label_pool == 0) {
+    return;
+  }
+
   if (bk_strlen(name) > 10) {
     tputs_rom("Error, label name too long, limit is 10\n");
     return;
@@ -43,12 +58,11 @@ void labels_add(char* name, int gotoline) {
     return;
   }
 
-  if (label_next >= 50) {
+  if (label_pool->next >= LABEL_POOL_SIZE) {
     tputs_rom("Error, no more room in label dictionary\n");
     return;
   }
-  bk_strcpy(labels[label_next].name, name);
-  labels[label_next].lineno = gotoline;
-  label_next++;
+  bk_strcpy(label_pool->entries[label_pool->next].name, name);
+  label_pool->entries[label_pool->next].lineno = gotoline;
+  label_pool->next++;
 }
-

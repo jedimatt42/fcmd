@@ -16,10 +16,11 @@
 
 int runScript(struct DeviceServiceRoutine* dsr, char* scriptName) {
   int ran = 0;
+  struct LabelPool label_pool;
   scriptDsr = dsr;
   struct PAB pab;
   scriptPab = &pab;
-  bk_labels_clear();
+  bk_labels_enter(&label_pool);
   scripton++;
   int lineno = 0;
 
@@ -66,5 +67,6 @@ int runScript(struct DeviceServiceRoutine* dsr, char* scriptName) {
     bk_dsr_close(dsr, &pab);
   }
   scripton--;
+  bk_labels_leave();
   return ran;
 }

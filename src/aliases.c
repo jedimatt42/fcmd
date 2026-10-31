@@ -39,7 +39,9 @@ void alias_set(const char* name, const char* value) {
     return;
   }
 
-  dict_put(&system_dict, DE_TYPE_ALIAS, key, value);
+  if (!dict_put(&system_dict, DE_TYPE_ALIAS, key, value)) {
+    tputs_rom("Error, alias table full\n");
+  }
 }
 
 int alias_get(const char* name, char* buf, int limit) {

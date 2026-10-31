@@ -7,6 +7,9 @@
 
 struct Dictionary system_dict;
 
+extern char* heap_start;
+extern char __LOWER_LIMIT;
+
 void dict_init(struct Dictionary* dict, char* addr) {
   dict->addr = (struct DictEntry*) addr;
   dict->end = (struct DictEntry*) addr;
@@ -38,17 +41,30 @@ void dict_visit(struct Dictionary* dict, dict_visitor_cb cb) {
 }
 
 int dict_put(struct Dictionary* dict, int type, const char* key, const char* value) {
+    int keylen = bk_strlen(key);
+    int vallen = bk_strlen(value);
+    int entry_size = 5 + keylen + vallen;
+
+    struct DictEntry* old = dict_entry(dict, type, key);
+    int old_size = old ? dict_entry_size(old) : 0;
+    char* new_end = ((char*) dict->end - old_size) + entry_size;
+
+    if (new_end > &__LOWER_LIMIT) {
+        return 0;
+    }
+    if (heap_start != 0 && new_end > heap_start) {
+        return 0;
+    }
+
     dict_remove(dict, type, key);
 
     struct DictEntry* newspace = dict->end;
-    int keylen = bk_strlen(key);
-    int vallen = bk_strlen(value);
     newspace->type = type;
     newspace->keylen = keylen;
     newspace->vallen = vallen;
     bk_strncpy(newspace->data, (char*) key, keylen);
     bk_strncpy(newspace->data + (keylen + 1), (char*) value, vallen);
-    dict->end = (struct DictEntry*) (((char*) newspace) + dict_entry_size(newspace));
+    dict->end = (struct DictEntry*) (((char*) newspace) + entry_size);
     return 1;
 }
 
