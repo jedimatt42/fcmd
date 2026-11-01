@@ -6,6 +6,9 @@
 extern int sams_next_page;
 extern int sams_total_pages;
 
+// SAMS page currently mapped at >3000 (the active C stack page).
+extern int sams_stack_page;
+
 extern volatile int sams_map_shadow[6];
 
 // Minimum number of 4K pages required at boot.

@@ -31,10 +31,10 @@ The `0x0000` console build currently uses:
 | Range | Contents |
 | --- | --- |
 | `0x2000–0x203D` | API data table: `fc_api`, `trampdata`, `stramp`, `procInfoPtr`, GCC branch table, FC-CC pointers |
-| `0x203E–0x20A3` | Remaining `.data`: CROM trampoline, VDP buffers, `heap_end`, display settings, etc. |
-| `0x20A4–0x299F` | `.bss`, size `0x08FC` (2,300 bytes) |
-| `0x29A0` | `__BSS_END` |
-| `0x29A0` upward | DSR list, then dictionary, then post-dictionary heap |
+| `0x203E–0x20A5` | Remaining `.data`: CROM trampoline, VDP buffers, `heap_end`, `sams_stack_page`, display settings, etc. |
+| `0x20A6–0x29B1` | `.bss`, size `0x090C` (2,316 bytes) |
+| `0x29B2` | `__BSS_END` |
+| `0x29B2` upward | DSR list, then dictionary, then post-dictionary heap |
 | `0x2F00` | `__LOWER_LIMIT` |
 | `0x2F00–0x2FFF` | Unused cushion; not runtime-checked |
 | `0x3000` | `__STACK_BOTTOM` |
@@ -45,9 +45,9 @@ The `0x6000` cart build differs slightly:
 
 | Range | Contents |
 | --- | --- |
-| `0x2000–0x2083` | `.data`, size `0x84` |
-| `0x2084–0x297F` | `.bss`, size `0x08FC` |
-| `0x2980` | `__BSS_END` |
+| `0x2000–0x2085` | `.data`, size `0x86` |
+| `0x2086–0x2991` | `.bss`, size `0x090C` |
+| `0x2992` | `__BSS_END` |
 | `0x2F00` | `__LOWER_LIMIT` |
 | `0x3000–0x3FFF` | C stack |
 
@@ -55,17 +55,19 @@ Key fixed symbols in the `0x0000` build:
 
 ```text
 __DATA_START      0x2000
-__DATA_END        0x20A4
-__BSS_START       0x20A4
-__BSS_END         0x29A0
-system_dict       0x20A8
-dsrList           0x20AC
-currentDsr        0x230A
-currentPath       0x230E
+__DATA_END        0x20A6
+__BSS_START       0x20A6
+__BSS_END         0x29B2
+system_dict       0x20AA
+dsrList           0x20AE
+currentDsr        0x230C
+currentPath       0x2310
 heap_end          0x206A
-heap_ceiling      0x244A
-sams_next_page    0x26CC
-sams_total_pages  0x26CE
+heap_ceiling      0x244C
+sams_next_page    0x26DE
+sams_total_pages  0x26E0
+sams_stack_page   0x206C
+activeProcInfo    0x26CA
 __LOWER_LIMIT     0x2F00
 __STACK_BOTTOM    0x3000
 __STACK_TOP       0x4000
@@ -74,7 +76,7 @@ __STATS_STACK     0x1000
 
 ## Dynamic lower-memory region
 
-The area from `0x29A0` to `0x2F00` is shared dynamically:
+The area from `0x29B2` to `0x2F00` is shared dynamically:
 
 ```text
 __BSS_END
@@ -100,11 +102,11 @@ __LOWER_LIMIT (0x2F00)
 This list starts at `__BSS_END`. For example, with 3 drive DSRs:
 
 ```text
-0x29A0 + 16 × 4 = 0x29E0
+0x29B2 + 16 × 4 = 0x29F2
 ```
 
 The dictionary starts at the heap pointer after these allocations, not
-necessarily at `0x29A0`.
+necessarily at `0x29B2`.
 
 ### Dictionary
 
@@ -151,25 +153,38 @@ released.
 ## C stack
 
 `crt0.c` sets the stack pointer to `__STACK_TOP` (`0x4000`) after initializing
-SAMS. Lower-expansion page 1 is stack-only:
+SAMS. Lower-expansion page 1 holds the shell's C stack:
 
 ```text
-0x3000–0x3FFF   4,096-byte stack
+0x3000–0x3FFF   4,096-byte stack window
 0x4000          initial SP
 ```
 
-ForceCommand and external programs share this stack. There is no separate
-external-program stack:
+The shell and every executable use the full window, but with different physical
+SAMS pages:
 
-- `runExecutable()` calls the external `main` directly.
-- The external C prologue subtracts its frame from `r10`.
-- `fc_api()` and `trampoline` use the caller's `r10`.
-- Banked FC functions use the same stack.
-- `fc_exit` restores the shell `r10` saved by `fc_exit_prepare`.
-- Nested external programs share the same 4 KB stack.
+- the shell runs on SAMS page 1;
+- before an executable is entered, `handleExecutable()` allocates one SAMS page
+  and `run_external()` maps it at `0x3000`, then sets `r10 = 0x4000`;
+- on return, `run_external_resume` maps the caller's page back before restoring
+  `r10` and `r11`;
+- `fc_exit` jumps to the same resume path instead of restoring `r10` itself.
+
+Consequences:
+
+- each executable and each nested executable gets a fresh 4 KB stack;
+- the caller's stack page is preserved while a child runs;
+- external API calls, banked calls, and callbacks use the executable's stack;
+- `ProcInfo` cannot live on the executable stack, because that page is unmapped
+  while the caller is suspended. The active context is `activeProcInfo` in
+  page 0, reached through `procInfoPtr`;
+- the resume path uses no stack until the caller's page is mapped back.
 
 There is no runtime stack guard. The `0x2F00–0x2FFF` range is unused cushion;
 compiled code can run past it before control returns.
+
+External programs must not call `sams_map_page` for the `0x3000` window: it is
+the running C stack, and remapping it invalidates the caller's frames.
 
 ## Upper expansion and SAMS
 
@@ -182,14 +197,16 @@ SAMS pages are 4 KB. At FC startup:
 | SAMS page | Mapped at | Owner |
 | --- | --- | --- |
 | 0 | `0x2000` | FC lower `.data` / `.bss` |
-| 1 | `0x3000` | FC stack |
+| 1 | `0x3000` | Shell C stack |
 | 2 | `0xB000` | Command history |
 | 3 | `0xC000` | Command history |
-| 4+ | `0xA000`… | External program allocations |
+| 4+ | `0xA000`… | External program code/data, then one private stack page |
 
 `init_sams()` maps page 0 at `0x2000`, page 1 at `0x3000`, and sets
 `sams_next_page = 2`. `history_init()` allocates pages 2 and 3, so the first
-external SAMS program normally gets base page 4.
+external SAMS program normally gets base page 4. The executable's private
+stack page is allocated after its code/data pages, so it is the highest page
+in that program's block and is freed with the rest on return.
 
 ### Paged external executable
 
@@ -199,38 +216,40 @@ A paged external program uses:
 | --- | --- |
 | `0xA000–0xBFFF` | Currently mapped 8 KB code bank, two SAMS pages |
 | `0xC000–0xFFFF` | Data/BSS window, four SAMS pages |
-| `0x3000–0x3FFF` | Shared FC/external C stack |
+| `0x3000–0x3FFF` | The executable's private 4 KB C stack |
 
 The loader reads `codePages` from the program header, then allocates:
 
 ```text
-codePages + max(4, dataPages)
+codePages + max(4, dataPages) + 1 stack page
 ```
 
 Code pages alternate at `0xA000` and `0xB000`. Data pages map at `0xC000`,
-`0xD000`, `0xE000`, and `0xF000`.
+`0xD000`, `0xE000`, and `0xF000`. The stack page maps at `0x3000` only while
+the program runs.
 
 Example page use, assuming base page 4:
 
-| Program | Code pages | Data pages | Total |
-| --- | --- | --- | --- |
-| FCARC | 4–11 (8 pages) | 12–15 (4 pages) | 12 pages |
-| FCUNARC | 4–13 (10 pages) | 14–17 (4 pages) | 14 pages |
+| Program | Code pages | Data pages | Stack | Total |
+| --- | --- | --- | --- | --- |
+| FCARC | 4–11 (8 pages) | 12–15 (4 pages) | 16 | 13 pages |
+| FCUNARC | 4–13 (10 pages) | 14–17 (4 pages) | 18 | 15 pages |
 
 Only the first data page contains the loaded `.data` image. The external
 `main()` zeroes `.bss` across the remaining data pages.
 
 `stramp` maps a target 8 KB code bank into `0xA000`/`0xB000`, calls the target,
-then remaps the caller's bank. The lower stack is not touched by code-bank
+then remaps the caller's bank. The lower stack page is not touched by code-bank
 switching.
 
-On return, `handleExecutable()` frees the external program's SAMS pages and
-restores the previous `0xA000–0xF000` mapping snapshot.
+On return, `run_external_resume` maps the caller's page back at `0x3000`, then
+`handleExecutable()` frees the external program's SAMS pages (including its
+stack page) and restores the previous `0xA000–0xF000` mapping snapshot.
 
 ### Flat external executable
 
 A flat (non-paged) FC executable is loaded into six freshly allocated SAMS pages
-mapped at `0xA000–0xFFFF` and uses the same 4 KB lower-expansion stack. On
+mapped at `0xA000–0xFFFF` and gets its own 4 KB stack page at `0x3000`. On
 return, `handleExecutable()` frees those pages and restores the previous
 mapping.
 
@@ -258,8 +277,10 @@ sysinfo /m
 This adds a line like:
 
 ```text
-Dict:    29C4  SP: 3F1E
+Dict:    29C4  SP: 3F1E  Stack: 1
 ```
 
 `Dict:` is the current `system_dict.end`. `SP:` is the live `r10` inside
-`handleSysInfo()` while printing.
+`handleSysInfo()` while printing. `Stack:` is the SAMS page currently mapped at
+`0x3000` (`sams_stack_page`): 1 in the shell, or the running executable's
+private stack page.

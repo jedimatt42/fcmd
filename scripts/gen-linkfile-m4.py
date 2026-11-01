@@ -24,6 +24,7 @@ EXPLICIT_ASM = {
 ASM_BANKS = {
     'fc_cc_runtime.asm': 0,
     'fc_exit.asm': 0,
+    'runexec.asm': 0,
     'sams_tramp.asm': 0,
     'fg99.asm': 1,
     'oem_high_chars.asm': 3,

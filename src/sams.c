@@ -9,6 +9,11 @@
 int sams_next_page;
 int sams_total_pages;
 
+// SAMS page currently mapped at >3000. This lives in .data because crt0
+// clears .bss before copying the initial data image, and page 1 is mapped
+// there before that copy runs.
+int sams_stack_page = 1;
+
 volatile int sams_map_shadow[6];
 
 void samsMapOn() {
@@ -130,6 +135,7 @@ int init_sams() {
         samsWaitStateOff();
         sams_map_page(0, 0x2000);
         sams_map_page(1, 0x3000);
+        sams_stack_page = 1;
         sams_next_page = 2;
         sams_total_pages = total_pages;
         return sams_total_pages;

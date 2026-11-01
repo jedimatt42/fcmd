@@ -200,8 +200,13 @@ literals are safe. An empty or NULL value removes the variable.
 ## Non-local exit
 
 `fc_exit(status)` (`src/fc_exit.asm`) does not return through this convention.
-It restores the saved `runExecutable()` stack and branches back to ForceCommand
-with the status. `exit(x)` in `fc_api.h` is an alias for `fc_exit(x)`.
+It restores the saved executable context and branches back to ForceCommand with
+the status. `exit(x)` in `fc_api.h` is an alias for `fc_exit(x)`.
+
+The executable runs on its own SAMS stack page mapped at `>3000`, so `fc_exit`
+does not restore `r10` itself: the caller's stack page is not mapped yet. It
+jumps to `run_external_resume` (`src/runexec.asm`), which maps the caller's page
+back, then restores `r10` and `r11` and returns to `runExecutable()`.
 
 ## Gotchas checklist
 

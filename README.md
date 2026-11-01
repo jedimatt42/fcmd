@@ -40,15 +40,23 @@ data/bss boundaries slightly.
 
 | Range | Contents |
 | --- | --- |
-| `0x2000–0x299F` | Shell `.data` / `.bss` |
-| `0x29A0` upward | DSR list, then environment dictionary, then shell heap |
+| `0x2000–0x29B1` | Shell `.data` / `.bss` |
+| `0x29B2` upward | DSR list, then environment dictionary, then shell heap |
 | `0x2F00` | Dictionary/heap upper limit |
 | `0x2F00–0x2FFF` | Unused cushion |
 | `0x3000–0x3FFF` | 4 KB C stack, grows down from `0x4000` |
 
-External FC programs inherit the same 4 KB stack at `0x3000–0x3FFF`. There is no
-separate external-program stack, so external API calls and banked calls also use
-this stack.
+The shell and each external FC program get a full 4 KB stack at
+`0x3000–0x3FFF`. The shell uses SAMS page 1. Before an executable is entered,
+ForceCommand allocates one SAMS page and maps it into the same window. Nested
+executables therefore each get a fresh 4 KB stack, and the caller's stack is
+preserved until the child returns. The page is freed when the program exits.
+
+External API calls and banked calls use the current executable's stack. The
+`0x2F00–0x2FFF` cushion below the stack gives another 256 bytes of headroom
+before an overflow reaches the dictionary or heap. Each active executable uses
+one additional SAMS page; on the 128 KB minimum, deeply nested large programs
+can exhaust SAMS, in which case the launch is refused.
 
 The environment dictionary and shell heap are bounded below `0x2F00`. When they
 are full, `var_set`/`alias_set` report an error instead of overwriting the

@@ -67,6 +67,8 @@ int handleSysInfo() {
     bk_tputs_ram(bk_uint2hex((unsigned int) system_dict.end));
     tputs_rom("  SP: ");
     bk_tputs_ram(bk_uint2hex((unsigned int) sp));
+    tputs_rom("  Stack: ");
+    bk_tputs_ram(bk_uint2str(sams_stack_page));
     tputs_rom("\n");
   }
 

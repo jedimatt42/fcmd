@@ -157,6 +157,9 @@ repeated; that includes the v2.6 TIPIMAP `CS1`/`DSK5`–`DSK9` mappings.
   mapped, so they may call ForceCommand APIs. ROM callbacks remain direct calls.
 - Program exit is no longer limited to returning from `main`: `fc_exit`/`exit`
   restores the saved `runExecutable` stack and returns the requested status.
+- Each executable runs on its own SAMS page mapped at `0x3000`, so nested
+  executables each get a full 4 KB stack and the shell's/stack caller's page is
+  preserved. `fc_exit` and normal return both restore the caller's page first.
 - API functions, the SDK header, and the API table are generated together, so
   the ROM and all executables must be rebuilt as a unit.
 

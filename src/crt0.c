@@ -55,10 +55,11 @@ void _start(void)
     int tmp_total_pages = sams_total_pages;
 
     // Initialize all block and stack allocation to zero
-    // - just blast all of lower mem-expansion, all 8k
+    // - clear page 0 (.data/.bss/dictionary/heap) only. Page 1 is the C
+    //   stack page and does not need to be cleared.
     {
       int *dst = (int*)0x2000;
-      while(dst < (int*)0x4000)
+      while(dst < (int*)0x3000)
       {
         *dst++ = 0;
       }

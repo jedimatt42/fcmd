@@ -12,22 +12,25 @@
   program in the same bank.
 */
 
-int runExecutable(const char * ext) {
-    int err = 0;
-    int arg1 = (int)(ext + bk_strlen(ext) + 1);
+/* Resident process context. The running executable's stack page is mapped at
+ * >3000, so it cannot hold its own ProcInfo. */
+struct ProcInfo activeProcInfo;
 
-    __asm__(
-        "li r1,fc_exit_return\n\t"
-        "bl @fc_exit_prepare\n\t"
-        "mov @>A006,r0\n\t"
-        "mov %1,r1\n\t"
-        "bl *r0\n\t"
-        "fc_exit_return:\n\t"
-        "mov r1,%0\n\t"
-        : "=r"(err)  /* output list */
-        : "r"(arg1)  /* input list */
-        : "r0", "r1" /* register clobber list */
-    );
+/*
+ * Enter an executable on its own SAMS stack page.
+ *   r1 = SAMS page to map at >3000
+ *   r2 = executable main address (from >A006)
+ *   r3 = argument string
+ * Returns the status in r1. Implemented in runexec.asm.
+ */
+extern int run_external(int stack_page, int main_addr, int arg);
+
+int runExecutable(const char * ext) {
+    int arg1 = (int)(ext + bk_strlen(ext) + 1);
+    int stack_page = procInfoPtr->stack_page;
+    int main_addr = *(volatile int*)0xA006;
+
+    int err = run_external(stack_page, main_addr, arg1);
 
     procInfoPtr->exit_active = 0;
     return err;

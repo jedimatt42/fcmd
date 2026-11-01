@@ -14,6 +14,8 @@ void resetSams() {
         *(d++) = *(s++);
     }
     // now swap the copy in and setup 'default' sams page layout
+    // still page 0 here, so sams_stack_page is writable
+    sams_stack_page = 3;
     inl_map_page(2, 0x2000);
     inl_map_page(3, 0x3000);
     inl_map_page(0xA, 0xA000);

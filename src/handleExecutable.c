@@ -55,8 +55,17 @@ void __attribute__((noinline)) restoreSAMS(int* snapshot) {
   }
 }
 
-void popProcInfo() {
-    procInfoPtr = procInfoPtr->prev;    
+/*
+ * Allocate one SAMS page for an executable's private C stack. The page is
+ * mapped at >3000 just before the program is entered, so the shell's page 1
+ * stays intact.
+ */
+static int allocateStackPage() {
+  if (sams_next_page + 1 > sams_total_pages) {
+    tputs_rom("Not enough SAMS pages for program stack\n");
+    return -1;
+  }
+  return bk_alloc_pages(1);
 }
 
 int handleExecutable(char *ext)
@@ -64,13 +73,21 @@ int handleExecutable(char *ext)
   int cmd_type = 0;
   int err = 0;
 
+  // The ProcInfo for this level lives on the caller's stack page. It is
+  // valid while loading, but not while a child executable runs on its own
+  // page. The active copy is kept in page 0.
+  struct ProcInfo* parentProc = procInfoPtr;
   struct ProcInfo procInfo;
-  procInfo.prev = procInfoPtr;
+  procInfo.prev = 0; // unused; context restore is explicit in this function
   procInfo.base_page = 0;
   procInfo.exit_sp = 0;
   procInfo.exit_resume = 0;
   procInfo.exit_status = 0;
   procInfo.exit_active = 0;
+  procInfo.exit_page = 0;
+  procInfo.ret_addr = 0;
+  procInfo.stack_page = -1;
+  procInfo.saved_r12 = 0;
   procInfoPtr = &procInfo;
 
   int samsSnapshot[6];
@@ -82,11 +99,24 @@ int handleExecutable(char *ext)
     tputs_rom("unknown command: ");
     bk_tputs_ram(ext);
     bk_tputc('\n');
-    popProcInfo();
+    if (procInfo.base_page != 0) {
+      bk_free_pages(sams_next_page - procInfo.base_page);
+    }
+    restoreSAMS(samsSnapshot);
+    procInfoPtr = parentProc;
     return err;
   }
 
   if (cmd_type == BIN) {
+    int stackPage = allocateStackPage();
+    if (stackPage < 0) {
+      bk_free_pages(sams_next_page - procInfo.base_page);
+      restoreSAMS(samsSnapshot);
+      procInfoPtr = parentProc;
+      return 1;
+    }
+    procInfo.stack_page = stackPage;
+
     identify_callback old_hook = bk_get_identify_hook();
     int restoreDisplay = *(volatile int*)0xA004;
     int old_nTitleLine = nTitleLine;
@@ -96,10 +126,27 @@ int handleExecutable(char *ext)
       nTitleLine = 0;
       bk_setupScreen(displayWidth);
     }
+
+    // The parent's hook lives in the parent's code pages, which are not mapped
+    // while the child runs. Do not leave a dangling callback installed.
+    bk_set_identify_hook(0);
+
+    // Keep the active context resident while the executable's stack page is
+    // mapped. Always save the resident context on the caller's (currently
+    // mapped) stack page; it may belong to an outer executable even when the
+    // immediate caller is a script.
+    struct ProcInfo parentActive = activeProcInfo;
+    activeProcInfo = procInfo;
+    procInfoPtr = &activeProcInfo;
+
     // Go to bank 0 to actually launch so API tables are visible.
     err = bk_runExecutable(ext);
 
-    bk_set_identify_hook(old_hook);
+    // run_external() has restored the parent page at >3000. Put the resident
+    // context back for the outer executable, if any.
+    activeProcInfo = parentActive;
+    procInfoPtr = parentProc;
+
     if (restoreDisplay != 0xFCFC) {
       conio_scrnCol = old_oldcolors;
       nTitleLine = old_nTitleLine;
@@ -112,11 +159,14 @@ int handleExecutable(char *ext)
       bk_tputc('\n');
     }
 
-    bk_free_pages(sams_next_page - procInfoPtr->base_page);
+    bk_free_pages(sams_next_page - procInfo.base_page);
     // restore previous sams registers for upper memory expansion
     restoreSAMS(samsSnapshot);
+    // Only now are the caller's code pages mapped again, so its callback
+    // address is safe to install.
+    bk_set_identify_hook(old_hook);
   }
-  popProcInfo();
+  procInfoPtr = parentProc;
   return err;
 }
 
