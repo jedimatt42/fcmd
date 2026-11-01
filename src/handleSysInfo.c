@@ -9,8 +9,16 @@
 #include "detect_vdp.h"
 #include "globals.h"
 #include "sams.h"
+#include "dictionary.h"
 
 int handleSysInfo() {
+  int show_mem = 0;
+  char* peek = bk_strtokpeek(0, ' ');
+  if (peek && 0 == bk_strcmpi(str2ram("/m"), peek)) {
+    show_mem = 1;
+    bk_strtok(0, ' '); // consume the optional /m
+  }
+
   struct GfxInformation di;
   bk_gfx_get_info(&di);
 
@@ -55,6 +63,16 @@ int handleSysInfo() {
   bk_tputs_ram(bk_uint2str(gcc_minor));
   tputs_rom("\n");
 #endif
+
+  if (show_mem) {
+    char* sp;
+    __asm__("mov r10,%0" : "=r"(sp));
+    tputs_rom("Dict:    ");
+    bk_tputs_ram(bk_uint2hex((unsigned int) system_dict.end));
+    tputs_rom("  SP: ");
+    bk_tputs_ram(bk_uint2hex((unsigned int) sp));
+    tputs_rom("\n");
+  }
 
   // todo: add a few other options
   // add command line options, default to all, that control what line items to include

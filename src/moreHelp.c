@@ -88,8 +88,9 @@ void b14Help(char* tok) {
     );
   } else if (matchcmd(tok, "sysinfo")) {
     wraptext("==SysInfo==\n\n"
-      "sysinfo\n\n"
+      "sysinfo [/m]\n\n"
       "Print details about the current system hardware configuration.\n"
+      "/m - optional. Also print the dictionary end and current stack pointer.\n"
     );
   } else if (matchcmd(tok, "pwd")) {
     wraptext("==PWD==\n\n"

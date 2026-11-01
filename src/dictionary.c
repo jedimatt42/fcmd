@@ -7,7 +7,7 @@
 
 struct Dictionary system_dict;
 
-extern char* heap_start;
+extern char* heap_ceiling;
 extern char __LOWER_LIMIT;
 
 void dict_init(struct Dictionary* dict, char* addr) {
@@ -52,7 +52,7 @@ int dict_put(struct Dictionary* dict, int type, const char* key, const char* val
     if (new_end > &__LOWER_LIMIT) {
         return 0;
     }
-    if (heap_start != 0 && new_end > heap_start) {
+    if (heap_ceiling != 0 && new_end > heap_ceiling) {
         return 0;
     }
 

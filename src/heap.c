@@ -10,10 +10,11 @@ extern char __LOWER_LIMIT;
 char* heap_end = (char*)&__BSS_END;
 
 /*
- * Address of the first live heap allocation, or 0 when the heap is empty.
- * The dictionary grows upward from __BSS_END and must not run into this.
+ * Lowest live heap allocation made after the dictionary was initialized,
+ * or 0 when there is none. Pre-dictionary allocations (the DSR list) live
+ * below the dictionary and do not constrain dictionary growth.
  */
-char* heap_start = 0;
+char* heap_ceiling = 0;
 
 char* alloc(int sz) {
   /*
@@ -39,8 +40,8 @@ char* alloc(int sz) {
     return 0;
   }
 
-  if (heap_start == 0) {
-    heap_start = heap_end;
+  if (heap_ceiling == 0 && system_dict.addr != 0) {
+    heap_ceiling = heap_end;
   }
 
   void* result = heap_end;
@@ -50,7 +51,7 @@ char* alloc(int sz) {
 
 void free(char* addr) {
   heap_end = addr;
-  if (heap_start != 0 && heap_end <= heap_start) {
-    heap_start = 0;
+  if (heap_ceiling != 0 && heap_end <= heap_ceiling) {
+    heap_ceiling = 0;
   }
 }
