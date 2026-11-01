@@ -5,107 +5,17 @@
 #include "sams.h"
 #include "strutil.h"
 #include "list.h"
-#include <vdp.h>
-
-#define VDP_REDO_BUFFER 0x3500
-#define VDP_BUFFER_LEN 256
-
-void sams_hist_handler(char* buffer, int limit, int op);
-void sams_hist_indexed(char* buffer, int limit, int idx);
-void vdp_hist_handler(char* buffer, int limit, int op);
-void vdp_hist_indexed(char* buffer, int limit, int idx);
 
 int history_on = 0;
 
-static void (*hist_handler)(char* buffer, int limit, int op);
-
 static int hist_page;
-static int vdp_history_text_mode;
 
-void history_screen_mode(int text_mode) {
-  if (!sams_total_pages && text_mode && !vdp_history_text_mode) {
-    vdpmemset(VDP_REDO_BUFFER, 0, VDP_BUFFER_LEN);
-  }
-  vdp_history_text_mode = text_mode;
-}
-
-
-void history_init() {
-  if (sams_total_pages) {
-    hist_page = bk_alloc_pages(2);
-    bk_map_page(hist_page, SAMS_HIST_ADDR);
-    bk_map_page(hist_page+1, SAMS_HIST_ADDR + 0x1000);
-    HIST_IDX = 0;
-    list_init(HISTORY, (char*)(SAMS_HIST_ADDR + 8), (char*)(SAMS_HIST_ADDR + 0x1FFF));
-    hist_handler = sams_hist_handler;
-  } else {
-    hist_handler = vdp_hist_handler;
-  }
-}
-
-inline static void ensure_sams() {
+static void ensure_sams() {
   bk_map_page(hist_page, SAMS_HIST_ADDR);
   bk_map_page(hist_page + 1, SAMS_HIST_ADDR + 0x1000);
 }
 
-void history_redo(char* buffer, int limit, int op) {
-  if (!sams_total_pages && !vdp_history_text_mode) {
-    bk_strset(buffer, 0, limit);
-    return;
-  }
-  if (op == HIST_STORE) {
-    // never store the history command itself.
-    if (!bk_strcmpi(str2ram("history"), buffer)) {
-      return;
-    }
-    // never store history references
-    if (buffer[0] == '!') {
-      return;
-    }
-  }
-  hist_handler(buffer, limit, op);
-}
-
-void vdp_hist_indexed(char* buffer, int limit, int idx) {
-  vdp_hist_handler(buffer, limit, HIST_GET);
-}
-
-void sams_hist_indexed(char* buffer, int limit, int idx) {
-  ensure_sams();
-  HIST_IDX = 0;
-  while(idx > 0) {
-    sams_hist_handler(buffer, limit, HIST_GET);
-    idx--;
-  }
-}
-
-void history_indexed(char* buffer, int limit, int idx) {
-  if (sams_total_pages) {
-    sams_hist_indexed(buffer, limit, idx);
-  } else {
-    vdp_hist_indexed(buffer, limit, idx);
-  }
-}
-
-void vdp_hist_handler(char* buffer, int limit, int op) {
-  if (!vdp_history_text_mode) {
-    bk_strset(buffer, 0, limit);
-    return;
-  }
-  if (op == HIST_STORE) {
-    int len = bk_strlen(buffer);
-    if (len > 0) {
-      vdpmemcpy(VDP_REDO_BUFFER, buffer, VDP_BUFFER_LEN);
-    }
-  } else if (op == HIST_GET) {
-    str_set(buffer, 0, limit);
-    vdpmemread(VDP_REDO_BUFFER, buffer, limit);
-  } else if (op == HIST_GET_DEC) {
-    str_set(buffer, 0, limit);
-  }
-}
-
-void sams_hist_handler(char* buffer, int limit, int op) {
+static void hist_handler(char* buffer, int limit, int op) {
   ensure_sams();
   if (op == HIST_STORE) {
     int len = bk_strlen(buffer);
@@ -136,4 +46,26 @@ void sams_hist_handler(char* buffer, int limit, int op) {
       HIST_IDX = 0;
     }
   }
+}
+
+void history_init() {
+  hist_page = bk_alloc_pages(2);
+  bk_map_page(hist_page, SAMS_HIST_ADDR);
+  bk_map_page(hist_page + 1, SAMS_HIST_ADDR + 0x1000);
+  HIST_IDX = 0;
+  list_init(HISTORY, (char*)(SAMS_HIST_ADDR + 8), (char*)(SAMS_HIST_ADDR + 0x1FFF));
+}
+
+void history_redo(char* buffer, int limit, int op) {
+  if (op == HIST_STORE) {
+    // never store the history command itself.
+    if (!bk_strcmpi(str2ram("history"), buffer)) {
+      return;
+    }
+    // never store history references
+    if (buffer[0] == '!') {
+      return;
+    }
+  }
+  hist_handler(buffer, limit, op);
 }

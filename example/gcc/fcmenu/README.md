@@ -27,7 +27,7 @@ menu.
 
 There can be 100 menu entries, including separators.
 
-If you have SAMS, another instance of FCMENU may be run with a different data file to create nested menus.
+Another instance of FCMENU may be run with a different data file to create nested menus.
 
 ## Keys
 
@@ -58,8 +58,6 @@ On an 80 column display, you should be able to display 40 items per page. A 40 c
 
 The config file should not have more than 100 items (this will be enforced in a future build)
 
-Standard 32K systems should get an error if you use ForceCommand executables such as FCMENU in as a command target, or in a script target. Only one process can be in upper memory expansion at a time.
-
-With SAMS, ForceCommand will provide a new set of pages for upper memory expansion, and executables like ForceCommaand's FTP or FCMENU can be safely executed. Upon exit, the previous calling executable will be paged back in and resume control.
+ForceCommand requires SAMS memory. For each ForceCommand executable, such as FCMENU or ForceCommand's FTP, it provides a new set of pages for upper memory expansion. Upon exit, the previous calling executable is paged back in and resumes control.
 
 Mouse is only supported on F18A 80x30 column mode.

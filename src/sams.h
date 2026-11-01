@@ -8,6 +8,10 @@ extern int sams_total_pages;
 
 extern volatile int sams_map_shadow[6];
 
+// Minimum number of 4K pages required at boot.
+// 32 pages is 128K, the smallest SAMS card that was produced.
+#define SAMS_MIN_PAGES 32
+
 // determine how many SAMS pages are available, or 0 if no SAMS detected.
 int init_sams();
 

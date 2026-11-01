@@ -70,7 +70,7 @@ void b14Help(char* tok) {
       "List command history. You may then recall an item by number with !n, such as !7 to copy the 7th "
       "previous command into the current command line.\n"
       "Also, Fctn-8(redo) and Fctn-E(up arrow) moves up through history. Fctn-X(down arrow) moves back down.\n"
-      "32K systems only have 1 history entry. SAMS systems have 4K of history.\n"
+      "History is stored in 4K of SAMS memory.\n"
     );
   } else if (matchcmd(tok, "bar")) {
     wraptext("==Display Bar==\n\n"

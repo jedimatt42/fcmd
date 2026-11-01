@@ -4,7 +4,6 @@
 #include "vdp.h"
 #include "vdp_internal.h"
 #include "dsrutil.h"
-#include "history.h"
 #include "gpu_scroll.h"
 
 void vdp_screen_mode_changed_ex(int mode, unsigned int pab,
@@ -12,7 +11,6 @@ void vdp_screen_mode_changed_ex(int mode, unsigned int pab,
                                 unsigned int file_buffer,
                                 unsigned int file_buffer_size) {
   bk_dsr_set_vdp_buffers(pab, buffer, file_buffer, file_buffer_size);
-  bk_history_screen_mode(mode != VDP_SCREENMODE_GRAPHICS);
 }
 
 void vdp_screen_mode_changed(int mode) {

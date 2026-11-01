@@ -112,12 +112,9 @@ int handleExecutable(char *ext)
       bk_tputc('\n');
     }
 
-    if (sams_total_pages) {
-      // if we didn't have sams, we wouldn't be able to get here with api_exec true.
-      bk_free_pages(sams_next_page - procInfoPtr->base_page);
-      // restore previous sams registers for upper memory expansion
-      restoreSAMS(samsSnapshot);
-    }
+    bk_free_pages(sams_next_page - procInfoPtr->base_page);
+    // restore previous sams registers for upper memory expansion
+    restoreSAMS(samsSnapshot);
   }
   popProcInfo();
   return err;
@@ -307,17 +304,12 @@ int loadPagedFormat(struct DeviceServiceRoutine* dsr, int iocode, char* filename
   bk_lvl2_input_cpu(dsr->crubase, iocode, filename, 0, addInfoPtr);
 
   int totalBlocks = addInfoPtr->first_sector;
-  if (sams_total_pages) {
-    int extraPages = (totalBlocks >> 4) - pages;
-    if (extraPages < 4) {
-      // ensure we have at least enough pages to fill upper memory expansion
-      extraPages = 4;
-    }
-    if (allocatePages(pages + extraPages)) {
-      return 1;
-    }
-  } else {
-    tputs_rom("SAMS Memory Required\n");
+  int extraPages = (totalBlocks >> 4) - pages;
+  if (extraPages < 4) {
+    // ensure we have at least enough pages to fill upper memory expansion
+    extraPages = 4;
+  }
+  if (allocatePages(pages + extraPages)) {
     return 1;
   }
 
@@ -366,10 +358,8 @@ int loadPagedFormat(struct DeviceServiceRoutine* dsr, int iocode, char* filename
 }
 
 int loadFlatFormat(struct DeviceServiceRoutine *dsr, int iocode, char *filename, struct AddInfo *addInfoPtr) {
-  if (sams_total_pages) { // if sams exists
-    if (prepareMemory()) {
-        return 1;
-    }
+  if (prepareMemory()) {
+    return 1;
   }
   char *cpuAddr = (char *)0xA000;
 

@@ -17,10 +17,8 @@
 
 int commandLineEd(char* cmdline, int limit) {
   // command line editor using same code as full screen editor - mostly
-  if (sams_total_pages) {
-    int pagebase = bk_alloc_pages(1);
-    bk_map_page(pagebase, 0xA000);
-  }
+  int pagebase = bk_alloc_pages(1);
+  bk_map_page(pagebase, 0xA000);
 
   EDIT_BUFFER->justRendered = 0;
   EDIT_BUFFER->ed_mode = ED_LINE;
@@ -44,9 +42,7 @@ int commandLineEd(char* cmdline, int limit) {
     bk_strncpy(cmdline, EDIT_BUFFER->lines[0].data, limit);
   }
 
-  if (sams_total_pages) {
-    bk_free_pages(1);
-  }
+  bk_free_pages(1);
 
   return 0; // cmdline is left empty on ctrl-c|break
 }
@@ -61,11 +57,9 @@ int handleEd() {
   return 0;
   }
 
-  if (sams_total_pages) {
-    int pagebase = bk_alloc_pages(6);
-    for(int i=pagebase; i<pagebase+6; i++) {
-      bk_map_page(i, 0xA000 + ((i-pagebase) * 0x1000));
-    }
+  int pagebase = bk_alloc_pages(6);
+  for(int i=pagebase; i<pagebase+6; i++) {
+    bk_map_page(i, 0xA000 + ((i-pagebase) * 0x1000));
   }
 
   // A tiny DV80 editor
@@ -110,9 +104,7 @@ int handleEd() {
     conio_y = displayHeight - 1;
   }
 
-  if (sams_total_pages) {
-    bk_free_pages(6);
-  }
+  bk_free_pages(6);
   return 0;
 }
 

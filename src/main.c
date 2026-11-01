@@ -31,6 +31,24 @@
 #include "runScript.h"
 #include "getstr.h"
 #include "ed.h"
+#include "sams.h"
+
+static void samsRequiredError() {
+  tputs_rom("ForceCommand requires SAMS memory.\n\n");
+  if (sams_total_pages == 0) {
+    tputs_rom("No SAMS memory was detected.\n");
+  } else {
+    tputs_rom("Detected: ");
+    bk_tputs_ram(bk_uint2str(sams_total_pages * 4));
+    tputs_rom("K\n");
+  }
+  tputs_rom("\nRequired: ");
+  bk_tputs_ram(bk_uint2str(SAMS_MIN_PAGES * 4));
+  tputs_rom("K\n\nReset the computer to continue.\n");
+  while (1) {
+    /* hold the message until the user resets the computer */
+  }
+}
 
 void titleScreen() {
   tputs_rom("Force Command v");
@@ -81,6 +99,10 @@ void cartmain()
     bk_set_palette(0, 0);
   }
   pal = bk_isPal();
+
+  if (sams_total_pages < SAMS_MIN_PAGES) {
+    samsRequiredError();
+  }
 
   bk_loadDriveDSRs();
 

@@ -7,8 +7,8 @@ Covers: `sys_sams_info`, `sams_alloc_pages`, `sams_free_pages`,
 
 ## Type
 
-`COND` / `AUTO`. On a machine without SAMS the whole test is skipped and the
-summary reports one skip.
+`COND` / `AUTO`. ForceCommand requires SAMS, so the test normally runs. The
+skip path remains for standalone use where SAMS is absent.
 
 ## Semantics exercised
 
@@ -28,8 +28,8 @@ snapshot after the executable returns.
 
 ## Expected result
 
-The final line is `pass=N fail=N skip=N` with `fail=0`, or `skip=1` on a
-machine without SAMS.
+The final line is `pass=N fail=N skip=N` with `fail=0` under ForceCommand.
+Standalone runs on a machine without SAMS report `skip=1`.
 
 ## Build and run
 

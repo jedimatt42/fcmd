@@ -17,8 +17,8 @@ the printed date/time.
 - `hex_to_int` handles a leading space, `+`, `-`, invalid digits, and an empty
   string.
 - `sys_info` reports a populated DSR list with `currentDsr` pointing inside it.
-- `sys_sams_info` reports a non-negative page count. On a machine without SAMS
-  the SAMS checks are skipped.
+- `sys_sams_info` reports a non-negative page count. ForceCommand requires
+  SAMS, so the SAMS checks always run under ForceCommand.
 - `time_get` returns in-range fields, or the test skips when no clock is present.
 
 The final line is `pass=N fail=N skip=N`. Any failure makes the program return

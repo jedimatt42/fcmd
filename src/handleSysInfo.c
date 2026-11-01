@@ -46,12 +46,8 @@ int handleSysInfo() {
   }
 
   tputs_rom("Memory:  ");
-  if (sams_total_pages) {
-    unsigned int ram = sams_total_pages * 4;
-    bk_tputs_ram(bk_uint2str(ram));
-  } else {
-    tputs_rom("32");
-  }
+  unsigned int ram = sams_total_pages * 4;
+  bk_tputs_ram(bk_uint2str(ram));
   tputs_rom("K\n");
 
 #ifdef __TMS9900_PATCH_MAJOR__

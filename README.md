@@ -28,6 +28,45 @@ Supports:
 * `|` pipelines with temporary DV80 handoff files
 * TIPIMAP to control DSKx, URIx, and AUTO mapping
 
+### Memory model
+
+ForceCommand requires SAMS memory: it will not start on a plain 32K system. At
+least 128 KB of SAMS memory is required, matching the smallest SAMS card that
+was produced.
+
+ForceCommand uses the lower 8 KB expansion for its shell data and C stack.
+The `0x0000` console build is shown; the `0x6000` cart build shifts the
+data/bss boundaries slightly.
+
+| Range | Contents |
+| --- | --- |
+| `0x2000–0x299F` | Shell `.data` / `.bss` |
+| `0x29A0` upward | DSR list, then environment dictionary, then shell heap |
+| `0x2F00` | Dictionary/heap upper limit |
+| `0x2F00–0x2FFF` | Unused cushion |
+| `0x3000–0x3FFF` | 4 KB C stack, grows down from `0x4000` |
+
+External FC programs inherit the same 4 KB stack at `0x3000–0x3FFF`. There is no
+separate external-program stack, so external API calls and banked calls also use
+this stack.
+
+The environment dictionary and shell heap are bounded below `0x2F00`. When they
+are full, `var_set`/`alias_set` report an error instead of overwriting the
+stack.
+
+Paged external programs use:
+
+- `0xA000–0xBFFF` for the current 8 KB code bank
+- `0xC000–0xFFFF` for data/BSS
+- additional SAMS pages for code and data banks
+
+Flat external programs are loaded into six dedicated SAMS pages mapped at
+`0xA000–0xFFFF`.
+
+`sysinfo /m` prints the live dictionary end and current stack pointer. See
+[`internal-docs/memory-map.md`](internal-docs/memory-map.md) for the complete
+address map and SAMS page layout.
+
 ### Redirection and pipelines
 
 `>` and `>>` redirect terminal output to a DISPLAY/VARIABLE 80 file. Records

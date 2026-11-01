@@ -3,6 +3,14 @@
 Changes since **v2.6**. Features already shipped in the v2.x releases are not
 repeated; that includes the v2.6 TIPIMAP `CS1`/`DSK5`–`DSK9` mappings.
 
+## System requirements
+
+- **SAMS memory is required.** ForceCommand now halts at boot with an error
+  message if no SAMS is detected or fewer than 128 KB is available. Plain 32K
+  systems are no longer supported.
+- The no-SAMS VDP command history was removed; history now always uses the
+  SAMS-backed list.
+
 ## User-visible features
 
 ### Shell and scripting
@@ -175,8 +183,8 @@ repeated; that includes the v2.6 TIPIMAP `CS1`/`DSK5`–`DSK9` mappings.
 - VDP filesystem buffers are now relocatable instead of fixed addresses. Each
   successful graphics mode change reserves PAB, parameter, and file buffers and
   updates DSR/level-2/system-information users to the new addresses.
-- The no-SAMS VDP history buffer is only enabled in text modes and is cleared
-  when entering a text mode, so graphics sessions cannot corrupt or expose it.
+- Command history is stored in SAMS and works independently of the display
+  mode; the former no-SAMS VDP history buffer was removed.
 - Graphics modes reset the console hooks: terminal output becomes inert in
   bitmap/multicolor modes, scrolling is disabled, and `term_kscan` runs with
   interrupts disabled.
