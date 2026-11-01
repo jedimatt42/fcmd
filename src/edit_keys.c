@@ -55,6 +55,9 @@ int ed_handleKeys(char* devpath, int* insert_mode, int* cursor, int k) {
       } else {
 	ed_enter();
       }
+    } else if (ed_historyRecall()) {
+      // !n was replaced with the referenced command; keep editing.
+      return 0;
     } else {
       ed_historyPush();
       return 1;

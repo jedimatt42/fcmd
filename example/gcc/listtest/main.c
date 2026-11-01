@@ -7,11 +7,11 @@
  * overflow path.
  *
  * The buffer is a static array, which the linker places in upper expansion
- * memory. The list implementation's eviction walk compares an entry length
- * against the list end address cast to int, so its behavior depends on the
- * address sign. This test therefore asserts the invariants that must hold
- * regardless (newest entry survives, bytes stay within the buffer) and prints
- * the surviving count for observation.
+ * memory. Entries are stored on even boundaries with padding, so the TMS9900
+ * can read the length word without odd-address word accesses. The eviction
+ * walk must stay within [addr, end) and drop only the oldest entry. This test
+ * asserts the newest entry survives, exactly one entry is evicted per
+ * overflow, and bytes stay within the buffer.
  */
 
 #define BUF_SIZE 64
@@ -31,8 +31,9 @@ static void test_init_empty(void) {
     char out[8];
 
     list_init(&list, list_buf, list_buf + BUF_SIZE);
-    FC_CHECK(list.addr == list_buf);
-    FC_CHECK(list.end == list_buf);
+    FC_CHECK(list.addr >= list_buf && list.addr <= list_buf + 1);
+    FC_CHECK(((int)list.addr & 1) == 0);
+    FC_CHECK(list.end == list.addr);
     FC_CHECK(list.ceiling == list_buf + BUF_SIZE);
     FC_CHECK(list_get(&list, 0) == 0);
 
@@ -122,8 +123,8 @@ static void test_overflow(void) {
 
     list_init(&list, list_buf, list_buf + BUF_SIZE);
 
-    /* each entry costs 11 + 2 = 13 bytes; four fit in 64 bytes, the fifth
-       forces the eviction path */
+    /* each entry costs 11 + 2 + 1 pad = 14 bytes; four fit in 64 bytes, the
+       fifth forces the eviction path */
     for (i = 0; i < 5; i++) {
         item[0] = 'a' + i;
         list_push(&list, item, 11);
@@ -141,7 +142,9 @@ static void test_overflow(void) {
     term_puts("[OBSERVE] entries surviving overflow: ");
     term_puts(str_from_uint((unsigned int)count));
     term_putc('\n');
-    FC_OBSERVE("implementation may drop all older entries on overflow; newest is kept");
+    /* b, c, d, e survive; the oldest entry (a) was evicted. */
+    FC_CHECK_EQ(count, 4);
+    FC_OBSERVE("only the oldest entry is evicted on overflow; newest is kept");
 
     /* draining the list must leave it empty */
     for (i = 0; i < count; i++) {

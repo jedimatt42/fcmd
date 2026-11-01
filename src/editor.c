@@ -17,8 +17,9 @@
 
 
 void ed_clearBuffer() {
-  // zero out the allocated memory buffer space (all of upper memory expansion)
-  bk_strset((char*)(EDIT_BUFFER->lines), 0, 80 * EDIT_BUFFER->max_lines);
+  // zero out the allocated memory buffer space, including every Line's length
+  // field and terminating NUL.
+  bk_strset((char*)(EDIT_BUFFER->lines), 0, sizeof(struct Line) * EDIT_BUFFER->max_lines);
 }
 
 int ed_loadFile(struct DeviceServiceRoutine* dsr, char* path) {
@@ -185,7 +186,7 @@ void ed_erase() {
       x++;
     }
     line->length = x - 1;
-    while (x < 80) {
+    while (x < (int)sizeof(line->data)) {
       line->data[x++] = 0;
     }
     // move current location one left
@@ -240,7 +241,7 @@ void ed_gotoBeginningOfLine() {
 
 void ed_clearLine(struct Line* line) {
   line->length = 0;
-  for(int i=0; i<80; i++) {
+  for(int i=0; i<(int)sizeof(line->data); i++) {
     line->data[i] = 0;
   }
 }
@@ -273,7 +274,7 @@ void ed_historyDown() {
   if (history_on) {
     struct Line* line = EDIT_BUFFER->lines; // always line 0 when history at play
     ed_clearLine(line);
-    bk_history_redo(line->data, 80, HIST_GET_DEC);
+    bk_history_redo(line->data, (int)sizeof(line->data) - 1, HIST_GET_DEC);
     line->length = bk_strlen(line->data);
     ed_gotoBeginningOfLine();
   }
@@ -283,7 +284,7 @@ void ed_historyUp() {
   if (history_on) {
     struct Line* line = EDIT_BUFFER->lines; // always line 0 when history at play
     ed_clearLine(line);
-    bk_history_redo(line->data, 80, HIST_GET);
+    bk_history_redo(line->data, (int)sizeof(line->data) - 1, HIST_GET);
     line->length = bk_strlen(line->data);
     ed_gotoBeginningOfLine();
   }
@@ -294,6 +295,24 @@ void ed_historyPush() {
     struct Line* line = EDIT_BUFFER->lines;
     bk_history_redo(line->data, line->length, HIST_STORE);
   }
+}
+
+// Handle a !n history reference in line-edit mode. Returns non-zero when the
+// line was a reference and the editor should stay open.
+int ed_historyRecall() {
+  struct Line* line = EDIT_BUFFER->lines;
+  if (line->data[0] != '!') {
+    return 0;
+  }
+  int hist_ref = bk_atoi(line->data + 1);
+  if (hist_ref <= 0) {
+    return 0;
+  }
+  ed_clearLine(line);
+  bk_history_indexed(line->data, (int)sizeof(line->data) - 1, hist_ref);
+  line->length = bk_strlen(line->data);
+  ed_gotoBeginningOfLine();
+  return 1;
 }
 
 void ed_enter() {

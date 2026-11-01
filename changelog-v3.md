@@ -106,6 +106,14 @@ repeated; that includes the v2.6 TIPIMAP `CS1`/`DSK5`–`DSK9` mappings.
 - Fixed heap allocation overwriting the environment dictionary (variables and
   aliases).
 - Fixed `str_cmp`/`str_cmp_icase` to compare the first character as well.
+- Fixed command history overflow: when full, the oldest entry is discarded
+  instead of the entire history being wiped.
+- Fixed list/history records to be word-aligned. The TMS9900 cannot read the
+  16-bit length word at an odd address, which corrupted history traversal after
+  commands with odd-length record sizes.
+- Restored `!n` command-history recall in the command-line editor.
+- Fixed history storage for full-width (80 column) command lines by keeping a
+  terminating NUL in the editor line buffer.
 - Removed the spurious `DEVICE NOT FOUND`/`No parent folder` messages printed
   during ordinary path resolution at boot.
 

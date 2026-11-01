@@ -12,22 +12,23 @@ survive an overflow.
 
 ## Semantics exercised
 
-- `list_init` sets an empty list between `addr` and `ceiling`.
+- `list_init` sets an empty list between `addr` and `ceiling`, aligning `addr`
+  to an even boundary.
 - `list_push` inserts at the head, so `list_get(list, 0)` is the newest entry
-  and `list_pop` removes newest first.
+  and `list_pop` removes newest first. Records are padded to an even size so
+  the 16-bit length word is always word-aligned.
 - `list_pop` copies `min(entry.length, limit)` bytes and does not null terminate
-  when truncated, but still removes the whole entry.
+  when truncated, but still removes the whole entry. It null terminates when
+  the caller's buffer has room for the terminator.
 - `list_pop` on an empty list is a no-op.
 - `list_get` returns 0 past the end.
 
 ## Overflow note
 
-The eviction walk in `src/list.c` compares an entry length against the list end
-address cast to `int`. Because the test buffer is in upper expansion memory,
-that value is negative and eviction discards all older entries instead of only
-the oldest. The test asserts the invariants that must hold either way (newest
-entry survives, `end` stays within `[addr, ceiling]`) and prints the surviving
-count. A future implementation that evicts one entry at a time would still pass.
+The eviction walk in `src/list.c` stays within `[addr, end)` and drops only the
+oldest entry. The test asserts that the newest entry survives, that exactly one
+entry is evicted per overflow, and that `end` stays within `[addr, ceiling]`.
+The surviving count is also printed for observation.
 
 ## Expected result
 

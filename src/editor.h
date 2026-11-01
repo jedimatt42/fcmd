@@ -27,7 +27,9 @@
 
 struct Line {
   int length;
-  char data[80];
+  // 80 columns plus a terminating NUL so recalled history entries and file
+  // records can always be treated as C strings.
+  char data[81];
 };
 
 struct EditBuffer {
@@ -69,6 +71,7 @@ void ed_up();
 void ed_historyDown();
 void ed_historyUp();
 void ed_historyPush();
+int ed_historyRecall();
 void ed_enter();
 void ed_eraseLine();
 void ed_joinToNext();

@@ -18,9 +18,17 @@ static void ensure_sams() {
 static void hist_handler(char* buffer, int limit, int op) {
   ensure_sams();
   if (op == HIST_STORE) {
-    int len = bk_strlen(buffer);
-    if (len > 0) {
-      list_push(HISTORY, buffer, len + 1 /* include the trailing null */);
+    // The editor can hand us a line that is not NUL terminated (an 80 column
+    // line fills the whole Line.data buffer). Copy through a terminated
+    // scratch buffer and honor the caller's length limit.
+    if (limit > 0) {
+      char copy[256];
+      int max = limit > (int)sizeof(copy) - 1 ? (int)sizeof(copy) - 1 : limit;
+      bk_strncpy(copy, buffer, max);
+      int len = bk_strlen(copy);
+      if (len > 0) {
+        list_push(HISTORY, copy, len + 1 /* include the trailing null */);
+      }
     }
     HIST_IDX = 0;
   } else if (op == HIST_GET) {
@@ -68,4 +76,17 @@ void history_redo(char* buffer, int limit, int op) {
     }
   }
   hist_handler(buffer, limit, op);
+}
+
+void history_indexed(char* buffer, int limit, int idx) {
+  ensure_sams();
+  HIST_IDX = 0;
+  if (idx <= 0) {
+    bk_strset(buffer, 0, limit);
+    return;
+  }
+  while (idx > 0) {
+    hist_handler(buffer, limit, HIST_GET);
+    idx--;
+  }
 }
