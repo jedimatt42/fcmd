@@ -102,6 +102,16 @@ void b14Help(char* tok) {
       "ed <filepath>\n\n"
       "Open or create a file in the builtin file editor. Press F7(Aid) in editor for editor details\n"
     );
+  } else if (matchcmd(tok, "more")) {
+    wraptext("==Page Through Text==\n\n"
+      "more [filepath]\n\n"
+      "Display a text file one screen at a time. Press any key to continue; "
+      "press Q to stop. The page size follows the current 40x24, 80x26, or "
+      "80x30 text mode.\n\n"
+      "With no filepath, the PIPEIN variable is used, so output from an "
+      "earlier pipeline stage can be read directly:\n\n"
+      "dir | more\n"
+    );
   } else if (matchcmd(tok, "palette")) {
     wraptext("==Palette==\n\n"
       "palette /r\n"

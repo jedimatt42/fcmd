@@ -58,7 +58,7 @@ int handleHelp() {
     "alias bar cd cfmount checksum cls color copy date "
     "delete drives echo ed env exit f18a fg99 goto help "
     "history if "
-    "load lvl2 mkdir palette protect pwd readkey rename "
+    "load lvl2 mkdir more palette protect pwd readkey rename "
     "rdemdk rdpart rdvol "
     "rmdir sysinfo tipibeeps tipihalt tipimap "
     "tipireboot type unprotect ver width xb\n\n"

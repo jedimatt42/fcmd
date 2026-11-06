@@ -61,6 +61,7 @@ int must_close_command(char* buffer) {
   if (MATCH(tok, str2ram("history"))) return 0;
   if (MATCH(tok, str2ram("lvl2"))) return 0;
   if (MATCH(tok, str2ram("mkdir"))) return 0;
+  if (MATCH(tok, str2ram("more"))) return 0;
   if (MATCH(tok, str2ram("palette"))) return 0;
   if (MATCH(tok, str2ram("protect"))) return 0;
   if (MATCH(tok, str2ram("pwd"))) return 0;
@@ -176,6 +177,7 @@ static int executeSingle(char* buffer, const char* forced_path, int* redirect_fa
     else COMMAND("load", bk_handleLoad)
     else COMMAND("lvl2", bk_handleLvl2)
     else COMMAND("mkdir", bk_handleMkdir)
+    else COMMAND("more", bk_handleMore)
     else COMMAND("palette", bk_handlePalette)
     else COMMAND("protect", bk_handleProtect)
     else COMMAND("pwd", bk_handlePwd)

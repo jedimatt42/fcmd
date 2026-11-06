@@ -32,6 +32,12 @@ repeated; that includes the v2.6 TIPIMAP `CS1`/`DSK5`–`DSK9` mappings.
     pipeline ends.
   - `\|` is a literal pipe; nested pipelines and pipelines inside an active
     redirection are rejected.
+- **New `more` command** for screen-at-a-time text paging.
+  - `more <filepath>` reads a DISPLAY/VARIABLE file; `more` with no argument
+    reads the pipeline input from `$PIPEIN`, so `dir | more` works directly.
+  - Page size adapts to the active 40x24, 80x26, or 80x30 text mode.
+  - Any key advances; `Q` stops. Output is not paged when redirected, so
+    `more $PIPEIN >file` still copies the complete text.
 - **Command exit status** is now carried through the shell.
   - Every built-in returns a status, and the `STATUS` variable is updated after
     every command.

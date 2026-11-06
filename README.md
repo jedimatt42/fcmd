@@ -26,6 +26,7 @@ Supports:
 * ANSI display
 * Output redirection with `>` (replace) and `>>` (append) to DISPLAY/VARIABLE 80 files
 * `|` pipelines with temporary DV80 handoff files
+* `more` screen-at-a-time text paging, including from `$PIPEIN`
 * TIPIMAP to control DSKx, URIx, and AUTO mapping
 
 ### Memory model
@@ -103,6 +104,19 @@ stage may use `>` or `>>`. Use `\|` for a literal pipe. Nested pipelines are
 rejected, and pipelines cannot run inside an already-active redirection.
 `STATUS` holds the first nonzero stage status. The resolved temp path must fit
 in a variable value (81 characters).
+
+Use `more` to read a file or the previous stage's output one screen at a time.
+With no file argument it reads `$PIPEIN`:
+
+```text
+more DSK1.README
+dir /w | more
+```
+
+The page size follows the active text mode: 40x24, 80x26, or F18A 80x30.
+Press any key for the next page, or `Q` to stop. If output is redirected,
+`more` prints the whole input without pausing so the target receives the
+complete text.
 
 Some older built-ins (notably `copy` and scripts) still return 0 after printing
 an error, so pipeline status is most meaningful with external programs and the
