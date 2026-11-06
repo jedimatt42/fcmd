@@ -79,9 +79,12 @@ static void f18a_gpu_exec_raw(int vector, int flags, unsigned int src,
 }
 
 void f18a_gpu_init(void) {
-    /* Start with a harmless vector in case the GPU executes the dispatcher
-       before the caller has prepared a request. */
-    f18a_gpu_exec_raw(F18A_GPU_GETINF, 0, 0, 0, 0);
+    /* Stage a harmless request before loading the GPU PC: on the F18A, writing
+       the PC registers starts the dispatcher if the GPU is idle. Do not trigger
+       VR56 here. If the GPU was just reset (for example by lock_f18a() while
+       re-entering 80x30 mode), its PC is still 0, so triggering first would
+       execute VRAM at >0000 instead of the built-in dispatcher. */
+    f18a_gpu_set_params(F18A_GPU_GETINF, 0, 0, 0, 0);
     VDP_SET_REGISTER(F18A_GPU_PC_MSB, (unsigned char)(F18A_GPU_DISPATCH >> 8));
     VDP_SET_REGISTER(F18A_GPU_PC_LSB, (unsigned char)F18A_GPU_DISPATCH);
     f18a_gpu_wait();
