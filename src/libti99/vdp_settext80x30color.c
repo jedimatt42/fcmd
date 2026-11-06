@@ -3,6 +3,7 @@
 
 #include "vdp.h"
 #include "vdp_internal.h"
+#include "f18a_gpu.h"
 #include "gpu_scroll.h"
 
 // TODO: text modes should not rely on conio support if possible...
@@ -17,18 +18,8 @@ static void vdpchar80color(int pAddr, int ch) {
 }
 
 static void fast_scrn_scroll_80color() {
-    const int line = nTextEnd - nTextRow + 1;
-
-    // use GPU code for fastest scrolling
-    VDP_SET_REGISTER(0x38,1); // trigger GPU code
-
-    VDP_SET_REGISTER(0x0f,2); // status register to read = SR2
-    while (VDPST & 0x80);    // wait for GPU status to be idle
-    VDP_SET_REGISTER(0x0f,0); // status register to read = SR0
-
-    vdpmemset(nTextRow + gColor, conio_scrnCol, line);  // clear the last line
-
-    return;
+    // Use the F18A's built-in BLKCPY routine for the row moves and fills.
+    bk_gpu_scroll_80color();
 }
 
 void set_text80x30_color(void)
@@ -73,10 +64,8 @@ int set_text80x30_color_raw() {
     vdpmemset(gSprite, 0xd0, 128);
     vdpmemset(gColor, conio_scrnCol, nTextEnd+1);	// clear the color table
 
-    // load GPU scroll function
-    bk_install_gpu_scroll();
-    VDP_SET_REGISTER(0x36, 0x3f);
-    VDP_SET_REGISTER(0x37, 0x00);
+    // Point the GPU at the F18A's built-in routine dispatcher.
+    bk_f18a_gpu_init();
 
 	gUnblank = unblank;
 	return unblank;

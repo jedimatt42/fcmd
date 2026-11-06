@@ -489,7 +489,8 @@ TMS9918A-compatible tables are laid out without overlap:
   sprite pattern overwrites the same-numbered character pattern).
 
 The implementation must account for ForceCommand's existing reserved VRAM,
-including command/history storage and the F18A GPU scroll area. ForceCommand
+including command/history storage and the F18A GPU parameter area at
+`0x3F00-0x3F10`. ForceCommand
 filesystem calls also use VDP-resident PAB, parameter, and file-data buffers.
 Those buffers must be relocated and reserved as part of each successful mode
 change; applications must use the addresses reported by the existing system

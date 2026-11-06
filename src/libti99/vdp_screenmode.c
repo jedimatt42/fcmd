@@ -4,7 +4,6 @@
 #include "vdp.h"
 #include "vdp_internal.h"
 #include "dsrutil.h"
-#include "gpu_scroll.h"
 
 void vdp_screen_mode_changed_ex(int mode, unsigned int pab,
                                 unsigned int buffer,
@@ -26,7 +25,6 @@ void vdp_screen_mode_changed(int mode) {
 }
 
 int vdp_screenmode(int mode) {
-	bk_disable_gpu_scroll();
 	switch (mode) {
 	case VDP_SCREENMODE_GRAPHICS:
 		set_graphics(VDP_SPR_8x8);
