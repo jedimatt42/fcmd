@@ -3,6 +3,7 @@
 #define MYBANK BANK(4)
 
 #include "commands.h"
+#include "parsing.h"
 #include "strutil.h"
 #include "terminal.h"
 #include "labellist.h"
@@ -34,10 +35,10 @@ int handleGoto() {
       int ferr = bk_dsr_read_cpu(scriptDsr, scriptPab, 0, commandbuf);
       record++;
       if (!ferr) {
-        char* tok = bk_strtok(commandbuf, ' ');
-        if (tok[bk_strlen(tok)-1] == ':') {
-          tok[bk_strlen(tok)-1] = 0; // shorten to just the name
-          labels_add(tok, record);
+        char labelname[12];
+        if (!bk_is_comment_line(commandbuf)
+            && bk_parse_label(commandbuf, labelname, sizeof(labelname))) {
+          labels_add(labelname, record);
         }
       }
     }

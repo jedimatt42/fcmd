@@ -63,7 +63,7 @@ int handleHelp() {
     "rmdir sysinfo tipibeeps tipihalt tipimap "
     "tipireboot type unprotect ver width xb\n\n"
     "other:\n\n"
-    "autocmd label path pipeline redirect\n");
+    "autocmd comment label path pipeline redirect\n");
   return 0;
   }
 
@@ -186,8 +186,8 @@ int handleHelp() {
     "operator - '=='\n");
   } else if (matchcmd(tok,"label")) {
     wraptext("==Label==\n\n"
-    "<label-name>:\n\n"
-    "A custom identifier followed by a colon defines a label that may be branched to using 'goto'\n");
+    ":<label-name>\n\n"
+    "A label starts with ':' and is branched to with 'goto <label-name>'\n");
   } else if (matchcmd(tok,"load")) {
     wraptext("==Load EA5 Program==\n\n"
     "load <filepath>\n\n"

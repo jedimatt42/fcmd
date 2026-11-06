@@ -9,6 +9,8 @@
 
 int handleCommand(char * buffer);
 int must_close_command(char* buffer);
+int is_comment_line(char* buffer);
+int parse_label(char* buffer, char* name, int limit);
 
 void path_parse(char* str_in, struct DeviceServiceRoutine** dsr, char* buffer, int requirements);
 int globMatches(char* filename);
@@ -17,6 +19,8 @@ int globMatches(char* filename);
 
 DECLARE_BANKED(handleCommand, BANK(10), int, bk_handleCommand, (char* buffer), (buffer))
 DECLARE_BANKED(must_close_command, BANK(10), int, bk_must_close_command, (char* buffer), (buffer))
+DECLARE_BANKED(is_comment_line, BANK(10), int, bk_is_comment_line, (char* buffer), (buffer))
+DECLARE_BANKED(parse_label, BANK(10), int, bk_parse_label, (char* buffer, char* name, int limit), (buffer, name, limit))
 DECLARE_BANKED_VOID(path_parse, BANK(10), bk_parsePathParam, (char* str_in, struct DeviceServiceRoutine** dsr, char* buffer, int requirements), (str_in, dsr, buffer, requirements))
 DECLARE_BANKED(globMatches, BANK(10), int, bk_globMatches, (char* filename), (filename))
 

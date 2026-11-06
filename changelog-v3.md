@@ -15,6 +15,12 @@ repeated; that includes the v2.6 TIPIMAP `CS1`/`DSK5`–`DSK9` mappings.
 
 ### Shell and scripting
 
+- **Script comments** with `REM <text>` or `::<text>`.
+  - `REM` must be the first word on the line and is case insensitive.
+  - `::` may be followed by any text.
+- **Script labels now use a leading colon**, matching MS-DOS: `:name` defines a
+  label and `goto name` branches to it. The old trailing-colon form (`name:`)
+  is no longer supported.
 - **Command aliases** with the new `alias` command.
   - `alias name value` defines an alias; the value may include arguments.
   - Additional command-line arguments are appended to the alias value.

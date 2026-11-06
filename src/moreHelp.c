@@ -47,7 +47,13 @@ static void wraptext(char* str) {
 
 /* ##########|----.----1----.----2----.----3----.----4|######## */
 void b14Help(char* tok) {
-  if (matchcmd(tok, "alias")) {
+  if (matchcmd(tok, "comment")) {
+    wraptext("==Comments==\n\n"
+      "REM <text>\n"
+      "::<text>\n\n"
+      "Lines beginning with REM or :: are ignored. REM must be the first word on the line. "
+      ":: may be followed by any text.\n");
+  } else if (matchcmd(tok, "alias")) {
     wraptext("==Manage command aliases==\n\n"
       "alias <alias-name> <alias-value>\n"
       "alias <alias-name>\n"

@@ -32,11 +32,58 @@ static int isAssignment(char* str) {
   return 0;
 }
 
+// Return non-zero for a comment line:
+//   REM <text>  (REM must be the first word, case insensitive)
+//   ::<text>    (double-colon prefix)
+int is_comment_line(char* buffer) {
+  char* p = buffer;
+  while (*p == ' ' || *p == '\t') {
+    p++;
+  }
+
+  if (p[0] == ':' && p[1] == ':') {
+    return 1;
+  }
+
+  return (p[0] == 'R' || p[0] == 'r')
+      && (p[1] == 'E' || p[1] == 'e')
+      && (p[2] == 'M' || p[2] == 'm')
+      && (p[3] == 0 || p[3] == ' ' || p[3] == '\t' || p[3] == '\r');
+}
+
+// Extract a leading-colon label from a script line. Returns non-zero and
+// writes the label name without the colon when the line defines a label.
+int parse_label(char* buffer, char* name, int limit) {
+  char* p = buffer;
+  while (*p == ' ' || *p == '\t') {
+    p++;
+  }
+
+  if (p[0] != ':' || p[1] == ':' || p[1] == 0 || p[1] == ' ' || p[1] == '\t' || p[1] == '\r') {
+    return 0;
+  }
+
+  p++;
+  int n = 0;
+  while (*p != 0 && *p != ' ' && *p != '\t' && *p != '\r' && n < limit - 1) {
+    name[n] = *p;
+    n++;
+    p++;
+  }
+  name[n] = 0;
+  return n > 0;
+}
+
 /*
    this has to compare against the list of safe commands so all others,
    scripts, and executables are considered
 */
 int must_close_command(char* buffer) {
+  char labelname[12];
+  if (is_comment_line(buffer) || parse_label(buffer, labelname, sizeof(labelname))) {
+    return 0;
+  }
+
   if (isAssignment(buffer)) {
     return 0;
   }
@@ -128,7 +175,7 @@ static void unescape_pipes(char* s) {
 static int executeSingle(char* buffer, const char* forced_path, int* redirect_failed) {
   result = 0;
   *redirect_failed = 0;
-  if (buffer[0] == 0) {
+  if (buffer[0] == 0 || is_comment_line(buffer)) {
     return 0;
   }
 
@@ -197,19 +244,21 @@ static int executeSingle(char* buffer, const char* forced_path, int* redirect_fa
     else COMMAND("ver", bk_handleVer)
     else COMMAND("width", bk_handleWidth)
     else COMMAND("xb", bk_handleXb)
-    else if (tok[bk_strlen(tok)-1] == ':') {
-      if (scripton) {
-        tok[bk_strlen(tok)-1] = 0; // shorten to just the name
-        bk_labels_add(tok, *goto_line_ref);
+    else {
+      char labelname[12];
+      if (parse_label(tok, labelname, sizeof(labelname))) {
+        if (scripton) {
+          bk_labels_add(labelname, *goto_line_ref);
+        } else {
+          tputs_rom("error, label only supported in script\n");
+        }
+      } else if (isAssignment(procbuf)) {
+        char* name = bk_strtok(procbuf, '=');
+        char* value = bk_strtokpeek(0, 0); // to end of line
+        bk_vars_set(name, value);
       } else {
-        tputs_rom("error, label only supported in script\n");
+        result = bk_handleExecutable(tok);
       }
-    } else if (isAssignment(procbuf)) {
-      char* name = bk_strtok(procbuf, '=');
-      char* value = bk_strtokpeek(0, 0); // to end of line
-      bk_vars_set(name, value);
-    } else {
-      result = bk_handleExecutable(tok);
     }
   }
 
@@ -259,7 +308,7 @@ static int runCommandLine(char* buffer) {
 // NOTE command handle functions in bank 0 do not need bk_ banking stub
 
 int handleCommand(char *buffer) {
-  if (buffer[0] == 0) {
+  if (buffer[0] == 0 || is_comment_line(buffer)) {
     return 0;
   }
 
