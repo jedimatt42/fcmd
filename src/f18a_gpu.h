@@ -33,36 +33,34 @@
 #define F18A_GPU_FILLBYTE 0x3F10
 #define F18A_GPU_DISPATCH 0x4026
 
-/* Initialize the built-in dispatcher and leave the GPU idle at >4026. */
+/* Public API results use the graphics error codes from graphics.h. */
+struct F18aGpuInfo {
+    int version;
+    unsigned int free_addr;
+    unsigned int vector_table;
+    unsigned int user_vector_table;
+};
+
+/* Public API: callable from external programs through the ForceCommand API. */
+int f18a_gpu_info(struct F18aGpuInfo* info);
+int f18a_gpu_copy(unsigned int src, unsigned int dst, unsigned int len);
+int f18a_gpu_fill(unsigned int dst, int value, unsigned int len);
+int f18a_gpu_exec(int vector, int flags, unsigned int src, unsigned int dst,
+                  unsigned int len);
+
+/* Internal support used by ForceCommand's 80x30 scroll routine. */
 void f18a_gpu_init(void);
-
-/* Run the routine selected by vector, using parameters already at >3F00. */
-void f18a_gpu_call(int vector);
-
-/* Stage a parameter block and run the routine selected by vector. */
-void f18a_gpu_exec(int vector, int flags, unsigned int src, unsigned int dst,
-                   unsigned int len);
-
-/* Block copy: len bytes from src to dst. */
 void f18a_gpu_blkcpy(unsigned int src, unsigned int dst, unsigned int len);
-
-/* Block fill: repeat value into len bytes at dst. */
 void f18a_gpu_blkfill(unsigned int dst, int value, unsigned int len);
 
 #ifdef MYBANK
+DECLARE_BANKED(f18a_gpu_info, BANK(7), int, bk_f18a_gpu_info, (struct F18aGpuInfo* info), (info))
+DECLARE_BANKED(f18a_gpu_copy, BANK(7), int, bk_f18a_gpu_copy, (unsigned int src, unsigned int dst, unsigned int len), (src, dst, len))
+DECLARE_BANKED(f18a_gpu_fill, BANK(7), int, bk_f18a_gpu_fill, (unsigned int dst, int value, unsigned int len), (dst, value, len))
+DECLARE_BANKED(f18a_gpu_exec, BANK(7), int, bk_f18a_gpu_exec, (int vector, int flags, unsigned int src, unsigned int dst, unsigned int len), (vector, flags, src, dst, len))
 DECLARE_BANKED_VOID(f18a_gpu_init, BANK(7), bk_f18a_gpu_init, (), ())
-DECLARE_BANKED_VOID(f18a_gpu_call, BANK(7), bk_f18a_gpu_call,
-                    (int vector), (vector))
-DECLARE_BANKED_VOID(f18a_gpu_exec, BANK(7), bk_f18a_gpu_exec,
-                    (int vector, int flags, unsigned int src,
-                     unsigned int dst, unsigned int len),
-                    (vector, flags, src, dst, len))
-DECLARE_BANKED_VOID(f18a_gpu_blkcpy, BANK(7), bk_f18a_gpu_blkcpy,
-                    (unsigned int src, unsigned int dst, unsigned int len),
-                    (src, dst, len))
-DECLARE_BANKED_VOID(f18a_gpu_blkfill, BANK(7), bk_f18a_gpu_blkfill,
-                    (unsigned int dst, int value, unsigned int len),
-                    (dst, value, len))
+DECLARE_BANKED_VOID(f18a_gpu_blkcpy, BANK(7), bk_f18a_gpu_blkcpy, (unsigned int src, unsigned int dst, unsigned int len), (src, dst, len))
+DECLARE_BANKED_VOID(f18a_gpu_blkfill, BANK(7), bk_f18a_gpu_blkfill, (unsigned int dst, int value, unsigned int len), (dst, value, len))
 #endif
 
 #endif

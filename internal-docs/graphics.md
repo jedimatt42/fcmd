@@ -142,7 +142,12 @@ not support sprites; passing an invalid value remains an error.
 #define GFX_CAP_SPRITE_STATUS    0x0400
 #define GFX_CAP_YJK              0x0800
 #define GFX_CAP_ATTRIBUTES       0x1000
+#define GFX_CAP_F18A_GPU         0x2000
 ```
+
+`GFX_CAP_F18A_GPU` is reported only in the managed F18A 80x30 text mode and
+means the public `f18a_gpu_copy()`, `f18a_gpu_fill()`, and `f18a_gpu_exec()`
+functions are available.
 
 Capabilities describe the public behavior, not whether an operation uses a
 software or hardware implementation. For example, `GFX_CAP_LINES` may be

@@ -195,6 +195,7 @@ struct SystemInformation {
 #define GFX_CAP_SPRITE_STATUS    0x0400
 #define GFX_CAP_YJK              0x0800
 #define GFX_CAP_ATTRIBUTES       0x1000
+#define GFX_CAP_F18A_GPU         0x2000  /* built-in GPU BLKCPY/catalog API */
 
 #define GFX_COLOR_INDEXED        0
 #define GFX_COLOR_DIRECT         1
@@ -257,6 +258,23 @@ struct GfxCopy {
     int destination_y;
     int op;
 };
+
+/*
+ * F18A built-in GPU routine information, returned by f18a_gpu_info().
+ */
+struct F18aGpuInfo {
+    int version;
+    unsigned int free_addr;
+    unsigned int vector_table;
+    unsigned int user_vector_table;
+};
+
+/* F18A built-in GPU routine vector indices. */
+#define F18A_GPU_BLKCPY          0
+#define F18A_GPU_FONTLD          1
+#define F18A_GPU_GETINF          2
+#define F18A_GPU_GETIDX          3
+#define F18A_GPU_BLOBLD          4
 
 struct SamsInformation {
   int next_page;

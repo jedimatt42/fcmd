@@ -114,7 +114,8 @@ int gfx_get_info(struct GfxInformation* info) {
         gfx_info.capabilities = GFX_CAP_TEXT;
         if (displayHeight == 30) {
             gfx_info.capabilities |= GFX_CAP_ATTRIBUTES | GFX_CAP_TILES |
-                                     GFX_CAP_SPRITES | GFX_CAP_SPRITE_STATUS;
+                                     GFX_CAP_SPRITES | GFX_CAP_SPRITE_STATUS |
+                                     GFX_CAP_F18A_GPU;
         }
         if (vdp_type == VDP_F18A) gfx_info.capabilities |= GFX_CAP_PALETTE;
         gfx_info.sprite_count = (gfx_info.capabilities & GFX_CAP_SPRITES) ? 32 : 0;

@@ -263,7 +263,8 @@ static int setup_text80x30(void) {
     displayHeight = 30;
     gfx_set_mode_info(GFX_MODE_F18A_TEXT80X30, 80, 30, 80, 30, 16,
                          GFX_COLOR_ATTRIBUTES, GFX_CAP_TEXT | GFX_CAP_ATTRIBUTES |
-                         GFX_CAP_TILES | GFX_CAP_SPRITES | GFX_CAP_SPRITE_STATUS,
+                         GFX_CAP_TILES | GFX_CAP_SPRITES | GFX_CAP_SPRITE_STATUS |
+                         GFX_CAP_F18A_GPU,
                          1);
     reload_charset();
     bk_term_cls();

@@ -53,6 +53,7 @@
 #define GFX_CAP_SPRITE_STATUS    0x0400
 #define GFX_CAP_YJK              0x0800
 #define GFX_CAP_ATTRIBUTES       0x1000
+#define GFX_CAP_F18A_GPU         0x2000  /* built-in GPU BLKCPY/catalog API */
 
 /* Color models. */
 #define GFX_COLOR_INDEXED        0

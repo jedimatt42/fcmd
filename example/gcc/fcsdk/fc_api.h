@@ -195,6 +195,7 @@ struct SystemInformation {
 #define GFX_CAP_SPRITE_STATUS    0x0400
 #define GFX_CAP_YJK              0x0800
 #define GFX_CAP_ATTRIBUTES       0x1000
+#define GFX_CAP_F18A_GPU         0x2000  /* built-in GPU BLKCPY/catalog API */
 
 #define GFX_COLOR_INDEXED        0
 #define GFX_COLOR_DIRECT         1
@@ -257,6 +258,23 @@ struct GfxCopy {
     int destination_y;
     int op;
 };
+
+/*
+ * F18A built-in GPU routine information, returned by f18a_gpu_info().
+ */
+struct F18aGpuInfo {
+    int version;
+    unsigned int free_addr;
+    unsigned int vector_table;
+    unsigned int user_vector_table;
+};
+
+/* F18A built-in GPU routine vector indices. */
+#define F18A_GPU_BLKCPY          0
+#define F18A_GPU_FONTLD          1
+#define F18A_GPU_GETINF          2
+#define F18A_GPU_GETIDX          3
+#define F18A_GPU_BLOBLD          4
 
 struct SamsInformation {
   int next_page;
@@ -710,6 +728,10 @@ typedef struct tui_widget tui_widget_t;
 #define FC_GFX_SPRITE_PATTERN_INDEX 0xc9
 #define FC_TUI_MOUSE_DISABLE 0xca
 #define FC_TUI_MOUSE_ENABLE 0xcb
+#define FC_F18A_GPU_COPY 0xcc
+#define FC_F18A_GPU_EXEC 0xcd
+#define FC_F18A_GPU_FILL 0xce
+#define FC_F18A_GPU_INFO 0xcf
 
 // function: void audio_beep()
 DECL_FC_API_CALL(FC_AUDIO_BEEP, audio_beep, void, (), ())
@@ -1322,5 +1344,17 @@ DECL_FC_API_CALL(FC_TUI_MOUSE_DISABLE, tui_mouse_disable, void, (), ())
 
 // function: int tui_mouse_enable()
 DECL_FC_API_CALL(FC_TUI_MOUSE_ENABLE, tui_mouse_enable, int, (), ())
+
+// function: int f18a_gpu_copy(unsigned int src, unsigned int dst, unsigned int len)
+DECL_FC_API_CALL(FC_F18A_GPU_COPY, f18a_gpu_copy, int, (unsigned int src, unsigned int dst, unsigned int len), (src, dst, len))
+
+// function: int f18a_gpu_exec(int vector, int flags, unsigned int src, unsigned int dst, unsigned int len)
+DECL_FC_API_CALL(FC_F18A_GPU_EXEC, f18a_gpu_exec, int, (int vector, int flags, unsigned int src, unsigned int dst, unsigned int len), (vector, flags, src, dst, len))
+
+// function: int f18a_gpu_fill(unsigned int dst, int value, unsigned int len)
+DECL_FC_API_CALL(FC_F18A_GPU_FILL, f18a_gpu_fill, int, (unsigned int dst, int value, unsigned int len), (dst, value, len))
+
+// function: int f18a_gpu_info(struct F18aGpuInfo* info)
+DECL_FC_API_CALL(FC_F18A_GPU_INFO, f18a_gpu_info, int, (struct F18aGpuInfo* info), (info))
 
 #endif

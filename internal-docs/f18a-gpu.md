@@ -48,12 +48,49 @@ To call a routine:
 4. Wait for GPU idle by selecting status register 2 in VR15 and polling
    bit 7 of the status port.
 
-ForceCommand wraps this in `src/f18a_gpu.c`. The vector index and
-parameters are passed to `f18a_gpu_exec()`, `f18a_gpu_call()` runs a vector
-whose parameter block is already staged, and `f18a_gpu_blkcpy()` /
-`f18a_gpu_blkfill()` provide the two BLKCPY forms.
+ForceCommand wraps this in `src/f18a_gpu.c`.
 
-The 80x30 text scroll routine uses four BLKCPY calls: move the text rows,
-clear the last text row, move the attribute rows, and clear the last attribute
-row. This replaces the older custom GPU scroll program that was uploaded to
-`>3F00` at runtime.
+## Public ForceCommand API
+
+The following functions are available to external programs. They return
+`GFX_OK` or one of the `GFX_ERR_*` values.
+
+```c
+struct F18aGpuInfo {
+    int version;
+    unsigned int free_addr;
+    unsigned int vector_table;
+    unsigned int user_vector_table;
+};
+
+int f18a_gpu_info(struct F18aGpuInfo* info);
+int f18a_gpu_copy(unsigned int src, unsigned int dst, unsigned int len);
+int f18a_gpu_fill(unsigned int dst, int value, unsigned int len);
+int f18a_gpu_exec(int vector, int flags,
+                  unsigned int src, unsigned int dst, unsigned int len);
+```
+
+`f18a_gpu_info()` runs `GETINF` and returns the catalog version, first free
+GPU-GRAM address, built-in vector table address, and user vector table address.
+
+`f18a_gpu_copy()` and `f18a_gpu_fill()` wrap the two `BLKCPY` modes. Both
+operate on the normal 16 KB VRAM range (`>0000` through `>3FFF`) and reject
+zero-length or crossing ranges.
+
+`f18a_gpu_exec()` stages the standard parameter block and runs a vector. It is
+primarily useful for `BLKCPY` and the by-index forms of `FONTLD`, `GETINF`,
+and `GETIDX`. The simple interface does not provide the extra parameter block
+fields or the 10-byte name buffer needed by some catalog operations; dedicated
+wrappers should be added if those are required.
+
+All four functions return `GFX_ERR_UNSUPPORTED` when the active VDP is not an
+F18A and `GFX_ERR_WRONG_MODE` unless the current mode is ForceCommand's managed
+80x30 text mode (the mode that leaves the F18A unlocked and initialized).
+
+`gfx_get_info()` reports `GFX_CAP_F18A_GPU` in that mode, allowing programs to
+detect the public GPU block-copy API without probing directly.
+
+The 80x30 text scroll routine uses four low-level BLKCPY calls: move the text
+rows, clear the last text row, move the attribute rows, and clear the last
+attribute row. This replaces the older custom GPU scroll program that was
+uploaded to `>3F00` at runtime.
