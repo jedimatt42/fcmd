@@ -11,7 +11,8 @@ make -C utilities/gcc/<directory>
 ```
 
 `make subdirs` from the repository root builds these utilities along with the
-examples. Each directory copies its finished program to `FC/BIN/`.
+examples. Both trees compile against the shared SDK in [fcsdk](../../fcsdk).
+Each directory copies its finished program to `FC/BIN/`.
 
 ## Programs
 

@@ -3,7 +3,7 @@
 This document describes how a C program calls a ForceCommand API function, how
 the call reaches the implementation in a banked cartridge/ROM bank, and how
 banked and SAMS-banked calls differ. It reflects the current ABI as generated
-into `example/gcc/fcsdk/fc_api.h`.
+into `fcsdk/fc_api.h`.
 
 ## Overview
 

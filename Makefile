@@ -50,7 +50,7 @@ linkfile.m4: scripts/gen-linkfile-m4.py linkfile.m4.in src/fcbanner.asm $(wildca
 	python3 ./scripts/gen-linkfile-m4.py $@
 
 subdirs: build_0x6000
-	cp build_0x6000/fcsdk.linkfile example/gcc/fcsdk/fc.ld
+	cp build_0x6000/fcsdk.linkfile fcsdk/fc.ld
 	set -e; for d in $(SUBDIRS); do $(MAKE) -C example/gcc/$$d; done
 	set -e; for d in $(UTIL_SUBDIRS); do $(MAKE) -C utilities/gcc/$$d; done
 
@@ -72,14 +72,7 @@ apitest-dsk: APITEST.DSK
 test-fcarc:
 	python3 scripts/test_fcarc.py
 
-fcsdk: subdirs
-	rm -fr ./fcsdk
-	cp -a example/gcc/fcsdk ./fcsdk
-	cp -a example/gcc/hello ./fcsdk/hello
-	cp -a example/gcc/samshello ./fcsdk/samshello
-	find fcsdk -name "objects" -o -name "mapfile" -o -name "*HELLO*" | xargs rm -r
-
-forcecmd_$(VER).zip: build_0x6000 build_0x0000 subdirs support fcsdk
+forcecmd_$(VER).zip: build_0x6000 build_0x0000 subdirs support
 	rm -f $@
 	zip -j $@ README.md build_0x0000/FCMD_0000.bin build_0x0000/FCMDG1.bin build_0x6000/FCMD.RPK build_0x6000/FCMDC.bin build_0x6000/FCMDG.bin
 	zip -r $@ $(SUPPORT) fcsdk scripts/fcarc.py scripts/test_fcarc.py utilities/gcc/fcarc/README.md
@@ -95,7 +88,6 @@ clean:
 	$(MAKE) -C FC clean
 	for d in $(SUBDIRS); do $(MAKE) -C example/gcc/$$d clean; done
 	for d in $(UTIL_SUBDIRS); do $(MAKE) -C utilities/gcc/$$d clean; done
-	rm -fr fcsdk
 
 else
 
@@ -233,7 +225,7 @@ $(OBJ_DIR)/%.o: src/libti99/%.c | $(OBJ_DIR)
 # API table generation (per-variant — bank addresses depend on BASE_ADDR)
 $(OBJ_DIR)/api.asm: fc_api.lst scripts/makeapi.py fc_api_template | $(OBJ_DIR)
 	grep DECLARE_BANKED src/libti99/*.h src/*.h >$(OBJ_DIR)/api.banks
-	python3 ./scripts/makeapi.py fc_api.lst $(OBJ_DIR)/api.asm $(OBJ_DIR)/api.banks example/gcc/fcsdk/fc_api.h $(BASE_ADDR)
+	python3 ./scripts/makeapi.py fc_api.lst $(OBJ_DIR)/api.asm $(OBJ_DIR)/api.banks fcsdk/fc_api.h $(BASE_ADDR)
 
 # api.asm is per-variant (in OBJ_DIR), so explicit rule needed — pattern rule looks for it at project root
 $(OBJ_DIR)/api.o: $(OBJ_DIR)/api.asm | $(OBJ_DIR)

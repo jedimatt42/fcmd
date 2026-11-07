@@ -2,8 +2,7 @@
 """Audit ForceCommand API coverage by the example/gcc test programs.
 
 Each name in fc_api.lst is searched for as a whole word in the example/gcc
-sources (*.c/*.h). The fcsdk directory (generated header) and build objects
-are skipped.
+sources (*.c/*.h). Build object directories are skipped.
 
 Usage:
   scripts/api_coverage.py                 # per-API coverage list
@@ -22,7 +21,7 @@ import sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 APILIST = os.path.join(ROOT, "fc_api.lst")
 EXAMPLES = os.path.join(ROOT, "example", "gcc")
-SKIP_DIRS = {"fcsdk", "objects"}
+SKIP_DIRS = {"objects"}
 
 
 def load_api():

@@ -547,7 +547,7 @@ bank 14 rather than bank 8. The following integration files are required:
 - `src/libti99/vdp.h` for shared VDP definitions
 - `fc_api.lst`
 - `fc_api_template` for public constants and structures
-- Generated `example/gcc/fcsdk/fc_api.h`
+- Generated `fcsdk/fc_api.h`
 
 API entries may be reordered because the ForceCommand 3 ABI has not been
 released. The API list should nevertheless remain grouped by subsystem and

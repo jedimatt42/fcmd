@@ -112,7 +112,7 @@ CC=tms9900-gcc
 OBJCOPY=tms9900-objcopy
 OBJDUMP=tms9900-objdump
 XDM99?=$(shell which xdm99.py)
-FCSDK=$(abspath ../fcsdk)
+FCSDK=$(abspath ../../../fcsdk)
 ```
 
 Next, FNAME defines our final executable file name. This will be a TIFILES FIAD file. 

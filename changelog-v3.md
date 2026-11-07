@@ -310,8 +310,8 @@ repeated; that includes the v2.6 TIPIMAP `CS1`/`DSK5`–`DSK9` mappings.
 - `hex_from_uint`, `hex_to_int`, `str_from_uint`, `str_from_basic`, and
   `str_from_float` replace and extend the old conversion helpers.
 - `str_cmp`/`str_cmp_icase` now compare the first character correctly.
-- The SDK header is generated into `fcsdk/fc_api.h` and is also kept in
-  `example/gcc/fcsdk/fc_api.h` for the examples.
+- The SDK header is generated into `fcsdk/fc_api.h`, which the examples and
+  utilities compile against.
 - `fc.ld` now provides the runtime symbols (`memcpy`, `memset`, double/float
   helpers) expected by the compiler.
 

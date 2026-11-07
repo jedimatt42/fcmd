@@ -3,6 +3,7 @@
 ForceCommand SDK example and test programs.
 
 Shipping utilities are kept separately under [utilities/gcc](../utilities/gcc).
+Both trees compile against the shared SDK in [fcsdk](../../fcsdk).
 
 ## Building
 
