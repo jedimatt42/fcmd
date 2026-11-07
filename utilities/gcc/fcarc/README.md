@@ -178,7 +178,7 @@ python3 scripts/test_fcarc.py
 ## Building
 
 ```bash
-make -C example/gcc/fcarc
+make -C utilities/gcc/fcarc
 ```
 
 The build produces `FCARC` and `FCUNARC` and copies both to `FC/BIN/`.

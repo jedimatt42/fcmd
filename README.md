@@ -150,7 +150,7 @@ legacy format has no path names.
 
 A dependency-free Python implementation is included as `scripts/fcarc.py`
 for creating, listing, extracting, and testing both formats on a modern
-computer. See `example/gcc/fcarc/README.md` for the format specification and
+computer. See `utilities/gcc/fcarc/README.md` for the format specification and
 usage details.
 
 ## End Users Wiki

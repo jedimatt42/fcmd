@@ -12,7 +12,10 @@ VER:=$(shell grep "\#define APP_VER" src/main.h | cut -d '"' -f2)
 
 SUPPORT=FC/BOOT FC/LOAD FC/FCMD FC/FCMDXB FC/BIN/DISKIMAGE FC/BIN/FCARC FC/BIN/FCUNARC FC/BIN/FCMENU FC/BIN/FTP FC/BIN/SAMPLE FC/BIN/SAY FC/BIN/TELNET FC/BIN/VIRGIL99 FC/BIN/FONT FC/BIN/MDOSANSI FC/BIN/MDOSFONT FC/BIN/MSXFONT FC/BIN/FCMDANSI FC/BIN/CHARSET
 
-SUBDIRS=hello samshello charset diskimage fcarc fcmenu ftp say telnet virgil font tuidemo graphicsdemo apitest sysinfo strtest strfmt listtest vartest exectest termtest termread vdptool audio sndtest exittest samstest dsrtest dsrcat lvl2file lvl2dir lvl2sector mousetest tipitest socktest tlstest speechtest gfxmodes gfxbitmap gfxpixels gfxlines gfxcircle gfxpaint gfxpages gfxtiles gfxpal gfxattr tuidraw tuiwin tuiwidgets tuievents tuidialogs
+SUBDIRS=hello samshello say tuidemo graphicsdemo apitest sysinfo strtest strfmt listtest vartest exectest termtest termread vdptool audio sndtest exittest samstest dsrtest dsrcat lvl2file lvl2dir lvl2sector mousetest tipitest socktest tlstest speechtest gfxmodes gfxbitmap gfxpixels gfxlines gfxcircle gfxpaint gfxpages gfxtiles gfxpal gfxattr tuidraw tuiwin tuiwidgets tuievents tuidialogs
+
+# Shipping utilities live apart from the example/test programs.
+UTIL_SUBDIRS=charset diskimage fcarc fcmenu ftp telnet virgil font
 
 # I0-I37 API test programs (plus the gfxbitmap transition probe), collected on
 # APITEST.DSK. The test programs are validated but are not part of the release.
@@ -49,6 +52,7 @@ linkfile.m4: scripts/gen-linkfile-m4.py linkfile.m4.in src/fcbanner.asm $(wildca
 subdirs: build_0x6000
 	cp build_0x6000/fcsdk.linkfile example/gcc/fcsdk/fc.ld
 	set -e; for d in $(SUBDIRS); do $(MAKE) -C example/gcc/$$d; done
+	set -e; for d in $(UTIL_SUBDIRS); do $(MAKE) -C utilities/gcc/$$d; done
 
 support:
 	$(MAKE) -C FC
@@ -78,7 +82,7 @@ fcsdk: subdirs
 forcecmd_$(VER).zip: build_0x6000 build_0x0000 subdirs support fcsdk
 	rm -f $@
 	zip -j $@ README.md build_0x0000/FCMD_0000.bin build_0x0000/FCMDG1.bin build_0x6000/FCMD.RPK build_0x6000/FCMDC.bin build_0x6000/FCMDG.bin
-	zip -r $@ $(SUPPORT) fcsdk scripts/fcarc.py scripts/test_fcarc.py example/gcc/fcarc/README.md
+	zip -r $@ $(SUPPORT) fcsdk scripts/fcarc.py scripts/test_fcarc.py utilities/gcc/fcarc/README.md
 
 clean:
 	rm -f forcecmd_*.zip
@@ -90,6 +94,7 @@ clean:
 	rm -fr build_0x6000 build_0x0000
 	$(MAKE) -C FC clean
 	for d in $(SUBDIRS); do $(MAKE) -C example/gcc/$$d clean; done
+	for d in $(UTIL_SUBDIRS); do $(MAKE) -C utilities/gcc/$$d clean; done
 	rm -fr fcsdk
 
 else

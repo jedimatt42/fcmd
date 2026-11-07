@@ -4,10 +4,9 @@ CC=tms9900-gcc
 OBJCOPY=tms9900-objcopy
 OBJDUMP=tms9900-objdump
 XDM99?=$(shell which xdm99.py)
-XAS99?=$(shell which xas99.py)
-FCSDK=$(abspath ../fcsdk)
+FCSDK=$(abspath ../../example/gcc/fcsdk)
 
-FNAME=DISKIMAGE
+FNAME=FTP
 
 LDFLAGS=\
   --script=$(FCSDK)/fc.ld --script=linkfile
@@ -37,6 +36,7 @@ $(FNAME): $(FNAME).bin
 .phony clean:
 	rm -fr objects
 	rm -f *.elf *.bin mapfile
+	rm -f $(FNAME)
 
 objects/%.o: %.asm
 	mkdir -p objects; cd objects; $(GAS) $(abspath $<) -o $(notdir $@)

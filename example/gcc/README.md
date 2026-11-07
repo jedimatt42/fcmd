@@ -1,6 +1,8 @@
 # Executable Examples
 
-ForceCommand SDK programs and the API test suite.
+ForceCommand SDK example and test programs.
+
+Shipping utilities are kept separately under [utilities/gcc](../utilities/gcc).
 
 ## Building
 
@@ -80,6 +82,4 @@ python3 scripts/api_coverage.py --groups   # per-prefix summary
 - [graphicsdemo](graphicsdemo) — graphics API demo.
 - [tuidemo](tuidemo) — interactive TUI demo.
 - [gfxbitmap](gfxbitmap) — graphics mode-transition probe (`GFXBITMAP [flags] [modes]`).
-- [charset](charset), [diskimage](diskimage), [fcmenu](fcmenu), [ftp](ftp),
-  [say](say), [telnet](telnet), [virgil](virgil), [font](font) — application
-  examples.
+- [say](say) — speech demo.

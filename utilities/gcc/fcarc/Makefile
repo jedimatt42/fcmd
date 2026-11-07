@@ -2,7 +2,7 @@ GAS=tms9900-as
 LD=tms9900-ld
 CC=tms9900-gcc
 OBJCOPY=tms9900-objcopy
-FCSDK=$(abspath ../fcsdk)
+FCSDK=$(abspath ../../example/gcc/fcsdk)
 XDM99?=$(shell which xdm99.py)
 
 FNAME_CREATE=FCARC
