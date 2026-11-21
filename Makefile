@@ -171,10 +171,17 @@ $(HEADBIN): $(BUILD_DIR)/$(FNAME).elf
 	$(OBJCOPY) -O binary -j .text $< $(HEADBIN)
 	@dd if=/dev/null of=$(HEADBIN) bs=$(COMMON_SIZE) seek=1
 
+# Bank 0 also carries the initialised .data image. The linker only checks
+# .bank0 against the 8K region, so verify the combined page here; otherwise
+# .data is silently truncated (and the console ROM build crashes at startup).
 $(BUILD_DIR)/bank0.page: $(BUILD_DIR)/$(FNAME).elf $(HEADBIN)
 	$(OBJCOPY) -O binary -j .data $< $(OBJ_DIR)/data.bin_tmp
 	$(OBJCOPY) -O binary -j .bank0 $< $(OBJ_DIR)/$(@F)_tmp
 	cat $(HEADBIN) $(OBJ_DIR)/$(@F)_tmp $(OBJ_DIR)/data.bin_tmp >$@
+	@sz=$$(wc -c <$@); if [ $$sz -gt 8192 ]; then \
+		echo "error: bank0 page overflow ($$sz bytes, max 8192)" >&2; \
+		rm -f $@; exit 1; \
+	fi
 	@dd if=/dev/null of=$@ bs=8192 seek=1
 
 $(BUILD_DIR)/bank%.page: $(BUILD_DIR)/$(FNAME).elf $(HEADBIN)
@@ -213,17 +220,19 @@ $(BUILD_DIR)/linkfile: linkfile.m4 | $(BUILD_DIR)
 	m4 -DBASE_ADDR=$(BASE_ADDR) -DOBJDIR=$(OBJ_DIR) $< > $@
 
 # Compilation rules
-$(OBJ_DIR)/%.o: src/%.c | $(OBJ_DIR)
+HDRS := $(wildcard src/*.h src/libti99/*.h)
+
+$(OBJ_DIR)/%.o: src/%.c $(HDRS) | $(OBJ_DIR)
 	cd $(OBJ_DIR); $(CC) -c $(abspath $<) $(CFLAGS) -o $(notdir $@)
 
 $(OBJ_DIR)/%.o: src/%.asm | $(OBJ_DIR)
 	cd $(OBJ_DIR); $(GAS) $(ASFLAGS) $(abspath $<) -o $(notdir $@)
 
-$(OBJ_DIR)/%.o: src/libti99/%.c | $(OBJ_DIR)
+$(OBJ_DIR)/%.o: src/libti99/%.c $(HDRS) | $(OBJ_DIR)
 	cd $(OBJ_DIR); $(CC) -c $(abspath $<) $(CFLAGS) -o $(notdir $@)
 
 # API table generation (per-variant — bank addresses depend on BASE_ADDR)
-$(OBJ_DIR)/api.asm: fc_api.lst scripts/makeapi.py fc_api_template $(wildcard src/*.h src/libti99/*.h) | $(OBJ_DIR)
+$(OBJ_DIR)/api.asm: fc_api.lst scripts/makeapi.py fc_api_template $(HDRS) | $(OBJ_DIR)
 	grep DECLARE_BANKED src/libti99/*.h src/*.h >$(OBJ_DIR)/api.banks
 	python3 ./scripts/makeapi.py fc_api.lst $(OBJ_DIR)/api.asm $(OBJ_DIR)/api.banks fcsdk/fc_api.h $(BASE_ADDR)
 

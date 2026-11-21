@@ -1,5 +1,5 @@
 #include "banks.h"
-#define MYBANK BANK(0)
+#define MYBANK BANK(8)
 
 #include "commands.h"
 
