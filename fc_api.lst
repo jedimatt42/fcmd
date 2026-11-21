@@ -232,3 +232,4 @@ f18a_gpu_copy
 f18a_gpu_exec
 f18a_gpu_fill
 f18a_gpu_info
+f18a_gpu_call

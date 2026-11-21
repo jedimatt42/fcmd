@@ -260,7 +260,11 @@ struct GfxCopy {
 };
 
 /*
- * F18A built-in GPU routine information, returned by f18a_gpu_info().
+ * ForceCommand GPU base information, returned by f18a_gpu_info().
+ *
+ * version is >FC01 (the base magic); free_addr is the first unused GPU GRAM
+ * address; vector_table is the host BLKCPY entry; user_vector_table is the
+ * current executable's app entry, or 0 if none is active.
  */
 struct F18aGpuInfo {
     int version;
@@ -269,12 +273,20 @@ struct F18aGpuInfo {
     unsigned int user_vector_table;
 };
 
-/* F18A built-in GPU routine vector indices. */
+/* The only built-in GPU routine is BLKCPY. */
 #define F18A_GPU_BLKCPY          0
-#define F18A_GPU_FONTLD          1
-#define F18A_GPU_GETINF          2
-#define F18A_GPU_GETIDX          3
-#define F18A_GPU_BLOBLD          4
+
+/*
+ * Argument block for a compiled GPU routine. func is copied to >3F01;
+ * arg[0..5] to >3F02-0D; result[0..5] is read from >3F20-2F. status is the
+ * GPU status byte from >3F0F.
+ */
+struct GpuCall {
+    unsigned char func;
+    unsigned char status;
+    unsigned int arg[6];
+    unsigned int result[6];
+};
 
 struct SamsInformation {
   int next_page;
@@ -732,6 +744,7 @@ typedef struct tui_widget tui_widget_t;
 #define FC_F18A_GPU_EXEC 0xcd
 #define FC_F18A_GPU_FILL 0xce
 #define FC_F18A_GPU_INFO 0xcf
+#define FC_F18A_GPU_CALL 0xd0
 
 // function: void audio_beep()
 DECL_FC_API_CALL(FC_AUDIO_BEEP, audio_beep, void, (), ())
@@ -1356,5 +1369,8 @@ DECL_FC_API_CALL(FC_F18A_GPU_FILL, f18a_gpu_fill, int, (unsigned int dst, int va
 
 // function: int f18a_gpu_info(struct F18aGpuInfo* info)
 DECL_FC_API_CALL(FC_F18A_GPU_INFO, f18a_gpu_info, int, (struct F18aGpuInfo* info), (info))
+
+// function: int f18a_gpu_call(struct GpuCall* call)
+DECL_FC_API_CALL(FC_F18A_GPU_CALL, f18a_gpu_call, int, (struct GpuCall* call), (call))
 
 #endif

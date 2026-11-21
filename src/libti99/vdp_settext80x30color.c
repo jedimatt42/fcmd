@@ -5,6 +5,7 @@
 #include "vdp_internal.h"
 #include "f18a_gpu.h"
 #include "gpu_scroll.h"
+#include "graphics.h"
 
 // TODO: text modes should not rely on conio support if possible...
 
@@ -57,15 +58,19 @@ int set_text80x30_color_raw() {
     VDP_SET_REGISTER(24 /* palette select */, 0x00);
 
     vdpchar = vdpchar80color;
-    scrn_scroll = fast_scrn_scroll_80color;
 
     // sprites are active when F18A is unlocked - this turns them all off.
     VDP_SET_REGISTER(0x33, 0x00);
     vdpmemset(gSprite, 0xd0, 128);
     vdpmemset(gColor, conio_scrnCol, nTextEnd+1);	// clear the color table
 
-    // Point the GPU at the F18A's built-in routine dispatcher.
-    bk_f18a_gpu_init();
+    // Install the ForceCommand GPU base. If the GPU cannot be initialized,
+    // fall back to the CPU scroll routine.
+    if (bk_f18a_gpu_init() == GFX_OK) {
+        scrn_scroll = fast_scrn_scroll_80color;
+    } else {
+        scrn_scroll = scrn_scroll_default;
+    }
 
 	gUnblank = unblank;
 	return unblank;

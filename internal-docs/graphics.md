@@ -146,8 +146,9 @@ not support sprites; passing an invalid value remains an error.
 ```
 
 `GFX_CAP_F18A_GPU` is reported only in the managed F18A 80x30 text mode and
-means the public `f18a_gpu_copy()`, `f18a_gpu_fill()`, and `f18a_gpu_exec()`
-functions are available.
+means the public `f18a_gpu_copy()`, `f18a_gpu_fill()`, `f18a_gpu_exec()`, and
+`f18a_gpu_call()` functions are available. ForceCommand installs its own base
+image at GRAM `>4000`; see [f18a-gpu.md](f18a-gpu.md).
 
 Capabilities describe the public behavior, not whether an operation uses a
 software or hardware implementation. For example, `GFX_CAP_LINES` may be
@@ -470,9 +471,9 @@ interface, so they also return `GFX_ERR_UNSUPPORTED` until that mapping is
 provided.
 
 Palette writes validate the active VDP and index before touching VDP registers.
-The F18A implementation unlocks the extended registers (two `0x1C` writes to
-VR57), writes the affected 16-entry palette bank through VR47, then re-locks by
-writing `0x00` to VR57. It must **not** use `lock_f18a()` for this: that writes
+The F18A implementation unlocks the extended registers (clear VR57, then two
+`0x1C` writes; the clear makes the sequence idempotent), writes the affected
+16-entry palette bank through VR47, then re-locks by writing `0x00` to VR57. It must **not** use `lock_f18a()` for this: that writes
 VR50 bit 7, which reboots the F18A (and clears VR2), destroying the active
 graphics mode. `F18A_TEXT80X30` is left unlocked because its attributes and GPU
 scroll need the enhanced registers.
@@ -494,8 +495,8 @@ TMS9918A-compatible tables are laid out without overlap:
   sprite pattern overwrites the same-numbered character pattern).
 
 The implementation must account for ForceCommand's existing reserved VRAM,
-including command/history storage and the F18A GPU parameter area at
-`0x3F00-0x3F10`. ForceCommand
+including command/history storage and the F18A GPU mailbox at
+`0x3F00-0x3F2F`. ForceCommand
 filesystem calls also use VDP-resident PAB, parameter, and file-data buffers.
 Those buffers must be relocated and reserved as part of each successful mode
 change; applications must use the addresses reported by the existing system

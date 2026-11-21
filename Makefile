@@ -12,7 +12,7 @@ VER:=$(shell grep "\#define APP_VER" src/main.h | cut -d '"' -f2)
 
 SUPPORT=FC/BOOT FC/LOAD FC/FCMD FC/FCMDXB FC/BIN/DISKIMAGE FC/BIN/FCARC FC/BIN/FCUNARC FC/BIN/FCMENU FC/BIN/FTP FC/BIN/SAMPLE FC/BIN/SAY FC/BIN/TELNET FC/BIN/VIRGIL99 FC/BIN/FONT FC/BIN/MDOSANSI FC/BIN/MDOSFONT FC/BIN/MSXFONT FC/BIN/FCMDANSI FC/BIN/CHARSET
 
-SUBDIRS=hello samshello say tuidemo graphicsdemo apitest sysinfo strtest strfmt listtest vartest exectest termtest termread vdptool audio sndtest exittest samstest dsrtest dsrcat lvl2file lvl2dir lvl2sector mousetest tipitest socktest tlstest speechtest gfxmodes gfxbitmap gfxpixels gfxlines gfxcircle gfxpaint gfxpages gfxtiles gfxpal gfxattr tuidraw tuiwin tuiwidgets tuievents tuidialogs
+SUBDIRS=hello samshello say tuidemo graphicsdemo apitest sysinfo strtest strfmt listtest vartest exectest termtest termread vdptool gramdump audio sndtest exittest samstest dsrtest dsrcat lvl2file lvl2dir lvl2sector mousetest tipitest socktest tlstest speechtest gfxmodes gfxbitmap gfxpixels gfxlines gfxcircle gfxpaint gfxpages gfxtiles gfxpal gfxattr tuidraw tuiwin tuiwidgets tuievents tuidialogs
 
 # Shipping utilities live apart from the example/test programs.
 UTIL_SUBDIRS=charset diskimage fcarc fcmenu ftp telnet virgil font
@@ -223,7 +223,7 @@ $(OBJ_DIR)/%.o: src/libti99/%.c | $(OBJ_DIR)
 	cd $(OBJ_DIR); $(CC) -c $(abspath $<) $(CFLAGS) -o $(notdir $@)
 
 # API table generation (per-variant — bank addresses depend on BASE_ADDR)
-$(OBJ_DIR)/api.asm: fc_api.lst scripts/makeapi.py fc_api_template | $(OBJ_DIR)
+$(OBJ_DIR)/api.asm: fc_api.lst scripts/makeapi.py fc_api_template $(wildcard src/*.h src/libti99/*.h) | $(OBJ_DIR)
 	grep DECLARE_BANKED src/libti99/*.h src/*.h >$(OBJ_DIR)/api.banks
 	python3 ./scripts/makeapi.py fc_api.lst $(OBJ_DIR)/api.asm $(OBJ_DIR)/api.banks fcsdk/fc_api.h $(BASE_ADDR)
 

@@ -16,13 +16,16 @@ The Force Command mechanism isn't trying to be all for everyone. There are infin
 ```asm
     REF main
     data 0xFCFC   ; Flag for valid Force Command binary
-    data 0x0004   ; SAMS page count - 0x0004 means sams required, 2 banks of 2 pages - 4
+    data 0x8004   ; SAMS page count; bit 15 marks the extended header
     data 0xFCFC   ; Flag that program promises to use screen safely
     data main     ; program start address
+    data 0x0000   ; GPU blob block - 0 means no blob
+    data 0x0000   ; GPU blob length - 0 means no blob
 ```
 
-The only difference here is the second word of the header is now 0x0004 to indicate that we are to be loaded into
-paged memory as 4 pages, 2 8k banks. So that gives us space for bank 0 and bank 1.
+The difference here is the second word of the header is now 0x8004: bit 15 marks the extended header and the low
+15 bits say we are to be loaded into paged memory as 4 pages, 2 8k banks. That gives us space for bank 0 and
+bank 1. The last two words are zero because this program has no GPU blob.
 
 The _header.o will end up in bank 0 when we link. And main must be in bank 0.
 

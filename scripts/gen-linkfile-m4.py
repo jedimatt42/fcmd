@@ -29,6 +29,7 @@ ASM_BANKS = {
     'fg99.asm': 1,
     'oem_high_chars.asm': 3,
     'oem_low_chars.asm': 3,
+    'gpu_base.asm': 7,
     'pointer.asm': 7,
 }
 

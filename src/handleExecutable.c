@@ -16,6 +16,7 @@
 #include "setupScreen.h"
 #include "runScript.h"
 #include "procinfo.h"
+#include "f18a_gpu.h"
 #include <vdp.h>
 #include <conio.h>
 
@@ -34,12 +35,20 @@ int loadPagedFormat(struct DeviceServiceRoutine* dsr, int iocode, char* filename
 #define FMT_EXE 1
 #define FMT_SAMS 2
 
+/* Bit 15 of the sams word marks the extended header. */
+#define FCH_EXT 0x8000
+
 struct FCProgramHeader {
   int fcfc;
   int sams;
   int safe;
   int start;
+  int gpu_blob_block;
+  int gpu_blob_length;
 };
+
+static int gpu_blob_block;
+static int gpu_blob_length;
 
 #define SAMS_REG(x) *((volatile int*)(0x4000 + (x << 1)))
 
@@ -72,6 +81,8 @@ int handleExecutable(char *ext)
 {
   int cmd_type = 0;
   int err = 0;
+  int gpu_pushed = 0;
+  struct GpuFrame gpu_frame;
 
   // The ProcInfo for this level lives on the caller's stack page. It is
   // valid while loading, but not while a child executable runs on its own
@@ -108,6 +119,12 @@ int handleExecutable(char *ext)
   }
 
   if (cmd_type == BIN) {
+    /*
+     * setupScreen can relocate the filesystem buffers. Remember where the
+     * loader put the GPU blob before calling it.
+     */
+    unsigned int gpu_blob_vram = vdp_filesystem_file_buffer & 0x3FFF;
+
     int stackPage = allocateStackPage();
     if (stackPage < 0) {
       bk_free_pages(sams_next_page - procInfo.base_page);
@@ -127,6 +144,17 @@ int handleExecutable(char *ext)
       bk_setupScreen(displayWidth);
     }
 
+    /*
+     * The GPU blob was read into the filesystem file buffer by the loader.
+     * Push it after setupScreen so a mode change cannot discard a freshly
+     * allocated blob. gpu_push saves the current free pointer/entry even if
+     * it fails, so pop always restores the parent's state.
+     */
+    if (gpu_blob_length > 0) {
+      bk_gpu_push(gpu_blob_vram, gpu_blob_length, &gpu_frame);
+      gpu_pushed = 1;
+    }
+
     // The parent's hook lives in the parent's code pages, which are not mapped
     // while the child runs. Do not leave a dangling callback installed.
     bk_set_identify_hook(0);
@@ -141,6 +169,13 @@ int handleExecutable(char *ext)
 
     // Go to bank 0 to actually launch so API tables are visible.
     err = bk_runExecutable(ext);
+
+    // Reclaim the child's GPU allocation. The parent's code is still resident
+    // below the child's frame; gpu_pop only restores the free pointer/entry.
+    if (gpu_pushed) {
+      bk_gpu_pop(&gpu_frame);
+      gpu_pushed = 0;
+    }
 
     // run_external() has restored the parent page at >3000. Put the resident
     // context back for the outer executable, if any.
@@ -247,6 +282,9 @@ int loadFromPath(const char *ext, const char *entry, int* cmd_type) {
   struct DeviceServiceRoutine *dsr = 0;
   char path[256];
 
+  gpu_blob_block = 0;
+  gpu_blob_length = 0;
+
   setDsrAndPath(ext, entry, &dsr, path);
   if (!dsr) {
     return 1;
@@ -314,11 +352,30 @@ int checkFormat(struct DeviceServiceRoutine* dsr, int iocode, char* filename, st
     return FMT_ERR;
   }
 
-  if (header.sams == 0) {
-  *pages = 6;
+  int extended = (header.sams & FCH_EXT) != 0;
+  int page_count = header.sams & 0x7FFF;
+
+  gpu_blob_block = 0;
+  gpu_blob_length = 0;
+  if (extended) {
+    int block = header.gpu_blob_block;
+    int length = header.gpu_blob_length;
+    /*
+     * Zero fields mean there is no blob. Ignore a malformed descriptor rather
+     * than reading a stale filesystem buffer later.
+     */
+    if (block > 0 && length > 0 &&
+        length <= GPU_MAX_BLOB && ((length + 255) >> 8) <= 255) {
+      gpu_blob_block = block;
+      gpu_blob_length = length;
+    }
+  }
+
+  if (page_count == 0) {
+    *pages = 6;
     return FMT_EXE;
   } else {
-    *pages = header.sams;
+    *pages = page_count;
     return FMT_SAMS;
   }
 }
@@ -354,6 +411,9 @@ int loadPagedFormat(struct DeviceServiceRoutine* dsr, int iocode, char* filename
   bk_lvl2_input_cpu(dsr->crubase, iocode, filename, 0, addInfoPtr);
 
   int totalBlocks = addInfoPtr->first_sector;
+  if (gpu_blob_block > 0 && gpu_blob_block < totalBlocks) {
+    totalBlocks = gpu_blob_block;
+  }
   int extraPages = (totalBlocks >> 4) - pages;
   if (extraPages < 4) {
     // ensure we have at least enough pages to fill upper memory expansion
@@ -404,6 +464,19 @@ int loadPagedFormat(struct DeviceServiceRoutine* dsr, int iocode, char* filename
     page++;
   }
 
+  if (gpu_blob_length > 0 && gpu_blob_block > 0) {
+    int blocks = (gpu_blob_length + 255) >> 8;
+    if (gpu_blob_length > GPU_MAX_BLOB || blocks > 255) {
+      gpu_blob_length = 0;
+    } else {
+      clearAddInfo(addInfoPtr);
+      addInfoPtr->first_sector = gpu_blob_block;
+      if (bk_lvl2_input(dsr->crubase, iocode, filename, blocks, addInfoPtr)) {
+        gpu_blob_length = 0;
+      }
+    }
+  }
+
   return 0;
 }
 
@@ -418,6 +491,10 @@ int loadFlatFormat(struct DeviceServiceRoutine *dsr, int iocode, char *filename,
   bk_lvl2_input_cpu(dsr->crubase, iocode, filename, 0, addInfoPtr);
 
   int totalBlocks = addInfoPtr->first_sector;
+  // The GPU blob is appended after the CPU image; do not load it as code.
+  if (gpu_blob_block > 0 && gpu_blob_block < totalBlocks) {
+    totalBlocks = gpu_blob_block;
+  }
   // Allow the file to be larger, but only load the first 24K.
   if (totalBlocks > 96) {
     totalBlocks = 96;
@@ -443,6 +520,19 @@ int loadFlatFormat(struct DeviceServiceRoutine *dsr, int iocode, char *filename,
 
     cpuAddr += load_size;
     blockId += blk_cnt;
+  }
+
+  if (gpu_blob_length > 0 && gpu_blob_block > 0) {
+    int blocks = (gpu_blob_length + 255) >> 8;
+    if (gpu_blob_length > GPU_MAX_BLOB || blocks > 255) {
+      gpu_blob_length = 0;
+    } else {
+      clearAddInfo(addInfoPtr);
+      addInfoPtr->first_sector = gpu_blob_block;
+      if (bk_lvl2_input(dsr->crubase, iocode, filename, blocks, addInfoPtr)) {
+        gpu_blob_length = 0;
+      }
+    }
   }
   return 0;
 }

@@ -83,4 +83,5 @@ python3 scripts/api_coverage.py --groups   # per-prefix summary
 - [graphicsdemo](graphicsdemo) — graphics API demo.
 - [tuidemo](tuidemo) — interactive TUI demo.
 - [gfxbitmap](gfxbitmap) — graphics mode-transition probe (`GFXBITMAP [flags] [modes]`).
+- [gramdump](gramdump) — F18A GPU base diagnostic; validates GRAM `>4000` and the public GPU API.
 - [say](say) — speech demo.

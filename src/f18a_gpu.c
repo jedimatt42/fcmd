@@ -6,58 +6,55 @@
 #include "graphics.h"
 #include <vdp.h>
 
-/* Select the F18A GPU status register while running a built-in routine. */
-#define F18A_GPU_STATUS_REG 0x0f
-#define F18A_GPU_STATUS_SR2 2
-#define F18A_GPU_RUNNING 0x80
+extern const unsigned char gpu_base[];
+extern const unsigned char gpu_boot[];
 
-/* VR54/VR55 hold the GPU program counter. */
-#define F18A_GPU_PC_MSB 0x36
-#define F18A_GPU_PC_LSB 0x37
+static unsigned int gpu_free;
+static unsigned int gpu_entry;
+static int gpu_base_ready;
 
-/* Writing >01 to VR56 triggers the GPU at its current program counter. */
-#define F18A_GPU_TRIGGER 0x38
+#define GPU_BASE_CHECK_ADDR 0x3000
 
-/* The built-in routines only address the normal 16 KB of VRAM. */
-#define F18A_GPU_VRAM_END 0x4000
+static void gpu_unlock(void) {
+    /*
+     * Clearing VR57 first makes the sequence deterministic. Writing >1C
+     * twice only unlocks from a known-locked state; if the F18A is already
+     * unlocked, the first >1C write re-locks it.
+     */
+    VDP_SET_REGISTER(0x39, 0x00);
+    VDP_SET_REGISTER(0x39, 0x1C);
+    VDP_SET_REGISTER(0x39, 0x1C);
+}
 
-static int f18a_gpu_ready(void) {
-    if (vdp_type != VDP_F18A) return GFX_ERR_UNSUPPORTED;
-    if ((nTextFlags & (TEXT_FLAG_IS_F18A | TEXT_HEIGHT_30)) !=
-        (TEXT_FLAG_IS_F18A | TEXT_HEIGHT_30)) {
-        return GFX_ERR_WRONG_MODE;
+static void gpu_trigger(unsigned int pc) {
+    VDP_SET_REGISTER(0x36, (unsigned char)(pc >> 8));
+    VDP_SET_REGISTER(0x37, (unsigned char)pc);
+}
+
+static void gpu_write_byte(unsigned int addr, unsigned char value) {
+    VDP_SET_ADDRESS_WRITE(addr);
+    VDPWD = value;
+}
+
+static unsigned char gpu_read_byte(unsigned int addr) {
+    VDP_SET_ADDRESS(addr);
+    return VDPRD;
+}
+
+static int gpu_wait_done(void) {
+    unsigned int timeout = 0xFFFF;
+    while (timeout--) {
+        if (gpu_read_byte(GPU_DONE) == 0xFF) {
+            return 1;
+        }
     }
-    return GFX_OK;
+    return 0;
 }
 
-static int f18a_gpu_valid_range(unsigned int addr, unsigned int len) {
-    /* Keep all comparisons in the positive signed range. BLKCPY would otherwise
-       wrap a 16-bit count or run into GPU GRAM above >3FFF. */
-    if (len == 0 || (len & 0x8000)) return GFX_ERR_RANGE;
-    if (addr & 0x8000) return GFX_ERR_RANGE;
-    if (addr >= F18A_GPU_VRAM_END) return GFX_ERR_RANGE;
-    if (len > (unsigned int)(F18A_GPU_VRAM_END - addr)) return GFX_ERR_RANGE;
-    return GFX_OK;
-}
-
-static int f18a_gpu_valid_copy(unsigned int src, unsigned int dst,
-                               unsigned int len) {
-    int result = f18a_gpu_valid_range(src, len);
-    if (result != GFX_OK) return result;
-    return f18a_gpu_valid_range(dst, len);
-}
-
-static void f18a_gpu_wait(void) {
-    VDP_SET_REGISTER(F18A_GPU_STATUS_REG, F18A_GPU_STATUS_SR2);
-    while (VDPST & F18A_GPU_RUNNING) {
-    }
-    VDP_SET_REGISTER(F18A_GPU_STATUS_REG, 0);
-}
-
-static void f18a_gpu_set_params(int vector, int flags, unsigned int src,
-                                unsigned int dst, unsigned int len) {
-    VDP_SET_ADDRESS_WRITE(F18A_GPU_PARAMS);
-    VDPWD = (unsigned char)vector;
+int f18a_gpu_blkcpy_raw(unsigned int src, unsigned int dst,
+                        unsigned int len, int flags) {
+    VDP_SET_ADDRESS_WRITE(GPU_PARAMS);
+    VDPWD = 0;                          /* unused */
     VDPWD = (unsigned char)flags;
     VDPWD = (unsigned char)(src >> 8);
     VDPWD = (unsigned char)src;
@@ -65,91 +62,164 @@ static void f18a_gpu_set_params(int vector, int flags, unsigned int src,
     VDPWD = (unsigned char)dst;
     VDPWD = (unsigned char)(len >> 8);
     VDPWD = (unsigned char)len;
+
+    gpu_write_byte(GPU_DONE, 0);
+    gpu_unlock();
+    gpu_trigger(GPU_HOST_BLKCPY);
+    return gpu_wait_done() ? GFX_OK : GFX_ERR_BUSY;
 }
 
-static void f18a_gpu_trigger(void) {
-    VDP_SET_REGISTER(F18A_GPU_TRIGGER, 0x01);
-    f18a_gpu_wait();
+static int gpu_check_base(void) {
+    unsigned char check[4];
+    if (f18a_gpu_blkcpy_raw(GPU_BASE_ADDR, GPU_BASE_CHECK_ADDR, 4, 0) != GFX_OK) {
+        return 0;
+    }
+    vdpmemread(GPU_BASE_CHECK_ADDR, (char*)check, 4);
+    return check[0] == 0x03 && check[1] == 0x40 &&
+           check[2] == 0xFC && check[3] == 0x01;
 }
 
-static void f18a_gpu_exec_raw(int vector, int flags, unsigned int src,
-                              unsigned int dst, unsigned int len) {
-    f18a_gpu_set_params(vector, flags, src, dst, len);
-    f18a_gpu_trigger();
+static int gpu_upload_base(void) {
+    vdpmemcpy(GPU_BASE_CHECK_ADDR, (const char*)gpu_base, GPU_BASE_LEN);
+    vdpmemcpy(GPU_BOOT_ADDR, (const char*)gpu_boot, GPU_BOOT_LEN);
+
+    gpu_write_byte(GPU_DONE, 0);
+    gpu_unlock();
+    gpu_trigger(GPU_BOOT_ADDR);
+    if (!gpu_wait_done()) {
+        return 0;
+    }
+    return gpu_check_base();
 }
 
-void f18a_gpu_init(void) {
-    /* Stage a harmless request before loading the GPU PC: on the F18A, writing
-       the PC registers starts the dispatcher if the GPU is idle. Do not trigger
-       VR56 here. If the GPU was just reset (for example by lock_f18a() while
-       re-entering 80x30 mode), its PC is still 0, so triggering first would
-       execute VRAM at >0000 instead of the built-in dispatcher. */
-    f18a_gpu_set_params(F18A_GPU_GETINF, 0, 0, 0, 0);
-    VDP_SET_REGISTER(F18A_GPU_PC_MSB, (unsigned char)(F18A_GPU_DISPATCH >> 8));
-    VDP_SET_REGISTER(F18A_GPU_PC_LSB, (unsigned char)F18A_GPU_DISPATCH);
-    f18a_gpu_wait();
+int f18a_gpu_init(void) {
+    if (vdp_type != VDP_F18A) {
+        return GFX_ERR_UNSUPPORTED;
+    }
+
+    gpu_unlock();
+
+    if (gpu_base_ready) {
+        if (gpu_check_base()) {
+            if (gpu_free == 0) {
+                gpu_free = GPU_FREE_INIT;
+            }
+            return GFX_OK;
+        }
+        /* The base is gone; any active executable GPU code is invalid too. */
+        gpu_base_ready = 0;
+        gpu_free = 0;
+        gpu_entry = 0;
+    }
+
+    if (!gpu_upload_base()) {
+        gpu_base_ready = 0;
+        gpu_free = 0;
+        gpu_entry = 0;
+        return GFX_ERR_BUSY;
+    }
+
+    if (gpu_free == 0) {
+        gpu_free = GPU_FREE_INIT;
+        gpu_entry = 0;
+    }
+    gpu_base_ready = 1;
+    return GFX_OK;
 }
 
-int f18a_gpu_info(struct F18aGpuInfo* info) {
-    char buf[8];
+int f18a_gpu_ready(void) {
     int result;
 
-    if (!info) return GFX_ERR_INVALID;
-    result = f18a_gpu_ready();
-    if (result != GFX_OK) return result;
-
-    f18a_gpu_exec_raw(F18A_GPU_GETINF, 0, 0, 0, 0);
-    vdpmemread(F18A_GPU_PARAMS, buf, 8);
-    info->version = (unsigned char)buf[0];
-    info->free_addr = ((unsigned char)buf[2] << 8) | (unsigned char)buf[3];
-    info->vector_table = ((unsigned char)buf[4] << 8) | (unsigned char)buf[5];
-    info->user_vector_table = ((unsigned char)buf[6] << 8) | (unsigned char)buf[7];
-    return GFX_OK;
-}
-
-int f18a_gpu_copy(unsigned int src, unsigned int dst, unsigned int len) {
-    int result = f18a_gpu_ready();
-    if (result != GFX_OK) return result;
-    result = f18a_gpu_valid_copy(src, dst, len);
-    if (result != GFX_OK) return result;
-    f18a_gpu_exec_raw(F18A_GPU_BLKCPY, 0, src, dst, len);
-    return GFX_OK;
-}
-
-int f18a_gpu_fill(unsigned int dst, int value, unsigned int len) {
-    int result = f18a_gpu_ready();
-    if (result != GFX_OK) return result;
-    if (value < 0 || value > 255) return GFX_ERR_RANGE;
-    result = f18a_gpu_valid_range(dst, len);
-    if (result != GFX_OK) return result;
-
-    VDP_SET_ADDRESS_WRITE(F18A_GPU_FILLBYTE);
-    VDPWD = (unsigned char)value;
-    f18a_gpu_exec_raw(F18A_GPU_BLKCPY, 1, F18A_GPU_FILLBYTE, dst, len);
-    return GFX_OK;
-}
-
-int f18a_gpu_exec(int vector, int flags, unsigned int src, unsigned int dst,
-                  unsigned int len) {
-    int result = f18a_gpu_ready();
-    if (result != GFX_OK) return result;
-    if (vector < 0 || vector > F18A_GPU_BLOBLD) return GFX_ERR_INVALID;
-    if (vector == F18A_GPU_BLKCPY) {
-        result = f18a_gpu_valid_copy(src, dst, len);
-        if (result != GFX_OK) return result;
+    if (vdp_type != VDP_F18A) {
+        return GFX_ERR_UNSUPPORTED;
     }
-    f18a_gpu_exec_raw(vector, flags, src, dst, len);
+    if ((nTextFlags & (TEXT_FLAG_IS_F18A | TEXT_HEIGHT_30)) !=
+        (TEXT_FLAG_IS_F18A | TEXT_HEIGHT_30)) {
+        return GFX_ERR_WRONG_MODE;
+    }
+    if (!gpu_base_ready) {
+        result = f18a_gpu_init();
+        if (result != GFX_OK) {
+            return result;
+        }
+    }
     return GFX_OK;
+}
+
+unsigned int f18a_gpu_get_free(void) {
+    return gpu_free;
+}
+
+unsigned int f18a_gpu_get_entry(void) {
+    return gpu_entry;
+}
+
+int gpu_push(unsigned int vram_src, unsigned int len, struct GpuFrame* frame) {
+    int result;
+
+    if (!frame) return GFX_ERR_INVALID;
+
+    frame->free_addr = gpu_free;
+    frame->entry = gpu_entry;
+
+    /*
+     * The loader may run before the executable selects an 80x30 mode. Verify
+     * or install the base now; the blob survives a later mode switch.
+     */
+    result = f18a_gpu_init();
+    if (result != GFX_OK) {
+        gpu_entry = 0;
+        return result;
+    }
+    if (len == 0) {
+        gpu_entry = 0;
+        return GFX_ERR_INVALID;
+    }
+    if (vram_src >= 0x4000 || len > (unsigned int)(0x4000 - vram_src)) {
+        gpu_entry = 0;
+        return GFX_ERR_RANGE;
+    }
+    if (gpu_free < GPU_FREE_INIT || gpu_free > GPU_STACK_LIMIT ||
+        len > (unsigned int)(GPU_STACK_LIMIT - gpu_free)) {
+        gpu_entry = 0;
+        return GFX_ERR_NO_VRAM;
+    }
+
+    result = f18a_gpu_blkcpy_raw(vram_src, gpu_free, len, 0);
+    if (result != GFX_OK) {
+        gpu_entry = 0;
+        return result;
+    }
+
+    gpu_entry = gpu_free;
+    gpu_free += (len + 1) & ~1;
+
+    /*
+     * Only the managed 80x30 mode expects the F18A to stay unlocked. In any
+     * other mode restore the lock state the mode setup selected.
+     */
+    if ((nTextFlags & (TEXT_FLAG_IS_F18A | TEXT_HEIGHT_30)) !=
+        (TEXT_FLAG_IS_F18A | TEXT_HEIGHT_30)) {
+        VDP_SET_REGISTER(0x39, 0x00);
+    }
+    return GFX_OK;
+}
+
+void gpu_pop(struct GpuFrame* frame) {
+    if (!frame) return;
+    gpu_free = frame->free_addr;
+    gpu_entry = frame->entry;
 }
 
 void f18a_gpu_blkcpy(unsigned int src, unsigned int dst, unsigned int len) {
-    /* BLKCPY flag 0: increment the source address (copy). */
-    f18a_gpu_exec_raw(F18A_GPU_BLKCPY, 0, src, dst, len);
+    if (gpu_base_ready) {
+        f18a_gpu_blkcpy_raw(src, dst, len, 0);
+    }
 }
 
 void f18a_gpu_blkfill(unsigned int dst, int value, unsigned int len) {
-    /* BLKCPY flag != 0: read once from the fixed source and repeat it. */
-    VDP_SET_ADDRESS_WRITE(F18A_GPU_FILLBYTE);
-    VDPWD = (unsigned char)value;
-    f18a_gpu_exec_raw(F18A_GPU_BLKCPY, 1, F18A_GPU_FILLBYTE, dst, len);
+    if (gpu_base_ready) {
+        gpu_write_byte(GPU_FILLBYTE, (unsigned char)value);
+        f18a_gpu_blkcpy_raw(GPU_FILLBYTE, dst, len, 1);
+    }
 }

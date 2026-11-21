@@ -38,21 +38,27 @@ We then return 0 to indicate program success. A non-zero value will cause Force 
 ```asm
     REF main
     data 0xFCFC   ; Flag for valid Force Command binary
-    data 0x0000   ; SAMS page count - 0x0000 means no sams required
+    data 0x8000   ; SAMS page count; bit 15 marks the extended header
     data 0xFCFC   ; Flag that program promises to use screen safely
     data main     ; program start address
+    data 0x0000   ; GPU blob block - 0 means no blob
+    data 0x0000   ; GPU blob length - 0 means no blob
 ```
 
 This header module must be in address 0xA000 when the executable is loaded. We'll see how that is handled in the linkfile later. 
 
 Written in 9900 asm, we first reference our entry point function ( this can have any name actually ). 
 
-The header consists of 4 words. 
+The header consists of 6 words.
 
 - Executable Flag - without 0xFCFC, Force Command will assume this file is not an executable.
-- SAMS Page Count - Since this example does not require SAMS, we'll set this to 0. 
+- SAMS Page Count - Since this example does not require SAMS, we'll set this to 0. Bit 15 is set to mark the extended header; the low 15 bits are the page count.
 - Terminal Flag   - If the program leaves VDP registers and memory in a safe state, then a value of 0xFCFC indates the screen does not need to be reconfigured upon executable return to Force Command. If something other than 0xFCFC is here, then Force Command will clear the screen, and reset the display mode to the default it would auto-detect on startup.
 - Entry Point Address - the address of our main function.
+- GPU Blob Block - the program-file block containing an optional F18A GPU routine. Zero means no blob.
+- GPU Blob Length - the GPU routine length in bytes. Zero means no blob.
+
+The extended header is 12 bytes, so code starts at `0xA00C`. Programs without a GPU blob still use bit 15 to select the extended layout. Older 8-byte headers remain loadable, with code starting at `0xA008`.
 
 ## Linking
 
