@@ -196,11 +196,15 @@ $(FINAL_BIN): $(BANKBINS) 994a_rom/994a_rom_8k.bin
 	dd if=/dev/zero bs=1 count=$$((512*1024 - 128*1024 - 8192)) >> $@ 2>/dev/null
 	cat 994a_rom/994a_rom_8k.bin >> $@
 
+# Assembled GPL power-up routine for the patched GROM 1
+$(BUILD_DIR)/powerup.grom: src/gpl-powerup.g99 $(BUILD_DIR)/$(FNAME).elf
+	python3 $(XGA99) -D "_START=>$$(grep ' _start$$' $(BUILD_DIR)/mapfile | sed 's/.*0x0*//' | sed 's/ .*//')" -o $@ $<
+
 # Patched GROM 1 with powerup routine branching to _start
-$(BUILD_DIR)/$(FNAME)G1.bin: 994a_rom/994a_grom1.bin $(BUILD_DIR)/$(FNAME).elf
+$(BUILD_DIR)/$(FNAME)G1.bin: 994a_rom/994a_grom1.bin $(BUILD_DIR)/powerup.grom
 	python3 scripts/patch_grom1.py \
 		--input 994a_rom/994a_grom1.bin \
-		--start $$(grep ' _start$$' $(BUILD_DIR)/mapfile | sed 's/.*0x0*//' | sed 's/ .*//') \
+		--boot $(BUILD_DIR)/powerup.grom \
 		--output $@
 else
 $(FINAL_BIN): $(BANKBINS)

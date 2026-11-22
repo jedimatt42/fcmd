@@ -1,0 +1,32 @@
+; ForceCommand power-up GPL for the patched console GROM 1.
+;
+; The console's normal power-up sequence has already initialized the machine
+; when this routine runs. Build a two-instruction TMS9900 trampoline in
+; scratchpad RAM and jump to it, unless F is held down.
+
+	grom >2000
+	aorg >1800
+
+	data >0000		; end of power-up list
+	data boot		; GROM address of the routine below
+
+boot:
+	; The power-up scan leaves KSCAN in split-keyboard mode 1. Do not change
+	; >8374, since later software may rely on that mode. In mode 1 the
+	; half-keyboard table at >17C0 reports F as >0C.
+	scan			; scan keyboard, result in >8375
+	ceq  >0C,@>8375		; is F being held down?
+	bs   G@held		; yes: return to the console
+	br   G@launch		; no: boot ForceCommand
+held:
+	dst  *>8372,*>8373	; move next power-up address to subroutine stack
+	dect @>8372		; update the stack pointer
+	rtn
+
+launch:
+	dst  >04E0,@>8320	; CLR @>0000 - select ForceCommand bank 0
+	dst  >0000,@>8322
+	dst  >0460,@>8324	; B @_START - enter ForceCommand
+	dst  _START,@>8326
+	dst  >8320,@>8300	; XML >F0 vector
+	xml  >F0
