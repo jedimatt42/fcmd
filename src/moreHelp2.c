@@ -4,6 +4,8 @@
 #include "commands.h"
 #include "main.h"
 #include "globals.h"
+#include "moreHelp.h"
+#include "moreHelpHeight.h"
 #include "strutil.h"
 #include "terminal.h"
 #include <string.h>
@@ -45,11 +47,16 @@ static void wraptext(char* str) {
 }
 
 int moreHelp2(char* tok) {
+  if (bk_moreHelpHeight(tok)) {
+    return 1;
+  }
+
   if (matchcmd(tok, "f18a")) {
     wraptext("==F18A==\n\n"
       "f18a [lock]\n\n"
-      "With no option, switch to the F18A personality and initialize its 80x30 "
-      "color text mode.\n\n"
+      "With no option, switch to the F18A personality and initialize 80x24 "
+      "text mode with per-character color attributes. Use 'height 30' for "
+      "80x30.\n\n"
       "lock - lock the F18A, initialize all standard 9918 registers, and switch "
       "to 40-column text mode.\n\n"
       "ForceCommand does not probe for an F18A when a V9938 or V9958 is detected, "

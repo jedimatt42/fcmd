@@ -57,7 +57,7 @@ int handleHelp() {
     "Commands:\n\n"
     "alias bar cd cfmount checksum cls color copy date "
     "delete drives echo ed env exit f18a fg99 goto help "
-    "history if "
+    "height history if "
     "load lvl2 mkdir more palette protect pwd readkey rename "
     "rdemdk rdpart rdvol "
     "rmdir sysinfo tipibeeps tipihalt tipimap "
@@ -258,10 +258,9 @@ int handleHelp() {
   } else if (matchcmd(tok,"width")) {
     wraptext("==Set Screen Width==\n\n"
     "width <40|80>\n\n"
-    "Change display to 40x24, 80x26 or 80x30 mode.\n"
-    "F18A VDP will provide 80x30 with colors per character.\n"
-    "9938/9958 VDPs will provide 80x26 with single foreground/background colors.\n"
-    "Other VDPs will fall back on 40x24 with single foreground/background colors.\n");
+    "Change display width. Default heights: 40 columns = 24, "
+    "9938/9958 80 columns = 26, F18A 80 columns = 24. "
+    "Use 'height' to change the height.\n");
   } else if (matchcmd(tok,"pipeline")) {
     wraptext("==Pipelines==\n\n"
     "command1 | command2 | command3\n\n"

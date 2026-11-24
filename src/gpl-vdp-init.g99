@@ -1,17 +1,59 @@
-; EVPC-compatible V9938/V9958 detection and pre-initialization for the GPL
-; boot stubs. This file is COPYed into gpl-boot.g99 and gpl-powerup.g99 and
-; falls through to the host's 'F'-key check.
+; V9938/V9958 detection and pre-initialization for the GPL boot stubs.
+; This file is COPYed into gpl-boot.g99 and gpl-powerup.g99.
 ;
-; The VRAM-page method comes from the EVPC DSR power-up routine. Reading two
-; pages is not enough because both pages may contain the same value, so write
-; a sentinel into page 0 and verify page 2 does not contain it.
-;
-; The test uses VRAM >3FFF, the last byte of the first 16K, and restores it
-; immediately. No other VRAM byte is touched, so the console's initialized
-; name, pattern, color, and sprite tables are preserved.
+; Two-stage policy:
+;   vdp_init_apparent - before the F scan. Only applies the EVPC register
+;                       table/palette when the VDP already looks like a 9938.
+;   vdp_init_bank     - after the F scan. Runs the VRAM bank test to find a
+;                       CaDD hybrid that still looks like a 9918, and applies
+;                       the EVPC init only if the test succeeds.
+
+; ---------------------------------------------------------------------------
+; Determine the apparent VDP type without unlocking anything and initialize
+; only if it already appears to be a 9938/9958.
+; ---------------------------------------------------------------------------
+vdp_init_apparent:
+	; Select status register 4 and read it twice. A 9918/locked F18A
+	; returns SR0, whose flags clear after the first read.
+	st   >04,@>8C02
+	st   >8F,@>8C02
+	st   @>8802,@>8375
+	st   @>8802,@>8376
+	st   >00,@>8C02
+	st   >8F,@>8C02
+
+	and  >FE,@>8376
+	ceq  >FE,@>8376
+	bs   G@vdp_apparent_9938
+
+	; On a 9918/locked F18A the R15 writes above alias into R7. Restore
+	; the console's standard white-on-cyan text/backdrop value.
+	st   >F7,@>8C02
+	st   >87,@>8C02
+	rtn
+
+vdp_apparent_9938:
+	call G@vdp_evpc_init
+	rtn
+
+; ---------------------------------------------------------------------------
+; After the F check: test for a hidden 9938-family VDP and initialize it.
+; The test uses VRAM >3FFF and restores it, so the first 16K is preserved.
+; ---------------------------------------------------------------------------
+vdp_init_bank:
+	; If it already appeared as a 9938, vdp_init_apparent initialized it.
+	st   >04,@>8C02
+	st   >8F,@>8C02
+	st   @>8802,@>8375
+	st   @>8802,@>8376
+	st   >00,@>8C02
+	st   >8F,@>8C02
+	and  >FE,@>8376
+	ceq  >FE,@>8376
+	bs   G@vdp_bank_done
 
 	; Save the page-0 byte so the test can restore it. >8375 and >8376 are
-	; the keyboard/joystick scratch bytes, overwritten by the F-key scan below.
+	; the keyboard/joystick scratch bytes, overwritten by the F-key scan.
 	st   >00,@>8C02
 	st   >8E,@>8C02
 	st   V@>3FFF,@>8375
@@ -24,10 +66,10 @@
 	st   >8E,@>8C02
 	st   V@>3FFF,@>8376
 	ceq  >AA,@>8376
-	bs   G@vdp_evpc_test2
-	br   G@vdp_evpc_detected
+	bs   G@vdp_bank_test2
+	br   G@vdp_bank_detected
 
-vdp_evpc_test2:
+vdp_bank_test2:
 	; A second sentinel guards against a coincidental >AA in page 2.
 	st   >00,@>8C02
 	st   >8E,@>8C02
@@ -36,16 +78,28 @@ vdp_evpc_test2:
 	st   >8E,@>8C02
 	st   V@>3FFF,@>8376
 	ceq  >55,@>8376
-	bs   G@vdp_evpc_not_detected
+	bs   G@vdp_bank_restore
 
-vdp_evpc_detected:
-	; Restore the saved page-0 byte and leave R14 on page 0.
+vdp_bank_detected:
+	st   >00,@>8C02
+	st   >8E,@>8C02
+	st   @>8375,V@>3FFF
+	call G@vdp_evpc_init
+	rtn
+
+vdp_bank_restore:
 	st   >00,@>8C02
 	st   >8E,@>8C02
 	st   @>8375,V@>3FFF
 
-	; EVPC power-up register table: R0-R19 and R23. R20-R22 (color burst),
-	; R24-R31 (unused) and R32-R46 (command unit) stay untouched.
+vdp_bank_done:
+	rtn
+
+; ---------------------------------------------------------------------------
+; EVPC power-up register table and palette. Leaves R20-R22, R24-R31 and the
+; command unit R32-R46 untouched.
+; ---------------------------------------------------------------------------
+vdp_evpc_init:
 	st   >00,@>8C02
 	st   >80,@>8C02
 	st   >20,@>8C02
@@ -130,12 +184,4 @@ vdp_evpc_detected:
 	st   >90,@>8C02
 	st   >00,@>8C02
 	st   >8E,@>8C02
-	br   G@vdp_evpc_done
-
-vdp_evpc_not_detected:
-	; Restore the saved page-0 byte.
-	st   >00,@>8C02
-	st   >8E,@>8C02
-	st   @>8375,V@>3FFF
-
-vdp_evpc_done:
+	rtn

@@ -9,7 +9,7 @@
 #include "detect_vdp.h"
 #include "terminal.h"
 
-#define SUPPORT_MOUSE (vdp_type == VDP_F18A && displayHeight == 30)
+#define SUPPORT_MOUSE (vdp_type == VDP_F18A && displayWidth == 80 && displayHeight == 30)
 
 extern char gfx_ptr_normal_black[32];
 extern char gfx_ptr_normal_white[32];

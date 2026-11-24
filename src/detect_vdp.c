@@ -71,60 +71,52 @@ static void clear_vdp_banks(int banks) {
   }
 }
 
-int detect_vdp() {
-  unsigned char reg4 = 0;
-  unsigned char reg1 = 0;
+static int apparent_9938_family() {
+  unsigned char reg4;
 
-  // First use the EVPC VRAM-page method. Unlike the F18A probe this cannot
-  // unlock an F18A and switch a CaDD hybrid away from its V9938 personality.
-  if (bk_vdp_evpc_detect()) {
-    bk_vdp_evpc_preinit();
-
-    VDP_SET_REGISTER(0x0f, 1);
-    reg1 = VDPST;
-    VDP_SET_REGISTER(0x0f, 0);
-
-    return (reg1 & 0x04) ? VDP_9958 : VDP_9938;
-  }
-
-  // Fallback for a Yamaha VDP whose page-0/page-2 bytes happened to match:
-  // status register 4 has its 7 high bits set on a V9938/V9958. Read it
-  // twice; a 9918A/locked F18A ignores the status-register select and returns
-  // SR0, whose interrupt/5S/collision flags clear after the first read.
+  // Status register 4 has its 7 high bits set on a Yamaha VDP. Read it twice;
+  // a 9918A/locked F18A ignores the status-register select and returns SR0,
+  // whose interrupt/5S/collision flags clear after the first read.
   VDP_SET_REGISTER(0x0f, 4);
   reg4 = VDPST & 0xFE;
   if (reg4 == 0xFE && (VDPST & 0xFE) != 0xFE) {
     reg4 = 0;
   }
   VDP_SET_REGISTER(0x0f, 0);
+  return reg4 == 0xFE;
+}
 
-  if (reg4 == 0xFE) {
-    VDP_SET_REGISTER(0x0f, 1);
-    reg1 = VDPST;
-    VDP_SET_REGISTER(0x0f, 0);
+static int detect_9938_id() {
+  unsigned char reg1;
 
+  VDP_SET_REGISTER(0x0f, 1);
+  reg1 = VDPST;
+  VDP_SET_REGISTER(0x0f, 0);
+
+  return (reg1 & 0x04) ? VDP_9958 : VDP_9938;
+}
+
+int detect_vdp() {
+  // First determine the apparent type without unlocking an F18A or running
+  // the VRAM bank test.
+  if (apparent_9938_family()) {
     bk_vdp_evpc_preinit();
-    return (reg1 & 0x04) ? VDP_9958 : VDP_9938;
+    return detect_9938_id();
+  }
+
+  // It looks like a 9918A. The bank test can reveal a CaDD hybrid that is
+  // still masking its 9938 register behavior. Do not probe for an F18A here;
+  // unlocking one is an explicit action through the 'f18a' command.
+  if (bk_vdp_evpc_detect()) {
+    bk_vdp_evpc_preinit();
+    return detect_9938_id();
   }
 
   #ifdef _CLASSIC_99
-
-  if (bk_isF18A()) {
-    return VDP_F18A;
-  }
   bk_vdp_evpc_preinit();
   return VDP_9938;
-
   #else
-
-  // Only probe for an F18A when no V9938/V9958 answered. On a V9938/V9958
-  // the probe would unlock an F18A and, on the CaDD hybrid, permanently
-  // switch the card away from its V9938 personality.
-  if (bk_isF18A()) {
-    return VDP_F18A;
-  }
   return VDP_9918;
-
   #endif
 }
 

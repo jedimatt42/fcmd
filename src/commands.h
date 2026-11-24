@@ -38,6 +38,7 @@ DEC_COMMAND(4, Protect);
 DEC_COMMAND(4, Type);
 DEC_COMMAND(4, Unprotect);
 DEC_COMMAND(5, Date);
+DEC_COMMAND(5, Height);
 DEC_COMMAND(5, Pwd);
 DEC_COMMAND(5, RDEmdk);
 DEC_COMMAND(5, RDPart);

@@ -12,15 +12,15 @@
 #include "vdp_internal.h"
 
 /*
- * Switch to the F18A personality and initialize its 80x30 color text mode.
+ * Explicitly switch to the F18A personality and select its 80x24 attribute
+ * text mode. Use 'height 30' afterwards for T80x30 when desired.
  *
  * 'f18a lock' instead leaves the F18A locked, initializes all standard 9918
  * registers, and selects 40-column text mode.
  *
- * Detection deliberately does not probe for an F18A when a V9938/V9958 is
- * present: on the CaDD hybrid that probe unlocks the F18A and permanently
- * switches the card away from its V9938 personality until a power cycle.
- * This command performs that switch only when the user explicitly asks for it.
+ * ForceCommand never probes for an F18A automatically: on the CaDD hybrid
+ * that probe unlocks the F18A and permanently switches the card away from
+ * its V9938 personality until a power cycle. Only this command performs it.
  */
 int handleF18A() {
   char* opt = bk_strtok(0, ' ');
@@ -39,8 +39,7 @@ int handleF18A() {
     if (!bk_isF18A()) {
       // The probe may have disturbed VDP registers, so restore the current
       // screen mode before reporting the failure.
-      int width = (displayWidth == 40 || vdp_type == VDP_9918) ? 40 : 80;
-      bk_setupScreen(width);
+      bk_setupScreenEx(displayWidth, displayHeight);
       tputs_rom("no F18A detected\n");
       return 1;
     }
@@ -53,12 +52,12 @@ int handleF18A() {
     bk_unlock_f18a();
     bk_set_palette(0, 0);
     bk_lock_f18a();
-    bk_setupScreen(40);
+    bk_setupScreenEx(40, 24);
     bk_vdp9918_init_text40();
     return 0;
   }
 
-  bk_setupScreen(80);
+  bk_setupScreenEx(80, 24);
   bk_set_palette(0, 0);
   return 0;
 }

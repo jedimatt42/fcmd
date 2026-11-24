@@ -11,9 +11,10 @@
 	data boot		; GROM address of the routine below
 
 boot:
-	; Detect and pre-initialize a V9938/V9958 exactly as the EVPC card
-	; does, before deciding whether to launch ForceCommand.
-	copy "gpl-vdp-init.g99"
+	; If the VDP already appears to be a 9938/9958, initialize it exactly as
+	; the EVPC card does. If it appears to be a 9918, leave it alone until
+	; after the F check so a CaDD hybrid stays in its masked power-up mode.
+	call G@vdp_init_apparent
 
 	; The power-up scan leaves KSCAN in split-keyboard mode 1. Do not change
 	; >8374, since later software may rely on that mode. In mode 1 the
@@ -28,9 +29,14 @@ held:
 	rtn
 
 launch:
+	; Not skipping ForceCommand, so the VRAM bank test is now safe to run.
+	call G@vdp_init_bank
+
 	dst  >04E0,@>8320	; CLR @>0000 - select ForceCommand bank 0
 	dst  >0000,@>8322
 	dst  >0460,@>8324	; B @_START - enter ForceCommand
 	dst  _START,@>8326
 	dst  >8320,@>8300	; XML >F0 vector
 	xml  >F0
+
+	copy "gpl-vdp-init.g99"

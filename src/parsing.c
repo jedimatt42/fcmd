@@ -219,6 +219,7 @@ static int executeSingle(char* buffer, const char* forced_path, int* redirect_fa
     else COMMAND("fg99", bk_handleFg99)
     else COMMAND("goto", bk_handleGoto)
     else COMMAND("if", bk_handleIf)
+    else COMMAND("height", bk_handleHeight)
     else COMMAND("help", bk_handleHelp)
     else COMMAND("history", bk_handleHistory)
     else COMMAND("load", bk_handleLoad)

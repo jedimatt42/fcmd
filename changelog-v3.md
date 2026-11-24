@@ -91,31 +91,29 @@ repeated; that includes the v2.6 TIPIMAP `CS1`/`DSK5`–`DSK9` mappings.
   - `FC/BOOT` is an EA5 utility that clears the console-ROM bank and returns to
     ForceCommand after running a cartridge.
 - **Improved VDP detection and initialization**.
-  - V9938/V9958 detection now starts with the EVPC VRAM-page method: write a
-    sentinel into page 0, switch to page 2, and verify the sentinel is gone.
-    This does not rely on pre-existing VRAM contents and does not need to
-    probe or unlock an F18A to recognize a 9938-family VDP.
-  - When a 9938-family VDP is found, ForceCommand applies the EVPC power-up
-    register table and default palette before completing its own full reset.
-  - V9938/V9958 palette writes now use the palette data port at `>8C04`.
-  - F18A probing is only attempted when no 9938-family or Yamaha VDP answers,
-    avoiding an accidental, permanent personality switch on V9938/F18A hybrid
-    cards.
-  - The new `f18a` command performs that switch deliberately. `f18a lock`
-    instead locks the F18A, initializes all eight standard 9918 registers,
-    and selects 40-column text mode.
-  - F18A detection also recovers correctly after a soft reset from 80×30 mode.
+  - Detection first determines the apparent VDP type without unlocking an
+    F18A or running the VRAM bank test.
+  - An apparent 9938/9958 is initialized with the EVPC 4A-compatible register
+    table and palette.
+  - An apparent 9918A is left in its 9918-safe state for the `F`-skip path.
+    The VRAM bank test runs only when ForceCommand is actually launching, and
+    applies the EVPC initialization only if a hidden 9938 is found.
+  - The GPL bank test writes and restores VRAM `>3FFF`, preserving the
+    console-initialized first 16K.
+  - F18A probing is never automatic. The `f18a` command is the only path that
+    unlocks an F18A.
+  - `f18a` now selects 80x24 text with per-character color attributes instead
+    of automatically selecting 80x30.
+  - Added `height <24|26|30>`:
+    - 24 is available on all supported modes.
+    - 26 is available on 9938/9958 displays, including 40-column mode.
+    - 30 is available on F18A displays, including 40-column mode.
+    - `height 30` is allowed on the CaDD hybrid even though current CaDD
+      firmware does not display T80x30 correctly; `height 24` recovers.
+  - V9938/V9958 palette writes use the palette data port at `>8C04`.
   - After detection, ForceCommand programs every VDP control register and
-    clears all VDP memory it can address, so boards that do not reset cleanly
-    start from a known state. On V9938/V9958 systems this includes the full
-    64 KB VRAM address space and the reset palette.
-  - The same full initialization runs when returning from an executable that
-    did not mark itself screen-safe.
-  - Both GPL boot stubs (`gpl-boot.g99` and `gpl-powerup.g99`) run the same
-    EVPC detection and pre-initialization before checking for the `F` key.
-    `gpl-boot.g99` now honors the `F` key like `gpl-powerup.g99`. The GPL
-    bank test uses and restores VRAM `>3FFF`, so the console-initialized
-    first 16K remains unchanged.
+    clears all VDP memory it can address. The same full initialization runs
+    when returning from an executable that was not screen-safe.
 - **Improved PAL/NTSC detection** by measuring the VDP interrupt rate over ten
   frames with the CRU timer, giving a wider and more reliable threshold.
 - **SAMS performance**: SAMS wait states are disabled when the hardware supports

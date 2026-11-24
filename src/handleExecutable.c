@@ -142,7 +142,7 @@ int handleExecutable(char *ext)
     if (restoreDisplay != 0xFCFC) {
       // turn bar off, cause app is using the full screen.
       nTitleLine = 0;
-      bk_setupScreen(displayWidth);
+      bk_setupScreenEx(displayWidth, displayHeight);
     }
 
     /*
@@ -189,7 +189,7 @@ int handleExecutable(char *ext)
       // The program did not promise to leave the screen usable. Rebuild the
       // VDP state completely before restoring ForceCommand's display mode.
       bk_vdp_full_init();
-      bk_setupScreen(displayWidth);
+      bk_setupScreenEx(displayWidth, displayHeight);
     }
 
     if (err) {

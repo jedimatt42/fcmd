@@ -10,34 +10,57 @@
 #include <vdp.h>
 #include <conio.h>
 
-int isF18A() {
-  // Ensure a known locked state before unlocking. If the F18A is already
-  // unlocked (for example after a soft reset out of an 80x30 session), the
-  // unlock sequence does not behave deterministically and the GPU test below
-  // can fail. lock_f18a() writes VR50 bit 7, which reboots the F18A and
-  // re-locks it when it is unlocked, and is a no-op when already locked.
-  lock_f18a();
-  unlock_f18a();
-  char testcode[6] = { 0x04, 0xE0, 0x3F, 0x00, 0x03, 0x40 };
-  vdpmemcpy(0x3F00, testcode, 6);
-  {
-    VDP_SET_REGISTER(0x36, 0x3F);
-    VDP_SET_REGISTER(0x37, 0x00);
-  }
+static void setupText40(int height) {
+  set_text();
 
-  int frames = 6;
-  while(frames--) {
-    VDP_SET_ADDRESS(0x3F00);
-    int res = VDPRD;
-    if (!res) {
-      return 1;
+  if (height == 30 && vdp_type == VDP_F18A) {
+    unlock_f18a();
+    VDP_SET_REGISTER(0x31, 0x40); // row 30 mode
+    VDP_SET_REGISTER(0x32, 0x00); // global colors
+    nTextRow = 29 * 40;
+    nTextEnd = (30 * 40) - 1;
+    nTextPos = nTextRow;
+    nTextFlags = TEXT_FLAG_IS_F18A | TEXT_WIDTH_40 | TEXT_HEIGHT_30;
+    displayHeight = 30;
+  } else if (height == 26 &&
+             (vdp_type == VDP_9938 || vdp_type == VDP_9958)) {
+    VDP_SET_REGISTER(0x09, 0x80); // LN=1, 26.5 rows
+    nTextRow = 25 * 40;
+    nTextEnd = (26 * 40) - 1;
+    nTextPos = nTextRow;
+    nTextFlags = TEXT_WIDTH_40 | TEXT_HEIGHT_26;
+    displayHeight = 26;
+  } else {
+    if (vdp_type == VDP_F18A) {
+      VDP_SET_REGISTER(0x31, 0x00); // row 30 off
+      VDP_SET_REGISTER(0x32, 0x00); // attributes off
     }
+    nTextFlags = TEXT_WIDTH_40 | TEXT_HEIGHT_24;
+    displayHeight = 24;
   }
-
-  return 0;
 }
 
-void setupScreen(int width) {
+static void setupText80(int height) {
+  if (vdp_type == VDP_F18A) {
+    if (height == 30) {
+      set_text80_color(30);
+      displayHeight = 30;
+    } else {
+      set_text80_color(24);
+      displayHeight = 24;
+    }
+  } else {
+    if (height == 26) {
+      set_text80_height(26);
+      displayHeight = 26;
+    } else {
+      set_text80_height(24);
+      displayHeight = 24;
+    }
+  }
+}
+
+void setupScreenEx(int width, int height) {
   lock_f18a();
   if (width == 0) {
     set_graphics(0);
@@ -58,24 +81,16 @@ void setupScreen(int width) {
     clrscr();
     charset();
     return;
-  } else if (width == 80) {
-    displayWidth = 80;
-    if (vdp_type == VDP_F18A) {
-      set_text80x30_color();
-      displayHeight = 30;
-    } else {
-      set_text80();
-#ifdef _CLASSIC_99
-      displayHeight = 24;
-#else
-      displayHeight = 26;
-#endif
-    }
-  } else { // 40 is the only other allowed value.
-    displayWidth = 40;
-    set_text();
-    displayHeight = 24;
   }
+
+  if (width == 80 && vdp_type != VDP_9918) {
+    displayWidth = 80;
+    setupText80(height);
+  } else {
+    displayWidth = 40;
+    setupText40(height);
+  }
+
   bk_initTerminal();
 
   int foreground = FOREGROUND;
@@ -94,6 +109,14 @@ void setupScreen(int width) {
     // if font file fails to load, then use ROM font
     bk_defineChars();
   }
+}
+
+void setupScreen(int width) {
+  int height = 24;
+  if (width == 80) {
+    height = (vdp_type == VDP_F18A) ? 24 : 26;
+  }
+  setupScreenEx(width, height);
 }
 
 

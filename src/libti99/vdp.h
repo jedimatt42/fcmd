@@ -190,8 +190,10 @@ void set_text();
 // Return: returns a value to be written to VDP_REG_MODE1 (and VDP_REG1_KSCAN_MIRROR if you use term_kscan())
 // The screen is blanked until you do this write, to allow you time to set it up
 int set_text80_raw();
+int set_text80_raw_height(int height);
 // this version enables the screen and sets the KSCAN copy for you
 void set_text80();
+void set_text80_height(int height);
 
 // set_text80_color - sets up 80 column text mode - 80x30 with Position Attributes (F18A only!)
 // Inputs: none
@@ -200,8 +202,10 @@ void set_text80();
 // Return: returns a value to be written to VDP_REG_MODE1 (and VDP_REG1_KSCAN_MIRROR if you use term_kscan())
 // The screen is blanked until you do this write, to allow you time to set it up
 int set_text80x30_color_raw();
+int set_text80_color_raw(int height);
 // this version enables the screen and sets the KSCAN copy for you
 void set_text80x30_color();
+void set_text80_color(int height);
 
 // vdpmemset - sets a count of VDP memory bytes to a value
 // Inputs: VDP address to start, the byte to set, and number of repeats

@@ -15,7 +15,8 @@
 
 static int tui_mouse_available(void) {
     /* Mirrors SUPPORT_MOUSE in tipi_mouse.c: the pointer is F18A 80x30 only. */
-    return (vdp_type == VDP_F18A && displayHeight == 30) ? 1 : 0;
+    return (vdp_type == VDP_F18A && displayWidth == 80 &&
+            displayHeight == 30) ? 1 : 0;
 }
 
 static void tui_mouse_cell(int* col, int* row);
