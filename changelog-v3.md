@@ -113,7 +113,9 @@ repeated; that includes the v2.6 TIPIMAP `CS1`/`DSK5`–`DSK9` mappings.
     did not mark itself screen-safe.
   - Both GPL boot stubs (`gpl-boot.g99` and `gpl-powerup.g99`) run the same
     EVPC detection and pre-initialization before checking for the `F` key.
-    `gpl-boot.g99` now honors the `F` key like `gpl-powerup.g99`.
+    `gpl-boot.g99` now honors the `F` key like `gpl-powerup.g99`. The GPL
+    bank test uses and restores VRAM `>3FFF`, so the console-initialized
+    first 16K remains unchanged.
 - **Improved PAL/NTSC detection** by measuring the VDP interrupt rate over ten
   frames with the CRU timer, giving a wider and more reliable threshold.
 - **SAMS performance**: SAMS wait states are disabled when the hardware supports

@@ -5,20 +5,24 @@
 ; The VRAM-page method comes from the EVPC DSR power-up routine. Reading two
 ; pages is not enough because both pages may contain the same value, so write
 ; a sentinel into page 0 and verify page 2 does not contain it.
+;
+; The test uses VRAM >3FFF, the last byte of the first 16K, and restores it
+; immediately. No other VRAM byte is touched, so the console's initialized
+; name, pattern, color, and sprite tables are preserved.
 
 	; Save the page-0 byte so the test can restore it. >8375 and >8376 are
 	; the keyboard/joystick scratch bytes, overwritten by the F-key scan below.
 	st   >00,@>8C02
 	st   >8E,@>8C02
-	st   V@>0000,@>8375
+	st   V@>3FFF,@>8375
 
 	; Write a sentinel into page 0, then read the same offset from page 2.
 	st   >00,@>8C02
 	st   >8E,@>8C02
-	st   >AA,V@>0000
+	st   >AA,V@>3FFF
 	st   >02,@>8C02
 	st   >8E,@>8C02
-	st   V@>0000,@>8376
+	st   V@>3FFF,@>8376
 	ceq  >AA,@>8376
 	bs   G@vdp_evpc_test2
 	br   G@vdp_evpc_detected
@@ -27,10 +31,10 @@ vdp_evpc_test2:
 	; A second sentinel guards against a coincidental >AA in page 2.
 	st   >00,@>8C02
 	st   >8E,@>8C02
-	st   >55,V@>0000
+	st   >55,V@>3FFF
 	st   >02,@>8C02
 	st   >8E,@>8C02
-	st   V@>0000,@>8376
+	st   V@>3FFF,@>8376
 	ceq  >55,@>8376
 	bs   G@vdp_evpc_not_detected
 
@@ -38,7 +42,7 @@ vdp_evpc_detected:
 	; Restore the saved page-0 byte and leave R14 on page 0.
 	st   >00,@>8C02
 	st   >8E,@>8C02
-	st   @>8375,V@>0000
+	st   @>8375,V@>3FFF
 
 	; EVPC power-up register table: R0-R19 and R23. R20-R22 (color burst),
 	; R24-R31 (unused) and R32-R46 (command unit) stay untouched.
@@ -132,6 +136,6 @@ vdp_evpc_not_detected:
 	; Restore the saved page-0 byte.
 	st   >00,@>8C02
 	st   >8E,@>8C02
-	st   @>8375,V@>0000
+	st   @>8375,V@>3FFF
 
 vdp_evpc_done:
