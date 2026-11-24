@@ -14,6 +14,7 @@
 #include "globals.h"
 #include "sams.h"
 #include "setupScreen.h"
+#include "detect_vdp.h"
 #include "runScript.h"
 #include "procinfo.h"
 #include "f18a_gpu.h"
@@ -185,6 +186,9 @@ int handleExecutable(char *ext)
     if (restoreDisplay != 0xFCFC) {
       conio_scrnCol = old_oldcolors;
       nTitleLine = old_nTitleLine;
+      // The program did not promise to leave the screen usable. Rebuild the
+      // VDP state completely before restoring ForceCommand's display mode.
+      bk_vdp_full_init();
       bk_setupScreen(displayWidth);
     }
 

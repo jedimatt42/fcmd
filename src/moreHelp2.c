@@ -47,8 +47,11 @@ static void wraptext(char* str) {
 int moreHelp2(char* tok) {
   if (matchcmd(tok, "f18a")) {
     wraptext("==F18A==\n\n"
-      "f18a\n\n"
-      "Switch to the F18A personality and initialize its 80x30 color text mode.\n\n"
+      "f18a [lock]\n\n"
+      "With no option, switch to the F18A personality and initialize its 80x30 "
+      "color text mode.\n\n"
+      "lock - lock the F18A, initialize all standard 9918 registers, and switch "
+      "to 40-column text mode.\n\n"
       "ForceCommand does not probe for an F18A when a V9938 or V9958 is detected, "
       "so this command can be used to select F18A mode from an AUTOCMD script.\n\n"
       "On a V9938/F18A hybrid this permanently switches the card to F18A mode. "

@@ -2,6 +2,7 @@
 #define MYBANK BANK(12)
 
 #include "commands.h"
+#include "debug_vdp.h"
 
 #include "globals.h"
 #include "parsing.h"
@@ -35,6 +36,10 @@ int handleDebug() {
             switch(cmd) {
                 case 'M':
                     cmdM(tok);
+                    break;
+                case 'S':
+                case 'V':
+                    bk_debug_vdp_command(tok);
                     break;
                 // Add Memory poke
                 // Add Cru editing

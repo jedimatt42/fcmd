@@ -465,10 +465,9 @@ int gfx_palette_set(int index, int red, int green, int blue);
 
 For F18A, components range from 0 through 15 and the existing four-bank palette
 has 64 entries. TMS9918A-compatible modes use the fixed hardware palette and
-return `GFX_ERR_UNSUPPORTED`. V9938/V9958 palette writes require an additional
-palette data-port mapping that is not present in the current TI two-port
-interface, so they also return `GFX_ERR_UNSUPPORTED` until that mapping is
-provided.
+return `GFX_ERR_UNSUPPORTED`. V9938/V9958 palette writes use the palette data
+port at `>8C04`, but the graphics API does not expose them yet, so they also
+return `GFX_ERR_UNSUPPORTED`.
 
 Palette writes validate the active VDP and index before touching VDP registers.
 The F18A implementation unlocks the extended registers (clear VR57, then two

@@ -11,6 +11,10 @@
 	data boot		; GROM address of the routine below
 
 boot:
+	; Detect and pre-initialize a V9938/V9958 exactly as the EVPC card
+	; does, before deciding whether to launch ForceCommand.
+	copy "gpl-vdp-init.g99"
+
 	; The power-up scan leaves KSCAN in split-keyboard mode 1. Do not change
 	; >8374, since later software may rely on that mode. In mode 1 the
 	; half-keyboard table at >17C0 reports F as >0C.

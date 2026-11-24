@@ -78,6 +78,9 @@ repeated; that includes the v2.6 TIPIMAP `CS1`/`DSK5`–`DSK9` mappings.
   - `lvl2 /a` shows level-2 routine addresses.
   - `sysinfo` reports the GCC patch level when the toolchain provides it.
   - `ver` identifies the running build as `8-bit CART` or `16-bit ROM`.
+  - The hidden `debug` command can dump VDP status registers with `S` and
+    control registers with `V`. The `V` read uses the F18A SR15 mechanism and
+    never unlocks the F18A.
 
 ### Display, hardware, and I/O
 
@@ -87,11 +90,30 @@ repeated; that includes the v2.6 TIPIMAP `CS1`/`DSK5`–`DSK9` mappings.
   - `FCMDG1.bin` is a patched GROM 1 that autoboots ForceCommand.
   - `FC/BOOT` is an EA5 utility that clears the console-ROM bank and returns to
     ForceCommand after running a cartridge.
-- **Improved VDP detection**.
-  - F18A probing is only attempted when no Yamaha VDP answers, avoiding an
-    accidental, permanent personality switch on V9938/F18A hybrid cards.
-  - The new `f18a` command performs that switch deliberately.
+- **Improved VDP detection and initialization**.
+  - V9938/V9958 detection now starts with the EVPC VRAM-page method: write a
+    sentinel into page 0, switch to page 2, and verify the sentinel is gone.
+    This does not rely on pre-existing VRAM contents and does not need to
+    probe or unlock an F18A to recognize a 9938-family VDP.
+  - When a 9938-family VDP is found, ForceCommand applies the EVPC power-up
+    register table and default palette before completing its own full reset.
+  - V9938/V9958 palette writes now use the palette data port at `>8C04`.
+  - F18A probing is only attempted when no 9938-family or Yamaha VDP answers,
+    avoiding an accidental, permanent personality switch on V9938/F18A hybrid
+    cards.
+  - The new `f18a` command performs that switch deliberately. `f18a lock`
+    instead locks the F18A, initializes all eight standard 9918 registers,
+    and selects 40-column text mode.
   - F18A detection also recovers correctly after a soft reset from 80×30 mode.
+  - After detection, ForceCommand programs every VDP control register and
+    clears all VDP memory it can address, so boards that do not reset cleanly
+    start from a known state. On V9938/V9958 systems this includes the full
+    64 KB VRAM address space and the reset palette.
+  - The same full initialization runs when returning from an executable that
+    did not mark itself screen-safe.
+  - Both GPL boot stubs (`gpl-boot.g99` and `gpl-powerup.g99`) run the same
+    EVPC detection and pre-initialization before checking for the `F` key.
+    `gpl-boot.g99` now honors the `F` key like `gpl-powerup.g99`.
 - **Improved PAL/NTSC detection** by measuring the VDP interrupt rate over ten
   frames with the CRU timer, giving a wider and more reliable threshold.
 - **SAMS performance**: SAMS wait states are disabled when the hardware supports

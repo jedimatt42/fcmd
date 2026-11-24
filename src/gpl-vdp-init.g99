@@ -1,0 +1,137 @@
+; EVPC-compatible V9938/V9958 detection and pre-initialization for the GPL
+; boot stubs. This file is COPYed into gpl-boot.g99 and gpl-powerup.g99 and
+; falls through to the host's 'F'-key check.
+;
+; The VRAM-page method comes from the EVPC DSR power-up routine. Reading two
+; pages is not enough because both pages may contain the same value, so write
+; a sentinel into page 0 and verify page 2 does not contain it.
+
+	; Save the page-0 byte so the test can restore it. >8375 and >8376 are
+	; the keyboard/joystick scratch bytes, overwritten by the F-key scan below.
+	st   >00,@>8C02
+	st   >8E,@>8C02
+	st   V@>0000,@>8375
+
+	; Write a sentinel into page 0, then read the same offset from page 2.
+	st   >00,@>8C02
+	st   >8E,@>8C02
+	st   >AA,V@>0000
+	st   >02,@>8C02
+	st   >8E,@>8C02
+	st   V@>0000,@>8376
+	ceq  >AA,@>8376
+	bs   G@vdp_evpc_test2
+	br   G@vdp_evpc_detected
+
+vdp_evpc_test2:
+	; A second sentinel guards against a coincidental >AA in page 2.
+	st   >00,@>8C02
+	st   >8E,@>8C02
+	st   >55,V@>0000
+	st   >02,@>8C02
+	st   >8E,@>8C02
+	st   V@>0000,@>8376
+	ceq  >55,@>8376
+	bs   G@vdp_evpc_not_detected
+
+vdp_evpc_detected:
+	; Restore the saved page-0 byte and leave R14 on page 0.
+	st   >00,@>8C02
+	st   >8E,@>8C02
+	st   @>8375,V@>0000
+
+	; EVPC power-up register table: R0-R19 and R23. R20-R22 (color burst),
+	; R24-R31 (unused) and R32-R46 (command unit) stay untouched.
+	st   >00,@>8C02
+	st   >80,@>8C02
+	st   >20,@>8C02
+	st   >81,@>8C02
+	st   >00,@>8C02
+	st   >82,@>8C02
+	st   >0E,@>8C02
+	st   >83,@>8C02
+	st   >01,@>8C02
+	st   >84,@>8C02
+	st   >06,@>8C02
+	st   >85,@>8C02
+	st   >00,@>8C02
+	st   >86,@>8C02
+	st   >F7,@>8C02
+	st   >87,@>8C02
+	st   >08,@>8C02
+	st   >88,@>8C02
+	st   >02,@>8C02
+	st   >89,@>8C02
+	st   >00,@>8C02
+	st   >8A,@>8C02
+	st   >00,@>8C02
+	st   >8B,@>8C02
+	st   >F7,@>8C02
+	st   >8C,@>8C02
+	st   >00,@>8C02
+	st   >8D,@>8C02
+	st   >00,@>8C02
+	st   >8E,@>8C02
+	st   >00,@>8C02
+	st   >8F,@>8C02
+	st   >00,@>8C02
+	st   >90,@>8C02
+	st   >00,@>8C02
+	st   >91,@>8C02
+	st   >00,@>8C02
+	st   >92,@>8C02
+	st   >00,@>8C02
+	st   >93,@>8C02
+	st   >00,@>8C02
+	st   >97,@>8C02
+
+	; EVPC default palette, 16 entries through the V9938 palette port.
+	st   >00,@>8C02
+	st   >90,@>8C02
+	st   >00,@>8C04
+	st   >00,@>8C04
+	st   >00,@>8C04
+	st   >00,@>8C04
+	st   >00,@>8C04
+	st   >06,@>8C04
+	st   >33,@>8C04
+	st   >07,@>8C04
+	st   >07,@>8C04
+	st   >00,@>8C04
+	st   >27,@>8C04
+	st   >03,@>8C04
+	st   >50,@>8C04
+	st   >00,@>8C04
+	st   >07,@>8C04
+	st   >06,@>8C04
+	st   >70,@>8C04
+	st   >00,@>8C04
+	st   >73,@>8C04
+	st   >03,@>8C04
+	st   >60,@>8C04
+	st   >06,@>8C04
+	st   >64,@>8C04
+	st   >06,@>8C04
+	st   >30,@>8C04
+	st   >04,@>8C04
+	st   >65,@>8C04
+	st   >03,@>8C04
+	st   >55,@>8C04
+	st   >05,@>8C04
+	st   >77,@>8C04
+	st   >07,@>8C04
+
+	; Leave the palette pointer and VRAM page at zero.
+	st   >00,@>8C02
+	st   >90,@>8C02
+	st   >00,@>8C02
+	st   >8E,@>8C02
+	br   G@vdp_evpc_done
+
+vdp_evpc_not_detected:
+	; Restore the saved page-0 byte.
+	st   >00,@>8C02
+	st   >8E,@>8C02
+	st   @>8375,V@>0000
+
+vdp_evpc_done:

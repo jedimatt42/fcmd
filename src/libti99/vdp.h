@@ -18,6 +18,8 @@
 #define VDPWA	*((volatile unsigned char*)0x8C02)
 // Write Data
 #define VDPWD	*((volatile unsigned char*)0x8C00)
+// Write Palette Data (V9938/V9958)
+#define VDPWP	*((volatile unsigned char*)0x8C04)
 
 //*********************
 // Inline VDP helpers
