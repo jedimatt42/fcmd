@@ -32,11 +32,6 @@ start:
 ; cartridge rom.
 
 boot:
-	; If the VDP already appears to be a 9938/9958, initialize it exactly as
-	; the EVPC card does. If it appears to be a 9918, leave it alone until
-	; after the F check so a CaDD hybrid stays in its masked power-up mode.
-	call G@vdp_init_apparent
-
 	; The power-up scan leaves KSCAN in split-keyboard mode 1. In mode 1 the
 	; half-keyboard table reports F as >0C.
 	scan			; scan keyboard, result in >8375
@@ -50,9 +45,6 @@ held:
 	rtn
 
 launch:
-	; Not skipping ForceCommand, so the VRAM bank test is now safe to run.
-	call G@vdp_init_bank
-
 	dclr	@>83CE		; clear sound bytes
 	st		>70,@>9400	; load speech write
 	st		>9F,@>8400	; Set sound generators
@@ -61,6 +53,4 @@ launch:
 	st		>FF,@>8400
 	dst CART,@>8300	; source value is symbol _cart in rom
 	xml >F0
-
-	copy "gpl-vdp-init.g99"
 

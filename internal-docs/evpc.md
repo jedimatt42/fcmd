@@ -437,9 +437,9 @@ like a 9918A with 16 KB of VRAM, then leaves it alone.
 
 ## Relationship to js99er's V9938 initialization
 
-js99er solves the same problem differently. Instead of running a power-up
-routine, js99er's `V9938.reset()` patches the console GROM's VDP register
-default table at GROM `>0451` before the console initializes the VDP:
+js99er solves the same problem in two different ways, depending on the selected
+VDP. The plain `V9938` mode patches the console GROM's VDP register default
+table at GROM `>0451` before the console initializes the VDP:
 
 ```ts
 const vdpRegisterData = 0x0451;
@@ -455,11 +455,20 @@ That produces exactly the same table bases as the EVPC DSR:
 R2 = 00, R3 = 0E, R4 = 01, R5 = 06, R6 = 00, R7 = F7
 ```
 
+The `V9938/F18A` (CaDD Hybrid) mode no longer patches the GROM. It starts in a
+9918A compatibility mode inside the V9938 core: table addresses use the 9918
+masks and VRAM addresses are 14 bits. The first access above VRAM `0x3FFF`
+switches the card to full V9938 behavior, at which point the unpatched R2-R6
+high bits become active. That is the same "lazy 9938" idea as the EVPC DSR,
+but implemented in the VDP instead of by rewriting registers after the console
+has run.
+
 See `js99er-9938.md` for the full js99er analysis. The EVPC approach is a
-runtime register rewrite in the DSR power-up routine; the js99er approach is a
-static patch of the console's default table before the console runs. Both keep
-the V9938 in 9918-compatible Graphics 1 mode with all tables in the first
-16 KB.
+runtime register rewrite in the DSR power-up routine; the plain js99er V9938
+approach is a static patch of the console's default table; the CaDD approach
+is a 9918A compatibility mode that ends on the first extended-VRAM access. All
+three keep the V9938 in 9918-compatible Graphics 1 mode with all tables in the
+first 16 KB.
 
 ## Appendix: raw register table
 

@@ -189,8 +189,6 @@ $(BUILD_DIR)/bank%.page: $(BUILD_DIR)/$(FNAME).elf $(HEADBIN)
 	cat $(HEADBIN) $(OBJ_DIR)/$(@F)_tmp >$@
 	@dd if=/dev/null of=$@ bs=8192 seek=1
 
-GPL_VDP_INIT = src/gpl-vdp-init.g99
-
 # Console ROM: 512KB image with original console ROM patched in
 ifeq ($(CONSOLE_ROM),1)
 $(FINAL_BIN): $(BANKBINS) 994a_rom/994a_rom_8k.bin
@@ -199,7 +197,7 @@ $(FINAL_BIN): $(BANKBINS) 994a_rom/994a_rom_8k.bin
 	cat 994a_rom/994a_rom_8k.bin >> $@
 
 # Assembled GPL power-up routine for the patched GROM 1
-$(BUILD_DIR)/powerup.grom: src/gpl-powerup.g99 $(GPL_VDP_INIT) $(BUILD_DIR)/$(FNAME).elf
+$(BUILD_DIR)/powerup.grom: src/gpl-powerup.g99 $(BUILD_DIR)/$(FNAME).elf
 	python3 $(XGA99) -D "_START=>$$(grep ' _start$$' $(BUILD_DIR)/mapfile | sed 's/.*0x0*//' | sed 's/ .*//')" -o $@ $<
 
 # Patched GROM 1 with powerup routine branching to _start
@@ -215,7 +213,7 @@ endif
 
 # GROM boot binary — cartridge only
 ifneq ($(CONSOLE_ROM),1)
-$(BUILD_DIR)/$(FNAME)G.bin: src/gpl-boot.g99 $(GPL_VDP_INIT) $(BUILD_DIR)/$(FNAME).elf
+$(BUILD_DIR)/$(FNAME)G.bin: src/gpl-boot.g99 $(BUILD_DIR)/$(FNAME).elf
 	python3 $(XGA99) -D "CART=$(shell echo -n '>' ; grep _cart $(BUILD_DIR)/mapfile | sed 's/^\s*0x0*\([0-9a-f]*\) *_cart/\1/')" -o $@ $<
 endif
 

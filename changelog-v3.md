@@ -98,8 +98,8 @@ repeated; that includes the v2.6 TIPIMAP `CS1`/`DSK5`–`DSK9` mappings.
   - An apparent 9918A is left in its 9918-safe state for the `F`-skip path.
     The VRAM bank test runs only when ForceCommand is actually launching, and
     applies the EVPC initialization only if a hidden 9938 is found.
-  - The GPL bank test writes and restores VRAM `>3FFF`, preserving the
-    console-initialized first 16K.
+  - The GPL boot stubs do not initialize the VDP; skipping ForceCommand with
+    `F` leaves the console's VDP state untouched.
   - F18A probing is never automatic. The `f18a` command is the only path that
     unlocks an F18A.
   - `f18a` now selects 80x24 text with per-character color attributes instead
